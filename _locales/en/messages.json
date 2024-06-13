@@ -1,0 +1,38 @@
+{
+    "openInPopupWindow": {
+        "message": "Open link in popup window"
+    },
+    "extensionName": {
+        "message": "Drag to Preview"
+    },
+    "extensionDescription": {
+        "message": "Adds context menu entry to open link in popup window"
+    },
+    "popupHeight": {
+        "message": "Popup height (px)"
+    },
+    "popupWidth": {
+        "message": "Popup width (px)"
+    },
+    "closeWhenFocusedInitialWindow": {
+        "message": "Close popup when origin window is focused"
+    },
+    "tryOpenAtMousePosition": {
+        "message": "Try to open at mouse position (disabled — open at screen center)"
+    },  
+    "hideBrowserControls": {
+        "message": "Hide browser controls (addressbar, tabbar, etc)"
+    },  
+    "openPageInMainWindow": {
+        "message": "Open page in main window"
+    },  
+    "searchInPopupWindow": {
+        "message": "Search in popup window"
+    },  
+    "searchInPopupEnabled": {
+        "message": "Option to search selection in popup enabled"
+    },  
+    "popupSearchUrl": {
+        "message": "Search url (%s will be replaced with the search query)"
+    }
+}

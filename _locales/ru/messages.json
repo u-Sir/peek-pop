@@ -1,0 +1,38 @@
+{
+    "extensionDescription": {
+        "message": "Добавляет опцию в контекстное меню для ссылки для открытия её во вплывающем окне"
+    },
+    "extensionName": {
+        "message": "Drag to Preview"
+    },
+    "closeWhenFocusedInitialWindow": {
+        "message": "Закрыть всплывающее окно, когда изначальное окно получает фокус"
+    },   
+    "openInPopupWindow": {
+        "message": "Открыть ссылку во всплывающем окне"
+    },    
+    "popupHeight": {
+        "message": "Высота окна (px)"
+    },    
+    "popupWidth": {
+        "message": "Ширина окна (px)"
+    },    
+    "tryOpenAtMousePosition": {
+        "message": "Пытаться открыть под курсором мыши (отключено — октрывать в центре экрана)"
+    },    
+    "hideBrowserControls": {
+        "message": "Прятать элементы управления браузера (панель адреса, вкладок, и тд)"
+    },  
+    "openPageInMainWindow": {
+        "message": "Открыть страницу в основном окне"
+    },  
+    "searchInPopupWindow": {
+        "message": "Искать во всплывающем окне"
+    },  
+    "searchInPopupEnabled": {
+        "message": "Включить опцию поиска выделения во всплывающем окне"
+    },  
+    "popupSearchUrl": {
+        "message": "URL поиска (%s будет заменено поисковым запросом)"
+    }
+}
