@@ -1,14 +1,27 @@
 let lastClientX, lastClientY, originWindowId;
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    lastClientX = request.lastClientX;
-    lastClientY = request.lastClientY;
+    const url = sender.tab.url;
+    chrome.storage.sync.get('disabledUrls', function (data) {
+        const disabledUrls = data.disabledUrls || [];
+        for (const pattern of disabledUrls) {
+            const regex = new RegExp(pattern.replace(/\*/g, '.*')); // Convert wildcard to regex
+            if (regex.test(url)) {
+                console.log(`URL ${url} is disabled due to pattern ${pattern}`);
+                return;
+            }
+        }
 
-    if (request.linkUrl) {
-        loadUserConfigs(() => handleLinkInPopup(request.linkUrl, sender.tab.incognito));
-    } else if (request.selectionText) {
-        loadUserConfigs(() => handleTextSearchInPopup(request.selectionText, sender.tab.incognito));
-    }
+        lastClientX = request.lastClientX;
+        lastClientY = request.lastClientY;
+
+        if (request.linkUrl) {
+            loadUserConfigs(() => handleLinkInPopup(request.linkUrl, sender.tab.incognito));
+        } else if (request.selectionText) {
+            console.log('Handling selection text in popup:', request.selectionText);
+            loadUserConfigs(() => handleTextSearchInPopup(request.selectionText, sender.tab.incognito));
+        }
+    });
 });
 
 function handleLinkInPopup(linkUrl, incognito) {

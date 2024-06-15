@@ -1,0 +1,42 @@
+{
+    "openInPopupWindow": {
+        "message": "在弹出窗口中打开链接"
+    },
+    "extensionName": {
+        "message": "拖拽预览"
+    },
+    "extensionDescription": {
+        "message": "在弹出窗口中打开拖拽的链接、搜索拖拽的文本"
+    },
+    "popupHeight": {
+        "message": "窗口高度 (px)"
+    },
+    "popupWidth": {
+        "message": "窗口宽度 (px)"
+    },
+    "closeWhenFocusedInitialWindow": {
+        "message": "焦点回到原窗口时自动关闭弹窗"
+    },
+    "tryOpenAtMousePosition": {
+        "message": "尝试在鼠标附近弹出 (关闭 — 居中)"
+    },  
+    "hideBrowserControls": {
+        "message": "隐藏浏览器控制 (地址栏, 标签栏, 等等)"
+    },  
+    "openPageInMainWindow": {
+        "message": "在主窗口中打开页面"
+    },  
+    "searchInPopupWindow": {
+        "message": "在弹出窗口中搜索"
+    },  
+    "searchInPopupEnabled": {
+        "message": "在弹出窗口中搜索选中的文本"
+    },  
+    "popupSearchUrl": {
+        "message": "搜索 URL (%s 搜索时会替换为搜索词)"
+    },
+    "disabledUrls": {
+        "message": "对以下 URL 禁用，（每行一个，支持正则表达式、通配符、纯文本）"
+    }
+}
+

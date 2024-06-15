@@ -1,23 +1,28 @@
-function shouldDisableExtension(url, patterns) {
-    return patterns.some(pattern => new RegExp(pattern).test(url));
+function isDisabledUrl(url, callback) {
+    chrome.storage.sync.get('disabledUrls', function (data) {
+        const disabledUrls = data.disabledUrls || [];
+        for (const pattern of disabledUrls) {
+            const regex = new RegExp(pattern.replace(/\*/g, '.*')); // Convert wildcard to regex
+            if (regex.test(url)) {
+                console.log(`URL ${url} is disabled due to pattern ${pattern}`);
+                callback(true);
+                return;
+            }
+        }
+        callback(false);
+    });
 }
 
-chrome.storage.sync.get('disabledUrls', function (data) {
-    const patterns = data.disabledUrls || [];
-    const currentUrl = window.location.href;
+document.addEventListener("dragstart", function (e) {
+    const url = window.location.href;
+    isDisabledUrl(url, function(disabled) {
+        if (disabled) return;
 
-    if (shouldDisableExtension(currentUrl, patterns)) {
-        return; // Do not initialize the rest of the extension's code
-    }
-
-    document.addEventListener("dragstart", function (e) {
         const selectionText = window.getSelection().toString();
         if (e.target.tagName === 'A') {
-            // Prevent default click behavior
             e.preventDefault();
             e.stopPropagation();
 
-            // Remove all event listeners on the link
             const link = e.target;
             const clonedLink = link.cloneNode(true);
             link.parentNode.replaceChild(clonedLink, link);
@@ -28,44 +33,46 @@ chrome.storage.sync.get('disabledUrls', function (data) {
                 lastClientY: e.screenY
             });
         } else if (selectionText) {
-            // Retrieve the 'searchInPopupEnabled' setting from Chrome storage
             chrome.storage.sync.get('searchInPopupEnabled', function (data) {
-                // Check if the setting is enabled
                 if (data.searchInPopupEnabled) {
-                    // Send a message to the background script to handle the search in popup
+                    console.log('Sending selection text to background:', selectionText);
                     chrome.runtime.sendMessage({
                         selectionText: selectionText,
                         lastClientX: e.screenX,
                         lastClientY: e.screenY
                     });
 
-                    // Prevent default drag behavior
                     e.preventDefault();
                     e.stopPropagation();
                 }
             });
         }
     });
+});
 
-    document.addEventListener("dragover", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }, true);
+document.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+}, true);
 
-    document.addEventListener("drop", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }, true);
+document.addEventListener("drop", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+}, true);
 
-    document.addEventListener("dragend", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }, true);
+document.addEventListener("dragend", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+}, true);
 
-    document.addEventListener("mouseup", function (e) {
+document.addEventListener("mouseup", function (e) {
+    const url = window.location.href;
+    isDisabledUrl(url, function(disabled) {
+        if (disabled) return;
+
         if (e.target.tagName === 'A' && e.target.href) {
             e.preventDefault();
             e.stopPropagation();
         }
-    }, true);
-});
+    });
+}, true);
