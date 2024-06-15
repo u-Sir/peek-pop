@@ -1,3 +1,6 @@
+0.0.5
+- support disabled extension in specific urls (via plain text, regexp or wildcards)
+
 0.0.4
 - fixed a bug that "Option to search selection in popup enabled" can't be disabled.
 

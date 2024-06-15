@@ -20,8 +20,8 @@
     "tryOpenAtMousePosition": {
         "message": "Try to open at mouse position (disabled — open at screen center)"
     },  
-    "hideBrowserControls": {
-        "message": "Hide browser controls (addressbar, tabbar, etc)"
+    "disabledUrls": {
+        "message": "Disable extension on these URLs (plain text or regex or wildcarks, one per line)"
     },  
     "openPageInMainWindow": {
         "message": "Open page in main window"

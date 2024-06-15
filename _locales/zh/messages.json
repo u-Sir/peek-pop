@@ -20,8 +20,8 @@
     "tryOpenAtMousePosition": {
         "message": "尝试在鼠标附近弹出 (关闭 — 居中)"
     },  
-    "hideBrowserControls": {
-        "message": "隐藏浏览器控制 (地址栏, 标签栏, 等等)"
+    "disabledUrls": {
+        "message": "访问以下 URL 时禁止触发（文本、正则、通配符，一行一个规则）"
     },  
     "openPageInMainWindow": {
         "message": "在主窗口中打开页面"
