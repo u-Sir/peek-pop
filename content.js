@@ -13,10 +13,13 @@ function isDisabledUrl(url, callback) {
     });
 }
 
-document.addEventListener("dragstart", function (e) {
+function handleDragStart(e) {
     const url = window.location.href;
     isDisabledUrl(url, function(disabled) {
-        if (disabled) return;
+        if (disabled) {
+            // If URL is disabled, allow default browser behavior
+            return;
+        }
 
         const selectionText = window.getSelection().toString();
         if (e.target.tagName === 'A') {
@@ -48,16 +51,34 @@ document.addEventListener("dragstart", function (e) {
             });
         }
     });
-});
+}
+
+document.addEventListener("dragstart", handleDragStart);
 
 document.addEventListener("dragover", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
+    const url = window.location.href;
+    isDisabledUrl(url, function(disabled) {
+        if (disabled) {
+            // If URL is disabled, allow default browser behavior
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+    });
 }, true);
 
 document.addEventListener("drop", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
+    const url = window.location.href;
+    isDisabledUrl(url, function(disabled) {
+        if (disabled) {
+            // If URL is disabled, allow default browser behavior
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+    });
 }, true);
 
 document.addEventListener("dragend", function (e) {
@@ -68,9 +89,7 @@ document.addEventListener("dragend", function (e) {
 document.addEventListener("mouseup", function (e) {
     const url = window.location.href;
     isDisabledUrl(url, function(disabled) {
-        if (disabled) return;
-
-        if (e.target.tagName === 'A' && e.target.href) {
+        if (disabled && e.target.tagName === 'A' && e.target.href) {
             e.preventDefault();
             e.stopPropagation();
         }
