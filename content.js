@@ -1,35 +1,19 @@
-function isDisabledUrl(url, callback) {
-    chrome.storage.sync.get('disabledUrls', function (data) {
-        const disabledUrls = data.disabledUrls || [];
-        for (const pattern of disabledUrls) {
-            const regex = new RegExp(pattern.replace(/\*/g, '.*')); // Convert wildcard to regex
-            if (regex.test(url)) {
-                console.log(`URL ${url} is disabled due to pattern ${pattern}`);
-                callback(true);
-                return;
-            }
-        }
-        callback(false);
-    });
-}
+chrome.storage.sync.get('disabledUrls', function(data) {
+    const disabledUrls = data.disabledUrls || [];
+    const currentUrl = window.location.href;
 
-function handleDragStart(e) {
-    const url = window.location.href;
-    isDisabledUrl(url, function(disabled) {
-        if (disabled) {
-            // If URL is disabled, allow default browser behavior
-            return;
-        }
+    if (isUrlDisabled(currentUrl, disabledUrls)) {
+        return; // Do nothing if the URL is disabled
+    }
 
+    document.addEventListener("dragstart", function (e) {
         const selectionText = window.getSelection().toString();
         if (e.target.tagName === 'A') {
             e.preventDefault();
             e.stopPropagation();
-
             const link = e.target;
             const clonedLink = link.cloneNode(true);
             link.parentNode.replaceChild(clonedLink, link);
-
             chrome.runtime.sendMessage({
                 linkUrl: e.target.href,
                 lastClientX: e.screenX,
@@ -38,60 +22,47 @@ function handleDragStart(e) {
         } else if (selectionText) {
             chrome.storage.sync.get('searchInPopupEnabled', function (data) {
                 if (data.searchInPopupEnabled) {
-                    console.log('Sending selection text to background:', selectionText);
                     chrome.runtime.sendMessage({
                         selectionText: selectionText,
                         lastClientX: e.screenX,
                         lastClientY: e.screenY
                     });
-
                     e.preventDefault();
                     e.stopPropagation();
                 }
             });
         }
-    });
-}
+    }, true);
 
-document.addEventListener("dragstart", handleDragStart);
-
-document.addEventListener("dragover", function (e) {
-    const url = window.location.href;
-    isDisabledUrl(url, function(disabled) {
-        if (disabled) {
-            // If URL is disabled, allow default browser behavior
-            return;
-        }
-
+    document.addEventListener("dragover", function (e) {
         e.preventDefault();
         e.stopPropagation();
-    });
-}, true);
+    }, true);
 
-document.addEventListener("drop", function (e) {
-    const url = window.location.href;
-    isDisabledUrl(url, function(disabled) {
-        if (disabled) {
-            // If URL is disabled, allow default browser behavior
-            return;
-        }
-
+    document.addEventListener("drop", function (e) {
         e.preventDefault();
         e.stopPropagation();
-    });
-}, true);
+    }, true);
 
-document.addEventListener("dragend", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-}, true);
+    document.addEventListener("dragend", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }, true);
 
-document.addEventListener("mouseup", function (e) {
-    const url = window.location.href;
-    isDisabledUrl(url, function(disabled) {
-        if (disabled && e.target.tagName === 'A' && e.target.href) {
+    document.addEventListener("mouseup", function (e) {
+        if (e.target.tagName === 'A' && e.target.href) {
             e.preventDefault();
             e.stopPropagation();
         }
+    }, true);
+});
+
+function isUrlDisabled(url, disabledUrls) {
+    return disabledUrls.some(disabledUrl => {
+        if (disabledUrl.includes('*')) {
+            const regex = new RegExp(disabledUrl.replace(/\*/g, '.*'));
+            return regex.test(url);
+        }
+        return url.includes(disabledUrl);
     });
-}, true);
+}

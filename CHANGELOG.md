@@ -1,4 +1,4 @@
-0.0.7
+0.0.9
 - support disable in specific URLs via regex, wildcard, plain text
 
 0.0.4

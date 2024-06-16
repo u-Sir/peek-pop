@@ -19,9 +19,9 @@
     },
     "tryOpenAtMousePosition": {
         "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
-    }, 
-    "hideBrowserControls": {
-        "message": "Ocultar los controles del navegador (barra de direcciones, barra de pestañas, etc.)"
+    },  
+    "disabledUrls": {
+        "message": "Disable extension on these URLs (via plain text, regex, wildcarks, one per line)"
     },  
     "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"

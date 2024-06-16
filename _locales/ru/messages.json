@@ -19,10 +19,10 @@
     },    
     "tryOpenAtMousePosition": {
         "message": "Пытаться открыть под курсором мыши (отключено — октрывать в центре экрана)"
-    },    
-    "hideBrowserControls": {
-        "message": "Прятать элементы управления браузера (панель адреса, вкладок, и тд)"
     },  
+    "disabledUrls": {
+        "message": "Disable extension on these URLs (via plain text, regex, wildcarks, one per line)"
+    }, 
     "openPageInMainWindow": {
         "message": "Открыть страницу в основном окне"
     },  

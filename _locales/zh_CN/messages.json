@@ -20,9 +20,6 @@
     "tryOpenAtMousePosition": {
         "message": "尝试在鼠标附近弹出 (关闭 — 居中)"
     },  
-    "hideBrowserControls": {
-        "message": "隐藏浏览器控制 (地址栏, 标签栏, 等等)"
-    },  
     "openPageInMainWindow": {
         "message": "在主窗口中打开页面"
     },  
@@ -36,7 +33,7 @@
         "message": "搜索 URL (%s 搜索时会替换为搜索词)"
     },
     "disabledUrls": {
-        "message": "对以下 URL 禁用，（每行一个，支持正则表达式、通配符、纯文本）"
+        "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
     }
 }
 
