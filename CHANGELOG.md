@@ -1,3 +1,7 @@
+0.0.11
+- convert to non-persistent background.
+- ensured popup window open in the same container/private-mode as original page on Firefox.
+
 0.0.10
 - support disable in specific URLs via regex, wildcard, plain text
 
