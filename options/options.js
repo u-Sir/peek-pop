@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
-    loadUserConfigs(function(userConfigs) {
+    loadUserConfigs(function (userConfigs) {
         const keys = Object.keys(configs);
 
         for (let i = 0, l = keys.length; i < l; i++) {
@@ -24,7 +24,7 @@ function init() {
                 }
                 label.appendChild(document.createTextNode(chrome.i18n.getMessage(key)));
 
-                input.addEventListener("input", function(e) {
+                input.addEventListener("input", function (e) {
                     let id = input.getAttribute('id');
                     let inputValue = input.getAttribute('type') == 'checkbox' ? input.checked : input.value;
                     configs[id] = inputValue;
@@ -36,32 +36,11 @@ function init() {
 
         let disabledUrlsTextarea = document.getElementById('disabledUrls');
         if (disabledUrlsTextarea) {
-            disabledUrlsTextarea.value = (userConfigs.disabledUrls || []).join('\n');
-
-            let label = disabledUrlsTextarea.parentNode.querySelector('label');
-            if (!label) {
-                label = document.createElement('label');
-                label.setAttribute('for', 'disabledUrls');
-                disabledUrlsTextarea.parentNode.insertAdjacentElement('beforeend', label);
-            }
-            label.appendChild(document.createTextNode(chrome.i18n.getMessage('disabledUrls')));
-
-            disabledUrlsTextarea.addEventListener('input', function(e) {
-                let patterns = disabledUrlsTextarea.value.split('\n').filter(pattern => pattern.trim().length > 0);
-                chrome.storage.sync.set({ 'disabledUrls': patterns }, function () {
-                    configs['disabledUrls'] = patterns;
-                });
+            disabledUrlsTextarea.value = userConfigs.disabledUrls?.join('\n') ?? configs.disabledUrls.join('\n');
+            disabledUrlsTextarea.addEventListener('input', function () {
+                configs.disabledUrls = disabledUrlsTextarea.value.split('\n').filter((line) => line.trim());
+                saveAllSettings();
             });
         }
     });
-}
-
-function loadUserConfigs(callback) {
-    chrome.storage.sync.get(null, function (configs) {
-        callback(configs);
-    });
-}
-
-function saveAllSettings() {
-    chrome.storage.sync.set(configs);
 }
