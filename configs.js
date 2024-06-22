@@ -6,25 +6,24 @@ const configs = {
     'popupWidth': 1000,
     'searchInPopupEnabled': true,
     'popupSearchUrl': 'https://www.google.com/search?q=%s',
-}
+    'disabledUrls': []
+};
 
 function loadUserConfigs(callback) {
     const keys = Object.keys(configs);
-    chrome.storage.sync.get(
-        keys, function (userConfigs) {
-            const l = keys.length;
-            for (let i = 0; i < l; i++) {
-                let key = keys[i];
+    chrome.storage.local.get(keys, function (userConfigs) {
+        const l = keys.length;
+        for (let i = 0; i < l; i++) {
+            let key = keys[i];
 
-                if (userConfigs[key] !== null && userConfigs[key] !== undefined)
-                    configs[key] = userConfigs[key];
-            }
-
-            if (callback) callback(userConfigs);
+            if (userConfigs[key] !== null && userConfigs[key] !== undefined)
+                configs[key] = userConfigs[key];
         }
-    );
+
+        if (callback) callback(userConfigs);
+    });
 }
 
 function saveAllSettings() {
-    chrome.storage.sync.set(configs);
+    chrome.storage.local.set(configs);
 }

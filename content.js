@@ -25,15 +25,19 @@ function handleDragStart(e) {
         chrome.runtime.sendMessage({
             linkUrl: e.target.href,
             lastClientX: e.screenX,
-            lastClientY: e.screenY
+            lastClientY: e.screenY,
+            width: window.screen.availWidth,
+            height: window.screen.availHeight
         });
     } else if (selectionText) {
-        chrome.storage.sync.get('searchInPopupEnabled', function (data) {
+        chrome.storage.local.get('searchInPopupEnabled', function (data) {
             if (data.searchInPopupEnabled) {
                 chrome.runtime.sendMessage({
                     selectionText: selectionText,
                     lastClientX: e.screenX,
-                    lastClientY: e.screenY
+                    lastClientY: e.screenY,
+                    width: window.screen.availWidth,
+                    height: window.screen.availHeight
                 });
                 e.preventDefault();
                 e.stopPropagation();
@@ -75,7 +79,7 @@ function isUrlDisabled(url, disabledUrls) {
 }
 
 function checkUrlAndToggleListeners() {
-    chrome.storage.sync.get('disabledUrls', function(data) {
+    chrome.storage.local.get('disabledUrls', function(data) {
         const disabledUrls = data.disabledUrls || [];
         const currentUrl = window.location.href;
 
@@ -88,7 +92,7 @@ function checkUrlAndToggleListeners() {
 }
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
-    if (namespace === 'sync' && changes.disabledUrls) {
+    if (namespace === 'local' && changes.disabledUrls) {
         checkUrlAndToggleListeners();
     }
 });
@@ -96,11 +100,20 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 checkUrlAndToggleListeners();
 
 // Monitor URL changes and re-evaluate extension activity
+// Monitor URL changes and save `lastUrl` in chrome.storage.local
 let lastUrl = location.href;
 new MutationObserver(() => {
     const url = location.href;
     if (url !== lastUrl) {
         lastUrl = url;
-        checkUrlAndToggleListeners();
+        chrome.storage.local.set({ lastUrl: url });
+        checkUrlAndToggleListeners(); // Optionally trigger listener checks
     }
-}).observe(document, {subtree: true, childList: true});
+}).observe(document, { subtree: true, childList: true });
+
+// On content script initialization, retrieve lastUrl from storage if available
+chrome.storage.local.get('lastUrl', function(data) {
+    if (data.lastUrl) {
+        lastUrl = data.lastUrl;
+    }
+});
