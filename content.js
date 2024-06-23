@@ -68,6 +68,8 @@ function handleMouseUp(e) {
     }
 }
 
+
+
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => {
         if (disabledUrl.includes('*')) {
@@ -117,3 +119,14 @@ chrome.storage.local.get('lastUrl', function(data) {
         lastUrl = data.lastUrl;
     }
 });
+
+// Add an event listener for focus events on the window
+window.addEventListener('focus', function(event) {
+    if (chrome.storage.local.get('closeWhenFocusedInitialWindow')) {
+        // Send a message to background.js when the window regains focus
+        chrome.runtime.sendMessage({ action: 'windowRegainedFocus' });
+    }
+    
+});
+
+

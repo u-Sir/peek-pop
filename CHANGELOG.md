@@ -1,4 +1,4 @@
-0.0.11
+0.0.13
 - convert to non-persisten background.
 - ensured popup window open in the same container/private-mode as original page on Firefox.
 
