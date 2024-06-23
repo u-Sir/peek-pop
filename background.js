@@ -22,23 +22,40 @@ function loadUserConfigs(callback) {
     });
 }
 
-loadUserConfigs(() => {});
+loadUserConfigs(() => { });
 let screenWidth = 0;
 let screenHeight = 0;
 
 chrome.runtime.onInstalled.addListener(() => {
-    loadUserConfigs(() => {});
+    loadUserConfigs(() => { });
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    chrome.windows.getCurrent(currentWindow => {
+        chrome.storage.local.get('originWindowId', ({ originWindowId }) => {
+            if (request.action === 'windowRegainedFocus' && currentWindow.id === originWindowId) {
+                chrome.windows.getAll({ populate: true }, windows => {
+                    windows.forEach(window => {
+                        if (window.type === 'popup') {
+                            chrome.windows.remove(window.id);
+                        }
+                    });
+                });
+            }
+        });
+    });
+    
+
+
+
     chrome.storage.local.set({
         lastClientX: request.lastClientX,
         lastClientY: request.lastClientY
     });
-    
+
     screenWidth = request.width;
     screenHeight = request.height;
-    
+
     chrome.storage.local.get('disabledUrls', data => {
         const disabledUrls = data.disabledUrls || [];
         const currentUrl = sender.tab.url;
