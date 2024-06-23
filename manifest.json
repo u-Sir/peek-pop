@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "0.0.13",
+  "version": "0.0.11",
   "default_locale": "en",
   "icons": {
     "48": "icon.svg",
@@ -10,8 +10,7 @@
     "128": "icon.svg"
   },
   "background": {
-    "scripts": [ "background.js" ],
-    "persistent": false
+    "service_worker": "background.js" 
   },
   "content_scripts": [
     {
@@ -24,16 +23,20 @@
     "storage",
     "tabs",
     "alarms",
-    "cookies",
+    "cookies"
+  ],
+  "host_permissions": [
     "*://*/*"
   ],
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": false
   },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "drag_to_privew@uxer"
+  "action": {
+    "default_icon": {
+      "48": "icon.svg",
+      "96": "icon.svg",
+      "128": "icon.svg"
     }
   }
 }
