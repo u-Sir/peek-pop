@@ -1,4 +1,4 @@
-0.0.15
+0.0.16
 - add option to only response when shift key is pressing.
 - add an option to enable "ensured popup window open in the same container as original page".
 - add "send page back to original window" in context menu on popup window.

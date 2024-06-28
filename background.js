@@ -239,7 +239,8 @@ chrome.alarms.onAlarm.addListener(alarm => {
                     height: height,
                     top: dy,
                     left: dx,
-                    focused: true
+                    focused: true,
+                    incognito: incognito
                 };
 
                 if (cookieStoreId && cookieStoreId !== "firefox-default") {
