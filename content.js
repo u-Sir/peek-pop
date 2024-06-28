@@ -4,6 +4,9 @@ function addListeners() {
     document.addEventListener("drop", handleDrop, true);
     document.addEventListener("dragend", handleDragEnd, true);
     document.addEventListener("mouseup", handleMouseUp, true);
+    document.addEventListener('contextmenu', function (event) {
+        chrome.runtime.sendMessage({ action: 'ensureContextMenu' });
+    });
 }
 
 function removeListeners() {
@@ -16,34 +19,43 @@ function removeListeners() {
 
 function handleDragStart(e) {
     const selectionText = window.getSelection().toString();
-    if (e.target.tagName === 'A') {
-        e.preventDefault();
-        e.stopPropagation();
-        const link = e.target;
-        const clonedLink = link.cloneNode(true);
-        link.parentNode.replaceChild(clonedLink, link);
-        chrome.runtime.sendMessage({
-            linkUrl: e.target.href,
-            lastClientX: e.screenX,
-            lastClientY: e.screenY,
-            width: window.screen.availWidth,
-            height: window.screen.availHeight
-        });
-    } else if (selectionText) {
-        chrome.storage.local.get('searchInPopupEnabled', function (data) {
-            if (data.searchInPopupEnabled) {
-                chrome.runtime.sendMessage({
-                    selectionText: selectionText,
-                    lastClientX: e.screenX,
-                    lastClientY: e.screenY,
-                    width: window.screen.availWidth,
-                    height: window.screen.availHeight
-                });
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        });
-    }
+    chrome.storage.local.get(['shiftEnabled', 'searchInPopupEnabled'], function(data) {
+        const shiftEnabled = data.shiftEnabled || false;
+        const searchInPopupEnabled = data.searchInPopupEnabled || false;
+
+        // If shiftEnabled is true and neither shift nor Command key is pressed, do nothing
+        if (shiftEnabled && !e.shiftKey) {
+            return;
+        }
+
+        // Handle dragging links
+        if (e.target.tagName === 'A') {
+            e.preventDefault();
+            e.stopPropagation();
+            chrome.runtime.sendMessage({
+                action: 'dragStart',
+                linkUrl: e.target.href,
+                lastClientX: e.screenX,
+                lastClientY: e.screenY,
+                width: window.screen.availWidth,
+                height: window.screen.availHeight,
+                shiftKey: e.shiftKey
+            });
+        // Handle dragging text
+        } else if (selectionText && searchInPopupEnabled) {
+            chrome.runtime.sendMessage({
+                action: 'dragStart',
+                selectionText: selectionText,
+                lastClientX: e.screenX,
+                lastClientY: e.screenY,
+                width: window.screen.availWidth,
+                height: window.screen.availHeight,
+                shiftKey: e.shiftKey
+            });
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
 }
 
 function handleDragOver(e) {
@@ -68,8 +80,6 @@ function handleMouseUp(e) {
     }
 }
 
-
-
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => {
         if (disabledUrl.includes('*')) {
@@ -81,7 +91,7 @@ function isUrlDisabled(url, disabledUrls) {
 }
 
 function checkUrlAndToggleListeners() {
-    chrome.storage.local.get('disabledUrls', function(data) {
+    chrome.storage.local.get(['disabledUrls', 'searchInPopupEnabled'], function (data) {
         const disabledUrls = data.disabledUrls || [];
         const currentUrl = window.location.href;
 
@@ -90,10 +100,15 @@ function checkUrlAndToggleListeners() {
         } else {
             addListeners();
         }
+
+        // Ensure searchInPopupEnabled is set
+        if (typeof data.searchInPopupEnabled === 'undefined') {
+            chrome.storage.local.set({ searchInPopupEnabled: true });
+        }
     });
 }
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
+chrome.storage.onChanged.addListener(function (changes, namespace) {
     if (namespace === 'local' && changes.disabledUrls) {
         checkUrlAndToggleListeners();
     }
@@ -101,34 +116,26 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 
 checkUrlAndToggleListeners();
 
-// Monitor URL changes and re-evaluate extension activity
-// Monitor URL changes and save `lastUrl` in chrome.storage.local
 let lastUrl = location.href;
 new MutationObserver(() => {
     const url = location.href;
     if (url !== lastUrl) {
         lastUrl = url;
         chrome.storage.local.set({ lastUrl: url });
-        checkUrlAndToggleListeners(); // Optionally trigger listener checks
+        checkUrlAndToggleListeners();
     }
 }).observe(document, { subtree: true, childList: true });
 
-// On content script initialization, retrieve lastUrl from storage if available
-chrome.storage.local.get('lastUrl', function(data) {
+chrome.storage.local.get('lastUrl', function (data) {
     if (data.lastUrl) {
         lastUrl = data.lastUrl;
     }
 });
 
-// Add an event listener for focus events on the window
-window.addEventListener('focus', function(event) {
-    chrome.storage.local.get('closeWhenFocusedInitialWindow', function(data) {
+window.addEventListener('focus', function (event) {
+    chrome.storage.local.get('closeWhenFocusedInitialWindow', function (data) {
         if (data.closeWhenFocusedInitialWindow) {
-            // Send a message to background.js when the window regains focus
             chrome.runtime.sendMessage({ action: 'windowRegainedFocus' });
         }
     });
 });
-
-
-

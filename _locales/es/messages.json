@@ -1,7 +1,7 @@
 {
     "openInPopupWindow": {
         "message": "Abrir enlace en ventana emergente"
-    },    
+    },
     "extensionName": {
         "message": "Drag to Preview"
     },
@@ -19,20 +19,29 @@
     },
     "tryOpenAtMousePosition": {
         "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
-    },  
+    },
     "disabledUrls": {
         "message": "Disable extension on these URLs (via plain text, regex, wildcarks, one per line)"
-    },  
+    },
     "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"
-    },  
+    },
     "searchInPopupWindow": {
         "message": "Buscar en ventana emergente"
-    },  
+    },
     "searchInPopupEnabled": {
         "message": "Opción para buscar selección en ventana emergente habilitada"
-    },  
+    },
     "popupSearchUrl": {
         "message": "URL de búsqueda (%s se reemplazará con la consulta de búsqueda)"
+    },
+    "enableContainerIdentify": {
+        "message": "mantener abierto en el mismo contenedor que la página original"
+    },
+    "sendPageBack": {
+        "message": "Enviar página de vuelta a la ventana original"
+    },
+    "shiftEnabled": {
+        "message": "responder solo cuando se mantenga presionado Shift"
     }
 }

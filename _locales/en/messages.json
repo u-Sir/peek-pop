@@ -34,5 +34,14 @@
     },  
     "popupSearchUrl": {
         "message": "Search url (%s will be replaced with the search query)"
+    },
+    "enableContainerIdentify": {
+        "message": "keep open in the same container as original page"
+    },
+    "sendPageBack": {
+        "message": "Send Page Back to Original Window"
+    },
+    "shiftEnabled": {
+        "message": "response only when Shift keep down"
     }
 }

@@ -34,6 +34,15 @@
     },
     "disabledUrls": {
         "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
+    },
+    "enableContainerIdentify": {
+        "message": "确保弹窗跟原页面处于同一容器内"
+    },
+    "sendPageBack": {
+        "message": "发送当前页面到原窗口"
+    },
+    "shiftEnabled": {
+        "message": "按住 Shift 时才进行响应"
     }
 }
 

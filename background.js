@@ -6,7 +6,9 @@ const configs = {
     'popupWidth': 1000,
     'searchInPopupEnabled': true,
     'popupSearchUrl': 'https://www.google.com/search?q=%s',
-    'disabledUrls': []
+    'disabledUrls': [],
+    'enableContainerIdentify': true,
+    'shiftEnabled': false
 };
 
 function loadUserConfigs(callback) {
@@ -17,7 +19,6 @@ function loadUserConfigs(callback) {
                 configs[key] = userConfigs[key];
             }
         });
-
         if (callback) callback(userConfigs);
     });
 }
@@ -25,26 +26,48 @@ function loadUserConfigs(callback) {
 loadUserConfigs(() => { });
 let screenWidth = 0;
 let screenHeight = 0;
+let contextMenuCreated = false;
 
 chrome.runtime.onInstalled.addListener(() => {
     loadUserConfigs(() => { });
 });
 
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.windows.getCurrent(currentWindow => {
         chrome.storage.local.get('originWindowId', ({ originWindowId }) => {
+            if (request.action === 'ensureContextMenu' && currentWindow.id !== originWindowId) {
+                if (!contextMenuCreated) {
+                    chrome.contextMenus.create({
+                        id: 'sendPageBack',
+                        title: chrome.i18n.getMessage('sendPageBack'),
+                        contexts: ['page']
+                    });
+                    contextMenuCreated = true;
+                }
+            }
+            
             if (request.action === 'windowRegainedFocus' && currentWindow.id === originWindowId) {
                 chrome.windows.getAll({ populate: true }, windows => {
                     windows.forEach(window => {
                         if (window.type === 'popup') {
                             chrome.windows.remove(window.id);
+
+                            // Remove the context menu item when the popup window is closed
+                            chrome.contextMenus.remove('sendPageBack');
+                            popupWindowId = null;
+                            contextMenuCreated = false;
                         }
                     });
                 });
             }
+
+            if (request.action === 'updateshiftEnabled') {
+                configs.shiftEnabled = request.shiftEnabled;
+                chrome.storage.local.set({ shiftEnabled: request.shiftEnabled });
+            }
         });
     });
-    
 
 
 
@@ -56,8 +79,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     screenWidth = request.width;
     screenHeight = request.height;
 
-    chrome.storage.local.get('disabledUrls', data => {
+    chrome.storage.local.get(['disabledUrls', 'searchInPopupEnabled'], data => {
         const disabledUrls = data.disabledUrls || [];
+        const searchInPopupEnabled = data.searchInPopupEnabled;
         const currentUrl = sender.tab.url;
 
         if (isUrlDisabled(currentUrl, disabledUrls)) {
@@ -66,7 +90,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         if (request.linkUrl) {
             loadUserConfigs(() => handleLinkInPopup(request.linkUrl, sender.tab));
-        } else if (request.selectionText) {
+        } else if (searchInPopupEnabled && request.selectionText) {
             loadUserConfigs(() => handleTextSearchInPopup(request.selectionText, sender.tab));
         }
     });
@@ -74,6 +98,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function handleLinkInPopup(linkUrl, tab) {
     let originalWindowIsFullscreen = false;
+
+    // Validate the URL before proceeding
+    if (!isValidUrl(linkUrl)) {
+        console.error('Invalid URL:', linkUrl);
+        return;
+    }
 
     chrome.windows.getCurrent(originWindow => {
         if (originWindow.type !== 'popup') {
@@ -87,10 +117,11 @@ function handleLinkInPopup(linkUrl, tab) {
             });
         }
 
-        chrome.storage.local.get(['lastClientX', 'lastClientY'], ({ lastClientX, lastClientY }) => {
-            let dx, dy;
+        chrome.storage.local.get(['lastClientX', 'lastClientY', 'enableContainerIdentify'], ({ lastClientX, lastClientY, enableContainerIdentify }) => {
+            let dx = 0, dy = 0;
             let height = parseInt(configs.popupHeight, 10);
             let width = parseInt(configs.popupWidth, 10);
+            const enableContainer = enableContainerIdentify !== undefined ? enableContainerIdentify : configs.enableContainerIdentify;
 
             if (configs.tryOpenAtMousePosition && lastClientX && lastClientY) {
                 dx = lastClientX - width / 2;
@@ -108,15 +139,15 @@ function handleLinkInPopup(linkUrl, tab) {
             dy = Math.round(dy);
 
             const alarmData = { linkUrl, dx, dy, width, height, incognito: tab.incognito, originalWindowIsFullscreen };
-
-            // Check if tab.cookieStoreId is not "firefox-default" before setting cookieStoreId in alarmData
-            if (tab.cookieStoreId && tab.cookieStoreId !== "firefox-default") {
+            if (enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== "firefox-default") {
                 alarmData.cookieStoreId = tab.cookieStoreId;
+                
             }
+
+            
 
             const alarmName = `popupLinkAlarm_${Date.now()}`;
             chrome.storage.local.set({ [alarmName]: alarmData });
-
             const delayInMilliseconds = originalWindowIsFullscreen ? 600 : 0;
             chrome.alarms.create(alarmName, { when: Date.now() + delayInMilliseconds });
         });
@@ -138,10 +169,11 @@ function handleTextSearchInPopup(selectionText, tab) {
             });
         }
 
-        chrome.storage.local.get(['lastClientX', 'lastClientY'], ({ lastClientX, lastClientY }) => {
-            let dx, dy;
+        chrome.storage.local.get(['lastClientX', 'lastClientY', 'enableContainerIdentify'], ({ lastClientX, lastClientY, enableContainerIdentify }) => {
+            let dx = 0, dy = 0;
             let height = parseInt(configs.popupHeight, 10);
             let width = parseInt(configs.popupWidth, 10);
+            const enableContainer = enableContainerIdentify !== undefined ? enableContainerIdentify : configs.enableContainerIdentify;
 
             if (configs.tryOpenAtMousePosition && lastClientX && lastClientY) {
                 dx = lastClientX - width / 2;
@@ -161,18 +193,25 @@ function handleTextSearchInPopup(selectionText, tab) {
             const searchUrl = configs.popupSearchUrl.replace('%s', encodeURIComponent(selectionText));
             const alarmData = { searchUrl, dx, dy, width, height, incognito: tab.incognito, originalWindowIsFullscreen };
 
-            // Check if tab.cookieStoreId is not "firefox-default" before setting cookieStoreId in alarmData
-            if (tab.cookieStoreId && tab.cookieStoreId !== "firefox-default") {
+            if (enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== "firefox-default") {
                 alarmData.cookieStoreId = tab.cookieStoreId;
             }
 
             const alarmName = `popupSearchAlarm_${Date.now()}`;
             chrome.storage.local.set({ [alarmName]: alarmData });
-
             const delayInMilliseconds = originalWindowIsFullscreen ? 600 : 0;
             chrome.alarms.create(alarmName, { when: Date.now() + delayInMilliseconds });
         });
     });
+}
+
+function isValidUrl(url) {
+    try {
+        const parsedUrl = new URL(url);
+        return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+    } catch (e) {
+        return false;
+    }
 }
 
 chrome.alarms.onAlarm.addListener(alarm => {
@@ -181,9 +220,18 @@ chrome.alarms.onAlarm.addListener(alarm => {
     if (alarmName.startsWith('popupLinkAlarm_') || alarmName.startsWith('popupSearchAlarm_')) {
         chrome.storage.local.get(alarmName, data => {
             if (data[alarmName]) {
-                const { linkUrl, searchUrl, dx, dy, width, height, incognito, cookieStoreId, originalWindowIsFullscreen } = data[alarmName];
+                const { linkUrl, searchUrl, dx, dy, width, height, incognito, originalWindowIsFullscreen, cookieStoreId } = data[alarmName];
 
                 const url = linkUrl || searchUrl;
+
+                // Validate the URL before creating the popup window
+                if (!isValidUrl(url)) {
+                    console.error('Invalid URL:', url);
+                    return;
+                }
+
+                chrome.storage.local.set({ popupUrl: url });
+
                 const createData = {
                     url: url,
                     type: 'popup',
@@ -191,28 +239,36 @@ chrome.alarms.onAlarm.addListener(alarm => {
                     height: height,
                     top: dy,
                     left: dx,
-                    focused: true,
-                    incognito: incognito
+                    focused: true
                 };
 
-                // Only set cookieStoreId in createData if it's not "firefox-default"
                 if (cookieStoreId && cookieStoreId !== "firefox-default") {
                     createData.cookieStoreId = cookieStoreId;
                 }
 
                 chrome.windows.create(createData, popupWindow => {
-                    chrome.windows.update(popupWindow.id, {
-                        top: dy,
-                        left: dx
-                    });
+                    if (chrome.runtime.lastError) {
+                        console.error('Error creating popup window:', chrome.runtime.lastError);
+                    } else if (popupWindow) {
+                        chrome.windows.update(popupWindow.id, {
+                            top: dy,
+                            left: dx
+                        }, () => {
+                            if (chrome.runtime.lastError) {
+                                console.error('Error updating popup window position:', chrome.runtime.lastError);
+                            }
+                        });
 
-                    if (!configs.closeWhenFocusedInitialWindow) return;
+                        if (!configs.closeWhenFocusedInitialWindow) return;
 
-                    const focusAlarmName = `focusChangeAlarm_${Date.now()}`;
-                    const focusAlarmData = { popupWindowId: popupWindow.id, originalWindowIsFullscreen };
-                    chrome.storage.local.set({ [focusAlarmName]: focusAlarmData });
+                        const focusAlarmName = `focusChangeAlarm_${Date.now()}`;
+                        const focusAlarmData = { popupWindowId: popupWindow.id, originalWindowIsFullscreen };
+                        chrome.storage.local.set({ [focusAlarmName]: focusAlarmData });
 
-                    chrome.alarms.create(focusAlarmName, { when: Date.now() + 300 });
+                        chrome.alarms.create(focusAlarmName, { when: Date.now() + 300 });
+                    } else {
+                        console.error('Failed to create popup window.');
+                    }
                 });
 
                 chrome.storage.local.remove(alarmName);
@@ -254,3 +310,37 @@ function isUrlDisabled(url, disabledUrls) {
         return url.includes(disabledUrl);
     });
 }
+
+// Handle context menu click
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === 'sendPageBack') {
+        chrome.storage.local.get(['originWindowId', 'enableContainerIdentify'], ({ originWindowId, enableContainerIdentify }) => {
+            if (originWindowId) {
+                const createData = {
+                    windowId: originWindowId,
+                    url: tab.url
+                };
+
+                if (enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== "firefox-default") {
+                    createData.cookieStoreId = tab.cookieStoreId;
+                }
+
+                chrome.tabs.create(createData, () => {
+                    // Close the popup window
+                    chrome.windows.get(tab.windowId, (window) => {
+                        if (window.type === 'popup') {
+                            chrome.windows.remove(window.id);
+                        }
+                    });
+
+                    // Remove the context menu item
+                    chrome.contextMenus.remove('sendPageBack', () => {
+                        contextMenuCreated = false; // Reset flag
+                    });
+                });
+            } else {
+                console.error('No original window ID found in storage.');
+            }
+        });
+    }
+});

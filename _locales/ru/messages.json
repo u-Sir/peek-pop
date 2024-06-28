@@ -7,32 +7,41 @@
     },
     "closeWhenFocusedInitialWindow": {
         "message": "Закрыть всплывающее окно, когда изначальное окно получает фокус"
-    },   
+    },
     "openInPopupWindow": {
         "message": "Открыть ссылку во всплывающем окне"
-    },    
+    },
     "popupHeight": {
         "message": "Высота окна (px)"
-    },    
+    },
     "popupWidth": {
         "message": "Ширина окна (px)"
-    },    
+    },
     "tryOpenAtMousePosition": {
         "message": "Пытаться открыть под курсором мыши (отключено — октрывать в центре экрана)"
-    },  
+    },
     "disabledUrls": {
         "message": "Disable extension on these URLs (via plain text, regex, wildcarks, one per line)"
-    }, 
+    },
     "openPageInMainWindow": {
         "message": "Открыть страницу в основном окне"
-    },  
+    },
     "searchInPopupWindow": {
         "message": "Искать во всплывающем окне"
-    },  
+    },
     "searchInPopupEnabled": {
         "message": "Включить опцию поиска выделения во всплывающем окне"
-    },  
+    },
     "popupSearchUrl": {
         "message": "URL поиска (%s будет заменено поисковым запросом)"
+    },
+    "enableContainerIdentify": {
+        "message": "оставлять открытым в том же контейнере, что и исходная страница"
+    },
+    "sendPageBack": {
+        "message": "Отправить страницу обратно в исходное окно"
+    },
+    "shiftEnabled": {
+        "message": "отвечать только при удержании нажатой клавиши Shift"
     }
 }

@@ -6,7 +6,9 @@ const configs = {
     'popupWidth': 1000,
     'searchInPopupEnabled': true,
     'popupSearchUrl': 'https://www.google.com/search?q=%s',
-    'disabledUrls': []
+    'disabledUrls': [],
+    'enableContainerIdentify': true,
+    'shiftEnabled': false
 };
 
 function loadUserConfigs(callback) {
