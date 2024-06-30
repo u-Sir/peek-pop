@@ -21,7 +21,7 @@
         "message": "Пытаться открыть под курсором мыши (отключено — октрывать в центре экрана)"
     },
     "disabledUrls": {
-        "message": "Disable extension on these URLs (via plain text, regex, wildcarks, one per line)"
+        "message": "Отключить расширение на этих URL (через обычный текст, регулярные выражения, маски, по одной на строку)"
     },
     "openPageInMainWindow": {
         "message": "Открыть страницу в основном окне"
@@ -35,13 +35,22 @@
     "popupSearchUrl": {
         "message": "URL поиска (%s будет заменено поисковым запросом)"
     },
-    "enableContainerIdentify": {
-        "message": "оставлять открытым в том же контейнере, что и исходная страница"
-    },
     "sendPageBack": {
         "message": "Отправить страницу обратно в исходное окно"
     },
+    "blurEnabled": {
+        "message": "Применить эффект размытия на исходное окно при открытии всплывающего окна"
+    },
     "shiftEnabled": {
         "message": "отвечать только при удержании нажатой клавиши Shift"
+    },
+    "enableContainerIdentify": {
+        "message": "оставлять открытым в том же контейнере, что и исходная страница"
+    },
+    "blurPx": {
+        "message": "сила эффекта размытия: "
+    },
+    "blurTime": {
+        "message": "размытие в определенные секунды (s): "
     }
 }

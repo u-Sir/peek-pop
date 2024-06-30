@@ -1,3 +1,7 @@
+0.0.17
+- add an option to set blur effect on original page when popup window.
+- add options page to browser action.
+
 0.0.16
 - add option to only response when shift key is pressing.
 - add an option to enable "ensured popup window open in the same container as original page".

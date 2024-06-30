@@ -19,9 +19,14 @@ function removeListeners() {
 
 function handleDragStart(e) {
     const selectionText = window.getSelection().toString();
-    chrome.storage.local.get(['shiftEnabled', 'searchInPopupEnabled'], function(data) {
+    chrome.storage.local.get(['shiftEnabled', 'searchInPopupEnabled', 'blurEnabled', 'blurPx', 'blurTime'], function(data) {
         const shiftEnabled = data.shiftEnabled || false;
         const searchInPopupEnabled = data.searchInPopupEnabled || false;
+        
+        const blurEnabled = data.blurEnabled || true;
+        const blurPx = parseFloat(data.blurPx || 3);
+        const blurTime = parseFloat(data.blurTime || 1);
+
 
         // If shiftEnabled is true and neither shift nor Command key is pressed, do nothing
         if (shiftEnabled && !e.shiftKey) {
@@ -54,6 +59,11 @@ function handleDragStart(e) {
             });
             e.preventDefault();
             e.stopPropagation();
+        }
+
+        if (blurEnabled) {
+            document.body.style.filter = `blur(${blurPx}px)`;
+            document.body.style.transition = `filter ${blurTime}s ease`;
         }
     });
 }
@@ -133,6 +143,7 @@ chrome.storage.local.get('lastUrl', function (data) {
 });
 
 window.addEventListener('focus', function (event) {
+    document.body.style.filter = '';
     chrome.storage.local.get('closeWhenFocusedInitialWindow', function (data) {
         if (data.closeWhenFocusedInitialWindow) {
             chrome.runtime.sendMessage({ action: 'windowRegainedFocus' });

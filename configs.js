@@ -8,7 +8,10 @@ const configs = {
     'popupSearchUrl': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],
     'enableContainerIdentify': true,
-    'shiftEnabled': false
+    'shiftEnabled': false,
+    'blurEnabled': true,
+    'blurPx': 3,
+    'blurTime': 0
 };
 
 function loadUserConfigs(callback) {

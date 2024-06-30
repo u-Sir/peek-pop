@@ -42,5 +42,38 @@ function init() {
                 saveAllSettings();
             });
         }
+
+        const blurPxInput = document.getElementById('blurPx');
+        const blurPxOutput = document.getElementById('blurPxOutput');
+        const blurTimeInput = document.getElementById('blurTime');
+        const blurTimeOutput = document.getElementById('blurTimeOutput');
+
+        // Function to read from storage
+        function readFromStorage(key, defaultValue) {
+            const storedValue = localStorage.getItem(key);
+            return storedValue ? parseFloat(storedValue) : defaultValue;
+        }
+
+        // Set initial values from storage or default values
+        let initialBlurPxValue = readFromStorage('blurPxValue', 3);
+        let initialBlurTimeValue = readFromStorage('blurTimeValue', 1);
+
+        // Initialize slider values and outputs
+        blurPxInput.value = initialBlurPxValue;
+        blurPxOutput.textContent = initialBlurPxValue;
+
+        blurTimeInput.value = initialBlurTimeValue;
+        blurTimeOutput.textContent = initialBlurTimeValue;
+
+        // Event listeners to update outputs when sliders are interacted with
+        blurPxInput.addEventListener('input', function () {
+            blurPxOutput.textContent = blurPxInput.value;
+            localStorage.setItem('blurPxValue', blurPxInput.value);
+        });
+
+        blurTimeInput.addEventListener('input', function () {
+            blurTimeOutput.textContent = blurTimeInput.value;
+            localStorage.setItem('blurTimeValue', blurTimeInput.value);
+        });
     });
 }

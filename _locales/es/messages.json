@@ -21,7 +21,7 @@
         "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
     },
     "disabledUrls": {
-        "message": "Disable extension on these URLs (via plain text, regex, wildcarks, one per line)"
+        "message": "Desactivar la extensión en estas URL (a través de texto plano, regex, comodines, una por línea)"
     },
     "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"
@@ -35,13 +35,22 @@
     "popupSearchUrl": {
         "message": "URL de búsqueda (%s se reemplazará con la consulta de búsqueda)"
     },
-    "enableContainerIdentify": {
-        "message": "mantener abierto en el mismo contenedor que la página original"
-    },
     "sendPageBack": {
         "message": "Enviar página de vuelta a la ventana original"
     },
+    "blurEnabled": {
+        "message": "Aplicar efecto de desenfoque en la ventana original al abrir el popup"
+    },
     "shiftEnabled": {
         "message": "responder solo cuando se mantenga presionado Shift"
+    },
+    "enableContainerIdentify": {
+        "message": "mantener abierto en el mismo contenedor que la página original"
+    },
+    "blurPx": {
+        "message": "intensidad del efecto de desenfoque: "
+    },
+    "blurTime": {
+        "message": "desenfoque en segundos específicos (s): "
     }
 }
