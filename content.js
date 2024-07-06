@@ -1,74 +1,174 @@
+let isMouseDown = false;
+let startX, startY, mouseDownTime;
+let isDragging = false;
+let hasPopupTriggered = false;
+
 function addListeners() {
-    document.addEventListener("dragstart", handleDragStart, true);
-    document.addEventListener("dragover", handleDragOver, true);
-    document.addEventListener("drop", handleDrop, true);
-    document.addEventListener("dragend", handleDragEnd, true);
+    document.addEventListener("mousedown", handleMouseDown, true);
+    document.addEventListener("mousemove", handleMouseMove, true);
     document.addEventListener("mouseup", handleMouseUp, true);
+    document.addEventListener("click", handleClick, true);
+    document.addEventListener('contextmenu', handleContextMenu, true);
+    enableDragListeners();
 }
 
 function removeListeners() {
-    document.removeEventListener("dragstart", handleDragStart, true);
-    document.removeEventListener("dragover", handleDragOver, true);
-    document.removeEventListener("drop", handleDrop, true);
-    document.removeEventListener("dragend", handleDragEnd, true);
+    document.removeEventListener("mousedown", handleMouseDown, true);
+    document.removeEventListener("mousemove", handleMouseMove, true);
     document.removeEventListener("mouseup", handleMouseUp, true);
+    document.removeEventListener("click", handleClick, true);
+    document.removeEventListener('contextmenu', handleContextMenu, true);
+    disableDragListeners();
 }
 
-function handleDragStart(e) {
-    const selectionText = window.getSelection().toString();
-    if (e.target.tagName === 'A') {
-        e.preventDefault();
-        e.stopPropagation();
-        const link = e.target;
-        const clonedLink = link.cloneNode(true);
-        link.parentNode.replaceChild(clonedLink, link);
-        chrome.runtime.sendMessage({
-            linkUrl: e.target.href,
-            lastClientX: e.screenX,
-            lastClientY: e.screenY,
-            width: window.screen.availWidth,
-            height: window.screen.availHeight
-        });
-    } else if (selectionText) {
-        chrome.storage.local.get('searchInPopupEnabled', function (data) {
-            if (data.searchInPopupEnabled) {
-                chrome.runtime.sendMessage({
-                    selectionText: selectionText,
-                    lastClientX: e.screenX,
-                    lastClientY: e.screenY,
-                    width: window.screen.availWidth,
-                    height: window.screen.availHeight
-                });
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        });
+function handleMouseDown(e) {
+    isMouseDown = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    mouseDownTime = Date.now();
+    isDragging = false;
+    hasPopupTriggered = false;
+}
+
+function handleMouseMove(e) {
+    if (!isMouseDown || hasPopupTriggered) return;
+    if (Date.now() >= mouseDownTime) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
+            isDragging = true;
+            enableDragListeners(); // Enable drag listeners when dragging starts
+            triggerPopup(e);
+            hasPopupTriggered = true;
+        }
     }
-}
-
-function handleDragOver(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-function handleDragEnd(e) {
-    e.preventDefault();
-    e.stopPropagation();
 }
 
 function handleMouseUp(e) {
-    if (e.target.tagName === 'A' && e.target.href) {
+    isMouseDown = false;
+    if (isDragging) {
         e.preventDefault();
-        e.stopPropagation();
+        e.stopImmediatePropagation();
+    }
+    setTimeout(resetDraggingState, 0);
+}
+
+function handleClick(e) {
+    if (isDragging) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
     }
 }
 
+function handleContextMenu(event) {
+    chrome.runtime.sendMessage({ action: 'ensureContextMenu' });
+}
 
+function handleDrag(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function handleMouseOver(e) {
+    if (isDragging && e.target.tagName === 'A') {
+        const rect = e.target.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+}
+
+function triggerPopup(e) {
+    const selectionText = window.getSelection().toString();
+
+    chrome.storage.local.get(['modifiedKey', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime'], ({
+        modifiedKey = 'None',
+        searchEngine = 'https://www.google.com/search?q=%s',
+        blurEnabled = true,
+        blurPx = 3,
+        blurTime = 1,
+    }) => {
+
+
+        if (modifiedKey !== 'None' && !e[modifiedKey.toLowerCase() + 'Key']) {
+
+            disableDragListeners();
+            return;
+        }
+
+        if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
+
+            hasPopupTriggered = true;
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            if (blurEnabled) {
+                document.body.style.filter = `blur(${blurPx}px)`;
+                document.body.style.transition = `filter ${blurTime}s ease`;
+            }
+
+            chrome.runtime.sendMessage({
+                linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
+                lastClientX: e.screenX,
+                lastClientY: e.screenY,
+                width: window.screen.availWidth,
+                height: window.screen.availHeight,
+            }, () => {
+                disableDragListeners(); // Disable drag listeners after sending message
+
+            });
+        }
+    });
+}
+
+function enableDragListeners() {
+    document.addEventListener("dragstart", handleDrag, true);
+    document.addEventListener("dragover", handleDrag, true);
+    document.addEventListener("drop", handleDrag, true);
+    document.addEventListener("dragend", handleDrag, true);
+    document.addEventListener("mouseover", handleMouseOver, true);
+}
+
+function disableDragListeners() {
+    document.removeEventListener("dragstart", handleDrag, true);
+    document.removeEventListener("dragover", handleDrag, true);
+    document.removeEventListener("drop", handleDrag, true);
+    document.removeEventListener("dragend", handleDrag, true);
+    document.removeEventListener("mouseover", handleMouseOver, true);
+}
+
+function resetDraggingState() {
+    isDragging = false;
+    hasPopupTriggered = false;
+}
+
+// Initialize listeners when DOM is fully loaded
+document.addEventListener("DOMContentLoaded", addListeners);
+
+// Handle changes in Chrome storage for disabled URLs
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'local' && changes.disabledUrls) {
+        checkUrlAndToggleListeners();
+    }
+});
+
+function checkUrlAndToggleListeners() {
+    chrome.storage.local.get(['disabledUrls', 'searchEngine'], ({ disabledUrls = [], searchEngine }) => {
+        const currentUrl = window.location.href;
+        if (isUrlDisabled(currentUrl, disabledUrls)) {
+            removeListeners();
+        } else {
+            addListeners();
+        }
+
+        if (typeof searchEngine === 'undefined') {
+            chrome.storage.local.set({ searchEngine: 'https://www.google.com/search?q=%s' });
+        }
+    });
+}
 
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => {
@@ -80,55 +180,34 @@ function isUrlDisabled(url, disabledUrls) {
     });
 }
 
-function checkUrlAndToggleListeners() {
-    chrome.storage.local.get('disabledUrls', function(data) {
-        const disabledUrls = data.disabledUrls || [];
-        const currentUrl = window.location.href;
-
-        if (isUrlDisabled(currentUrl, disabledUrls)) {
-            removeListeners();
-        } else {
-            addListeners();
-        }
-    });
-}
-
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    if (namespace === 'local' && changes.disabledUrls) {
-        checkUrlAndToggleListeners();
-    }
-});
-
+// Check current URL and toggle listeners on initial load
 checkUrlAndToggleListeners();
 
-// Monitor URL changes and re-evaluate extension activity
-// Monitor URL changes and save `lastUrl` in chrome.storage.local
-let lastUrl = location.href;
-new MutationObserver(() => {
-    const url = location.href;
-    if (url !== lastUrl) {
-        lastUrl = url;
-        chrome.storage.local.set({ lastUrl: url });
-        checkUrlAndToggleListeners(); // Optionally trigger listener checks
-    }
-}).observe(document, { subtree: true, childList: true });
+// Update last URL in storage and toggle listeners on URL change using MutationObserver
+let lastUrl = null;
 
-// On content script initialization, retrieve lastUrl from storage if available
-chrome.storage.local.get('lastUrl', function(data) {
-    if (data.lastUrl) {
-        lastUrl = data.lastUrl;
+function updateLastUrl(newUrl) {
+    if (newUrl !== lastUrl) {
+        lastUrl = newUrl;
+        chrome.storage.local.set({ lastUrl: newUrl });
+        checkUrlAndToggleListeners();
     }
+}
+
+chrome.storage.local.get('lastUrl', ({ lastUrl: storedLastUrl }) => {
+    lastUrl = storedLastUrl || location.href;
+    updateLastUrl(lastUrl);
 });
 
-// Add an event listener for focus events on the window
-window.addEventListener('focus', function(event) {
-    chrome.storage.local.get('closeWhenFocusedInitialWindow', function(data) {
-        if (data.closeWhenFocusedInitialWindow) {
-            // Send a message to background.js when the window regains focus
+new MutationObserver(() => {
+    updateLastUrl(location.href);
+}).observe(document, { subtree: true, childList: true });
+
+window.addEventListener('focus', () => {
+    document.body.style.filter = '';
+    chrome.storage.local.get('closeWhenFocusedInitialWindow', ({ closeWhenFocusedInitialWindow }) => {
+        if (closeWhenFocusedInitialWindow) {
             chrome.runtime.sendMessage({ action: 'windowRegainedFocus' });
         }
     });
 });
-
-
-

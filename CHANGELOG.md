@@ -1,3 +1,19 @@
+0.0.19
+- multi-monitors supported.
+- change modified key to optional. (Please test to ensure it meets expectations.)
+- prevent trigger click when dragging link/selectedText.
+- add options to select search provider or custom.
+- new option page.
+
+0.0.17
+- add an option to set blur effect on original page when popup window.
+- add options page to browser action.
+
+0.0.16
+- add option to only response when shift key is pressing.
+- add an option to enable "ensured popup window open in the same container as original page".
+- add "send page back to original window" in context menu on popup window.
+
 0.0.14
 - convert to non-persisten background.
 - ensured popup window open in the same container/private-mode as original page on Firefox.

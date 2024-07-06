@@ -4,9 +4,12 @@ const configs = {
     'hideBrowserControls': true,
     'popupHeight': 800,
     'popupWidth': 1000,
-    'searchInPopupEnabled': true,
-    'popupSearchUrl': 'https://www.google.com/search?q=%s',
-    'disabledUrls': []
+    'searchEngine': 'https://www.google.com/search?q=%s',
+    'disabledUrls': [],
+    'blurEnabled': true,
+    'blurPx': 3,
+    'blurTime': 1,
+    'modifiedKey': 'None'
 };
 
 function loadUserConfigs(callback) {

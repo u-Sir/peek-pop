@@ -25,14 +25,44 @@
     },  
     "openPageInMainWindow": {
         "message": "Open page in main window"
-    },  
-    "searchInPopupWindow": {
-        "message": "Search in popup window"
-    },  
-    "searchInPopupEnabled": {
-        "message": "Option to search selection in popup enabled"
-    },  
-    "popupSearchUrl": {
-        "message": "Search url (%s will be replaced with the search query)"
+    },
+    "sendPageBack": {
+        "message": "Send Page Back to Original Window"
+    },
+    "blurEnabled": {
+        "message": "Set blur effect on Original Window when popup"
+    },
+    "enableContainerIdentify": {
+        "message": "keep open in the same container as original page"
+    },
+    "blurPx": {
+        "message": "blur effect strengh: "
+    },
+    "blurTime": {
+        "message": "blur in specific seconds (s): "
+    },
+    "keySelection": {
+        "message": "Response when selected key is pressing (Please check if it works as expected.)"
+    },
+    "searchEngineSelection": {
+        "message": "Search provider"
+    },
+    "custom": {
+        "message": "custom search url (use %s as selected text)"
+    },
+    "searchDisable": {
+        "message": "Disable search in popup window"
+    },
+    "noneKey": {
+        "message": "None"
+    },
+    "blurEffectSettings": {
+        "message": "Blur Effect Settings"
+    },
+    "popupSettings": {
+        "message": "Popup Window Settings"
+    },
+    "blacklist": {
+        "message": "Blacklist"
     }
 }
