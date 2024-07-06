@@ -1,10 +1,13 @@
+let isDragging = false;
+
 function addListeners() {
+    document.addEventListener("click", handleClick, true);
     document.addEventListener("dragstart", handleDragStart, true);
     document.addEventListener("dragover", handleDragOver, true);
     document.addEventListener("drop", handleDrop, true);
     document.addEventListener("dragend", handleDragEnd, true);
     document.addEventListener("mouseup", handleMouseUp, true);
-    document.addEventListener('contextmenu', function (event) {
+    document.addEventListener('contextmenu', function () {
         chrome.runtime.sendMessage({ action: 'ensureContextMenu' });
     });
 }
@@ -18,52 +21,45 @@ function removeListeners() {
 }
 
 function handleDragStart(e) {
+    isDragging = true;
+
     const selectionText = window.getSelection().toString();
-    chrome.storage.local.get(['shiftEnabled', 'searchInPopupEnabled', 'blurEnabled', 'blurPx', 'blurTime'], function(data) {
-        const shiftEnabled = data.shiftEnabled || false;
-        const searchInPopupEnabled = data.searchInPopupEnabled || false;
-        
-        const blurEnabled = data.blurEnabled || true;
+    chrome.storage.local.get(['modifiedKey', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime'], function (data) {
+        const modifiedKey = data.modifiedKey || 'None';
+        const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
+        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
         const blurPx = parseFloat(data.blurPx || 3);
         const blurTime = parseFloat(data.blurTime || 1);
 
+        if (modifiedKey !== 'None') {
+            const keyMap = {
+                'Ctrl': e.ctrlKey,
+                'Alt': e.altKey,
+                'Shift': e.shiftKey,
+                'Meta': e.metaKey
+            };
 
-        // If shiftEnabled is true and neither shift nor Command key is pressed, do nothing
-        if (shiftEnabled && !e.shiftKey) {
-            return;
+            if (!keyMap[modifiedKey]) {
+                return;
+            }
         }
 
-        // Handle dragging links
-        if (e.target.tagName === 'A') {
+        if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
             e.preventDefault();
-            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            if (blurEnabled) {
+                document.body.style.filter = `blur(${blurPx}px)`;
+                document.body.style.transition = `filter ${blurTime}s ease`;
+            }
+
             chrome.runtime.sendMessage({
-                action: 'dragStart',
-                linkUrl: e.target.href,
+                linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
                 lastClientX: e.screenX,
                 lastClientY: e.screenY,
                 width: window.screen.availWidth,
                 height: window.screen.availHeight,
-                shiftKey: e.shiftKey
             });
-        // Handle dragging text
-        } else if (selectionText && searchInPopupEnabled) {
-            chrome.runtime.sendMessage({
-                action: 'dragStart',
-                selectionText: selectionText,
-                lastClientX: e.screenX,
-                lastClientY: e.screenY,
-                width: window.screen.availWidth,
-                height: window.screen.availHeight,
-                shiftKey: e.shiftKey
-            });
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        if (blurEnabled) {
-            document.body.style.filter = `blur(${blurPx}px)`;
-            document.body.style.transition = `filter ${blurTime}s ease`;
         }
     });
 }
@@ -86,7 +82,15 @@ function handleDragEnd(e) {
 function handleMouseUp(e) {
     if (e.target.tagName === 'A' && e.target.href) {
         e.preventDefault();
+        e.stopImmediatePropagation();
+    }
+}
+
+function handleClick(e) {
+    if (isDragging) {
+        e.preventDefault();
         e.stopPropagation();
+        isDragging = false;
     }
 }
 
@@ -101,7 +105,7 @@ function isUrlDisabled(url, disabledUrls) {
 }
 
 function checkUrlAndToggleListeners() {
-    chrome.storage.local.get(['disabledUrls', 'searchInPopupEnabled'], function (data) {
+    chrome.storage.local.get(['disabledUrls', 'searchEngine'], function (data) {
         const disabledUrls = data.disabledUrls || [];
         const currentUrl = window.location.href;
 
@@ -111,15 +115,15 @@ function checkUrlAndToggleListeners() {
             addListeners();
         }
 
-        // Ensure searchInPopupEnabled is set
-        if (typeof data.searchInPopupEnabled === 'undefined') {
-            chrome.storage.local.set({ searchInPopupEnabled: true });
+        // Ensure searchEngine is set to a valid default if undefined
+        if (typeof data.searchEngine === 'undefined') {
+            chrome.storage.local.set({ searchEngine: 'https://www.google.com/search?q=%s' });
         }
     });
 }
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
-    if (namespace === 'local' && changes.disabledUrls) {
+    if (namespace === 'local' && (changes.disabledUrls || changes.searchEngine)) {
         checkUrlAndToggleListeners();
     }
 });
@@ -142,7 +146,7 @@ chrome.storage.local.get('lastUrl', function (data) {
     }
 });
 
-window.addEventListener('focus', function (event) {
+window.addEventListener('focus', function () {
     document.body.style.filter = '';
     chrome.storage.local.get('closeWhenFocusedInitialWindow', function (data) {
         if (data.closeWhenFocusedInitialWindow) {

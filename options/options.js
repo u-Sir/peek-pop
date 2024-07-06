@@ -1,79 +1,159 @@
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
-    loadUserConfigs(function (userConfigs) {
-        const keys = Object.keys(configs);
+    loadUserConfigs(setupPage);
+}
 
-        for (let i = 0, l = keys.length; i < l; i++) {
-            const key = keys[i];
+function setupPage(userConfigs) {
+    // Elements to translate and set labels for
+    const elementsToTranslate = [
+        { id: 'keySelection', messageId: 'keySelection' },
+        { id: 'searchEngineSelection', messageId: 'searchEngineSelection' },
+        { id: 'popupSettings', messageId: 'popupSettings' },
+        { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
+        { id: 'blacklist', messageId: 'blacklist' }
+    ];
 
-            let input = document.getElementById(key.toString());
+    elementsToTranslate.forEach(({ id, messageId }) => setTextContent(id, messageId));
 
-            if (input !== null && input !== undefined) {
-                if (input.type == 'checkbox') {
-                    input.checked = userConfigs[key] ?? configs[key];
-                } else {
-                    input.value = userConfigs[key] ?? configs[key];
-                }
+    // Set specific labels
+    setInputLabel('custom', 'custom');
+    setInputLabel('searchDisable', 'searchDisable');
+    setInputLabel('noneKey', 'noneKey');
 
-                let label = input.parentNode.querySelector('label');
-                if (!label) {
-                    label = document.createElement('label');
-                    label.setAttribute('for', key.toString());
-                    input.parentNode.insertAdjacentElement('beforeend', label);
-                }
-                label.appendChild(document.createTextNode(chrome.i18n.getMessage(key)));
-
-                input.addEventListener("input", function (e) {
-                    let id = input.getAttribute('id');
-                    let inputValue = input.getAttribute('type') == 'checkbox' ? input.checked : input.value;
-                    configs[id] = inputValue;
-
-                    saveAllSettings();
-                });
-            }
+    // Initialize input elements
+    Object.keys(configs).forEach(key => {
+        const input = document.getElementById(key);
+        if (input) {
+            initializeInput(input, key, userConfigs[key]);
+            addInputListener(input, key);
         }
+    });
 
-        let disabledUrlsTextarea = document.getElementById('disabledUrls');
-        if (disabledUrlsTextarea) {
-            disabledUrlsTextarea.value = userConfigs.disabledUrls?.join('\n') ?? configs.disabledUrls.join('\n');
-            disabledUrlsTextarea.addEventListener('input', function () {
-                configs.disabledUrls = disabledUrlsTextarea.value.split('\n').filter((line) => line.trim());
-                saveAllSettings();
-            });
-        }
+    // Initialize textarea and sliders
+    initializeTextarea('disabledUrls', userConfigs);
+    initializeSlider('blurPx', 3);
+    initializeSlider('blurTime', 1);
 
-        const blurPxInput = document.getElementById('blurPx');
-        const blurPxOutput = document.getElementById('blurPxOutput');
-        const blurTimeInput = document.getElementById('blurTime');
-        const blurTimeOutput = document.getElementById('blurTimeOutput');
+    // Set modified key
+    setModifiedKey();
 
-        // Function to read from storage
-        function readFromStorage(key, defaultValue) {
-            const storedValue = localStorage.getItem(key);
-            return storedValue ? parseFloat(storedValue) : defaultValue;
-        }
+    // Setup search engine selection
+    setupSearchEngineSelection(userConfigs);
+}
 
-        // Set initial values from storage or default values
-        let initialBlurPxValue = readFromStorage('blurPxValue', 3);
-        let initialBlurTimeValue = readFromStorage('blurTimeValue', 1);
+function setTextContent(elementId, messageId) {
+    document.getElementById(elementId).textContent = chrome.i18n.getMessage(messageId);
+}
 
-        // Initialize slider values and outputs
-        blurPxInput.value = initialBlurPxValue;
-        blurPxOutput.textContent = initialBlurPxValue;
+function setInputLabel(inputId, messageId) {
+    const label = document.querySelector(`label[for="${inputId}"]`);
+    if (label) {
+        label.textContent = chrome.i18n.getMessage(messageId);
+    }
+}
 
-        blurTimeInput.value = initialBlurTimeValue;
-        blurTimeOutput.textContent = initialBlurTimeValue;
+function initializeInput(input, key, userConfig) {
+    if (input.type === 'checkbox') {
+        input.checked = userConfig ?? configs[key];
+    } else {
+        input.value = userConfig ?? configs[key];
+    }
 
-        // Event listeners to update outputs when sliders are interacted with
-        blurPxInput.addEventListener('input', function () {
-            blurPxOutput.textContent = blurPxInput.value;
-            localStorage.setItem('blurPxValue', blurPxInput.value);
+    const label = input.parentNode.querySelector('label') || createLabel(input, key);
+    label.textContent = chrome.i18n.getMessage(key);
+}
+
+function createLabel(input, key) {
+    const label = document.createElement('label');
+    label.setAttribute('for', key);
+    input.parentNode.appendChild(label);
+    return label;
+}
+
+function addInputListener(input, key) {
+    input.addEventListener("input", () => {
+        configs[key] = input.type === 'checkbox' ? input.checked : input.value;
+        saveAllSettings();
+    });
+}
+
+function initializeTextarea(textareaId, userConfigs) {
+    const textarea = document.getElementById(textareaId);
+    if (textarea) {
+        textarea.value = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
+        textarea.addEventListener('input', () => {
+            configs[textareaId] = textarea.value.split('\n').filter(line => line.trim());
+            saveAllSettings();
         });
+    }
+}
 
-        blurTimeInput.addEventListener('input', function () {
-            blurTimeOutput.textContent = blurTimeInput.value;
-            localStorage.setItem('blurTimeValue', blurTimeInput.value);
+function initializeSlider(id, defaultValue) {
+    const input = document.getElementById(id);
+    const output = document.getElementById(`${id}Output`);
+    const initialValue = localStorage.getItem(id) ?? defaultValue;
+
+    input.value = initialValue;
+    output.textContent = initialValue;
+
+    input.addEventListener('input', () => {
+        output.textContent = input.value;
+        localStorage.setItem(id, input.value);
+    });
+}
+
+function setModifiedKey() {
+    chrome.storage.local.get('modifiedKey', ({ modifiedKey }) => {
+        modifiedKey = modifiedKey ?? 'noneKey';
+        document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
+    });
+
+    document.querySelectorAll('input[name="modifiedKey"]').forEach(input => {
+        input.addEventListener('change', event => {
+            chrome.storage.local.set({ modifiedKey: event.target.value });
         });
     });
 }
+
+function setupSearchEngineSelection(userConfigs) {
+    const customInput = document.getElementById('customSearchEngine');
+    const searchEngines = ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable'];
+
+    // Ensure the custom input event listener is set up properly
+    customInput.addEventListener('input', () => {
+        chrome.storage.local.set({ searchEngine: customInput.value });
+    });
+
+    searchEngines.forEach(engine => {
+        const radio = document.getElementById(engine);
+        radio.addEventListener('change', () => {
+            if (radio.checked) {
+                let searchEngineValue;
+                if (engine === 'custom') {
+                    customInput.style.display = 'block';
+                    searchEngineValue = customInput.value;
+                } else {
+                    customInput.style.display = 'none';
+                    searchEngineValue = radio.value;
+                }
+                chrome.storage.local.set({ searchEngine: searchEngineValue });
+            }
+        });
+
+        // Restore saved value on load
+        if (userConfigs.searchEngine === radio.value) {
+            radio.checked = true;
+            customInput.style.display = engine === 'custom' ? 'block' : 'none';
+        }
+    });
+
+    // Special handling for initial load if 'custom' is selected
+    if (!searchEngines.some(engine => userConfigs.searchEngine === document.getElementById(engine)?.value)) {
+        const customRadio = document.getElementById('custom');
+        customRadio.checked = true;
+        customInput.style.display = 'block';
+        customInput.value = userConfigs.searchEngine;
+    }
+}
+

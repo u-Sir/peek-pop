@@ -2,97 +2,127 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="options.css" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="options.css" />
 </head>
 
 <body>
+    <p>
+    <fieldset>
+        <legend id="keySelection"></legend>
+
+        <input type="radio" id="ctrlKey" name="modifiedKey" value="Ctrl" />
+        <label for="ctrlKey">Ctrl</label>
+
+        <input type="radio" id="altKey" name="modifiedKey" value="Alt" />
+        <label for="altKey">Alt/Option</label>
+
+        <input type="radio" id="shiftKey" name="modifiedKey" value="Shift" />
+        <label for="shiftKey">Shift</label>
+
+        <input type="radio" id="metaKey" name="modifiedKey" value="Meta" />
+        <label for="metaKey">Windows/Command</label>
+
+        <input type="radio" id="noneKey" name="modifiedKey" value="None" />
+        <label for="noneKey">None</label>
+    </fieldset>
+    </p>
+
+
+
+    <p>
+        <fieldset>
+            <legend id="searchEngineSelection">Select Search Engine</legend>
+            <input type="radio" id="custom" name="searchEngine" value="custom" />
+            <label for="custom">Custom</label>
+            <input type="radio" id="google" name="searchEngine" value="https://www.google.com/search?q=%s" />
+            <label for="google">Google</label>
+            <input type="radio" id="bing" name="searchEngine" value="https://www.bing.com/search?q=%s" />
+            <label for="bing">Bing</label>
+            <input type="radio" id="baidu" name="searchEngine" value="https://www.baidu.com/s?wd=%s" />
+            <label for="baidu">Baidu</label>
+            <input type="radio" id="yandex" name="searchEngine" value="https://yandex.com/search/?text=%s" />
+            <label for="yandex">Yandex</label>
+            <input type="radio" id="duckduckgo" name="searchEngine" value="https://duckduckgo.com/?q=%s" />
+            <label for="duckduckgo">DuckDuckGo</label>
+            <input type="radio" id="searchDisable" name="searchEngine" value="None" />
+            <label for="searchDisable">None</label>
+            <input type="text" id="customSearchEngine" style="display:none;" placeholder="URL" />
+        </fieldset>
+        </p>
     
-    <div class='option'>
-        <label><input type="checkbox" id="blurEnabled"></input></label>
-    </div>
-
-    <br />
-
-    <div class='option'>
-        <label for="blurPx"></label><output for="blurPx" id="blurPxOutput"></output>
-        <br>
-        <input type="range" id="blurPx" name="blurPx" min="0" max="20" step="0.1">
-    </div>
     
-    <br />
     
-    <div class='option'>
-        <label for="blurTime"></label><output for="blurTime" id="blurTimeOutput"></output>
-        <br>
-        <input type="range" id="blurTime" name="blurTime" min="0" max="2" step="0.1">
-    </div>
+    <p>
+    <fieldset>
+        <legend id="blurEffectSettings"></legend>
+
+        <div class='option'>
+            <label><input type="checkbox" id="blurEnabled"></input></label>
+        </div>
+
+
+        <div class='option'>
+            <label for="blurPx"></label><output for="blurPx" id="blurPxOutput"></output>
+            <br>
+            <input type="range" id="blurPx" name="blurPx" min="0" max="20" step="0.1">
+        </div>
+
+
+        <div class='option'>
+            <label for="blurTime"></label><output for="blurTime" id="blurTimeOutput"></output>
+            <br>
+            <input type="range" id="blurTime" name="blurTime" min="0" max="2" step="0.1">
+        </div>
+
+    </fieldset>
+    </p>
+
+    <p>
+    <fieldset>
+        <legend id="popupSettings"></legend>
+
+        <div class='option'>
+            <label><input type="checkbox" id="enableContainerIdentify"></input></label>
+        </div>
     
+        <div class='option'>
+            <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></input></label>
+        </div>
+ 
 
-    <hr />
+        <div class='option'>
+            <label><input type="checkbox" id="tryOpenAtMousePosition"></input></label>
+        </div>
 
-    <hr />
+        <div class='option'>
+            <label><input type="number" max="10000" min="100" step="50" id="popupHeight"></input></label>
+        </div>
+
+        <div class='option'>
+            <label><input type="number" max="10000" min="100" step="50" id="popupWidth"></input></label>
+        </div>
+
+    </fieldset>
+    </p>
 
 
-    <div class='option'>
-        <label><input type="checkbox" id="shiftEnabled"></input></label>
-    </div>
 
-    <br />
-    
-    <div class='option'>
-        <label><input type="checkbox" id="enableContainerIdentify"></input></label>
-    </div>
+    <p>
+    <fieldset>
+        <legend id="blacklist"></legend>
 
-    <br />
-    
-    <div class='option'>
-        <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></input></label>
-    </div>   
-    
-    <br />
-    
-    <div class='option'>
-        <label><input type="checkbox" id="tryOpenAtMousePosition"></input></label>
-    </div>
+        <div class='option'>
+            <label for="disabledUrls"></label>
+            <textarea id="disabledUrls" rows="10" cols="50"></textarea>
+        </div>
 
-    <br />    
+    </fieldset>
+    </p>
 
-    <div class='option'>
-        <label><input type="number" max="10000" min="100" step="50" id="popupHeight"></input></label>
-    </div> 
 
-    <br />
-    
-    <div class='option'>
-        <label><input type="number" max="10000" min="100" step="50" id="popupWidth"></input></label>
-    </div>
-
-    <hr />
-
-    <hr />
-
-    <div class='option'>
-        <label><input type="checkbox" id="searchInPopupEnabled"></input></label>
-    </div>
-
-    <div class='option'>
-        <label><input type="text" id="popupSearchUrl"></input></label>
-    </div>
-
-    
-
-    <hr />
-
-    <hr />
-
-    <div class='option'>
-        <label for="disabledUrls"></label>
-        <textarea id="disabledUrls" rows="10" cols="50"></textarea>
-    </div>
-
-  <script src="../configs.js"></script>
-  <script src="./options.js"></script>
+    <script src="../configs.js"></script>
+    <script src="./options.js"></script>
 </body>
 
 </html>

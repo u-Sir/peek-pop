@@ -22,3 +22,9 @@ textarea {
     font-size: 14px;
     resize: vertical; /* Allow vertical resize */
 }
+
+legend {
+    background-color: #0000007d;
+    color: #fff;
+    padding: 3px 6px;
+  }

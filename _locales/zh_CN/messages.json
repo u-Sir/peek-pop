@@ -22,15 +22,6 @@
     },  
     "openPageInMainWindow": {
         "message": "在主窗口中打开页面"
-    },  
-    "searchInPopupWindow": {
-        "message": "在弹出窗口中搜索"
-    },  
-    "searchInPopupEnabled": {
-        "message": "在弹出窗口中搜索选中的文本"
-    },  
-    "popupSearchUrl": {
-        "message": "搜索 URL (%s 搜索时会替换为搜索词)"
     },
     "disabledUrls": {
         "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
@@ -41,9 +32,6 @@
     "blurEnabled": {
         "message": "弹窗时背景模糊"
     },
-    "shiftEnabled": {
-        "message": "按住 Shift 时才进行响应"
-    },
     "enableContainerIdentify": {
         "message": "确保弹窗跟原页面处于同一容器内"
     },
@@ -52,6 +40,30 @@
     },
     "blurTime": {
         "message": "模糊效果过渡时间（秒）："
+    },
+    "keySelection": {
+        "message": "按下所选键时响应（设置后请自行测试）"
+    },
+    "searchEngineSelection": {
+        "message": "搜索引擎"
+    },
+    "custom": {
+        "message": "自定义"
+    },
+    "searchDisable": {
+        "message": "禁用"
+    },
+    "noneKey": {
+        "message": "无"
+    },
+    "blurEffectSettings": {
+        "message": "模糊效果"
+    },
+    "popupSettings": {
+        "message": "弹窗设置"
+    },
+    "blacklist": {
+        "message": "黑名单"
     }
 }
 

@@ -1,3 +1,10 @@
+0.0.18
+- multi-monitors supported.
+- change modified key to optional. (Please test to ensure it meets expectations.)
+- prevent trigger click when dragging link/selectedText.
+- add options to select search provider or custom.
+- new option page.
+
 0.0.17
 - add an option to set blur effect on original page when popup window.
 - add options page to browser action.
