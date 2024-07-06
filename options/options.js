@@ -5,6 +5,8 @@ function init() {
 }
 
 function setupPage(userConfigs) {
+    userConfigs = userConfigs || {};
+
     // Elements to translate and set labels for
     const elementsToTranslate = [
         { id: 'keySelection', messageId: 'keySelection' },
@@ -36,10 +38,10 @@ function setupPage(userConfigs) {
     initializeSlider('blurTime', 1);
 
     // Set modified key
-    setModifiedKey();
+    setModifiedKey(userConfigs.modifiedKey);
 
     // Setup search engine selection
-    setupSearchEngineSelection(userConfigs);
+    setupSearchEngineSelection(userConfigs.searchEngine);
 }
 
 function setTextContent(elementId, messageId) {
@@ -54,10 +56,11 @@ function setInputLabel(inputId, messageId) {
 }
 
 function initializeInput(input, key, userConfig) {
+    const configValue = userConfig !== undefined ? userConfig : configs[key];
     if (input.type === 'checkbox') {
-        input.checked = userConfig ?? configs[key];
+        input.checked = configValue;
     } else {
-        input.value = userConfig ?? configs[key];
+        input.value = configValue;
     }
 
     const label = input.parentNode.querySelector('label') || createLabel(input, key);
@@ -103,11 +106,9 @@ function initializeSlider(id, defaultValue) {
     });
 }
 
-function setModifiedKey() {
-    chrome.storage.local.get('modifiedKey', ({ modifiedKey }) => {
-        modifiedKey = modifiedKey ?? 'noneKey';
-        document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
-    });
+function setModifiedKey(modifiedKey) {
+    modifiedKey = modifiedKey ?? 'noneKey';
+    document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
 
     document.querySelectorAll('input[name="modifiedKey"]').forEach(input => {
         input.addEventListener('change', event => {
@@ -116,7 +117,7 @@ function setModifiedKey() {
     });
 }
 
-function setupSearchEngineSelection(userConfigs) {
+function setupSearchEngineSelection(searchEngine) {
     const customInput = document.getElementById('customSearchEngine');
     const searchEngines = ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable'];
 
@@ -142,18 +143,44 @@ function setupSearchEngineSelection(userConfigs) {
         });
 
         // Restore saved value on load
-        if (userConfigs.searchEngine === radio.value) {
+        if (searchEngine === radio.value) {
             radio.checked = true;
             customInput.style.display = engine === 'custom' ? 'block' : 'none';
         }
     });
 
     // Special handling for initial load if 'custom' is selected
-    if (!searchEngines.some(engine => userConfigs.searchEngine === document.getElementById(engine)?.value)) {
+    if (!searchEngines.some(engine => searchEngine === document.getElementById(engine)?.value)) {
         const customRadio = document.getElementById('custom');
         customRadio.checked = true;
         customInput.style.display = 'block';
-        customInput.value = userConfigs.searchEngine;
+        customInput.value = searchEngine;
     }
 }
 
+function loadUserConfigs(callback) {
+    const keys = Object.keys(configs);
+    chrome.storage.local.get(keys, function (userConfigs) {
+        userConfigs.searchEngine = userConfigs.searchEngine ?? configs.searchEngine;
+        userConfigs.modifiedKey = userConfigs.modifiedKey ?? configs.modifiedKey;
+        
+        keys.forEach(key => {
+            if (userConfigs[key] !== null && userConfigs[key] !== undefined) {
+                configs[key] = userConfigs[key];
+            }
+        });
+
+        if (callback) callback(userConfigs);
+    });
+}
+
+function saveConfig(key, value) {
+    configs[key] = value;
+    let data = {};
+    data[key] = value;
+    chrome.storage.local.set(data);
+}
+
+function saveAllSettings() {
+    chrome.storage.local.set(configs);
+}

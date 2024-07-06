@@ -21,11 +21,19 @@ function loadUserConfigs(callback) {
                 configs[key] = userConfigs[key];
             }
         });
-        if (callback) callback(userConfigs);
+        if (callback) callback();
     });
 }
 
-loadUserConfigs(() => { });
+function saveConfig(key, value) {
+    configs[key] = value;
+    let data = {};
+    data[key] = value;
+    chrome.storage.local.set(data);
+}
+
+loadUserConfigs(() => {});
+
 let screenWidth = 0;
 let screenHeight = 0;
 let contextMenuCreated = false;
@@ -64,15 +72,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
 
             if (request.action === 'updateshiftEnabled') {
-                configs.shiftEnabled = request.shiftEnabled;
-                chrome.storage.local.set({ shiftEnabled: request.shiftEnabled });
+                saveConfig('shiftEnabled', request.shiftEnabled);
             }
         });
 
-        chrome.storage.local.set({
-            lastClientX: request.lastClientX,
-            lastClientY: request.lastClientY
-        });
+        saveConfig('lastClientX', request.lastClientX);
+        saveConfig('lastClientY', request.lastClientY);
 
         screenWidth = request.width;
         screenHeight = request.height;
@@ -103,7 +108,7 @@ function handleLinkInPopup(linkUrl, tab, currentWindow) {
 
     chrome.windows.getCurrent(originWindow => {
         if (originWindow.type !== 'popup') {
-            chrome.storage.local.set({ originWindowId: originWindow.id });
+            saveConfig('originWindowId', originWindow.id);
         }
 
         if (originWindow.state === 'fullscreen') {
@@ -286,3 +291,4 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         });
     }
 });
+

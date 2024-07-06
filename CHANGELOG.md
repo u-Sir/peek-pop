@@ -1,4 +1,4 @@
-0.0.18
+0.0.19
 - multi-monitors supported.
 - change modified key to optional. (Please test to ensure it meets expectations.)
 - prevent trigger click when dragging link/selectedText.
