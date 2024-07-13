@@ -1,99 +1,115 @@
 let isDragging = false;
+const configs = {
+    'closeWhenFocusedInitialWindow': true,
+    'tryOpenAtMousePosition': false,
+    'hideBrowserControls': true,
+    'popupHeight': 800,
+    'popupWidth': 1000,
+    'searchEngine': 'https://www.google.com/search?q=%s',
+    'disabledUrls': [],
+    'enableContainerIdentify': true,
+    'blurEnabled': true,
+    'blurPx': 3,
+    'blurTime': 1,
+    'modifiedKey': 'None'
+};
+
+async function loadUserConfigs() {
+    return new Promise(resolve => {
+        chrome.storage.local.get(Object.keys(configs), storedConfigs => {
+            // Merge stored configurations with default configs, setting defaults for undefined keys
+            const mergedConfigs = { ...configs, ...storedConfigs };
+
+            // Update the main configs object with merged configurations
+            Object.assign(configs, mergedConfigs);
+
+            // Log the merged configurations (optional)
+            // console.log('Loaded and merged user configurations:', configs);
+
+            // Resolve with the merged configurations
+            resolve(mergedConfigs);
+        });
+    });
+}
 
 function addListeners() {
-    document.addEventListener("click", handleClick, true);
-    document.addEventListener("dragstart", handleDragStart, true);
-    document.addEventListener("dragover", handleDragOver, true);
-    document.addEventListener("drop", handleDrop, true);
-    document.addEventListener("dragend", handleDragEnd, true);
-    document.addEventListener("mouseup", handleMouseUp, true);
-    document.addEventListener('contextmenu', function () {
-        chrome.runtime.sendMessage({ action: 'ensureContextMenu' });
+    const events = ["click", "dragstart", "dragover", "drop", "dragend", "mouseup"];
+    events.forEach(event => document.addEventListener(event, handleEvent, true));
+    document.addEventListener('contextmenu', () => {
+        chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
+            if (chrome.runtime.lastError) {
+                console.error("Runtime error:", chrome.runtime.lastError);
+            } else {
+                console.log("Background script responded:", response);
+            }
+        });
     });
 }
 
 function removeListeners() {
-    document.removeEventListener("dragstart", handleDragStart, true);
-    document.removeEventListener("dragover", handleDragOver, true);
-    document.removeEventListener("drop", handleDrop, true);
-    document.removeEventListener("dragend", handleDragEnd, true);
-    document.removeEventListener("mouseup", handleMouseUp, true);
+    const events = ["dragstart", "dragover", "drop", "dragend", "mouseup"];
+    events.forEach(event => document.removeEventListener(event, handleEvent, true));
 }
 
-function handleDragStart(e) {
+function handleEvent(e) {
+    if (e.type === 'dragstart') {
+        handleDragStart(e);
+    } else if (['dragover', 'drop', 'dragend', 'mouseup'].includes(e.type)) {
+        preventEvent(e);
+    } else if (e.type === 'click') {
+        handleClick(e);
+    }
+}
+
+function preventEvent(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+async function handleDragStart(e) {
     isDragging = true;
 
     const selectionText = window.getSelection().toString();
-    chrome.storage.local.get(['modifiedKey', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime'], function (data) {
-        const modifiedKey = data.modifiedKey || 'None';
-        const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
-        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-        const blurPx = parseFloat(data.blurPx || 3);
-        const blurTime = parseFloat(data.blurTime || 1);
+    const data = await loadUserConfigs(['modifiedKey', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime']);
 
-        if (modifiedKey !== 'None') {
-            const keyMap = {
-                'Ctrl': e.ctrlKey,
-                'Alt': e.altKey,
-                'Shift': e.shiftKey,
-                'Meta': e.metaKey
-            };
+    const modifiedKey = data.modifiedKey || 'None';
+    const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
+    const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+    const blurPx = parseFloat(data.blurPx || 3);
+    const blurTime = parseFloat(data.blurTime || 1);
 
-            if (!keyMap[modifiedKey]) {
-                return;
-            }
+    if (modifiedKey !== 'None') {
+        const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+        if (!keyMap[modifiedKey]) return;
+    }
+
+    if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
+        preventEvent(e);
+
+        if (blurEnabled) {
+            document.body.style.filter = `blur(${blurPx}px)`;
+            document.body.style.transition = `filter ${blurTime}s ease`;
         }
 
-        if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            if (blurEnabled) {
-                document.body.style.filter = `blur(${blurPx}px)`;
-                document.body.style.transition = `filter ${blurTime}s ease`;
-            }
-
-            chrome.runtime.sendMessage({
-                linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
-                lastClientX: e.screenX,
-                lastClientY: e.screenY,
-                width: window.screen.availWidth,
-                height: window.screen.availHeight,
-            });
-        }
-    });
-}
-
-function handleDragOver(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-function handleDragEnd(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-function handleMouseUp(e) {
-    if (e.target.tagName === 'A' && e.target.href) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        chrome.runtime.sendMessage({
+            linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
+            lastClientX: e.screenX,
+            lastClientY: e.screenY,
+            width: window.screen.availWidth,
+            height: window.screen.availHeight,
+            top: window.screen.availTop,
+            left: window.screen.availLeft
+        });
     }
 }
 
 function handleClick(e) {
     if (isDragging) {
-        e.preventDefault();
-        e.stopPropagation();
+        preventEvent(e);
         isDragging = false;
     }
 }
-
+ 
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => {
         if (disabledUrl.includes('*')) {
@@ -104,27 +120,25 @@ function isUrlDisabled(url, disabledUrls) {
     });
 }
 
-function checkUrlAndToggleListeners() {
-    chrome.storage.local.get(['disabledUrls', 'searchEngine'], function (data) {
-        const disabledUrls = data.disabledUrls || [];
-        const currentUrl = window.location.href;
+async function checkUrlAndToggleListeners() {
+    const data = await loadUserConfigs(['disabledUrls', 'searchEngine']);
+    const disabledUrls = data.disabledUrls || [];
+    const currentUrl = window.location.href;
 
-        if (isUrlDisabled(currentUrl, disabledUrls)) {
-            removeListeners();
-        } else {
-            addListeners();
-        }
+    if (isUrlDisabled(currentUrl, disabledUrls)) {
+        removeListeners();
+    } else {
+        addListeners();
+    }
 
-        // Ensure searchEngine is set to a valid default if undefined
-        if (typeof data.searchEngine === 'undefined') {
-            chrome.storage.local.set({ searchEngine: 'https://www.google.com/search?q=%s' });
-        }
-    });
+    if (typeof data.searchEngine === 'undefined') {
+        chrome.storage.local.set({ searchEngine: 'https://www.google.com/search?q=%s' });
+    }
 }
 
-chrome.storage.onChanged.addListener(function (changes, namespace) {
+chrome.storage.onChanged.addListener(async (changes, namespace) => {
     if (namespace === 'local' && (changes.disabledUrls || changes.searchEngine)) {
-        checkUrlAndToggleListeners();
+        await checkUrlAndToggleListeners();
     }
 });
 
@@ -140,17 +154,41 @@ new MutationObserver(() => {
     }
 }).observe(document, { subtree: true, childList: true });
 
-chrome.storage.local.get('lastUrl', function (data) {
+chrome.storage.local.get('lastUrl', (data) => {
     if (data.lastUrl) {
         lastUrl = data.lastUrl;
     }
 });
 
-window.addEventListener('focus', function () {
-    document.body.style.filter = '';
-    chrome.storage.local.get('closeWhenFocusedInitialWindow', function (data) {
-        if (data.closeWhenFocusedInitialWindow) {
-            chrome.runtime.sendMessage({ action: 'windowRegainedFocus' });
-        }
+function sendMessageToBackground(message) {
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(message, response => {
+            if (chrome.runtime.lastError) {
+                console.error("Runtime error:", chrome.runtime.lastError);
+                reject(chrome.runtime.lastError);
+            } else {
+                console.log("Background script responded:", response);
+                if (response && response.status) {
+                    resolve(response);
+                } else {
+                    reject(new Error("Undefined response from background script"));
+                }
+            }
+        });
     });
+}
+
+window.addEventListener('focus', async () => {
+    try {
+        document.body.style.filter = '';
+        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
+        const message = data.closeWhenFocusedInitialWindow 
+            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
+            : { checkContextMenuItem: true };
+        
+        const response = await sendMessageToBackground(message);
+        console.log("Background script responded:", response);
+    } catch (error) {
+        console.error("Error sending message to background script:", error);
+    }
 });

@@ -1,29 +1,18 @@
 document.addEventListener("DOMContentLoaded", init);
 
-function init() {
-    loadUserConfigs(setupPage);
+async function init() {
+    const userConfigs = await loadUserConfigs();
+    setupPage(userConfigs);
 }
 
-function setupPage(userConfigs) {
-    userConfigs = userConfigs || {};
-
-    // Elements to translate and set labels for
+function setupPage(userConfigs = {}) {
     const elementsToTranslate = [
-        { id: 'keySelection', messageId: 'keySelection' },
-        { id: 'searchEngineSelection', messageId: 'searchEngineSelection' },
-        { id: 'popupSettings', messageId: 'popupSettings' },
-        { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
-        { id: 'blacklist', messageId: 'blacklist' }
+        'keySelection', 'searchEngineSelection', 'popupSettings', 'blurEffectSettings', 'blacklist'
     ];
 
-    elementsToTranslate.forEach(({ id, messageId }) => setTextContent(id, messageId));
+    elementsToTranslate.forEach(id => setTextContent(id, id));
+    ['custom', 'searchDisable', 'noneKey'].forEach(id => setInputLabel(id, id));
 
-    // Set specific labels
-    setInputLabel('custom', 'custom');
-    setInputLabel('searchDisable', 'searchDisable');
-    setInputLabel('noneKey', 'noneKey');
-
-    // Initialize input elements
     Object.keys(configs).forEach(key => {
         const input = document.getElementById(key);
         if (input) {
@@ -32,20 +21,18 @@ function setupPage(userConfigs) {
         }
     });
 
-    // Initialize textarea and sliders
     initializeTextarea('disabledUrls', userConfigs);
-    initializeSlider('blurPx', 3);
-    initializeSlider('blurTime', 1);
-
-    // Set modified key
+    initializeSlider('blurPx', userConfigs.blurPx ?? 3);
+    initializeSlider('blurTime', userConfigs.blurTime ?? 1);
     setModifiedKey(userConfigs.modifiedKey);
-
-    // Setup search engine selection
     setupSearchEngineSelection(userConfigs.searchEngine);
 }
 
 function setTextContent(elementId, messageId) {
-    document.getElementById(elementId).textContent = chrome.i18n.getMessage(messageId);
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = chrome.i18n.getMessage(messageId);
+    }
 }
 
 function setInputLabel(inputId, messageId) {
@@ -76,8 +63,8 @@ function createLabel(input, key) {
 
 function addInputListener(input, key) {
     input.addEventListener("input", () => {
-        configs[key] = input.type === 'checkbox' ? input.checked : input.value;
-        saveAllSettings();
+        const value = input.type === 'checkbox' ? input.checked : input.value;
+        saveSingleSetting(key, value);
     });
 }
 
@@ -86,8 +73,8 @@ function initializeTextarea(textareaId, userConfigs) {
     if (textarea) {
         textarea.value = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
         textarea.addEventListener('input', () => {
-            configs[textareaId] = textarea.value.split('\n').filter(line => line.trim());
-            saveAllSettings();
+            const value = textarea.value.split('\n').filter(line => line.trim());
+            saveSingleSetting(textareaId, value);
         });
     }
 }
@@ -101,86 +88,95 @@ function initializeSlider(id, defaultValue) {
     output.textContent = initialValue;
 
     input.addEventListener('input', () => {
-        output.textContent = input.value;
-        localStorage.setItem(id, input.value);
+        const value = input.value;
+        output.textContent = value;
+        localStorage.setItem(id, value);
+        saveSingleSetting(id, value);
     });
 }
 
-function setModifiedKey(modifiedKey) {
-    modifiedKey = modifiedKey ?? 'noneKey';
-    document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
+function setModifiedKey(modifiedKey = 'noneKey') {
+    const modifiedKeyInput = document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`);
+    if (modifiedKeyInput) {
+        modifiedKeyInput.checked = true;
+    }
 
     document.querySelectorAll('input[name="modifiedKey"]').forEach(input => {
         input.addEventListener('change', event => {
-            chrome.storage.local.set({ modifiedKey: event.target.value });
+            saveSingleSetting('modifiedKey', event.target.value);
         });
     });
 }
 
 function setupSearchEngineSelection(searchEngine) {
     const customInput = document.getElementById('customSearchEngine');
-    const searchEngines = ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable'];
+    const searchEngines = ['google', 'bing', 'baidu', 'yandex', 'wiki', 'duckduckgo', 'custom', 'searchDisable'];
 
-    // Ensure the custom input event listener is set up properly
     customInput.addEventListener('input', () => {
-        chrome.storage.local.set({ searchEngine: customInput.value });
+        saveSingleSetting('searchEngine', customInput.value);
     });
 
     searchEngines.forEach(engine => {
         const radio = document.getElementById(engine);
         radio.addEventListener('change', () => {
             if (radio.checked) {
-                let searchEngineValue;
-                if (engine === 'custom') {
-                    customInput.style.display = 'block';
-                    searchEngineValue = customInput.value;
-                } else {
-                    customInput.style.display = 'none';
-                    searchEngineValue = radio.value;
-                }
-                chrome.storage.local.set({ searchEngine: searchEngineValue });
+                const searchEngineValue = engine === 'custom' ? customInput.value : radio.value;
+                customInput.style.display = engine === 'custom' ? 'block' : 'none';
+                saveSingleSetting('searchEngine', searchEngineValue);
             }
         });
 
-        // Restore saved value on load
         if (searchEngine === radio.value) {
             radio.checked = true;
             customInput.style.display = engine === 'custom' ? 'block' : 'none';
         }
     });
 
-    // Special handling for initial load if 'custom' is selected
     if (!searchEngines.some(engine => searchEngine === document.getElementById(engine)?.value)) {
         const customRadio = document.getElementById('custom');
-        customRadio.checked = true;
-        customInput.style.display = 'block';
-        customInput.value = searchEngine;
+        if (customRadio) {
+            customRadio.checked = true;
+            customInput.style.display = 'block';
+            customInput.value = searchEngine;
+        }
     }
 }
 
-function loadUserConfigs(callback) {
+async function loadUserConfigs() {
     const keys = Object.keys(configs);
-    chrome.storage.local.get(keys, function (userConfigs) {
-        userConfigs.searchEngine = userConfigs.searchEngine ?? configs.searchEngine;
-        userConfigs.modifiedKey = userConfigs.modifiedKey ?? configs.modifiedKey;
-        
-        keys.forEach(key => {
-            if (userConfigs[key] !== null && userConfigs[key] !== undefined) {
-                configs[key] = userConfigs[key];
-            }
+    return new Promise(resolve => {
+        chrome.storage.local.get(keys, userConfigs => {
+            Object.keys(configs).forEach(key => {
+                if (userConfigs[key] === undefined) {
+                    userConfigs[key] = configs[key];
+                }
+            });
+            resolve(userConfigs);
         });
-
-        if (callback) callback(userConfigs);
     });
 }
 
-function saveConfig(key, value) {
-    configs[key] = value;
-    let data = {};
-    data[key] = value;
-    chrome.storage.local.set(data);
+function saveAllSettings() {
+    debounce(() => {
+        chrome.storage.local.set(configs);
+    }, 300)();
 }
 
-function saveAllSettings() {
-    chrome.storage.local.set(configs);
+function saveSingleSetting(key, value) {
+    configs[key] = value;
+    debounce(() => {
+        chrome.storage.local.set({ [key]: value });
+    }, 300)();
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }

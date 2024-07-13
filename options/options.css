@@ -28,3 +28,50 @@ legend {
     color: #fff;
     padding: 3px 6px;
   }
+
+  /* Dark Mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+    .option {
+        padding: 5px;
+        cursor: pointer;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+
+    .option:hover {
+        background-color: #2e2e2e;
+        transition: background-color 50ms ease-in-out;
+        border-radius: 4px;
+    }
+
+    input[type="text"], input[type="number"], textarea {
+        min-width: 40%;
+        margin-right: 4px;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border: 1px solid #333;
+    }
+
+    textarea {
+        width: 100%;
+        box-sizing: border-box; /* Ensure the textarea takes the full width */
+        margin-top: 5px;
+        padding: 5px;
+        font-size: 14px;
+        resize: vertical; /* Allow vertical resize */
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border: 1px solid #333;
+    }
+
+    legend {
+        background-color: #333;
+        color: #e0e0e0;
+        padding: 3px 6px;
+    }
+}
