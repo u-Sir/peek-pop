@@ -2,12 +2,12 @@
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "default_locale": "en",
   "icons": {
-    "48": "icon.svg",
-    "96": "icon.svg",
-    "128": "icon.svg"
+    "48": "icon.png",
+    "96": "icon.png",
+    "128": "icon.png"
   },
   "background": {
     "service_worker": "background.js"
@@ -18,7 +18,6 @@
         "<all_urls>"
       ],
       "js": [
-        "configs.js",
         "content.js"
       ],
       "run_at": "document_start"
@@ -35,14 +34,14 @@
   ],
   "options_ui": {
     "page": "options/options.html",
-    "open_in_tab": false
+    "open_in_tab": true
   },
   "action": {
     "default_popup": "options/options.html",
     "default_icon": {
-      "48": "icon.svg",
-      "96": "icon.svg",
-      "128": "icon.svg"
+      "48": "icon.png",
+      "96": "icon.png",
+      "128": "icon.png"
     }
   }
 }

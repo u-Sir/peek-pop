@@ -1,3 +1,18 @@
+const configs = {
+    'closeWhenFocusedInitialWindow': true,
+    'tryOpenAtMousePosition': false,
+    'hideBrowserControls': true,
+    'popupHeight': 800,
+    'popupWidth': 1000,
+    'searchEngine': 'https://www.google.com/search?q=%s',
+    'disabledUrls': [],
+    'blurEnabled': true,
+    'blurPx': 3,
+    'blurTime': 1,
+    'modifiedKey': 'None',
+    'originWindowId': ''
+};
+
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
@@ -15,7 +30,6 @@ function setupPage(userConfigs) {
         { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
         { id: 'blacklist', messageId: 'blacklist' }
     ];
-
 
     elementsToTranslate.forEach(({ id, messageId }) => setTextContent(id, messageId));
 
@@ -120,7 +134,7 @@ function setModifiedKey(modifiedKey) {
 
 function setupSearchEngineSelection(searchEngine) {
     const customInput = document.getElementById('customSearchEngine');
-    const searchEngines = ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable'];
+    const searchEngines = ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable', 'wiki', 'yandex'];
 
     // Ensure the custom input event listener is set up properly
     customInput.addEventListener('input', () => {

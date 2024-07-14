@@ -1,3 +1,10 @@
+0.0.20
+- ensure that popup window centered based on current screen when tryOpenAtMousePosition is false.
+- align the checkboxes/radio buttons with their respective labels properly on options page.
+- ensure "send page back" response when idle.
+- added Wikipedia in search providers.
+- keep options page following system's light/dark mode.
+
 0.0.19
 - multi-monitors supported.
 - change modified key to optional. (Please test to ensure it meets expectations.)

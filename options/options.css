@@ -1,3 +1,4 @@
+/* General Option Styling */
 .option {
     padding: 5px;
     cursor: pointer;
@@ -9,18 +10,29 @@
     border-radius: 4px;
 }
 
-input[type="text"], textarea {
-    min-width: 95%;
-    margin-right: 4px;
+/* Align text with radio buttons and checkboxes */
+input[type="radio"],
+input[type="checkbox"] {
+    margin-right: 8px;
+    vertical-align: top;
 }
 
-input[type="number"] {
-    min-width: 10%;
+label {
+    vertical-align: top;
+    line-height: 1.5; /* Adjust line-height for better alignment */
+}
+
+/* Input and Textarea Styling */
+input[type="text"],
+input[type="number"],
+textarea {
+    min-width: 40%;
     margin-right: 4px;
 }
 
 textarea {
-    width: 500px;
+    min-width: 600px;
+    width: 100%;
     box-sizing: border-box; /* Ensure the textarea takes the full width */
     margin-top: 5px;
     padding: 5px;
@@ -32,4 +44,55 @@ legend {
     background-color: #0000007d;
     color: #fff;
     padding: 3px 6px;
-  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        min-width: 600px;
+    }
+
+    .option {
+        padding: 5px;
+        cursor: pointer;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+
+    .option:hover {
+        background-color: #2e2e2e;
+        transition: background-color 50ms ease-in-out;
+        border-radius: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        min-width: 40%;
+        margin-right: 4px;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border: 1px solid #333;
+    }
+
+    textarea {
+        min-width: 600px;
+        width: 100%;
+        box-sizing: border-box; /* Ensure the textarea takes the full width */
+        margin-top: 5px;
+        padding: 5px;
+        font-size: 14px;
+        resize: vertical; /* Allow vertical resize */
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border: 1px solid #333;
+    }
+
+    legend {
+        background-color: #333;
+        color: #e0e0e0;
+        padding: 3px 6px;
+    }
+}
