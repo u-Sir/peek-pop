@@ -17,16 +17,8 @@ const configs = {
 async function loadUserConfigs() {
     return new Promise(resolve => {
         chrome.storage.local.get(Object.keys(configs), storedConfigs => {
-            // Merge stored configurations with default configs, setting defaults for undefined keys
             const mergedConfigs = { ...configs, ...storedConfigs };
-
-            // Update the main configs object with merged configurations
             Object.assign(configs, mergedConfigs);
-
-            // Log the merged configurations (optional)
-            // console.log('Loaded and merged user configurations:', configs);
-
-            // Resolve with the merged configurations
             resolve(mergedConfigs);
         });
     });
@@ -54,10 +46,16 @@ function removeListeners() {
 function handleEvent(e) {
     if (e.type === 'dragstart') {
         handleDragStart(e);
-    } else if (['dragover', 'drop', 'dragend', 'mouseup'].includes(e.type)) {
+
+    } else if (['dragover', 'drop', 'dragend'].includes(e.type)) {
         preventEvent(e);
     } else if (e.type === 'click') {
         handleClick(e);
+    } else if (e.type === 'mouseup') {
+        if (e.target.tagName === 'A' && e.target.href) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        }
     }
 }
 
@@ -84,7 +82,8 @@ async function handleDragStart(e) {
     }
 
     if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
-        preventEvent(e);
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
         if (blurEnabled) {
             document.body.style.filter = `blur(${blurPx}px)`;
@@ -108,8 +107,9 @@ function handleClick(e) {
         preventEvent(e);
         isDragging = false;
     }
+
 }
- 
+
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => {
         if (disabledUrl.includes('*')) {
@@ -182,10 +182,10 @@ window.addEventListener('focus', async () => {
     try {
         document.body.style.filter = '';
         const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
-        const message = data.closeWhenFocusedInitialWindow 
+        const message = data.closeWhenFocusedInitialWindow
             ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
             : { checkContextMenuItem: true };
-        
+
         const response = await sendMessageToBackground(message);
         console.log("Background script responded:", response);
     } catch (error) {

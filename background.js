@@ -85,6 +85,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         });
         console.log('Current window:', currentWindow);
 
+
         const userConfigs = await loadUserConfigs();
         let { originWindowId } = userConfigs;
 
@@ -135,15 +136,25 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             sendResponse({ status: 'window focus handled' });
         }
 
-        await Promise.all([
-            saveConfig('lastClientX', request.lastClientX),
-            saveConfig('lastClientY', request.lastClientY),
-            saveConfig('lastScreenTop', request.top),
-            saveConfig('lastScreenLeft', request.left),
-            saveConfig('lastScreenWidth', request.width),
-            saveConfig('lastScreenHeight', request.height)
-        ]);
+        const zoomFactor = await new Promise((resolve, reject) => {
+            chrome.tabs.getZoom(sender.tab.id, (zoom) => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(zoom);
+                }
+            });
+        });
 
+        await Promise.all([
+            saveConfig('lastClientX', request.lastClientX * zoomFactor),
+            saveConfig('lastClientY', request.lastClientY * zoomFactor),
+            saveConfig('lastScreenTop', request.top * zoomFactor),
+            saveConfig('lastScreenLeft', request.left * zoomFactor),
+            saveConfig('lastScreenWidth', request.width * zoomFactor),
+            saveConfig('lastScreenHeight', request.height * zoomFactor)
+        ]);
+        
         const { disabledUrls } = userConfigs;
         if (isUrlDisabled(sender.tab.url, disabledUrls)) {
             sendResponse({ status: 'url disabled' });
@@ -174,7 +185,7 @@ async function handleLinkInPopup(linkUrl, tab, currentWindow) {
     const {
         lastClientX, lastClientY, enableContainerIdentify,
         popupHeight, popupWidth, tryOpenAtMousePosition,
-        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight
+        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, devicePixelRatio
     } = userConfigs;
 
     const height = parseInt(popupHeight, 10) || 800;
@@ -185,6 +196,15 @@ async function handleLinkInPopup(linkUrl, tab, currentWindow) {
     dx = Math.max(lastScreenLeft, Math.min(dx, lastScreenLeft + lastScreenWidth - width));
     dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - height));
 
+    console.log("tryOpenAtMousePosition: " + tryOpenAtMousePosition )
+    console.log("lastScreenLeft: " + lastScreenLeft  )
+    console.log("lastScreenTop: " + lastScreenTop  )
+    console.log("lastScreenWidth: " + lastScreenWidth)
+    console.log("lastScreenHeight: " + lastScreenHeight)
+    console.log("dx - dy : " + dx + "-" + dy)
+    console.log("devicePixelRatio: " + devicePixelRatio)
+
+    
     const createData = {
         url: linkUrl,
         type: 'popup',

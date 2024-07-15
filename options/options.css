@@ -9,27 +9,32 @@
     border-radius: 4px;
 }
 
-input[type="text"], input[type="number"], textarea {
+input[type="text"],
+input[type="number"],
+textarea {
     min-width: 40%;
     margin-right: 4px;
 }
 
 textarea {
     width: 100%;
-    box-sizing: border-box; /* Ensure the textarea takes the full width */
+    box-sizing: border-box;
+    /* Ensure the textarea takes the full width */
     margin-top: 5px;
     padding: 5px;
     font-size: 14px;
-    resize: vertical; /* Allow vertical resize */
+    resize: vertical;
+    /* Allow vertical resize */
 }
 
 legend {
     background-color: #0000007d;
     color: #fff;
     padding: 3px 6px;
-  }
+}
 
-  /* Dark Mode */
+
+/* Dark Mode */
 @media (prefers-color-scheme: dark) {
     body {
         background-color: #121212;
@@ -49,7 +54,9 @@ legend {
         border-radius: 4px;
     }
 
-    input[type="text"], input[type="number"], textarea {
+    input[type="text"],
+    input[type="number"],
+    textarea {
         min-width: 40%;
         margin-right: 4px;
         background-color: #1e1e1e;
@@ -59,11 +66,13 @@ legend {
 
     textarea {
         width: 100%;
-        box-sizing: border-box; /* Ensure the textarea takes the full width */
+        box-sizing: border-box;
+        /* Ensure the textarea takes the full width */
         margin-top: 5px;
         padding: 5px;
         font-size: 14px;
-        resize: vertical; /* Allow vertical resize */
+        resize: vertical;
+        /* Allow vertical resize */
         background-color: #1e1e1e;
         color: #e0e0e0;
         border: 1px solid #333;

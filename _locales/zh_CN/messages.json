@@ -48,7 +48,7 @@
         "message": "搜索引擎"
     },
     "custom": {
-        "message": "自定义"
+        "message": "自定义(选中文本：%s)"
     },
     "searchDisable": {
         "message": "禁用"
