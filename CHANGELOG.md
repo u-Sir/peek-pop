@@ -1,4 +1,4 @@
-0.0.20
+0.0.21
 - ensure that popup window centered based on current screen when tryOpenAtMousePosition is false.
 - align the checkboxes/radio buttons with their respective labels properly on options page.
 - ensure "send page back" response when idle.
