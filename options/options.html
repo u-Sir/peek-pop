@@ -25,6 +25,7 @@
 
         <input type="radio" id="noneKey" name="modifiedKey" value="None" />
         <label for="noneKey">None</label>
+        <br >
     </fieldset>
     </p>
 
@@ -33,23 +34,31 @@
     <p>
         <fieldset>
             <legend id="searchEngineSelection">Select Search Engine</legend>
-            <input type="radio" id="custom" name="searchEngine" value="custom" />
-            <label for="custom">Custom</label>
             <input type="radio" id="google" name="searchEngine" value="https://www.google.com/search?q=%s" />
             <label for="google">Google</label>
+            
             <input type="radio" id="bing" name="searchEngine" value="https://www.bing.com/search?q=%s" />
             <label for="bing">Bing</label>
+            
             <input type="radio" id="baidu" name="searchEngine" value="https://www.baidu.com/s?wd=%s" />
             <label for="baidu">Baidu</label>
+            
             <input type="radio" id="yandex" name="searchEngine" value="https://yandex.com/search/?text=%s" />
             <label for="yandex">Yandex</label>
+            
             <input type="radio" id="duckduckgo" name="searchEngine" value="https://duckduckgo.com/?q=%s" />
             <label for="duckduckgo">DuckDuckGo</label>
+            
             <input type="radio" id="wiki" name="searchEngine" value="https://wikipedia.org/w/index.php?title=Special:Search&search=%s" />
             <label for="wiki">Wikipedia</label>
+            
             <input type="radio" id="searchDisable" name="searchEngine" value="None" />
             <label for="searchDisable">None</label>
-            <input type="text" id="customSearchEngine" style="display:none;" placeholder="URL" />
+            <br>
+            <input type="radio" id="custom" name="searchEngine" value="custom" />
+            <label for="custom">Custom</label>
+            <input type="text" id="customSearchEngine" style="display:none;" placeholder="https://example.com/%s" />
+            
         </fieldset>
         </p>
     
@@ -84,10 +93,6 @@
     <fieldset>
         <legend id="popupSettings"></legend>
 
-        <!-- <div class='option'>
-            <label><input type="checkbox" id="enableContainerIdentify"></input></label>
-        </div> -->
-    
         <div class='option'>
             <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></input></label>
         </div>

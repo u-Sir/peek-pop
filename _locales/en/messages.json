@@ -33,13 +33,13 @@
         "message": "Set blur effect on Original Window when popup"
     },
     "enableContainerIdentify": {
-        "message": "keep open in the same container as original page"
+        "message": "Keep open in the same container as original page"
     },
     "blurPx": {
-        "message": "blur effect strengh: "
+        "message": "Blur effect strengh: "
     },
     "blurTime": {
-        "message": "blur in specific seconds (s): "
+        "message": "Blur in specific seconds (s): "
     },
     "keySelection": {
         "message": "Response when selected key is pressing (Please check if it works as expected.)"
@@ -48,7 +48,7 @@
         "message": "Search provider"
     },
     "custom": {
-        "message": "custom search url (use %s as selected text)"
+        "message": "Custom (use %s as selected text)"
     },
     "searchDisable": {
         "message": "Disable search in popup window"

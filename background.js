@@ -14,9 +14,8 @@ const configs = {
 };
 
 let contextMenuCreated = false;
-let sendPageBackMenuItemId = 'sendPageBack';
 
-function loadUserConfigs() {
+async function loadUserConfigs() {
     return new Promise(resolve => {
         chrome.storage.local.get(Object.keys(configs), storedConfigs => {
             const mergedConfigs = { ...configs, ...storedConfigs };
@@ -26,7 +25,7 @@ function loadUserConfigs() {
     });
 }
 
-function saveConfig(key, value) {
+async function saveConfig(key, value) {
     configs[key] = value;
     return new Promise(resolve => {
         chrome.storage.local.set({ [key]: value }, () => {
@@ -36,146 +35,41 @@ function saveConfig(key, value) {
     });
 }
 
-async function createContextMenuIfNeeded(windowType) {
-    const userConfigs = await loadUserConfigs();
+function onMenuItemClicked(info, tab) {
+    if (info.menuItemId === 'sendPageBack') {
+        loadUserConfigs().then(userConfigs => {
+            const { originWindowId } = userConfigs;
 
-    if (windowType === 'popup' && !contextMenuCreated) {
-        chrome.contextMenus.create({
-            id: sendPageBackMenuItemId,
-            title: chrome.i18n.getMessage('sendPageBack'),
-            contexts: ['page']
-        }, () => {
-            if (chrome.runtime.lastError) {
-                console.error('Error creating context menu item:', chrome.runtime.lastError.message);
-            } else {
-                contextMenuCreated = true;
-            }
-        });
-    } else if (windowType !== 'popup' && contextMenuCreated) {
-        chrome.contextMenus.remove(sendPageBackMenuItemId, () => {
-            if (chrome.runtime.lastError && chrome.runtime.lastError.message !== 'Cannot find menu item with id sendPageBack') {
-                console.error('Error removing context menu item:', chrome.runtime.lastError.message);
-            } else {
-                contextMenuCreated = false;
-            }
-        });
-    }
-}
+            if (originWindowId) {
+                const createData = { windowId: originWindowId, url: tab.url };
 
-async function onMenuItemClicked(info, tab) {
-    if (info.menuItemId === sendPageBackMenuItemId) {
-        const userConfigs = await loadUserConfigs();
-        const { originWindowId } = userConfigs;
-
-        if (originWindowId) {
-            const createData = { windowId: originWindowId, url: tab.url };
-
-            await chrome.tabs.create(createData);
-            chrome.windows.get(tab.windowId, window => {
-                if (window.type === 'popup') chrome.windows.remove(window.id);
-            });
-            chrome.contextMenus.remove(sendPageBackMenuItemId, () => {
-                if (chrome.runtime.lastError && chrome.runtime.lastError.message !== 'Cannot find menu item with id sendPageBack') {
-                    console.error('Error removing context menu item:', chrome.runtime.lastError.message);
-                } else {
+                chrome.tabs.create(createData, () => {
+                    chrome.windows.get(tab.windowId, window => {
+                        if (window.type === 'popup') chrome.windows.remove(window.id);
+                    });
+                    chrome.contextMenus.remove('sendPageBack');
                     contextMenuCreated = false;
-                }
-            });
-        } else {
-            console.error('No original window ID found in storage.');
-        }
+                    chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+                });
+            } else {
+                console.error('No original window ID found in storage.');
+            }
+        });
     }
 }
 
-chrome.runtime.onInstalled.addListener(async () => {
-    try {
-        const userConfigs = await loadUserConfigs();
+chrome.runtime.onInstalled.addListener(() => {
+    loadUserConfigs().then(userConfigs => {
         const keysToSave = Object.keys(configs).filter(key => userConfigs[key] === undefined);
-        await Promise.all(keysToSave.map(key => saveConfig(key, configs[key])));
-    } catch (error) {
-        console.error('Error during installation setup:', error);
-    }
+        Promise.all(keysToSave.map(key => saveConfig(key, configs[key])))
+            .catch(error => console.error('Error during installation setup:', error));
+    });
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('Received message in background script:', request);
 
-    handleIncomingMessage(request, sender, sendResponse);
-
-    return true; // Keeps the message channel open for async response
-});
-
-async function handleIncomingMessage(request, sender, sendResponse) {
-    try {
-        const currentWindow = await getCurrentWindow();
-        console.log('Current window:', currentWindow);
-
-        await createContextMenuIfNeeded(currentWindow.type);
-
-        const userConfigs = await loadUserConfigs();
-        let { originWindowId } = userConfigs;
-
-        if (!originWindowId && currentWindow.type !== 'popup') {
-            originWindowId = currentWindow.id;
-            await saveConfig('originWindowId', originWindowId);
-            console.log('Set and stored originWindowId:', originWindowId);
-        }
-
-        chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
-        chrome.contextMenus.onClicked.addListener(onMenuItemClicked);
-
-        if (request.checkContextMenuItem) {
-            sendResponse({ status: 'context menu checked' });
-        }
-
-        if (request.action === 'windowRegainedFocus' && currentWindow.id === originWindowId) {
-            const windows = await getAllWindows();
-            console.log('All windows:', windows);
-
-            for (const window of windows) {
-                if (window.type === 'popup') {
-                    await new Promise(resolve => chrome.windows.remove(window.id, resolve));
-                }
-            }
-            chrome.contextMenus.remove(sendPageBackMenuItemId, () => {
-                if (chrome.runtime.lastError && chrome.runtime.lastError.message !== 'Cannot find menu item with id sendPageBack') {
-                    console.error('Error removing context menu item:', chrome.runtime.lastError.message);
-                } else {
-                    contextMenuCreated = false;
-                    sendResponse({ status: 'window focus handled' });
-                }
-            });
-        }
-
-        await Promise.all([
-            saveConfig('lastClientX', request.lastClientX),
-            saveConfig('lastClientY', request.lastClientY),
-            saveConfig('lastScreenTop', request.top),
-            saveConfig('lastScreenLeft', request.left),
-            saveConfig('lastScreenWidth', request.width),
-            saveConfig('lastScreenHeight', request.height)
-        ]);
-
-        const { disabledUrls } = userConfigs;
-        if (isUrlDisabled(sender.tab.url, disabledUrls)) {
-            sendResponse({ status: 'url disabled' });
-        } else if (request.linkUrl) {
-            if (currentWindow.type !== 'popup') {
-                await saveConfig('originWindowId', currentWindow.id); // Always update originWindowId before handling link
-            }
-            await handleLinkInPopup(request.linkUrl, sender.tab, currentWindow);
-            sendResponse({ status: 'link handled' });
-        } else {
-            sendResponse({ status: 'message processed' });
-        }
-    } catch (error) {
-        console.error('Error in background script:', error);
-        sendResponse({ status: 'error', message: error.message });
-    }
-}
-
-function getCurrentWindow() {
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
         chrome.windows.getCurrent(window => {
             if (chrome.runtime.lastError) {
                 console.error('Error getting current window:', chrome.runtime.lastError);
@@ -184,58 +78,133 @@ function getCurrentWindow() {
                 resolve(window);
             }
         });
-    });
-}
+    })
+    .then(currentWindow => {
+        console.log('Current window:', currentWindow);
 
-function getAllWindows() {
-    return new Promise((resolve, reject) => {
-        chrome.windows.getAll({ populate: true }, windows => {
-            if (chrome.runtime.lastError) {
-                console.error('Error getting all windows:', chrome.runtime.lastError);
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(windows);
+        return loadUserConfigs().then(userConfigs => {
+            let { originWindowId } = userConfigs;
+
+            if (!originWindowId && currentWindow.type !== 'popup') {
+                originWindowId = currentWindow.id;
+                return saveConfig('originWindowId', originWindowId).then(() => originWindowId);
             }
-        });
-    });
-}
 
-async function handleLinkInPopup(linkUrl, tab, currentWindow) {
+            return originWindowId;
+        }).then(originWindowId => {
+            chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+            chrome.contextMenus.onClicked.addListener(onMenuItemClicked);
+
+            if (request.checkContextMenuItem) {
+                if (!contextMenuCreated && currentWindow.type === 'popup') {
+                    chrome.contextMenus.create({
+                        id: 'sendPageBack',
+                        title: chrome.i18n.getMessage('sendPageBack'),
+                        contexts: ['page']
+                    });
+                    contextMenuCreated = true;
+                } else if (currentWindow.type !== 'popup') {
+                    chrome.contextMenus.remove('sendPageBack');
+                    contextMenuCreated = false;
+                }
+                sendResponse({ status: 'context menu checked' });
+            }
+
+            if (request.action === 'windowRegainedFocus' && currentWindow.id === originWindowId) {
+                chrome.windows.getAll({ populate: true }, windows => {
+                    console.log('All windows:', windows);
+
+                    windows.forEach(window => {
+                        if (window.type === 'popup') {
+                            chrome.windows.remove(window.id);
+                        }
+                    });
+
+                    chrome.contextMenus.remove('sendPageBack');
+                    contextMenuCreated = false;
+                    sendResponse({ status: 'window focus handled' });
+                });
+            }
+
+            return Promise.all([
+                saveConfig('lastClientX', request.lastClientX),
+                saveConfig('lastClientY', request.lastClientY),
+                saveConfig('lastScreenTop', request.top),
+                saveConfig('lastScreenLeft', request.left),
+                saveConfig('lastScreenWidth', request.width),
+                saveConfig('lastScreenHeight', request.height)
+            ]).then(() => {
+                return loadUserConfigs().then(userConfigs => {
+                    const { disabledUrls } = userConfigs;
+
+                    if (isUrlDisabled(sender.tab.url, disabledUrls)) {
+                        sendResponse({ status: 'url disabled' });
+                    } else if (request.linkUrl) {
+                        if (currentWindow.type !== 'popup') {
+                            saveConfig('originWindowId', currentWindow.id);
+                        }
+                        handleLinkInPopup(request.linkUrl, sender.tab, currentWindow).then(() => {
+                            sendResponse({ status: 'link handled' });
+                        });
+                    } else {
+                        sendResponse({ status: 'message processed' });
+                    }
+                });
+            });
+        });
+    })
+    .catch(error => {
+        console.error('Error in background script:', error);
+        sendResponse({ status: 'error', message: error.message });
+    });
+
+    return true; // Keeps the message channel open for async response
+});
+
+
+function handleLinkInPopup(linkUrl, tab, currentWindow) {
     if (!isValidUrl(linkUrl)) {
         console.error('Invalid URL:', linkUrl);
-        return;
+        return Promise.reject(new Error('Invalid URL'));
     }
 
-    const userConfigs = await loadUserConfigs();
-    const {
-        lastClientX, lastClientY,
-        popupHeight, popupWidth, tryOpenAtMousePosition,
-        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight
-    } = userConfigs;
+    return loadUserConfigs().then(userConfigs => {
+        const {
+            lastClientX, lastClientY,
+            popupHeight, popupWidth, tryOpenAtMousePosition,
+            lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, devicePixelRatio
+        } = userConfigs;
 
-    const height = parseInt(popupHeight, 10) || 800;
-    const width = parseInt(popupWidth, 10) || 1000;
+        const height = parseInt(popupHeight, 10) || 800;
+        const width = parseInt(popupWidth, 10) || 1000;
 
-    let dx = tryOpenAtMousePosition && lastClientX ? lastClientX - width / 2 : lastScreenLeft + (lastScreenWidth - width) / 2;
-    let dy = tryOpenAtMousePosition && lastClientY ? lastClientY - height / 2 : lastScreenTop + (lastScreenHeight - height) / 2;
-    dx = Math.max(lastScreenLeft, Math.min(dx, lastScreenLeft + lastScreenWidth - width));
-    dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - height));
+        let dx = tryOpenAtMousePosition && lastClientX ? lastClientX - width / 2 : lastScreenLeft + (lastScreenWidth - width) / 2;
+        let dy = tryOpenAtMousePosition && lastClientY ? lastClientY - height / 2 : lastScreenTop + (lastScreenHeight - height) / 2;
+        dx = Math.max(lastScreenLeft, Math.min(dx, lastScreenLeft + lastScreenWidth - width));
+        dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - height));
 
-    const createData = {
-        url: linkUrl,
-        type: 'popup',
-        width,
-        height,
-        left: Math.round(dx),
-        top: Math.round(dy),
-        incognito: tab.incognito
-    };
+        console.log("tryOpenAtMousePosition: " + tryOpenAtMousePosition);
+        console.log("lastScreenLeft: " + lastScreenLeft);
+        console.log("lastScreenTop: " + lastScreenTop);
+        console.log("lastScreenWidth: " + lastScreenWidth);
+        console.log("lastScreenHeight: " + lastScreenHeight);
+        console.log("dx - dy : " + dx + "-" + dy);
+        console.log("devicePixelRatio: " + devicePixelRatio);
 
-    try {
-        await chrome.windows.create(createData);
-    } catch (error) {
-        console.error('Error creating popup window:', error);
-    }
+        const createData = {
+            url: linkUrl,
+            type: 'popup',
+            width,
+            height,
+            left: Math.round(dx),
+            top: Math.round(dy),
+            incognito: tab.incognito
+        };
+
+        return chrome.windows.create(createData).catch(error => {
+            console.error('Error creating popup window:', error);
+        });
+    });
 }
 
 function isValidUrl(url) {
@@ -251,18 +220,18 @@ function isUrlDisabled(url, disabledUrls) {
     return disabledUrls?.some(disabledUrl => url.startsWith(disabledUrl));
 }
 
-chrome.alarms.onAlarm.addListener(async alarm => {
+chrome.alarms.onAlarm.addListener(alarm => {
     const alarmName = alarm.name;
     if (alarmName.startsWith('popupLinkAlarm_')) {
-        const data = await new Promise(resolve => chrome.storage.local.get(alarmName, resolve));
-        const { dx, dy, width, height, incognito, linkUrl } = data[alarmName];
-        const createData = { url: linkUrl, type: 'popup', width, height, left: dx, top: dy, incognito };
+        chrome.storage.local.get(alarmName, data => {
+            const { dx, dy, width, height, incognito, linkUrl } = data[alarmName];
+            const createData = { url: linkUrl, type: 'popup', width, height, left: dx, top: dy, incognito };
 
-        try {
-            await chrome.windows.create(createData);
-            await new Promise(resolve => chrome.storage.local.remove(alarmName, resolve));
-        } catch (error) {
-            console.error('Error creating popup window:', error);
-        }
+            chrome.windows.create(createData).then(() => {
+                chrome.storage.local.remove(alarmName);
+            }).catch(error => {
+                console.error('Error creating popup window:', error);
+            });
+        });
     }
 });

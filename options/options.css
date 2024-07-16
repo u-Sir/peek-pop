@@ -13,7 +13,7 @@
 /* Align text with radio buttons and checkboxes */
 input[type="radio"],
 input[type="checkbox"] {
-    margin-right: 8px;
+    margin-right: 4px;
     vertical-align: top;
 }
 

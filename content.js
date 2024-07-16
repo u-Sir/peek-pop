@@ -1,3 +1,5 @@
+let isMouseDown = false;
+let startX, startY, mouseDownTime;
 let isDragging = false;
 let hasPopupTriggered = false;
 
@@ -18,23 +20,15 @@ const configs = {
 async function loadUserConfigs() {
     return new Promise(resolve => {
         chrome.storage.local.get(Object.keys(configs), storedConfigs => {
-            // Merge stored configurations with default configs, setting defaults for undefined keys
             const mergedConfigs = { ...configs, ...storedConfigs };
-
-            // Update the main configs object with merged configurations
             Object.assign(configs, mergedConfigs);
-
-            // Log the merged configurations (optional)
-            // console.log('Loaded and merged user configurations:', configs);
-
-            // Resolve with the merged configurations
             resolve(mergedConfigs);
         });
     });
 }
 
 function addListeners() {
-    const events = ["click", "dragstart", "dragover", "drop", "dragend", "mouseup", "mousedown"];
+    const events = ["mousedown", "mousemove", "mouseup", "click"];
     events.forEach(event => document.addEventListener(event, handleEvent, true));
     document.addEventListener('contextmenu', () => {
         chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
@@ -45,37 +39,83 @@ function addListeners() {
             }
         });
     });
+    enableDragListeners();
 }
 
 function removeListeners() {
-    const events = ["dragstart", "dragover", "drop", "dragend", "mouseup"];
+    const events = ["mousedown", "mousemove", "mouseup", "click"];
     events.forEach(event => document.removeEventListener(event, handleEvent, true));
+    disableDragListeners();
 }
 
 function handleEvent(e) {
-    if (e.type === 'dragstart') {
-        preventEvent(e);
-        addListeners();
-        handleDragStart(e);
-    } else if (['dragover', 'drop', 'dragend', 'mouseup'].includes(e.type)) {
-        preventEvent(e);
+    if (e.type === 'mousedown') {
+        isMouseDown = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        mouseDownTime = Date.now();
+        isDragging = false;
+        hasPopupTriggered = false;
+    } else if (e.type === 'mousemove') {
+        if (!isMouseDown || hasPopupTriggered) return;
+        if (Date.now() >= mouseDownTime) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
+                isDragging = true;
+                enableDragListeners(); // Enable drag listeners when dragging starts
+                triggerPopup(e);
+                hasPopupTriggered = true;
+            }
+        }
+    } else if (['dragstart', 'dragover', 'drop', 'dragend'].includes(e.type)) {
+        e.preventDefault();
+        e.stopPropagation();
     } else if (e.type === 'click') {
         handleClick(e);
-    } else if (e.type === 'mousedown') {
-        hasPopupTriggered = false;
+    } else if (e.type === 'mouseup') {
+        isMouseDown = false;
+        if (e.target.tagName === 'A' && e.target.href) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            setTimeout(resetDraggingState, 0);
+        }
     }
 }
 
-function preventEvent(e) {
-    e.preventDefault();
-    e.stopPropagation();
+function handleMouseOver(e) {
+    if (isDragging && e.target.tagName === 'A') {
+        const rect = e.target.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
 }
 
-async function handleDragStart(e) {
+function enableDragListeners() {
+    const events = ["dragstart", "dragover", "drop", "dragend"];
+    events.forEach(event => document.addEventListener(event, handleEvent, true));
+    document.addEventListener("mouseover", handleMouseOver, true);
+}
+
+function disableDragListeners() {
+    const events = ["dragstart", "dragover", "drop", "dragend"];
+    events.forEach(event => document.removeEventListener(event, handleEvent, true));
+    document.removeEventListener("mouseover", handleMouseOver, true);
+}
+
+function resetDraggingState() {
+    isDragging = false;
+    hasPopupTriggered = false;
+}
+
+async function triggerPopup(e) {
     isDragging = true;
 
     const selectionText = window.getSelection().toString();
-    const data = await loadUserConfigs(['modifiedKey', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime']);
+    const data = await loadUserConfigs();
 
     const modifiedKey = data.modifiedKey || 'None';
     const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
@@ -85,37 +125,40 @@ async function handleDragStart(e) {
 
     if (modifiedKey !== 'None') {
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
-        if (!keyMap[modifiedKey]) return;
+        if (!keyMap[modifiedKey]) {
+            disableDragListeners();
+            return;
+        }
     }
 
     if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
-        preventEvent(e);
-        if (!hasPopupTriggered) {
-            if (blurEnabled) {
-                document.body.style.filter = `blur(${blurPx}px)`;
-                document.body.style.transition = `filter ${blurTime}s ease`;
-            }
+        hasPopupTriggered = true;
 
-            chrome.runtime.sendMessage({
-                linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
-                lastClientX: e.screenX,
-                lastClientY: e.screenY,
-                width: window.screen.availWidth,
-                height: window.screen.availHeight,
-                top: window.screen.availTop,
-                left: window.screen.availLeft
-            });
-            hasPopupTriggered = true;
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
+        if (blurEnabled) {
+            document.body.style.filter = `blur(${blurPx}px)`;
+            document.body.style.transition = `filter ${blurTime}s ease`;
         }
-
+        chrome.runtime.sendMessage({
+            linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
+            lastClientX: e.screenX,
+            lastClientY: e.screenY,
+            width: window.screen.availWidth,
+            height: window.screen.availHeight,
+            top: window.screen.availTop,
+            left: window.screen.availLeft
+        }, () => {
+            disableDragListeners(); // Disable drag listeners after sending message
+        });
     }
 }
 
 function handleClick(e) {
     if (isDragging) {
-        preventEvent(e);
-        isDragging = false;
+        e.preventDefault();
+        e.stopImmediatePropagation();
     }
 }
 
@@ -130,7 +173,7 @@ function isUrlDisabled(url, disabledUrls) {
 }
 
 async function checkUrlAndToggleListeners() {
-    const data = await loadUserConfigs(['disabledUrls', 'searchEngine']);
+    const data = await loadUserConfigs();
     const disabledUrls = data.disabledUrls || [];
     const currentUrl = window.location.href;
 
@@ -190,7 +233,7 @@ function sendMessageToBackground(message) {
 window.addEventListener('focus', async () => {
     try {
         document.body.style.filter = '';
-        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
+        const data = await loadUserConfigs();
         const message = data.closeWhenFocusedInitialWindow
             ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
             : { checkContextMenuItem: true };
