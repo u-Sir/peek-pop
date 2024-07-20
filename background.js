@@ -30,7 +30,6 @@ async function saveConfig(key, value) {
     configs[key] = value;
     return new Promise(resolve => {
         chrome.storage.local.set({ [key]: value }, () => {
-            console.log(`Config saved: ${key} = ${value}`);
             resolve();
         });
     });
@@ -196,15 +195,6 @@ async function handleLinkInPopup(linkUrl, tab, currentWindow) {
     dx = Math.max(lastScreenLeft, Math.min(dx, lastScreenLeft + lastScreenWidth - width));
     dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - height));
 
-    console.log("tryOpenAtMousePosition: " + tryOpenAtMousePosition )
-    console.log("lastScreenLeft: " + lastScreenLeft  )
-    console.log("lastScreenTop: " + lastScreenTop  )
-    console.log("lastScreenWidth: " + lastScreenWidth)
-    console.log("lastScreenHeight: " + lastScreenHeight)
-    console.log("dx - dy : " + dx + "-" + dy)
-    console.log("devicePixelRatio: " + devicePixelRatio)
-
-    
     const createData = {
         url: linkUrl,
         type: 'popup',
@@ -235,20 +225,3 @@ function isValidUrl(url) {
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls?.some(disabledUrl => url.startsWith(disabledUrl));
 }
-
-chrome.alarms.onAlarm.addListener(async alarm => {
-    const alarmName = alarm.name;
-    if (alarmName.startsWith('popupLinkAlarm_')) {
-        const data = await new Promise(resolve => chrome.storage.local.get(alarmName, resolve));
-        const { dx, dy, width, height, incognito, linkUrl, cookieStoreId } = data[alarmName];
-        const createData = { url: linkUrl, type: 'popup', width, height, left: dx, top: dy, incognito };
-        if (cookieStoreId) createData.cookieStoreId = cookieStoreId;
-
-        try {
-            await chrome.windows.create(createData);
-            await new Promise(resolve => chrome.storage.local.remove(alarmName, resolve));
-        } catch (error) {
-            console.error('Error creating popup window:', error);
-        }
-    }
-});
