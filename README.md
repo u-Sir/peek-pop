@@ -7,7 +7,7 @@ This plugin allows you to preview links by dragging them and search selected tex
 - Chrome/Edge:
   - [Download](https://github.com/u-Sir/drag-to-preview/releases) and extract to load it with developer mode.
   - [Install via Edge Web Store](https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop)
-  - [Install via Chrome Web Store](https://chromewebstore.google.com/detail/%E6%8B%96%E6%8B%BD%E9%A2%84%E8%A7%88/fjllepdpgikphekgbinhpdkalliiejdh)
+  - [Install via Chrome Web Store](https://chromewebstore.google.com/detail/fjllepdpgikphekgbinhpdkalliiejdh)
 
 # Features:
 
