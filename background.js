@@ -219,19 +219,3 @@ function isValidUrl(url) {
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls?.some(disabledUrl => url.startsWith(disabledUrl));
 }
-
-chrome.alarms.onAlarm.addListener(alarm => {
-    const alarmName = alarm.name;
-    if (alarmName.startsWith('popupLinkAlarm_')) {
-        chrome.storage.local.get(alarmName, data => {
-            const { dx, dy, width, height, incognito, linkUrl } = data[alarmName];
-            const createData = { url: linkUrl, type: 'popup', width, height, left: dx, top: dy, incognito };
-
-            chrome.windows.create(createData).then(() => {
-                chrome.storage.local.remove(alarmName);
-            }).catch(error => {
-                console.error('Error creating popup window:', error);
-            });
-        });
-    }
-});
