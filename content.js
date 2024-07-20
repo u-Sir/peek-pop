@@ -131,7 +131,7 @@ async function triggerPopup(e) {
         }
     }
 
-    if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
+    if (e.target.tagName === 'A' || e.target.closest('a') || (selectionText && searchEngine !== 'None')) {
         hasPopupTriggered = true;
 
         e.preventDefault();
@@ -142,7 +142,7 @@ async function triggerPopup(e) {
             document.body.style.transition = `filter ${blurTime}s ease`;
         }
         chrome.runtime.sendMessage({
-            linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
+            linkUrl: e.target.tagName === 'A' ? e.target.href : e.target.closest('a') ? e.target.closest('a').href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
             lastClientX: e.screenX,
             lastClientY: e.screenY,
             width: window.screen.availWidth,
