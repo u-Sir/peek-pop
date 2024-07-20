@@ -6,7 +6,7 @@
         "message": "Drag to Preview"
     },
     "extensionDescription": {
-        "message": "Adds context menu entry to open link in popup window"
+        "message": "Drag to preview links or search selected text"
     },
     "popupHeight": {
         "message": "Popup height (px)"
