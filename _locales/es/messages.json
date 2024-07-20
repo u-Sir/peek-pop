@@ -64,5 +64,14 @@
     },
     "blacklist": {
         "message": "Lista negra"
+    },
+    "dragSettings": {
+        "message": "Configuraciones de arrastre"
+    },
+    "dragMovePx": {
+        "message": "Activar cuando el movimiento de arrastre supere (px): "
+    },
+    "delayTime": {
+        "message": "Comprobar px de movimiento después de (ms): "
     }
 }

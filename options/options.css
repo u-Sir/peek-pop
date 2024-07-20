@@ -4,6 +4,14 @@
     cursor: pointer;
 }
 
+
+.option output {
+    margin-left: 4px;
+    vertical-align: sub; /* Aligns the output element vertically */
+    display: inline-block;  /* Ensures the output element respects the vertical alignment */
+    /* Add any additional styling you want for the output */
+}
+
 .option:hover {
     background-color: lightgrey;
     transition: background-color 50ms ease-in-out;
@@ -57,6 +65,14 @@ legend {
     .option {
         padding: 5px;
         cursor: pointer;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+    
+    .option output {
+        margin-left: 4px;
+        vertical-align: sub; /* Aligns the output element vertically */
+        display: inline-block;  /* Ensures the output element respects the vertical alignment */
         background-color: #1e1e1e;
         color: #e0e0e0;
     }

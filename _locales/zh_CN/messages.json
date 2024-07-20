@@ -64,5 +64,14 @@
     },
     "blacklist": {
         "message": "黑名单"
+    },
+    "dragSettings": {
+        "message": "拖拽设置"
+    },
+    "dragMovePx": {
+        "message": "拖拽超过 (px) 时响应: "
+    },
+    "delayTime": {
+        "message": "拖拽 (ms) 后检查拖拽距离: "
     }
 }

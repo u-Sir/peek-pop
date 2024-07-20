@@ -10,7 +10,8 @@ const configs = {
     'blurPx': 3,
     'blurTime': 1,
     'modifiedKey': 'None',
-    'originWindowId': ''
+    'originWindowId': '',
+    'dragMovePx': 0
 };
 
 let contextMenuCreated = false;
@@ -29,7 +30,6 @@ async function saveConfig(key, value) {
     configs[key] = value;
     return new Promise(resolve => {
         chrome.storage.local.set({ [key]: value }, () => {
-            console.log(`Config saved: ${key} = ${value}`);
             resolve();
         });
     });
@@ -182,14 +182,6 @@ function handleLinkInPopup(linkUrl, tab, currentWindow) {
         let dy = tryOpenAtMousePosition && lastClientY ? lastClientY - height / 2 : lastScreenTop + (lastScreenHeight - height) / 2;
         dx = Math.max(lastScreenLeft, Math.min(dx, lastScreenLeft + lastScreenWidth - width));
         dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - height));
-
-        console.log("tryOpenAtMousePosition: " + tryOpenAtMousePosition);
-        console.log("lastScreenLeft: " + lastScreenLeft);
-        console.log("lastScreenTop: " + lastScreenTop);
-        console.log("lastScreenWidth: " + lastScreenWidth);
-        console.log("lastScreenHeight: " + lastScreenHeight);
-        console.log("dx - dy : " + dx + "-" + dy);
-        console.log("devicePixelRatio: " + devicePixelRatio);
 
         const createData = {
             url: linkUrl,

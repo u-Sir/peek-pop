@@ -64,5 +64,14 @@
     },
     "blacklist": {
         "message": "Черный список"
+    },
+    "dragSettings": {
+        "message": "Настройки перетаскивания"
+    },
+    "dragMovePx": {
+        "message": "Триггер при перемещении больше (px): "
+    },
+    "delayTime": {
+        "message": "Проверить px перемещения после (мс): "
     }
 }

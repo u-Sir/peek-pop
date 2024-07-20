@@ -51,7 +51,7 @@
         "message": "Custom (use %s as selected text)"
     },
     "searchDisable": {
-        "message": "Disable search in popup window"
+        "message": "Disable"
     },
     "noneKey": {
         "message": "None"
@@ -64,5 +64,14 @@
     },
     "blacklist": {
         "message": "Blacklist"
+    },
+    "dragSettings": {
+        "message": "Dragging Settings"
+    },
+    "dragMovePx": {
+        "message": "Trigger when drag move over (px): "
+    },
+    "delayTime": {
+        "message": "Check move px after (ms): "
     }
 }

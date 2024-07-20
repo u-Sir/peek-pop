@@ -2,6 +2,7 @@ let isMouseDown = false;
 let startX, startY, mouseDownTime;
 let isDragging = false;
 let hasPopupTriggered = false;
+let moveChecked = false;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -14,7 +15,9 @@ const configs = {
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
-    'modifiedKey': 'None'
+    'modifiedKey': 'None',
+    'dragMovePx': 0,
+    'delayTime': 0
 };
 
 async function loadUserConfigs() {
@@ -25,6 +28,10 @@ async function loadUserConfigs() {
             resolve(mergedConfigs);
         });
     });
+}
+
+async function initializeConfigs() {
+    await loadUserConfigs();
 }
 
 function addListeners() {
@@ -48,30 +55,52 @@ function removeListeners() {
     disableDragListeners();
 }
 
-function handleEvent(e) {
+async function handleEvent(e) {
     if (e.type === 'mousedown') {
+        // Check if the target is an image or if the image is wrapped in a link and return early if it is
+        if (e.target.tagName === 'IMG' || (e.target.closest('a') && e.target.closest('a').querySelector('img'))) {
+            return;
+        }
+        
         isMouseDown = true;
         startX = e.clientX;
         startY = e.clientY;
         mouseDownTime = Date.now();
         isDragging = false;
         hasPopupTriggered = false;
+        moveChecked = false;
+
     } else if (e.type === 'mousemove') {
         if (!isMouseDown || hasPopupTriggered) return;
-        if (Date.now() >= mouseDownTime) {
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
 
-            if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
-                isDragging = true;
-                enableDragListeners(); // Enable drag listeners when dragging starts
-                triggerPopup(e);
-                hasPopupTriggered = true;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        const moveTime = Date.now() - mouseDownTime;
+
+        // Load configurations dynamically
+        const currentConfigs = await loadUserConfigs();
+
+        // Debug logs to check values
+        console.log(`dx: ${dx}, dy: ${dy}, moveTime: ${moveTime}, dragMovePx: ${currentConfigs.dragMovePx}, delayTime: ${currentConfigs.delayTime}`);
+
+        // Check if the delay time has passed and if the drag distance exceeds the threshold
+        if (moveTime > currentConfigs.delayTime) {
+            if (Math.abs(dx) > currentConfigs.dragMovePx || Math.abs(dy) > currentConfigs.dragMovePx) {
+                if (!moveChecked) {
+                    isDragging = true;
+                    enableDragListeners(); // Enable drag listeners when dragging starts
+                    await triggerPopup(e);
+                    hasPopupTriggered = true;
+                    moveChecked = true;
+                }
             }
         }
     } else if (['dragstart', 'dragover', 'drop', 'dragend'].includes(e.type)) {
-        e.preventDefault();
-        e.stopPropagation();
+        // Only prevent default if not dealing with an image or its parent link
+        if (!(e.target.tagName === 'IMG' || (e.target.closest('a') && e.target.closest('a').querySelector('img')))) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     } else if (e.type === 'click') {
         handleClick(e);
     } else if (e.type === 'mouseup') {
@@ -83,6 +112,8 @@ function handleEvent(e) {
         }
     }
 }
+
+
 
 function handleMouseOver(e) {
     if (isDragging && e.target.tagName === 'A') {
@@ -112,11 +143,10 @@ function resetDraggingState() {
 }
 
 async function triggerPopup(e) {
-    isDragging = true;
+    console.log("Triggering popup...");
 
     const selectionText = window.getSelection().toString();
     const data = await loadUserConfigs();
-
     const modifiedKey = data.modifiedKey || 'None';
     const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
     const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
@@ -127,11 +157,12 @@ async function triggerPopup(e) {
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
         if (!keyMap[modifiedKey]) {
             disableDragListeners();
+            console.log("Modified key not pressed. Popup not triggered.");
             return;
         }
     }
 
-    if (e.target.tagName === 'A' || e.target.closest('a') || (selectionText && searchEngine !== 'None')) {
+    if (e.target.closest('a') || e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
         hasPopupTriggered = true;
 
         e.preventDefault();
@@ -141,6 +172,8 @@ async function triggerPopup(e) {
             document.body.style.filter = `blur(${blurPx}px)`;
             document.body.style.transition = `filter ${blurTime}s ease`;
         }
+
+        console.time("Popup Send Message");
         chrome.runtime.sendMessage({
             linkUrl: e.target.tagName === 'A' ? e.target.href : e.target.closest('a') ? e.target.closest('a').href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
             lastClientX: e.screenX,
@@ -150,10 +183,15 @@ async function triggerPopup(e) {
             top: window.screen.availTop,
             left: window.screen.availLeft
         }, () => {
+            console.timeEnd("Popup Send Message");
             disableDragListeners(); // Disable drag listeners after sending message
+            console.log("Popup triggered and message sent.");
         });
+    } else {
+        console.log("Popup conditions not met.");
     }
 }
+
 
 function handleClick(e) {
     if (isDragging) {
@@ -189,12 +227,14 @@ async function checkUrlAndToggleListeners() {
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-    if (namespace === 'local' && (changes.disabledUrls || changes.searchEngine)) {
+    if (namespace === 'local' && (changes.disabledUrls || changes.searchEngine || changes.dragMovePx || changes.delayTime)) {
         await checkUrlAndToggleListeners();
     }
 });
 
-checkUrlAndToggleListeners();
+initializeConfigs().then(() => {
+    checkUrlAndToggleListeners();
+});
 
 let lastUrl = location.href;
 new MutationObserver(() => {
