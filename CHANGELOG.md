@@ -1,3 +1,7 @@
+0.0.22
+- added drag settings.
+- ensure only response on links or selected text
+
 0.0.21
 - ensure that popup window centered based on current screen when tryOpenAtMousePosition is false.
 - align the checkboxes/radio buttons with their respective labels properly on options page.
