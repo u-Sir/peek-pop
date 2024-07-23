@@ -73,5 +73,14 @@
     },
     "delayTime": {
         "message": "Comprobar px de movimiento después de (ms): "
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "Persistir el tamaño y la posición del popup, ignorando los ajustes a continuación"
+    },
+    "normal": {
+        "message": "normal"
+    },
+    "windowType": {
+        "message": "Tipo de ventana emergente"
     }
 }

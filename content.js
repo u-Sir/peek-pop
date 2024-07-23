@@ -57,6 +57,14 @@ function removeListeners() {
 
 async function handleEvent(e) {
     if (e.type === 'mousedown') {
+        chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
+            if (chrome.runtime.lastError) {
+                console.error("Runtime error:", chrome.runtime.lastError);
+            } else {
+                console.log("Background script responded:", response);
+            }
+        });
+        
         // Check if the target is an image or if the image is wrapped in a link and return early if it is
         if (e.target.tagName === 'IMG' || (e.target.closest('a') && e.target.closest('a').querySelector('img'))) {
             return;
@@ -105,7 +113,7 @@ async function handleEvent(e) {
         handleClick(e);
     } else if (e.type === 'mouseup') {
         isMouseDown = false;
-        if (e.target.tagName === 'A' && e.target.href) {
+        if ((e.target.tagName === 'A' && e.target.href) || e.target.closest('a') ) {
             e.preventDefault();
             e.stopImmediatePropagation();
             setTimeout(resetDraggingState, 0);
@@ -116,13 +124,16 @@ async function handleEvent(e) {
 
 
 function handleMouseOver(e) {
-    if (isDragging && e.target.tagName === 'A') {
-        const rect = e.target.getBoundingClientRect();
-        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
-            e.preventDefault();
-            e.stopPropagation();
+    if (isDragging) {
+        if (e.target.tagName === 'A' || e.target.closest('a')) {
+            const rect = e.target.getBoundingClientRect();
+            if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
         }
     }
+    
 }
 
 function enableDragListeners() {

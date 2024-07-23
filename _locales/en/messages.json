@@ -73,5 +73,14 @@
     },
     "delayTime": {
         "message": "Check move px after (ms): "
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "Persist popup size and position, ignoring below settings"
+    },
+    "normal": {
+        "message": "normal"
+    },
+    "windowType": {
+        "message": "Popup window type"
     }
 }
