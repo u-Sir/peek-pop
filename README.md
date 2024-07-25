@@ -8,11 +8,5 @@ Extension provides several options for popup height/width,  whether to close the
 Privacy:
 This extension doesn't collect any private data. It requires access to currently open page in order to get mouse coordinates when popup window was opened. 
 "Storage" for save configs. 
-"Alarms" for set timeout in the scripts. 
 "Tabs" for get current url check if is in disabled URLs.
 "Cookies" for get current container in Firefox.
-
-
-<img src="./screenshots/popup-window.png">
-
-<img src="./screenshots/options.png">
