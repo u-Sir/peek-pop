@@ -264,14 +264,18 @@ function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosi
 
 // Function to create a popup window
 function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject) {
-    chrome.windows.create({
+    const createData = {
         url: linkUrl,
         type: windowType,
         top: parseInt(top),
         left: parseInt(left),
         width: parseInt(width),
-        height: parseInt(height)
-    }, (newWindow) => {
+        height: parseInt(height),
+        incognito: tab.incognito,
+        ...(enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default' ? { cookieStoreId: tab.cookieStoreId } : {})
+    };
+
+    chrome.windows.create(createData, (newWindow) => {
         if (chrome.runtime.lastError) {
             console.error('Error creating popup window:', chrome.runtime.lastError);
             reject(chrome.runtime.lastError);
