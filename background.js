@@ -43,8 +43,7 @@ async function saveConfig(key, value) {
 function onMenuItemClicked(info, tab) {
     if (info.menuItemId === 'sendPageBack') {
         loadUserConfigs().then(userConfigs => {
-            const { popupWindowsInfo } = userConfigs;
-
+            const { popupWindowsInfo, enableContainerIdentify } = userConfigs;
             if (popupWindowsInfo && Object.keys(popupWindowsInfo).length > 0) {
                 // Iterate through popupWindowsInfo to find the original window ID
                 let originalWindowId = null;
@@ -57,6 +56,9 @@ function onMenuItemClicked(info, tab) {
 
                 if (originalWindowId) {
                     const createData = { windowId: parseInt(originalWindowId), url: tab.url };
+                    if (enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default') {
+                        createData.cookieStoreId = tab.cookieStoreId;
+                    }
                     chrome.tabs.create(createData, () => {
                         chrome.windows.get(tab.windowId, window => {
                             if (window.id) chrome.windows.remove(window.id);
@@ -364,7 +366,6 @@ function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => url.includes(disabledUrl));
 }
 
-// Listener for updating popup window bounds
 // Listener for updating popup window bounds
 function windowUpdateListener(updatedWindow) {
     chrome.storage.local.get('popupWindowsInfo', (result) => {
