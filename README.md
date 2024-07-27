@@ -16,7 +16,9 @@ This plugin allows you to preview links by dragging them and search selected tex
 - Supports cross-site previews.
 - Syncs login status with the browser.
 - Automatically closes the preview when clicking on the original page.
-- Basic support for browser's native shortcuts such as forward, backward, and reader mode.
+- Automatically remember the popup window position and size.***(On Firefox, you need to click/scroll on the popup page)***
+- Support all browser's native shortcuts such as forward, backward, and reader mode.(you need to set popup window type to 'Normal')
+- Customizable popup window style via userChrome.css on ***Firefox***.(you need to set popup window type to 'Normal')
 - Supports returning the previewed page to display in the original window.
 - Customizable blur effect.
 - Drag action triggered only when modified key is held down (configurable).
@@ -29,8 +31,7 @@ This plugin allows you to preview links by dragging them and search selected tex
 # Screenshots
 ## Firefox
 ![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/27f678c1-3f2d-449e-b37b-f440df3d9dc8)
-
-![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/75c3fbae-b9ed-4c7b-a418-704944bb9b65)
+![image](https://github.com/user-attachments/assets/cd9da673-ad81-4f87-b9d0-11283d6c3dc5)
 
 ## Chrome/Edge
 ![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/64f16d7d-1600-42fa-9662-67028c4d4107)
