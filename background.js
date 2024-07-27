@@ -43,23 +43,33 @@ async function saveConfig(key, value) {
 function onMenuItemClicked(info, tab) {
     if (info.menuItemId === 'sendPageBack') {
         loadUserConfigs().then(userConfigs => {
-            const { originWindowId, enableContainerIdentify } = userConfigs;
+            const { popupWindowsInfo } = userConfigs;
 
-            if (originWindowId) {
-                const createData = { windowId: originWindowId, url: tab.url };
-                if (enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default') {
-                    createData.cookieStoreId = tab.cookieStoreId;
+            if (popupWindowsInfo && Object.keys(popupWindowsInfo).length > 0) {
+                // Iterate through popupWindowsInfo to find the original window ID
+                let originalWindowId = null;
+                for (const originWindowId in popupWindowsInfo) {
+                    if (popupWindowsInfo[originWindowId][tab.windowId]) {
+                        originalWindowId = originWindowId;
+                        break;
+                    }
                 }
-                chrome.tabs.create(createData, () => {
-                    chrome.windows.get(tab.windowId, window => {
-                        if (window.id) chrome.windows.remove(window.id);
+
+                if (originalWindowId) {
+                    const createData = { windowId: parseInt(originalWindowId), url: tab.url };
+                    chrome.tabs.create(createData, () => {
+                        chrome.windows.get(tab.windowId, window => {
+                            if (window.id) chrome.windows.remove(window.id);
+                        });
+                        chrome.contextMenus.remove('sendPageBack');
+                        contextMenuCreated = false;
+                        chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                     });
-                    chrome.contextMenus.remove('sendPageBack');
-                    contextMenuCreated = false;
-                    chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
-                });
+                } else {
+                    console.error('No original window ID found for current window ID in popupWindowsInfo.');
+                }
             } else {
-                console.error('No original window ID found in storage.');
+                console.error('popupWindowsInfo is empty or not properly structured.');
             }
         });
     }
