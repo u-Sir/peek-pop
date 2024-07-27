@@ -1,3 +1,8 @@
+0.0.22
+- improved modified key related logic.
+- added option to remember the popup window position and size.(Need to click/scroll on popup window page)
+- added option to set popup window type. Now you can do anything if set it to 'Normal'.
+
 0.0.21
 - ensure that popup window centered based on current screen when tryOpenAtMousePosition is false.
 - align the checkboxes/radio buttons with their respective labels properly on options page.
