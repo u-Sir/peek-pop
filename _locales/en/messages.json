@@ -64,5 +64,14 @@
     },
     "blacklist": {
         "message": "Blacklist"
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "Persist popup size and position(just click/scroll on popup window to save), ignoring below settings"
+    },
+    "normal": {
+        "message": "Normal"
+    },
+    "windowType": {
+        "message": "Popup window type:"
     }
 }

@@ -64,6 +64,15 @@
     },
     "blacklist": {
         "message": "黑名单"
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "保持弹出窗口的大小和位置（只需在弹出窗口中点击/滚动即可保存），忽略以下相关设置"
+    },
+    "normal": {
+        "message": "普通"
+    },
+    "windowType": {
+        "message": "弹出窗口类型："
     }
 }
 

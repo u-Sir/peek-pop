@@ -6,7 +6,7 @@
         "message": "Drag to Preview"
     },
     "extensionDescription": {
-        "message": "Agrega una entrada de menú contextual para abrir un enlace en una ventana emergente"
+        "message": "Arrastra para previsualizar enlaces o buscar texto seleccionado"
     },
     "popupHeight": {
         "message": "Altura emergente (px)"
@@ -64,5 +64,14 @@
     },
     "blacklist": {
         "message": "Lista negra"
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "Conservar tamaño y posición de la ventana emergente (solo haz clic/desplázate en la ventana emergente para guardar), ignorando los ajustes a continuación"
+    },
+    "normal": {
+        "message": "normal"
+    },
+    "windowType": {
+        "message": "Tipo de ventana emergente:"
     }
 }

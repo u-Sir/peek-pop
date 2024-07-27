@@ -6,12 +6,15 @@ const configs = {
     'popupWidth': 1000,
     'searchEngine': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],
-    'enableContainerIdentify': true,
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
     'modifiedKey': 'None',
-    'originWindowId': ''
+    'originWindowId': '',
+    'rememberPopupSizeAndPosition': false,
+    'windowType': 'popup',
+    'enableContainerIdentify': true,
+    'popupWindowsInfo': {}
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -38,6 +41,8 @@ function setupPage(userConfigs) {
     setInputLabel('custom', 'custom');
     setInputLabel('searchDisable', 'searchDisable');
     setInputLabel('noneKey', 'noneKey');
+    setInputLabel('normal', 'normal');
+    setInputLabel('windowType', 'windowType');
 
     // Initialize input elements
     Object.keys(configs).forEach(key => {
@@ -58,6 +63,9 @@ function setupPage(userConfigs) {
 
     // Setup search engine selection
     setupSearchEngineSelection(userConfigs.searchEngine);
+
+    // Setup window type selection
+    setupWindowTypeSelection(userConfigs.windowType);
 }
 
 function setTextContent(elementId, messageId) {
@@ -174,12 +182,27 @@ function setupSearchEngineSelection(searchEngine) {
     }
 }
 
+function setupWindowTypeSelection(windowType) {
+    windowType = windowType ?? 'popup';
+    document.querySelector(`input[name="windowType"][value="${windowType}"]`).checked = true;
+
+    document.querySelectorAll('input[name="windowType"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newWindowType = event.target.value;
+            chrome.storage.local.set({ windowType: newWindowType }, () => {
+                configs.windowType = newWindowType;
+            });
+        });
+    });
+}
+
 function loadUserConfigs(callback) {
     const keys = Object.keys(configs);
     chrome.storage.local.get(keys, function (userConfigs) {
         userConfigs.searchEngine = userConfigs.searchEngine ?? configs.searchEngine;
         userConfigs.modifiedKey = userConfigs.modifiedKey ?? configs.modifiedKey;
-        
+        userConfigs.windowType = userConfigs.windowType ?? configs.windowType;
+
         keys.forEach(key => {
             if (userConfigs[key] !== null && userConfigs[key] !== undefined) {
                 configs[key] = userConfigs[key];

@@ -1,4 +1,5 @@
 let isDragging = false;
+
 const configs = {
     'closeWhenFocusedInitialWindow': true,
     'tryOpenAtMousePosition': false,
@@ -11,12 +12,13 @@ const configs = {
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
-    'modifiedKey': 'None'
+    'modifiedKey': 'None',
+    'popupWindowsInfo': {}
 };
 
-async function loadUserConfigs() {
+async function loadUserConfigs(keys = Object.keys(configs)) {
     return new Promise(resolve => {
-        chrome.storage.local.get(Object.keys(configs), storedConfigs => {
+        chrome.storage.local.get(keys, storedConfigs => {
             const mergedConfigs = { ...configs, ...storedConfigs };
             Object.assign(configs, mergedConfigs);
             resolve(mergedConfigs);
@@ -27,31 +29,45 @@ async function loadUserConfigs() {
 function addListeners() {
     const events = ["click", "dragstart", "dragover", "drop", "dragend", "mouseup"];
     events.forEach(event => document.addEventListener(event, handleEvent, true));
-    document.addEventListener('contextmenu', () => {
-        chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
-            if (chrome.runtime.lastError) {
-                console.error("Runtime error:", chrome.runtime.lastError);
-            } else {
-                console.log("Background script responded:", response);
-            }
-        });
-    });
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('mousedown', handleContextMenu);
+    document.addEventListener('scroll', handleContextMenu);
 }
 
 function removeListeners() {
-    const events = ["dragstart", "dragover", "drop", "dragend", "mouseup"];
+    const events = ["click", "dragstart", "dragover", "drop", "dragend", "mouseup"];
     events.forEach(event => document.removeEventListener(event, handleEvent, true));
+    document.removeEventListener('contextmenu', handleContextMenu);
+    document.removeEventListener('mousedown', handleContextMenu);
+    document.removeEventListener('scroll', handleContextMenu);
+}
+
+function handleContextMenu() {
+    chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
+        if (chrome.runtime.lastError) {
+            console.error("Runtime error:", chrome.runtime.lastError);
+        } else {
+            // console.log("Background script responded:", response);
+        }
+    });
 }
 
 function handleEvent(e) {
     if (e.type === 'dragstart') {
-        handleDragStart(e);
+        chrome.storage.local.get('modifiedKey', (data) => {
+            const modifiedKey = data.modifiedKey || 'None';
+            const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+            if (modifiedKey === 'None' || keyMap[modifiedKey]) {
+                handleDragStart(e);
+            }
 
-    } else if (['dragover', 'drop', 'dragend'].includes(e.type)) {
+        });
+
+    } else if (['dragover', 'drop', 'dragend'].includes(e.type) && isDragging) {
         preventEvent(e);
     } else if (e.type === 'click') {
         handleClick(e);
-    } else if (e.type === 'mouseup') {
+    } else if (e.type === 'mouseup' && isDragging) {
         if (e.target.tagName === 'A' && e.target.href) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -59,29 +75,26 @@ function handleEvent(e) {
     }
 }
 
-function preventEvent(e) {
+
+async function preventEvent(e) {
     e.preventDefault();
     e.stopPropagation();
 }
 
 async function handleDragStart(e) {
-    isDragging = true;
-
     const selectionText = window.getSelection().toString();
-    const data = await loadUserConfigs(['modifiedKey', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime']);
 
-    const modifiedKey = data.modifiedKey || 'None';
-    const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
-    const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-    const blurPx = parseFloat(data.blurPx || 3);
-    const blurTime = parseFloat(data.blurTime || 1);
+    if (e.target || selectionText) {
+        isDragging = true;
 
-    if (modifiedKey !== 'None') {
-        const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
-        if (!keyMap[modifiedKey]) return;
-    }
+        const data = await loadUserConfigs(['searchEngine', 'blurEnabled', 'blurPx', 'blurTime']);
+        const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
+        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+        const blurPx = parseFloat(data.blurPx || 3);
+        const blurTime = parseFloat(data.blurTime || 1);
+        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+        const linkUrl = linkElement ? linkElement.href : searchEngine.replace('%s', encodeURIComponent(selectionText));
 
-    if (e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
@@ -90,8 +103,10 @@ async function handleDragStart(e) {
             document.body.style.transition = `filter ${blurTime}s ease`;
         }
 
+
+
         chrome.runtime.sendMessage({
-            linkUrl: e.target.tagName === 'A' ? e.target.href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
+            linkUrl: linkUrl,
             lastClientX: e.screenX,
             lastClientY: e.screenY,
             width: window.screen.availWidth,
@@ -100,6 +115,7 @@ async function handleDragStart(e) {
             left: window.screen.availLeft
         });
     }
+
 }
 
 function handleClick(e) {
@@ -107,7 +123,6 @@ function handleClick(e) {
         preventEvent(e);
         isDragging = false;
     }
-
 }
 
 function isUrlDisabled(url, disabledUrls) {
@@ -167,7 +182,7 @@ function sendMessageToBackground(message) {
                 console.error("Runtime error:", chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
             } else {
-                console.log("Background script responded:", response);
+                // console.log("Background script responded:", response);
                 if (response && response.status) {
                     resolve(response);
                 } else {
@@ -187,7 +202,7 @@ window.addEventListener('focus', async () => {
             : { checkContextMenuItem: true };
 
         const response = await sendMessageToBackground(message);
-        console.log("Background script responded:", response);
+        // console.log("Background script responded:", response);
     } catch (error) {
         console.error("Error sending message to background script:", error);
     }
