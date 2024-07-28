@@ -83,8 +83,10 @@ async function preventEvent(e) {
 
 async function handleDragStart(e) {
     const selectionText = window.getSelection().toString();
+    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+    const linkUrl = linkElement ? linkElement.href : null;
 
-    if (e.target || selectionText.trim()) {
+    if (linkUrl || selectionText.trim()) {
         isDragging = true;
 
         const data = await loadUserConfigs(['searchEngine', 'blurEnabled', 'blurPx', 'blurTime']);
@@ -92,8 +94,7 @@ async function handleDragStart(e) {
         const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
         const blurPx = parseFloat(data.blurPx || 3);
         const blurTime = parseFloat(data.blurTime || 1);
-        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-        const linkUrl = linkElement ? linkElement.href : searchEngine.replace('%s', encodeURIComponent(selectionText));
+        const finalLinkUrl = linkUrl || searchEngine.replace('%s', encodeURIComponent(selectionText));
 
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -106,7 +107,7 @@ async function handleDragStart(e) {
 
 
         chrome.runtime.sendMessage({
-            linkUrl: linkUrl,
+            linkUrl: finalLinkUrl,
             lastClientX: e.screenX,
             lastClientY: e.screenY,
             width: window.screen.availWidth,
