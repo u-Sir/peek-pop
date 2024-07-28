@@ -262,7 +262,6 @@ function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosi
 
 // Function to create a popup window
 function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
-    chrome.windows.update(originWindowId, { focused: false });
     chrome.windows.create({
         url: linkUrl,
         type: windowType,
