@@ -207,18 +207,14 @@ chrome.storage.local.get('lastUrl', (data) => {
 });
 
 window.addEventListener('focus', async () => {
-    console.log(`Event: focus changed, Timestamp: ${new Date().toISOString()}`)
     document.body.style.filter = '';
     try {
         const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
         const message = data.closeWhenFocusedInitialWindow
             ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
             : { checkContextMenuItem: true };
-
-        console.log(message);
-
         chrome.runtime.sendMessage(message);
     } catch (error) {
-        console.error('Error loading user configs:', error);
+        // console.error('Error loading user configs:', error);
     }
 });
