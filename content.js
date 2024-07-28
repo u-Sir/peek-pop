@@ -84,7 +84,7 @@ async function preventEvent(e) {
 async function handleDragStart(e) {
     const selectionText = window.getSelection().toString();
 
-    if (e.target || selectionText) {
+    if (e.target || selectionText.trim()) {
         isDragging = true;
 
         const data = await loadUserConfigs(['searchEngine', 'blurEnabled', 'blurPx', 'blurTime']);
