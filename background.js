@@ -270,7 +270,8 @@ function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, o
         left: parseInt(left),
         width: parseInt(width),
         height: parseInt(height),
-        focused: true
+        focused: true,
+        incognito: tab.incognito
     }, (newWindow) => {
         if (chrome.runtime.lastError) {
             console.error('Error creating popup window:', chrome.runtime.lastError);
