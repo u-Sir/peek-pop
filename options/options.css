@@ -17,6 +17,13 @@
     transition: background-color 50ms ease-in-out;
     border-radius: 4px;
 }
+.window-type {
+    margin-left: 3px;
+}
+
+.window-type label {
+    margin-left: 3px; /* Adjust the margin as needed */
+}
 
 /* Align text with radio buttons and checkboxes */
 input[type="radio"],

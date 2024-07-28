@@ -65,22 +65,13 @@
     "blacklist": {
         "message": "Blacklist"
     },
-    "dragSettings": {
-        "message": "Dragging Settings"
-    },
-    "dragMovePx": {
-        "message": "Trigger when drag move over (px): "
-    },
-    "delayTime": {
-        "message": "Check move px after (ms): "
-    },
     "rememberPopupSizeAndPosition": {
         "message": "Persist popup size and position, ignoring below settings"
     },
     "normal": {
-        "message": "normal"
+        "message": "Normal"
     },
     "windowType": {
-        "message": "Popup window type"
+        "message": "Popup window type:"
     }
 }

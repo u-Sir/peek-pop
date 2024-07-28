@@ -65,15 +65,6 @@
     "blacklist": {
         "message": "Lista negra"
     },
-    "dragSettings": {
-        "message": "Configuraciones de arrastre"
-    },
-    "dragMovePx": {
-        "message": "Activar cuando el movimiento de arrastre supere (px): "
-    },
-    "delayTime": {
-        "message": "Comprobar px de movimiento después de (ms): "
-    },
     "rememberPopupSizeAndPosition": {
         "message": "Persistir el tamaño y la posición del popup, ignorando los ajustes a continuación"
     },
@@ -81,6 +72,6 @@
         "message": "normal"
     },
     "windowType": {
-        "message": "Tipo de ventana emergente"
+        "message": "Tipo de ventana emergente:"
     }
 }

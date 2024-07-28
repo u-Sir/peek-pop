@@ -11,10 +11,9 @@ const configs = {
     'blurTime': 1,
     'modifiedKey': 'None',
     'originWindowId': '',
-    'dragMovePx': 0,
-    'delayTime': 0,
     'rememberPopupSizeAndPosition': false,
-    'windowType': 'popup' // Default value for windowType
+    'windowType': 'popup',
+    'popupWindowsInfo': {}
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -32,8 +31,7 @@ function setupPage(userConfigs) {
         { id: 'searchEngineSelection', messageId: 'searchEngineSelection' },
         { id: 'popupSettings', messageId: 'popupSettings' },
         { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
-        { id: 'blacklist', messageId: 'blacklist' },
-        { id: 'dragSettings', messageId: 'dragSettings' }
+        { id: 'blacklist', messageId: 'blacklist' }
     ];
 
     elementsToTranslate.forEach(({ id, messageId }) => setTextContent(id, messageId));
@@ -58,8 +56,6 @@ function setupPage(userConfigs) {
     initializeTextarea('disabledUrls', userConfigs);
     initializeSlider('blurPx', 3);
     initializeSlider('blurTime', 1);
-    initializeSlider('dragMovePx', 0);
-    initializeSlider('delayTime', 0);
 
     // Set modified key
     setModifiedKey(userConfigs.modifiedKey);

@@ -10,25 +10,6 @@
 
     <p>
     <fieldset>
-        <legend id="dragSettings"></legend>
-
-        <div class='option'>
-            <label for="delayTime"></label><output for="delayTime" id="delayTimeOutput"></output>
-            <br>
-            <input type="range" id="delayTime" name="delayTime" min="0" max="2000" step="1">
-        </div>
-
-        <div class='option'>
-            <label for="dragMovePx"></label><output for="dragMovePx" id="dragMovePxOutput"></output>
-            <br>
-            <input type="range" id="dragMovePx" name="dragMovePx" min="0" max="200" step="0.1">
-        </div>
-
-    </fieldset>
-    </p>
-
-    <p>
-    <fieldset>
         <legend id="keySelection"></legend>
 
         <input type="radio" id="ctrlKey" name="modifiedKey" value="Ctrl" />
@@ -114,14 +95,13 @@
     <fieldset>
         <legend id="popupSettings"></legend>
 
-        <div>
+        <div class="window-type">
             <label for="windowType">Popup window type</label>
-            <br>
             <input type="radio" id="normal" name="windowType" value="normal" />
-            <label for="normal">normal</label>
+            <label for="normal">Normal</label>
 
             <input type="radio" id="popup" name="windowType" value="popup" />
-            <label for="popup">popup</label>
+            <label for="popup">Popup</label>
         </div>
 
         <div class='option'>

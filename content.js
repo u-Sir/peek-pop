@@ -1,8 +1,6 @@
-let isMouseDown = false;
-let startX, startY, mouseDownTime;
 let isDragging = false;
 let hasPopupTriggered = false;
-let moveChecked = false;
+let isMouseDown = false;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -16,13 +14,12 @@ const configs = {
     'blurPx': 3,
     'blurTime': 1,
     'modifiedKey': 'None',
-    'dragMovePx': 0,
-    'delayTime': 0
+    'popupWindowsInfo': {}
 };
 
-async function loadUserConfigs() {
+async function loadUserConfigs(keys = Object.keys(configs)) {
     return new Promise(resolve => {
-        chrome.storage.local.get(Object.keys(configs), storedConfigs => {
+        chrome.storage.local.get(keys, storedConfigs => {
             const mergedConfigs = { ...configs, ...storedConfigs };
             Object.assign(configs, mergedConfigs);
             resolve(mergedConfigs);
@@ -30,122 +27,73 @@ async function loadUserConfigs() {
     });
 }
 
-async function initializeConfigs() {
-    await loadUserConfigs();
-}
-
 function addListeners() {
-    const events = ["mousedown", "mousemove", "mouseup", "click"];
-    events.forEach(event => document.addEventListener(event, handleEvent, true));
-    document.addEventListener('contextmenu', () => {
-        chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
-            if (chrome.runtime.lastError) {
-                console.error("Runtime error:", chrome.runtime.lastError);
-            } else {
-                console.log("Background script responded:", response);
-            }
-        });
-    });
-    enableDragListeners();
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('scroll', handleContextMenu);
 }
 
 function removeListeners() {
-    const events = ["mousedown", "mousemove", "mouseup", "click"];
+    const events = ["click", "dragstart", "dragover", "drop"];
     events.forEach(event => document.removeEventListener(event, handleEvent, true));
-    disableDragListeners();
+    document.removeEventListener('contextmenu', handleContextMenu);
+    document.removeEventListener('mousedown', handleMouseDown);
+    document.removeEventListener('scroll', handleContextMenu);
 }
 
-async function handleEvent(e) {
-    if (e.type === 'mousedown') {
-        chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
-            if (chrome.runtime.lastError) {
-                console.error("Runtime error:", chrome.runtime.lastError);
-            } else {
-                console.log("Background script responded:", response);
-            }
-        });
-        
-        // Check if the target is an image or if the image is wrapped in a link and return early if it is
-        if (e.target.tagName === 'IMG' || (e.target.closest('a') && e.target.closest('a').querySelector('img'))) {
-            return;
+function handleContextMenu() {
+    chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
+        if (chrome.runtime.lastError) {
+            console.error("Runtime error:", chrome.runtime.lastError);
+        } else {
+            // console.log("Background script responded:", response);
         }
-        
-        isMouseDown = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        mouseDownTime = Date.now();
-        isDragging = false;
-        hasPopupTriggered = false;
-        moveChecked = false;
-
-    } else if (e.type === 'mousemove') {
-        if (!isMouseDown || hasPopupTriggered) return;
-
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        const moveTime = Date.now() - mouseDownTime;
-
-        // Load configurations dynamically
-        const currentConfigs = await loadUserConfigs();
-
-        // Debug logs to check values
-        console.log(`dx: ${dx}, dy: ${dy}, moveTime: ${moveTime}, dragMovePx: ${currentConfigs.dragMovePx}, delayTime: ${currentConfigs.delayTime}`);
-
-        // Check if the delay time has passed and if the drag distance exceeds the threshold
-        if (moveTime > currentConfigs.delayTime) {
-            if (Math.abs(dx) > currentConfigs.dragMovePx || Math.abs(dy) > currentConfigs.dragMovePx) {
-                if (!moveChecked) {
-                    isDragging = true;
-                    enableDragListeners(); // Enable drag listeners when dragging starts
-                    await triggerPopup(e);
-                    hasPopupTriggered = true;
-                    moveChecked = true;
-                }
-            }
-        }
-    } else if (['dragstart', 'dragover', 'drop', 'dragend'].includes(e.type)) {
-        // Only prevent default if not dealing with an image or its parent link
-        if (!(e.target.tagName === 'IMG' || (e.target.closest('a') && e.target.closest('a').querySelector('img')))) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    } else if (e.type === 'click') {
-        handleClick(e);
-    } else if (e.type === 'mouseup') {
-        isMouseDown = false;
-        if ((e.target.tagName === 'A' && e.target.href) || e.target.closest('a') ) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            setTimeout(resetDraggingState, 0);
-        }
-    }
+    });
 }
 
-
-
-function handleMouseOver(e) {
-    if (isDragging) {
-        if (e.target.tagName === 'A' || e.target.closest('a')) {
-            const rect = e.target.getBoundingClientRect();
-            if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        }
-    }
-    
-}
-
-function enableDragListeners() {
-    const events = ["dragstart", "dragover", "drop", "dragend"];
+async function handleMouseDown() {
+    document.body.style.filter = '';
+    const events = ["click", "dragstart", "dragover", "drop"];
     events.forEach(event => document.addEventListener(event, handleEvent, true));
-    document.addEventListener("mouseover", handleMouseOver, true);
+    try {
+        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
+        const message = data.closeWhenFocusedInitialWindow
+            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
+            : { checkContextMenuItem: true };
+
+        console.log(message);
+
+        chrome.runtime.sendMessage(message);
+    } catch (error) {
+        console.error('Error loading user configs:', error);
+    }
+
+    isMouseDown = true;
+    hasPopupTriggered = false;
 }
 
-function disableDragListeners() {
-    const events = ["dragstart", "dragover", "drop", "dragend"];
-    events.forEach(event => document.removeEventListener(event, handleEvent, true));
-    document.removeEventListener("mouseover", handleMouseOver, true);
+function handleEvent(e) {
+    if (e.type === 'dragstart') {
+        chrome.storage.local.get('modifiedKey', (data) => {
+            const modifiedKey = data.modifiedKey || 'None';
+            const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+            if (modifiedKey === 'None' || keyMap[modifiedKey]) {
+                handleDragStart(e);
+            }
+
+        });
+
+    } else if (['dragover', 'drop'].includes(e.type) && isDragging) {
+        preventEvent(e);
+    } else if (e.type === 'click' && isDragging) {
+        preventEvent(e);
+        isDragging = false;
+    } else if (e.type === 'mouseup' && isDragging) {
+        isMouseDown = false;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        setTimeout(resetDraggingState, 0);
+    }
 }
 
 function resetDraggingState() {
@@ -153,62 +101,59 @@ function resetDraggingState() {
     hasPopupTriggered = false;
 }
 
-async function triggerPopup(e) {
-    console.log("Triggering popup...");
+async function preventEvent(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
 
+async function handleDragStart(e) {
+    if (!isMouseDown || hasPopupTriggered) return;
     const selectionText = window.getSelection().toString();
-    const data = await loadUserConfigs();
-    const modifiedKey = data.modifiedKey || 'None';
-    const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
-    const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-    const blurPx = parseFloat(data.blurPx || 3);
-    const blurTime = parseFloat(data.blurTime || 1);
+    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+    const linkUrl = linkElement ? linkElement.href : null;
 
-    if (modifiedKey !== 'None') {
-        const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
-        if (!keyMap[modifiedKey]) {
-            disableDragListeners();
-            console.log("Modified key not pressed. Popup not triggered.");
-            return;
-        }
-    }
-
-    if (e.target.closest('a') || e.target.tagName === 'A' || (selectionText && searchEngine !== 'None')) {
-        hasPopupTriggered = true;
+    if (linkUrl || selectionText.trim()) {
+        isDragging = true;
 
         e.preventDefault();
         e.stopImmediatePropagation();
+
+        const data = await loadUserConfigs(['searchEngine', 'blurEnabled', 'blurPx', 'blurTime']);
+        const searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
+        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+        const blurPx = parseFloat(data.blurPx || 3);
+        const blurTime = parseFloat(data.blurTime || 1);
+        const finalLinkUrl = linkUrl || searchEngine.replace('%s', encodeURIComponent(selectionText));
+
 
         if (blurEnabled) {
             document.body.style.filter = `blur(${blurPx}px)`;
             document.body.style.transition = `filter ${blurTime}s ease`;
         }
 
-        console.time("Popup Send Message");
-        chrome.runtime.sendMessage({
-            linkUrl: e.target.tagName === 'A' ? e.target.href : e.target.closest('a') ? e.target.closest('a').href : searchEngine.replace('%s', encodeURIComponent(selectionText)),
-            lastClientX: e.screenX,
-            lastClientY: e.screenY,
-            width: window.screen.availWidth,
-            height: window.screen.availHeight,
-            top: window.screen.availTop,
-            left: window.screen.availLeft
-        }, () => {
-            console.timeEnd("Popup Send Message");
-            disableDragListeners(); // Disable drag listeners after sending message
-            console.log("Popup triggered and message sent.");
-        });
-    } else {
-        console.log("Popup conditions not met.");
-    }
-}
 
 
-function handleClick(e) {
-    if (isDragging) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        document.addEventListener('dragend', function onDragend(e) {
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            chrome.runtime.sendMessage({
+                linkUrl: finalLinkUrl,
+                lastClientX: e.screenX,
+                lastClientY: e.screenY,
+                width: window.screen.availWidth,
+                height: window.screen.availHeight,
+                top: window.screen.availTop,
+                left: window.screen.availLeft
+            }, () => {
+                hasPopupTriggered = true;
+                document.removeEventListener('dragend', onDragend, true);
+
+            });
+        }, true);
+
     }
+
 }
 
 function isUrlDisabled(url, disabledUrls) {
@@ -222,7 +167,7 @@ function isUrlDisabled(url, disabledUrls) {
 }
 
 async function checkUrlAndToggleListeners() {
-    const data = await loadUserConfigs();
+    const data = await loadUserConfigs(['disabledUrls', 'searchEngine']);
     const disabledUrls = data.disabledUrls || [];
     const currentUrl = window.location.href;
 
@@ -238,14 +183,12 @@ async function checkUrlAndToggleListeners() {
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-    if (namespace === 'local' && (changes.disabledUrls || changes.searchEngine || changes.dragMovePx || changes.delayTime)) {
+    if (namespace === 'local' && (changes.disabledUrls || changes.searchEngine)) {
         await checkUrlAndToggleListeners();
     }
 });
 
-initializeConfigs().then(() => {
-    checkUrlAndToggleListeners();
-});
+checkUrlAndToggleListeners();
 
 let lastUrl = location.href;
 new MutationObserver(() => {
@@ -263,35 +206,19 @@ chrome.storage.local.get('lastUrl', (data) => {
     }
 });
 
-function sendMessageToBackground(message) {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(message, response => {
-            if (chrome.runtime.lastError) {
-                console.error("Runtime error:", chrome.runtime.lastError);
-                reject(chrome.runtime.lastError);
-            } else {
-                console.log("Background script responded:", response);
-                if (response && response.status) {
-                    resolve(response);
-                } else {
-                    reject(new Error("Undefined response from background script"));
-                }
-            }
-        });
-    });
-}
-
 window.addEventListener('focus', async () => {
+    console.log(`Event: focus changed, Timestamp: ${new Date().toISOString()}`)
+    document.body.style.filter = '';
     try {
-        document.body.style.filter = '';
-        const data = await loadUserConfigs();
+        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
         const message = data.closeWhenFocusedInitialWindow
             ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
             : { checkContextMenuItem: true };
 
-        const response = await sendMessageToBackground(message);
-        console.log("Background script responded:", response);
+        console.log(message);
+
+        chrome.runtime.sendMessage(message);
     } catch (error) {
-        console.error("Error sending message to background script:", error);
+        console.error('Error loading user configs:', error);
     }
 });
