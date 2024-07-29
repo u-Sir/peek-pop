@@ -10,7 +10,6 @@ const configs = {
     'blurPx': 3,
     'blurTime': 1,
     'modifiedKey': 'None',
-    'originWindowId': '',
     'rememberPopupSizeAndPosition': false,
     'windowType': 'popup',
     'enableContainerIdentify': true,
