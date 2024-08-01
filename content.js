@@ -59,6 +59,9 @@ function handleEvent(e) {
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             if (modifiedKey === 'None' || keyMap[modifiedKey]) {
                 handleDragStart(e);
+            } else {
+                const events = ["click", "dragstart", "dragover", "drop"];
+                events.forEach(event => document.removeEventListener(event, handleEvent, true));
             }
 
         });
