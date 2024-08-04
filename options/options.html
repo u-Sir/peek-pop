@@ -42,12 +42,8 @@
     <fieldset>
         <legend id="dragSettings"></legend>
 
-        <div class='option'>
-            <label><input type="checkbox" id="imgSupport"></input></label>
-        </div>
-
         <div class="keySelection">
-            <label for="modifiedKey"></label>
+            <label for="modifiedKey"  class="align-label"></label>
             <br>
 
             <input type="radio" id="ctrlKey" name="modifiedKey" value="Ctrl" />
@@ -64,8 +60,10 @@
 
             <input type="radio" id="noneKey" name="modifiedKey" value="None" />
             <label for="noneKey">None</label>
-            <br>
+                        <br>
+
         </div>
+            <br>
 
         <div class='option'>
             <label for="dragPx"></label><output for="dragPx" id="dragPxOutput"></output>
@@ -90,6 +88,11 @@
                 <label for="dragLeft">Left</label>
             </div>
         </div>
+
+        <div class='option'>
+            <label><input type="checkbox" id="imgSupport"></input></label>
+        </div>
+
         
     </fieldset>
     </p>
@@ -124,18 +127,19 @@
         <legend id="popupSettings"></legend>
 
         <div class="window-type">
-            <label for="windowType">Popup window type</label>
+            <label for="windowType"  class="align-label-1">Popup window type</label>
             <input type="radio" id="normal" name="windowType" value="normal" />
             <label for="normal">Normal</label>
 
             <input type="radio" id="popup" name="windowType" value="popup" />
             <label for="popup">Popup</label>
         </div>
+    <br>
 
         <div class='option'>
             <label><input type="checkbox" id="closedByEsc"></input></label>
         </div>
-
+        
         <div class='option'>
             <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></input></label>
         </div>
