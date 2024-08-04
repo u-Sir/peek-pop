@@ -9,61 +9,94 @@
 <body>
     <p>
     <fieldset>
-        <legend id="keySelection"></legend>
+        <legend id="searchEngineSelection">Select Search Engine</legend>
+        <input type="radio" id="google" name="searchEngine" value="https://www.google.com/search?q=%s" />
+        <label for="google">Google</label>
 
-        <input type="radio" id="ctrlKey" name="modifiedKey" value="Ctrl" />
-        <label for="ctrlKey">Ctrl</label>
+        <input type="radio" id="bing" name="searchEngine" value="https://www.bing.com/search?q=%s" />
+        <label for="bing">Bing</label>
 
-        <input type="radio" id="altKey" name="modifiedKey" value="Alt" />
-        <label for="altKey">Alt/Option</label>
+        <input type="radio" id="baidu" name="searchEngine" value="https://www.baidu.com/s?wd=%s" />
+        <label for="baidu">Baidu</label>
 
-        <input type="radio" id="shiftKey" name="modifiedKey" value="Shift" />
-        <label for="shiftKey">Shift</label>
+        <input type="radio" id="yandex" name="searchEngine" value="https://yandex.com/search/?text=%s" />
+        <label for="yandex">Yandex</label>
 
-        <input type="radio" id="metaKey" name="modifiedKey" value="Meta" />
-        <label for="metaKey">Windows/Command</label>
+        <input type="radio" id="duckduckgo" name="searchEngine" value="https://duckduckgo.com/?q=%s" />
+        <label for="duckduckgo">DuckDuckGo</label>
 
-        <input type="radio" id="noneKey" name="modifiedKey" value="None" />
-        <label for="noneKey">None</label>
-        <br >
+        <input type="radio" id="wiki" name="searchEngine" value="https://wikipedia.org/w/index.php?title=Special:Search&search=%s" />
+        <label for="wiki">Wikipedia</label>
+
+        <input type="radio" id="searchDisable" name="searchEngine" value="None" />
+        <label for="searchDisable">None</label>
+        <br>
+        <input type="radio" id="custom" name="searchEngine" value="custom" />
+        <label for="custom">Custom</label>
+        <input type="text" id="customSearchEngine" style="display:none;" placeholder="https://example.com/%s" />
+
     </fieldset>
     </p>
 
-
-
     <p>
-        <fieldset>
-            <legend id="searchEngineSelection">Select Search Engine</legend>
-            <input type="radio" id="google" name="searchEngine" value="https://www.google.com/search?q=%s" />
-            <label for="google">Google</label>
-            
-            <input type="radio" id="bing" name="searchEngine" value="https://www.bing.com/search?q=%s" />
-            <label for="bing">Bing</label>
-            
-            <input type="radio" id="baidu" name="searchEngine" value="https://www.baidu.com/s?wd=%s" />
-            <label for="baidu">Baidu</label>
-            
-            <input type="radio" id="yandex" name="searchEngine" value="https://yandex.com/search/?text=%s" />
-            <label for="yandex">Yandex</label>
-            
-            <input type="radio" id="duckduckgo" name="searchEngine" value="https://duckduckgo.com/?q=%s" />
-            <label for="duckduckgo">DuckDuckGo</label>
-            
-            <input type="radio" id="wiki" name="searchEngine" value="https://wikipedia.org/w/index.php?title=Special:Search&search=%s" />
-            <label for="wiki">Wikipedia</label>
-            
-            <input type="radio" id="searchDisable" name="searchEngine" value="None" />
-            <label for="searchDisable">None</label>
+    <fieldset>
+        <legend id="dragSettings"></legend>
+
+        <div class="keySelection">
+            <label for="modifiedKey"  class="align-label"></label>
             <br>
-            <input type="radio" id="custom" name="searchEngine" value="custom" />
-            <label for="custom">Custom</label>
-            <input type="text" id="customSearchEngine" style="display:none;" placeholder="https://example.com/%s" />
-            
-        </fieldset>
-        </p>
-    
-    
-    
+
+            <input type="radio" id="ctrlKey" name="modifiedKey" value="Ctrl" />
+            <label for="ctrlKey">Ctrl</label>
+
+            <input type="radio" id="altKey" name="modifiedKey" value="Alt" />
+            <label for="altKey">Alt/Option</label>
+
+            <input type="radio" id="shiftKey" name="modifiedKey" value="Shift" />
+            <label for="shiftKey">Shift</label>
+
+            <input type="radio" id="metaKey" name="modifiedKey" value="Meta" />
+            <label for="metaKey">Windows/Command</label>
+
+            <input type="radio" id="noneKey" name="modifiedKey" value="None" />
+            <label for="noneKey">None</label>
+                        <br>
+
+        </div>
+            <br>
+
+        <div class='option'>
+            <label for="dragPx"></label><output for="dragPx" id="dragPxOutput"></output>
+            <br>
+            <input type="range" id="dragPx" name="dragPx" min="0" max="200" step="0.1">
+        </div>
+
+        <div class='option'>
+            <label for="dragDirections"></label>
+            <br>
+            <div id="dragDirectionsContainer">
+                <input type="checkbox" id="dragUp" name="dragDirections" value="up" />
+                <label for="dragUp">Up</label>
+        
+                <input type="checkbox" id="dragDown" name="dragDirections" value="down" />
+                <label for="dragDown">Down</label>
+        
+                <input type="checkbox" id="dragRight" name="dragDirections" value="right" />
+                <label for="dragRight">Right</label>
+        
+                <input type="checkbox" id="dragLeft" name="dragDirections" value="left" />
+                <label for="dragLeft">Left</label>
+            </div>
+        </div>
+
+        <div class='option'>
+            <label><input type="checkbox" id="imgSupport"></input></label>
+        </div>
+
+        
+    </fieldset>
+    </p>
+
     <p>
     <fieldset>
         <legend id="blurEffectSettings"></legend>
@@ -94,26 +127,31 @@
         <legend id="popupSettings"></legend>
 
         <div class="window-type">
-            <label for="windowType">Popup window type</label>
+            <label for="windowType"  class="align-label-1">Popup window type</label>
             <input type="radio" id="normal" name="windowType" value="normal" />
             <label for="normal">Normal</label>
 
             <input type="radio" id="popup" name="windowType" value="popup" />
             <label for="popup">Popup</label>
         </div>
+    <br>
+
+        <div class='option'>
+            <label><input type="checkbox" id="closedByEsc"></input></label>
+        </div>
+
 
         <div class='option'>
             <label><input type="checkbox" id="enableContainerIdentify"></input></label>
         </div>
-    
-        <div class='option'>
-            <label><input type="checkbox" id="rememberPopupSizeAndPosition"></input></label>
-        </div>
-
+        
         <div class='option'>
             <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></input></label>
         </div>
- 
+
+        <div class='option'>
+            <label><input type="checkbox" id="rememberPopupSizeAndPosition"></input></label>
+        </div>
 
         <div class='option'>
             <label><input type="checkbox" id="tryOpenAtMousePosition"></input></label>

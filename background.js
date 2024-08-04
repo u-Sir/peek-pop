@@ -12,11 +12,14 @@ const configs = {
     'modifiedKey': 'None',
     'rememberPopupSizeAndPosition': false,
     'windowType': 'popup',
-    'enableContainerIdentify': true,
-    'popupWindowsInfo': {}
+    'popupWindowsInfo': {},
+    'closedByEsc': false,
+    'contextItemCreated': false,
+    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragPx': 0,
+    'imgSupport': false,
+    'enableContainerIdentify': true
 };
-
-let contextMenuCreated = false;
 
 // Load user configurations from storage
 async function loadUserConfigs() {
@@ -39,43 +42,7 @@ async function saveConfig(key, value) {
     });
 }
 
-// Handle context menu item click
-function onMenuItemClicked(info, tab) {
-    if (info.menuItemId === 'sendPageBack') {
-        loadUserConfigs().then(userConfigs => {
-            const { popupWindowsInfo, enableContainerIdentify } = userConfigs;
-            if (popupWindowsInfo && Object.keys(popupWindowsInfo).length > 0) {
-                // Iterate through popupWindowsInfo to find the original window ID
-                let originalWindowId = null;
-                for (const originWindowId in popupWindowsInfo) {
-                    if (popupWindowsInfo[originWindowId][tab.windowId]) {
-                        originalWindowId = originWindowId;
-                        break;
-                    }
-                }
 
-                if (originalWindowId) {
-                    const createData = { windowId: parseInt(originalWindowId), url: tab.url };
-                    if (enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default') {
-                        createData.cookieStoreId = tab.cookieStoreId;
-                    }
-                    chrome.tabs.create(createData, () => {
-                        chrome.windows.get(tab.windowId, window => {
-                            if (window.id) chrome.windows.remove(window.id);
-                        });
-                        chrome.contextMenus.remove('sendPageBack');
-                        contextMenuCreated = false;
-                        chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
-                    });
-                } else {
-                    console.error('No original window ID found for current window ID in popupWindowsInfo.');
-                }
-            } else {
-                console.error('popupWindowsInfo is empty or not properly structured.');
-            }
-        });
-    }
-}
 
 // Initialize the extension
 chrome.runtime.onInstalled.addListener(() => {
@@ -88,8 +55,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Handle incoming messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    // console.log('Received message in background script:', request);
-
     new Promise((resolve, reject) => {
         chrome.windows.getCurrent(window => {
             if (chrome.runtime.lastError) {
@@ -101,11 +66,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
     })
         .then(currentWindow => {
-            // console.log('Current window:', currentWindow);
 
             return loadUserConfigs().then(userConfigs => {
 
+
                 let popupWindowsInfo = userConfigs.popupWindowsInfo || {};
+
 
                 // Filter out the 'savedPositionAndSize' key
                 const filteredPopupWindowsInfo = Object.keys(popupWindowsInfo).reduce((acc, key) => {
@@ -127,15 +93,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
             }).then(popupWindowsInfo => {
 
-                const zoomFactor = new Promise((resolve, reject) => {
-                    chrome.tabs.getZoom(sender.tab.id, (zoom) => {
-                        if (chrome.runtime.lastError) {
-                            reject(chrome.runtime.lastError);
-                        } else {
-                            resolve(zoom);
-                        }
-                    });
-                });
 
                 chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                 chrome.contextMenus.onClicked.addListener(onMenuItemClicked);
@@ -148,31 +105,110 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             return parseInt(windowId) === currentWindow.id;
                         });
 
-                        if (!contextMenuCreated && !isCurrentWindowOriginal) {
-                            chrome.contextMenus.create({
-                                id: 'sendPageBack',
-                                title: chrome.i18n.getMessage('sendPageBack'),
-                                contexts: ['page']
-                            });
-                            contextMenuCreated = true;
-                        }
-                        sendResponse({ status: 'context menu checked' });
 
                         loadUserConfigs().then(userConfigs => {
-                            if (userConfigs.rememberPopupSizeAndPosition) {
-                                windowUpdateListener(currentWindow);
+                            if (!isCurrentWindowOriginal) {
+                                if (!userConfigs.contextItemCreated) {
+                                    chrome.contextMenus.create({
+                                        id: 'sendPageBack',
+                                        title: chrome.i18n.getMessage('sendPageBack'),
+                                        contexts: ['page']
+                                    }, () => {
+                                        if (chrome.runtime.lastError) {
+                                            userConfigs.contextItemCreated = true;
+                                            chrome.storage.local.set({ contextItemCreated: true }, () => {
+                                                // console.log('Context menu created and contextItemCreated updated to true' + Date.now());
+                                            });
+                                        } else {
+                                            userConfigs.contextItemCreated = true;
+                                            chrome.storage.local.set({ contextItemCreated: true }, () => {
+                                                // console.log('Context menu created and contextItemCreated updated to true' + Date.now());
+                                            });
+                                        }
+                                    });
+                                }
+
+                                if (userConfigs.rememberPopupSizeAndPosition) {
+                                    for (const originWindowId in popupWindowsInfo) {
+                                        if (originWindowId === 'savedPositionAndSize') {
+                                            continue; // Skip the savedPositionAndSize key
+                                        }
+
+                                        if (popupWindowsInfo[originWindowId][currentWindow.id]) {
+                                            if (!popupWindowsInfo[originWindowId]) {
+                                                popupWindowsInfo[originWindowId] = {};
+                                            }
+                                            popupWindowsInfo[originWindowId][currentWindow.id] = {
+                                                windowType: currentWindow.type,
+                                                top: currentWindow.top,
+                                                left: currentWindow.left,
+                                                width: currentWindow.width,
+                                                height: currentWindow.height
+                                            };
+
+                                            popupWindowsInfo.savedPositionAndSize = {
+                                                top: currentWindow.top,
+                                                left: currentWindow.left,
+                                                width: currentWindow.width,
+                                                height: currentWindow.height
+                                            };
+
+
+                                            chrome.storage.local.set({ popupWindowsInfo }, () => {
+                                                //addBoundsChangeListener(currentWindow.id, originWindowId);
+                                                chrome.windows.onRemoved.addListener(windowRemovedListener);
+                                            });
+                                        }
+                                    }
+                                
+                                }
+                            } else {
+                                // console.log('not popup window, do nothing')
                             }
+
+
                         });
                     });
+
+                    sendResponse({ status: 'item checked' });
+                }
+
+                if (request.action === 'closeCurrentTab') {
+                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
+                        const popupWindowsInfo = result.popupWindowsInfo;
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).some(windowId => {
+                            return parseInt(windowId) === currentWindow.id;
+                        });
+                        if (!isCurrentWindowOriginal) {
+                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                                if (tabs.length > 0) {
+                                    const currentTab = tabs[0];
+                                    chrome.tabs.remove(currentTab.id);
+                                }
+                            });
+                            if (result.contextItemCreated) {
+                                chrome.contextMenus.remove('sendPageBack');
+                                result.contextItemCreated = false;
+                                chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                    // console.log('Context menu created and contextItemCreated updated to false');
+                                });
+                            }
+                        }
+
+                    });
+                    sendResponse({ status: 'esc handled' });
+
                 }
 
                 if (request.action === 'windowRegainedFocus') {
-                    chrome.storage.local.get('popupWindowsInfo', (result) => {
+                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
                         const popupWindowsInfo = result.popupWindowsInfo;
                         const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).some(windowId => {
                             return parseInt(windowId) === currentWindow.id;
                         });
                         if (isCurrentWindowOriginal) {
+                            // console.log('start check:' + isCurrentWindowOriginal)
+
                             const popupsToRemove = Object.keys(popupWindowsInfo[currentWindow.id] || {});
 
                             chrome.windows.getAll({ populate: true }, windows => {
@@ -181,15 +217,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         chrome.windows.remove(window.id);
                                     }
                                 });
+                                if (result.contextItemCreated) {
+                                    chrome.contextMenus.remove('sendPageBack');
+                                    result.contextItemCreated = false;
+                                    chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                        // console.log('Context menu created and contextItemCreated updated to false');
+                                    });
+                                }
 
-                                chrome.contextMenus.remove('sendPageBack');
-                                contextMenuCreated = false;
-                                sendResponse({ status: 'window focus handled' });
                             });
                         }
 
                     });
+                    sendResponse({ status: 'window focus handled' });
+
                 }
+
+
+                const zoomFactor = new Promise((resolve, reject) => {
+                    chrome.tabs.getZoom(sender.tab.id, (zoom) => {
+                        if (chrome.runtime.lastError) {
+                            reject(chrome.runtime.lastError);
+                        } else {
+                            resolve(zoom);
+                        }
+                    });
+                });
 
                 return zoomFactor.then(zoom => {
                     return Promise.all([
@@ -207,9 +260,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         if (isUrlDisabled(sender.tab.url, disabledUrls)) {
                             sendResponse({ status: 'url disabled' });
                         } else if (request.linkUrl) {
-                            // if (currentWindow.id !== originWindowId) {
-                            //     saveConfig('originWindowId', currentWindow.id);
-                            // }
                             handleLinkInPopup(request.linkUrl, sender.tab, currentWindow, rememberPopupSizeAndPosition, windowType).then(() => {
                                 sendResponse({ status: 'link handled' });
                             });
@@ -237,7 +287,7 @@ function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosi
 
     return loadUserConfigs().then(userConfigs => {
         const {
-            lastClientX, lastClientY, enableContainerIdentify,
+            lastClientX, lastClientY,
             popupHeight, popupWidth, tryOpenAtMousePosition,
             lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight
         } = userConfigs;
@@ -255,19 +305,16 @@ function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosi
 
                     if (Object.keys(savedPositionAndSize).length > 0) {
                         ({ left: dx, top: dy, width, height } = savedPositionAndSize);
-                        // console.log('Using savedPositionAndSize for popup:', { dx, dy, width, height });
 
-                        createPopupWindow(linkUrl, tab, windowType, dx, dy, width, height, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject);
+                        createPopupWindow(linkUrl, tab, windowType, dx, dy, width, height, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
                     } else {
-                        // console.log('No saved popup position and size found.');
-                        defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject);
+                        defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
                     }
                 });
             } else {
                 chrome.storage.local.get(['popupWindowsInfo'], result => {
                     const popupWindowsInfo = result.popupWindowsInfo || {};
-                    // console.log('No saved popup position and size found.');
-                    defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject);
+                    defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
                 });
             }
         });
@@ -275,30 +322,34 @@ function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosi
 }
 
 // Function to create a popup window
-function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject) {
-    const createData = {
-        url: linkUrl,
-        type: windowType,
-        top: parseInt(top),
-        left: parseInt(left),
-        width: parseInt(width),
-        height: parseInt(height),
-        incognito: tab.incognito,
-        ...(enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default' ? { cookieStoreId: tab.cookieStoreId } : {})
-    };
+function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+    chrome.storage.local.get(['enableContainerIdentify'], (result) => {
+        const enableContainerIdentify = result.enableContainerIdentify !== undefined ? result.enableContainerIdentify : true;
 
-    chrome.windows.create(createData, (newWindow) => {
-        if (chrome.runtime.lastError) {
-            console.error('Error creating popup window:', chrome.runtime.lastError);
-            reject(chrome.runtime.lastError);
-        } else {
-            updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject);
-        }
+        chrome.windows.create({
+            url: linkUrl,
+            type: windowType,
+            top: parseInt(top, 10),
+            left: parseInt(left, 10),
+            width: parseInt(width, 10),
+            height: parseInt(height, 10),
+            focused: true,
+            incognito: tab.incognito,
+            ...(enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default' ? { cookieStoreId: tab.cookieStoreId } : {})
+        }, (newWindow) => {
+            if (chrome.runtime.lastError) {
+                console.error('Error creating popup window:', chrome.runtime.lastError);
+                reject(chrome.runtime.lastError);
+            } else {
+                updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+            }
+        });
     });
 }
 
+
 // Function to handle default popup creation
-function defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject) {
+function defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
     let dx, dy;
 
     if (tryOpenAtMousePosition) {
@@ -307,24 +358,24 @@ function defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, default
     } else {
         const screenWidth = lastScreenWidth || screen.width;
         const screenHeight = lastScreenHeight || screen.height;
-    
+
         const centerX = (screenWidth - defaultWidth) / 2;
         const centerY = (screenHeight - defaultHeight) / 2;
-    
+
         dx = parseInt(lastScreenLeft) + centerX;
         dy = parseInt(lastScreenTop) + centerY;
     }
-    
+
     // Clamping dx and dy to ensure they are within the screen bounds
     dx = Math.max(lastScreenLeft, Math.min(dx, lastScreenLeft + lastScreenWidth - defaultWidth));
     dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - defaultHeight));
-    
 
-    createPopupWindow(linkUrl, tab, windowType, dx, dy, defaultWidth, defaultHeight, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject);
+
+    createPopupWindow(linkUrl, tab, windowType, dx, dy, defaultWidth, defaultHeight, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
 }
 
 // Function to update popup info and add listeners
-function updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, enableContainerIdentify, resolve, reject) {
+function updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
     if (!popupWindowsInfo[originWindowId]) {
         popupWindowsInfo[originWindowId] = {};
     }
@@ -346,6 +397,7 @@ function updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo
     }
 
     chrome.storage.local.set({ popupWindowsInfo }, () => {
+        // addBoundsChangeListener(newWindow.id, originWindowId);
         chrome.windows.onRemoved.addListener(windowRemovedListener);
         resolve();
     });
@@ -366,60 +418,53 @@ function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => url.includes(disabledUrl));
 }
 
-// Listener for updating popup window bounds
-function windowUpdateListener(updatedWindow) {
-    chrome.storage.local.get('popupWindowsInfo', (result) => {
-        const popupWindowsInfo = result.popupWindowsInfo || {};
 
-        for (const originWindowId in popupWindowsInfo) {
-            if (popupWindowsInfo[originWindowId][updatedWindow.id]) {
-                // Fetch the zoom factor
-                chrome.windows.get(updatedWindow.id, { populate: true }, (window) => {
-                    if (chrome.runtime.lastError || !window.tabs || !window.tabs.length) {
-                        console.error('Error getting window tabs:', chrome.runtime.lastError || 'No tabs found');
-                        return;
+// Handle context menu item click
+function onMenuItemClicked(info, tab) {
+    if (info.menuItemId === 'sendPageBack') {
+        loadUserConfigs().then(userConfigs => {
+            const { popupWindowsInfo, enableContainerIdentify } = userConfigs;
+
+            if (popupWindowsInfo && Object.keys(popupWindowsInfo).length > 0) {
+                // Iterate through popupWindowsInfo to find the original window ID
+                let originalWindowId = null;
+                for (const originWindowId in popupWindowsInfo) {
+                    if (popupWindowsInfo[originWindowId][tab.windowId]) {
+                        originalWindowId = originWindowId;
+                        break;
                     }
+                }
 
-                    const tabId = window.tabs[0].id;
-
-                    chrome.tabs.getZoom(tabId, (zoomFactor) => {
-                        if (chrome.runtime.lastError) {
-                            console.error('Error getting zoom factor:', chrome.runtime.lastError);
-                            return;
-                        }
-
-                        // Update the popup window info with the zoom factor
-                        popupWindowsInfo[originWindowId][updatedWindow.id] = {
-                            windowType: updatedWindow.type,
-                            top: updatedWindow.top,
-                            left: updatedWindow.left,
-                            width: updatedWindow.width,
-                            height: updatedWindow.height,
-                            zoomFactor: zoomFactor
-                        };
-
-                        if (configs.rememberPopupSizeAndPosition) {
-                            popupWindowsInfo.savedPositionAndSize = {
-                                top: updatedWindow.top,
-                                left: updatedWindow.left,
-                                width: updatedWindow.width,
-                                height: updatedWindow.height,
-                                zoomFactor: zoomFactor
-                            };
-                        }
-
-                        // Save the updated info to local storage
-                        chrome.storage.local.set({ popupWindowsInfo }, () => {
-                            // console.log('Popup window bounds updated:', popupWindowsInfo, zoomFactor);
+                if (originalWindowId) {
+                    const createData = { windowId: parseInt(originalWindowId), url: tab.url };
+                    if (enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default') {
+                        createData.cookieStoreId = tab.cookieStoreId;
+                    }
+                    chrome.tabs.create(createData, () => {
+                        chrome.windows.get(tab.windowId, window => {
+                            if (window.id) chrome.windows.remove(window.id);
                         });
-                    });
-                });
 
-                break;
+                        if (userConfigs.contextItemCreated) {
+                            chrome.contextMenus.remove('sendPageBack');
+                            userConfigs.contextItemCreated = false;
+                            chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                // console.log('Context menu created and contextItemCreated updated to false');
+                            });
+                            chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+                        }
+
+                    });
+                } else {
+                    //console.error('No original window ID found for current window ID in popupWindowsInfo.');
+                }
+            } else {
+                console.error('popupWindowsInfo is empty or not properly structured.');
             }
-        }
-    });
+        });
+    }
 }
+
 
 // Listener for popup window removal
 function windowRemovedListener(windowId) {
@@ -428,11 +473,9 @@ function windowRemovedListener(windowId) {
 
         for (const originWindowId in popupWindowsInfo) {
             if (popupWindowsInfo[originWindowId][windowId]) {
-                console.log('remove',popupWindowsInfo[originWindowId][windowId])
                 delete popupWindowsInfo[originWindowId][windowId];
 
                 if (Object.keys(popupWindowsInfo[originWindowId]).length === 0) {
-                    console.log('remove',popupWindowsInfo[originWindowId])
                     delete popupWindowsInfo[originWindowId];
                 }
 

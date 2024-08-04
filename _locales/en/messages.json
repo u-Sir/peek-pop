@@ -41,7 +41,7 @@
     "blurTime": {
         "message": "Blur in specific seconds (s): "
     },
-    "keySelection": {
+    "modifiedKey": {
         "message": "Response when selected key is pressing (Please test to ensure it meets expectations.)"
     },
     "searchEngineSelection": {
@@ -73,5 +73,32 @@
     },
     "windowType": {
         "message": "Popup window type:"
+    },
+    "closedByEsc": {
+        "message": "Press Esc to close the current popup page (overrides page's default Esc behavior)"
+    },
+    "dragSettings": {
+        "message": "Drag Settings"
+    },
+    "dragPx": {
+        "message": "At least move px (do not check if 0): "
+    },
+    "dragDirections": {
+        "message": "Response on specificed directions:"
+    },
+    "dragUp": {
+        "message": "Up"
+    },
+    "dragDown": {
+        "message": "Down"
+    },
+    "dragRight": {
+        "message": "Right"
+    },
+    "dragLeft": {
+        "message": "Left"
+    },
+    "imgSupport": {
+        "message": "Image support"
     }
 }
