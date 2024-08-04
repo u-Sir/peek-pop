@@ -78,27 +78,27 @@
         "message": "Нажмите Esc, чтобы закрыть текущее всплывающее окно (переопределяет стандартное поведение клавиши Esc на странице)"
     },
     "dragSettings": {
-        "message": "Drag Settings"
+        "message": "Настройки Перетаскивания"
     },
     "dragPx": {
-        "message": "At least move px (do not check if 0): "
+        "message": "Переместить не менее пикселей (не проверять, если 0): "
     },
     "dragDirections": {
-        "message": "Response on specificed directions:"
+        "message": "Ответ на указанные направления:"
     },
     "dragUp": {
-        "message": "Up"
+        "message": "Вверх"
     },
     "dragDown": {
-        "message": "Down"
+        "message": "Вниз"
     },
     "dragRight": {
-        "message": "Right"
+        "message": "Право"
     },
     "dragLeft": {
-        "message": "Left"
+        "message": "Лево"
     },
     "imgSupport": {
-        "message": "Image support"
+        "message": "Поддержка изображений"
     }
 }

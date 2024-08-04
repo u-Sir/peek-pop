@@ -78,27 +78,27 @@
         "message": "Presiona Esc para cerrar la ventana emergente actual (anula el comportamiento predeterminado de Esc en la página)"
     },
     "dragSettings": {
-        "message": "Drag Settings"
+        "message": "Configuración de Arrastre"
     },
     "dragPx": {
-        "message": "At least move px (do not check if 0): "
+        "message": "Mover al menos px (no comprobar si es 0): "
     },
     "dragDirections": {
-        "message": "Response on specificed directions:"
+        "message": "Responder en direcciones especificadas:"
     },
     "dragUp": {
-        "message": "Up"
+        "message": "Arriba"
     },
     "dragDown": {
-        "message": "Down"
+        "message": "Abajo"
     },
     "dragRight": {
-        "message": "Right"
+        "message": "Derecha"
     },
     "dragLeft": {
-        "message": "Left"
+        "message": "Izquierda"
     },
     "imgSupport": {
-        "message": "Image support"
+        "message": "Soporte de imagen"
     }
 }
