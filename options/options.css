@@ -4,37 +4,47 @@
     cursor: pointer;
 }
 
-
-.option output {
-    margin-left: 4px;
-    vertical-align: sub; /* Aligns the output element vertically */
-    display: inline-block;  /* Ensures the output element respects the vertical alignment */
-    /* Add any additional styling you want for the output */
-}
-
 .option:hover {
-    background-color: lightgrey;
+    background-color: rgba(237, 237, 237, 0.498);
     transition: background-color 50ms ease-in-out;
     border-radius: 4px;
 }
-.window-type {
-    margin-left: 3px;
-}
 
-.window-type label {
-    margin-left: 3px; /* Adjust the margin as needed */
+.option output {
+    vertical-align: -0.5px;
+    /* Aligns the output element vertically */
+    display: inline-block;
+    /* Ensures the output element respects the vertical alignment */
+    /* Add any additional styling you want for the output */
 }
 
 /* Align text with radio buttons and checkboxes */
 input[type="radio"],
 input[type="checkbox"] {
-    margin-right: 4px;
-    vertical-align: top;
+    vertical-align: 0px;
+}
+
+legend {
+    font-weight: bold;
+}
+
+fieldset {
+    border: none;
 }
 
 label {
     vertical-align: top;
-    line-height: 1.5; /* Adjust line-height for better alignment */
+}
+
+/* Align only the modifiedKey label */
+.align-label {
+    margin-left: 4px;
+    display: inline-block;
+}
+
+.align-label-1 {
+    margin-left: 9px;
+    display: inline-block;
 }
 
 /* Input and Textarea Styling */
@@ -42,80 +52,54 @@ input[type="text"],
 input[type="number"],
 textarea {
     min-width: 40%;
-    margin-right: 4px;
 }
 
 textarea {
     min-width: 600px;
     width: 100%;
-    box-sizing: border-box; /* Ensure the textarea takes the full width */
+    box-sizing: border-box;
+    /* Ensure the textarea takes the full width */
     margin-top: 5px;
     padding: 5px;
     font-size: 14px;
-    resize: vertical; /* Allow vertical resize */
-}
-
-legend {
-    background-color: #0000007d;
-    color: #fff;
-    padding: 3px 6px;
+    resize: vertical;
+    /* Allow vertical resize */
 }
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
     body {
-        background-color: #121212;
-        color: #e0e0e0;
-        min-width: 600px;
+        background-color: #1c1c1c;
+        color: #b0b0b0;
     }
 
     .option {
-        padding: 5px;
-        cursor: pointer;
-        background-color: #1e1e1e;
-        color: #e0e0e0;
-    }
-    
-    .option output {
-        margin-left: 4px;
-        vertical-align: sub; /* Aligns the output element vertically */
-        display: inline-block;  /* Ensures the output element respects the vertical alignment */
-        background-color: #1e1e1e;
-        color: #e0e0e0;
+        background-color: #2c2c2c;
+        color: #b0b0b0;
     }
 
     .option:hover {
-        background-color: #2e2e2e;
-        transition: background-color 50ms ease-in-out;
-        border-radius: 4px;
+        background-color: #3c3c3c;
+    }
+
+    .option output {
+        background-color: #2c2c2c;
+        color: #b0b0b0;
     }
 
     input[type="text"],
     input[type="number"],
     textarea {
-        min-width: 40%;
-        margin-right: 4px;
-        background-color: #1e1e1e;
-        color: #e0e0e0;
-        border: 1px solid #333;
+        background-color: #2c2c2c;
+        color: #b0b0b0;
+        border: 1px solid #444;
     }
 
     textarea {
-        min-width: 600px;
-        width: 100%;
-        box-sizing: border-box; /* Ensure the textarea takes the full width */
-        margin-top: 5px;
-        padding: 5px;
-        font-size: 14px;
-        resize: vertical; /* Allow vertical resize */
-        background-color: #1e1e1e;
-        color: #e0e0e0;
-        border: 1px solid #333;
+        border: 1px solid #444;
     }
 
     legend {
-        background-color: #333;
-        color: #e0e0e0;
-        padding: 3px 6px;
+        color: #b0b0b0;
     }
 }
