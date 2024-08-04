@@ -5,6 +5,13 @@
 - ensure that response only dragging released inside in the current page area
 - rearrange options page.
 
+0.0.24
+- improved dragging logic on Chromium. ***Now only trigger after dragging  is released*** .
+- improved modified key related logic.
+- ensure only response on links or selected text
+- added option to remember the popup window position and size.***(Need to click/scroll on popup page on Firefox)***
+- added option to choose popup window type. ***Now you can do anything when set it to 'Normal'.***
+
 0.0.22
 - added drag settings.
 - ensure only response on links or selected text
