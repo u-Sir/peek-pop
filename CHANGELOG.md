@@ -1,3 +1,10 @@
+0.0.25
+- added an option to support image.
+- added an option to set )at least dragging distance in px.
+- option to choose dragging direction to response.(experimental)
+- ensure that response only dragging released inside in the current page area
+- rearrange options page.
+
 0.0.22
 - added drag settings.
 - ensure only response on links or selected text
