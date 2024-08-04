@@ -7,31 +7,6 @@
 </head>
 
 <body>
-
-    <p>
-    <fieldset>
-        <legend id="keySelection"></legend>
-
-        <input type="radio" id="ctrlKey" name="modifiedKey" value="Ctrl" />
-        <label for="ctrlKey">Ctrl</label>
-
-        <input type="radio" id="altKey" name="modifiedKey" value="Alt" />
-        <label for="altKey">Alt/Option</label>
-
-        <input type="radio" id="shiftKey" name="modifiedKey" value="Shift" />
-        <label for="shiftKey">Shift</label>
-
-        <input type="radio" id="metaKey" name="modifiedKey" value="Meta" />
-        <label for="metaKey">Windows/Command</label>
-
-        <input type="radio" id="noneKey" name="modifiedKey" value="None" />
-        <label for="noneKey">None</label>
-        <br>
-    </fieldset>
-    </p>
-
-
-
     <p>
     <fieldset>
         <legend id="searchEngineSelection">Select Search Engine</legend>
@@ -50,8 +25,7 @@
         <input type="radio" id="duckduckgo" name="searchEngine" value="https://duckduckgo.com/?q=%s" />
         <label for="duckduckgo">DuckDuckGo</label>
 
-        <input type="radio" id="wiki" name="searchEngine"
-            value="https://wikipedia.org/w/index.php?title=Special:Search&search=%s" />
+        <input type="radio" id="wiki" name="searchEngine" value="https://wikipedia.org/w/index.php?title=Special:Search&search=%s" />
         <label for="wiki">Wikipedia</label>
 
         <input type="radio" id="searchDisable" name="searchEngine" value="None" />
@@ -64,7 +38,61 @@
     </fieldset>
     </p>
 
+    <p>
+    <fieldset>
+        <legend id="dragSettings"></legend>
 
+        <div class='option'>
+            <label><input type="checkbox" id="imgSupport"></input></label>
+        </div>
+
+        <div class="keySelection">
+            <label for="modifiedKey"></label>
+            <br>
+
+            <input type="radio" id="ctrlKey" name="modifiedKey" value="Ctrl" />
+            <label for="ctrlKey">Ctrl</label>
+
+            <input type="radio" id="altKey" name="modifiedKey" value="Alt" />
+            <label for="altKey">Alt/Option</label>
+
+            <input type="radio" id="shiftKey" name="modifiedKey" value="Shift" />
+            <label for="shiftKey">Shift</label>
+
+            <input type="radio" id="metaKey" name="modifiedKey" value="Meta" />
+            <label for="metaKey">Windows/Command</label>
+
+            <input type="radio" id="noneKey" name="modifiedKey" value="None" />
+            <label for="noneKey">None</label>
+            <br>
+        </div>
+
+        <div class='option'>
+            <label for="dragPx"></label><output for="dragPx" id="dragPxOutput"></output>
+            <br>
+            <input type="range" id="dragPx" name="dragPx" min="0" max="200" step="0.1">
+        </div>
+
+        <div class='option'>
+            <label for="dragDirections"></label>
+            <br>
+            <div id="dragDirectionsContainer">
+                <input type="checkbox" id="dragUp" name="dragDirections" value="up" />
+                <label for="dragUp">Up</label>
+        
+                <input type="checkbox" id="dragDown" name="dragDirections" value="down" />
+                <label for="dragDown">Down</label>
+        
+                <input type="checkbox" id="dragRight" name="dragDirections" value="right" />
+                <label for="dragRight">Right</label>
+        
+                <input type="checkbox" id="dragLeft" name="dragDirections" value="left" />
+                <label for="dragLeft">Left</label>
+            </div>
+        </div>
+        
+    </fieldset>
+    </p>
 
     <p>
     <fieldset>
@@ -102,6 +130,10 @@
 
             <input type="radio" id="popup" name="windowType" value="popup" />
             <label for="popup">Popup</label>
+        </div>
+
+        <div class='option'>
+            <label><input type="checkbox" id="closedByEsc"></input></label>
         </div>
 
         <div class='option'>

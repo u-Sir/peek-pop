@@ -41,7 +41,7 @@
     "blurTime": {
         "message": "Desenfoque en segundos específicos (s): "
     },
-    "keySelection": {
+    "modifiedKey": {
         "message": "Respuesta cuando se presiona la tecla seleccionada (Por favor, verifica si funciona como se espera.)"
     },
     "searchEngineSelection": {
@@ -73,5 +73,32 @@
     },
     "windowType": {
         "message": "Tipo de ventana emergente:"
+    },
+    "closedByEsc": {
+        "message": "Presiona Esc para cerrar la ventana emergente actual (anula el comportamiento predeterminado de Esc en la página)"
+    },
+    "dragSettings": {
+        "message": "Drag Settings"
+    },
+    "dragPx": {
+        "message": "At least move px (do not check if 0): "
+    },
+    "dragDirections": {
+        "message": "Response on specificed directions:"
+    },
+    "dragUp": {
+        "message": "Up"
+    },
+    "dragDown": {
+        "message": "Down"
+    },
+    "dragRight": {
+        "message": "Right"
+    },
+    "dragLeft": {
+        "message": "Left"
+    },
+    "imgSupport": {
+        "message": "Image support"
     }
 }

@@ -41,7 +41,7 @@
     "blurTime": {
         "message": "размытие в определенные секунды (s): "
     },
-    "keySelection": {
+    "modifiedKey": {
         "message": "Ответ при нажатии выбранной клавиши (Пожалуйста, проверьте, работает ли это, как ожидалось.)"
     },
     "searchEngineSelection": {
@@ -73,5 +73,32 @@
     },
     "windowType": {
         "message": "Тип всплывающего окна:"
+    },
+    "closedByEsc": {
+        "message": "Нажмите Esc, чтобы закрыть текущее всплывающее окно (переопределяет стандартное поведение клавиши Esc на странице)"
+    },
+    "dragSettings": {
+        "message": "Drag Settings"
+    },
+    "dragPx": {
+        "message": "At least move px (do not check if 0): "
+    },
+    "dragDirections": {
+        "message": "Response on specificed directions:"
+    },
+    "dragUp": {
+        "message": "Up"
+    },
+    "dragDown": {
+        "message": "Down"
+    },
+    "dragRight": {
+        "message": "Right"
+    },
+    "dragLeft": {
+        "message": "Left"
+    },
+    "imgSupport": {
+        "message": "Image support"
     }
 }

@@ -12,10 +12,13 @@ const configs = {
     'modifiedKey': 'None',
     'rememberPopupSizeAndPosition': false,
     'windowType': 'popup',
-    'popupWindowsInfo': {}
+    'popupWindowsInfo': {},
+    'closedByEsc': false,
+    'contextItemCreated': false,
+    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragPx': 0,
+    'imgSupport': false
 };
-
-let contextMenuCreated = false;
 
 // Load user configurations from storage
 async function loadUserConfigs() {
@@ -57,9 +60,16 @@ function onMenuItemClicked(info, tab) {
                         chrome.windows.get(tab.windowId, window => {
                             if (window.id) chrome.windows.remove(window.id);
                         });
-                        chrome.contextMenus.remove('sendPageBack');
-                        contextMenuCreated = false;
-                        chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+
+                        if (userConfigs.contextItemCreated) {
+                            chrome.contextMenus.remove('sendPageBack');
+                            userConfigs.contextItemCreated = false;
+                            chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                // console.log('Context menu created and contextItemCreated updated to false');
+                            });
+                            chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+                        }
+
                     });
                 } else {
                     console.error('No original window ID found in popupWindowsInfo.');
@@ -98,7 +108,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
             return loadUserConfigs().then(userConfigs => {
 
+
                 let popupWindowsInfo = userConfigs.popupWindowsInfo || {};
+
 
                 // Filter out the 'savedPositionAndSize' key
                 const filteredPopupWindowsInfo = Object.keys(popupWindowsInfo).reduce((acc, key) => {
@@ -132,8 +144,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             return parseInt(windowId) === currentWindow.id;
                         });
 
-                        if (!isCurrentWindowOriginal) {
-                            loadUserConfigs().then(userConfigs => {
+
+                        loadUserConfigs().then(userConfigs => {
+                            if (!isCurrentWindowOriginal) {
+                                if (!userConfigs.contextItemCreated) {
+                                    chrome.contextMenus.create({
+                                        id: 'sendPageBack',
+                                        title: chrome.i18n.getMessage('sendPageBack'),
+                                        contexts: ['page']
+                                    }, () => {
+                                        if (chrome.runtime.lastError) {
+                                            userConfigs.contextItemCreated = true;
+                                            chrome.storage.local.set({ contextItemCreated: true }, () => {
+                                                // console.log('Context menu created and contextItemCreated updated to true' + Date.now());
+                                            });
+                                        } else {
+                                            userConfigs.contextItemCreated = true;
+                                            chrome.storage.local.set({ contextItemCreated: true }, () => {
+                                                // console.log('Context menu created and contextItemCreated updated to true' + Date.now());
+                                            });
+                                        }
+                                    });
+                                }
+
                                 if (userConfigs.rememberPopupSizeAndPosition) {
                                     for (const originWindowId in popupWindowsInfo) {
                                         if (originWindowId === 'savedPositionAndSize') {
@@ -141,32 +174,79 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         }
 
                                         if (popupWindowsInfo[originWindowId][currentWindow.id]) {
-                                            updatePopupInfoAndListeners(currentWindow.id, originWindowId, userConfigs.popupWindowsInfo, userConfigs.rememberPopupSizeAndPosition, resolve, reject);
+                                            if (!popupWindowsInfo[originWindowId]) {
+                                                popupWindowsInfo[originWindowId] = {};
+                                            }
+                                            popupWindowsInfo[originWindowId][currentWindow.id] = {
+                                                windowType: currentWindow.type,
+                                                top: currentWindow.top,
+                                                left: currentWindow.left,
+                                                width: currentWindow.width,
+                                                height: currentWindow.height
+                                            };
+
+                                            popupWindowsInfo.savedPositionAndSize = {
+                                                top: currentWindow.top,
+                                                left: currentWindow.left,
+                                                width: currentWindow.width,
+                                                height: currentWindow.height
+                                            };
+
+
+                                            chrome.storage.local.set({ popupWindowsInfo }, () => {
+                                                addBoundsChangeListener(currentWindow.id, originWindowId);
+                                                chrome.windows.onRemoved.addListener(windowRemovedListener);
+                                            });
                                         }
                                     }
                                 }
+                            }  else {
+                                // console.log('not popup window, do nothing')
+                            }
+
+
+                        });
+                    });
+
+                    sendResponse({ status: 'item checked' });
+                }
+
+                if (request.action === 'closeCurrentTab') {
+                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
+                        const popupWindowsInfo = result.popupWindowsInfo;
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).some(windowId => {
+                            return parseInt(windowId) === currentWindow.id;
+                        });
+                        if (!isCurrentWindowOriginal) {
+                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                                if (tabs.length > 0) {
+                                    const currentTab = tabs[0];
+                                    chrome.tabs.remove(currentTab.id);
+                                }
                             });
+                            if (result.contextItemCreated) {
+                                chrome.contextMenus.remove('sendPageBack');
+                                result.contextItemCreated = false;
+                                chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                    // console.log('Context menu created and contextItemCreated updated to false');
+                                });
+                            }
                         }
 
-                        if (!contextMenuCreated && !isCurrentWindowOriginal) {
-                            chrome.contextMenus.create({
-                                id: 'sendPageBack',
-                                title: chrome.i18n.getMessage('sendPageBack'),
-                                contexts: ['page']
-                            });
-                            contextMenuCreated = true;
-                        }
-                        sendResponse({ status: 'context menu checked' });
                     });
+                    sendResponse({ status: 'esc handled' });
+
                 }
 
                 if (request.action === 'windowRegainedFocus') {
-                    chrome.storage.local.get('popupWindowsInfo', (result) => {
+                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
                         const popupWindowsInfo = result.popupWindowsInfo;
                         const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).some(windowId => {
                             return parseInt(windowId) === currentWindow.id;
                         });
                         if (isCurrentWindowOriginal) {
+                            // console.log('start check:' + isCurrentWindowOriginal)
+
                             const popupsToRemove = Object.keys(popupWindowsInfo[currentWindow.id] || {});
 
                             chrome.windows.getAll({ populate: true }, windows => {
@@ -175,15 +255,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         chrome.windows.remove(window.id);
                                     }
                                 });
+                                if (result.contextItemCreated) {
+                                    chrome.contextMenus.remove('sendPageBack');
+                                    result.contextItemCreated = false;
+                                    chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                        // console.log('Context menu created and contextItemCreated updated to false');
+                                    });
+                                }
 
-                                chrome.contextMenus.remove('sendPageBack');
-                                contextMenuCreated = false;
-                                sendResponse({ status: 'window focus handled' });
                             });
                         }
 
                     });
+                    sendResponse({ status: 'window focus handled' });
+
                 }
+
+                
+
 
                 return Promise.all([
                     saveConfig('lastClientX', request.lastClientX),
@@ -420,9 +509,16 @@ function onMenuItemClicked(info, tab) {
                         chrome.windows.get(tab.windowId, window => {
                             if (window.id) chrome.windows.remove(window.id);
                         });
-                        chrome.contextMenus.remove('sendPageBack');
-                        contextMenuCreated = false;
-                        chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+
+                        if (userConfigs.contextItemCreated) {
+                            chrome.contextMenus.remove('sendPageBack');
+                            userConfigs.contextItemCreated = false;
+                            chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                // console.log('Context menu created and contextItemCreated updated to false');
+                            });
+                            chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+                        }
+
                     });
                 } else {
                     console.error('No original window ID found for current window ID in popupWindowsInfo.');

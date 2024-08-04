@@ -10,9 +10,15 @@ const configs = {
     'blurPx': 3,
     'blurTime': 1,
     'modifiedKey': 'None',
+    'originWindowId': '',
     'rememberPopupSizeAndPosition': false,
     'windowType': 'popup',
-    'popupWindowsInfo': {}
+    'popupWindowsInfo': {},
+    'closedByEsc': false,
+    'contextItemCreated': false,
+    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragPx': 0,
+    'imgSupport': false
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -26,11 +32,11 @@ function setupPage(userConfigs) {
 
     // Elements to translate and set labels for
     const elementsToTranslate = [
-        { id: 'keySelection', messageId: 'keySelection' },
         { id: 'searchEngineSelection', messageId: 'searchEngineSelection' },
         { id: 'popupSettings', messageId: 'popupSettings' },
         { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
-        { id: 'blacklist', messageId: 'blacklist' }
+        { id: 'blacklist', messageId: 'blacklist' },
+        { id: 'dragSettings', messageId: 'dragSettings' }
     ];
 
     elementsToTranslate.forEach(({ id, messageId }) => setTextContent(id, messageId));
@@ -41,6 +47,13 @@ function setupPage(userConfigs) {
     setInputLabel('noneKey', 'noneKey');
     setInputLabel('normal', 'normal');
     setInputLabel('windowType', 'windowType');
+    setInputLabel('modifiedKey', 'modifiedKey');
+    setInputLabel('dragDirections', 'dragDirections');
+    setInputLabel('dragPx', 'dragPx');
+    setInputLabel('dragUp', 'dragUp');
+    setInputLabel('dragDown', 'dragDown');
+    setInputLabel('dragLeft', 'dragLeft');
+    setInputLabel('dragRight', 'dragRight');
 
     // Initialize input elements
     Object.keys(configs).forEach(key => {
@@ -55,9 +68,13 @@ function setupPage(userConfigs) {
     initializeTextarea('disabledUrls', userConfigs);
     initializeSlider('blurPx', 3);
     initializeSlider('blurTime', 1);
+    initializeSlider('dragPx', 0);
+
+    // Initialize drag direction checkboxes
+    initializeDragDirectionCheckboxes(userConfigs.dragDirections || configs.dragDirections);
 
     // Set modified key
-    setModifiedKey(userConfigs.modifiedKey);
+    setupModifiedKeySelection(userConfigs.modifiedKey);
 
     // Setup search engine selection
     setupSearchEngineSelection(userConfigs.searchEngine);
@@ -128,17 +145,6 @@ function initializeSlider(id, defaultValue) {
     });
 }
 
-function setModifiedKey(modifiedKey) {
-    modifiedKey = modifiedKey ?? 'None';
-    document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
-
-    document.querySelectorAll('input[name="modifiedKey"]').forEach(input => {
-        input.addEventListener('change', event => {
-            chrome.storage.local.set({ modifiedKey: event.target.value });
-        });
-    });
-}
-
 function setupSearchEngineSelection(searchEngine) {
     const customInput = document.getElementById('customSearchEngine');
     const searchEngines = ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable', 'wiki', 'yandex'];
@@ -190,6 +196,34 @@ function setupWindowTypeSelection(windowType) {
             chrome.storage.local.set({ windowType: newWindowType }, () => {
                 configs.windowType = newWindowType;
             });
+        });
+    });
+}
+
+function setupModifiedKeySelection(modifiedKey) {
+    modifiedKey = modifiedKey ?? 'None';
+    document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
+
+    document.querySelectorAll('input[name="modifiedKey"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newModifiedKey = event.target.value;
+            chrome.storage.local.set({ modifiedKey: newModifiedKey }, () => {
+                configs.modifiedKey = newModifiedKey;
+            });
+        });
+    });
+}
+
+function initializeDragDirectionCheckboxes(directions) {
+    const directionCheckboxes = document.querySelectorAll('input[name="dragDirections"]');
+    directionCheckboxes.forEach(checkbox => {
+        checkbox.checked = directions.includes(checkbox.value);
+        checkbox.addEventListener('change', () => {
+            const selectedDirections = Array.from(directionCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            configs.dragDirections = selectedDirections;
+            saveConfig('dragDirections', selectedDirections);
         });
     });
 }

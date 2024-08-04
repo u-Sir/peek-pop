@@ -41,7 +41,7 @@
     "blurTime": {
         "message": "模糊效果过渡时间（秒）："
     },
-    "keySelection": {
+    "modifiedKey": {
         "message": "按下所选键时响应（请检查它是否按预期工作）"
     },
     "searchEngineSelection": {
@@ -73,5 +73,32 @@
     },
     "windowType": {
         "message": "弹出窗口类型："
+    },
+    "closedByEsc": {
+        "message": "按下 Esc 关闭当前弹窗页面(覆盖页面 Esc 原有行为)"
+    },
+    "dragSettings": {
+        "message": "拖拽设置"
+    },
+    "dragPx": {
+        "message": "至少移动 px （为 0 时不作检查）："
+    },
+    "dragDirections": {
+        "message": "仅对指定方向响应："
+    },
+    "dragUp": {
+        "message": "上"
+    },
+    "dragDown": {
+        "message": "下"
+    },
+    "dragRight": {
+        "message": "右"
+    },
+    "dragLeft": {
+        "message": "左"
+    },
+    "imgSupport": {
+        "message": "预览图片"
     }
 }
