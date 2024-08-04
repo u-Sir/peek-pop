@@ -41,46 +41,6 @@ async function saveConfig(key, value) {
     });
 }
 
-// Handle context menu item click
-function onMenuItemClicked(info, tab) {
-    if (info.menuItemId === 'sendPageBack') {
-        loadUserConfigs().then(userConfigs => {
-            const { popupWindowsInfo } = userConfigs;
-            // Check if the current window ID exists in popupWindowsInfo
-            if (popupWindowsInfo && popupWindowsInfo[tab.windowId]) {
-                const originalWindowId = Object.keys(popupWindowsInfo).find(originWindowId => {
-                    return Object.keys(popupWindowsInfo[originWindowId]).includes(tab.windowId.toString());
-                });
-
-
-
-                if (originalWindowId) {
-                    const createData = { windowId: parseInt(originalWindowId), url: tab.url };
-                    chrome.tabs.create(createData, () => {
-                        chrome.windows.get(tab.windowId, window => {
-                            if (window.id) chrome.windows.remove(window.id);
-                        });
-
-                        if (userConfigs.contextItemCreated) {
-                            chrome.contextMenus.remove('sendPageBack');
-                            userConfigs.contextItemCreated = false;
-                            chrome.storage.local.set({ contextItemCreated: false }, () => {
-                                // console.log('Context menu created and contextItemCreated updated to false');
-                            });
-                            chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
-                        }
-
-                    });
-                } else {
-                    console.error('No original window ID found in popupWindowsInfo.');
-                }
-            } else {
-                console.error('Current window ID not found in popupWindowsInfo.');
-            }
-        });
-    }
-}
-
 
 
 // Initialize the extension
