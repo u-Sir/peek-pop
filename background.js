@@ -481,7 +481,7 @@ function onMenuItemClicked(info, tab) {
 
                     });
                 } else {
-                    console.error('No original window ID found for current window ID in popupWindowsInfo.');
+                    //console.error('No original window ID found for current window ID in popupWindowsInfo.');
                 }
             } else {
                 console.error('popupWindowsInfo is empty or not properly structured.');
