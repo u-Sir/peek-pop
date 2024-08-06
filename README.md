@@ -31,6 +31,9 @@ This plugin allows you to preview links by dragging them and search selected tex
 - Popups can appear near the mouse cursor or centered.(supports multi-monitors)
 - Blacklist supports regular expressions, wildcards, and plain text.
 - Follow system dark/light mode.
+- Supports response on specific directions.
+- Escape to close current popup page.
+- Supports dragging images.
 
 # Screenshots
 ## Firefox
