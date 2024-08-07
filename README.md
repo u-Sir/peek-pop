@@ -1,4 +1,4 @@
-# Introduction
+# Drag to preview: 
 This plugin allows you to preview links by dragging them, search selected text by dragging, and provides secure, unrestricted, modification-free cross-origin access.
 
 ## Install
