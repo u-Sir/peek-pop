@@ -181,8 +181,8 @@ async function handleDragStart(e) {
             const currentMouseY = e.clientY;
             let direction = '';
             
-            // do nothing when drag out of current page, firefox use client, chromium use screen
-            if (!(viewportLeft < e.clientX && e.clientX < viewportRight && viewportTop < e.clientY && e.clientY < viewportBottom)) {
+            // do nothing when drag out of current page
+            if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
                 // console.log(viewportLeft , e.screenX , viewportRight , viewportTop, e.screenY, viewportBottom)
                 document.removeEventListener('dragend', onDragend, true);
                 resetDraggingState();
