@@ -8,6 +8,7 @@ This plugin allows you to preview links by dragging them, search selected text b
   - Download from [Release](https://github.com/u-Sir/drag-to-preview/releases) and extract to load it with developer mode.
 - Test version:
   - [Download topic](https://github.com/u-Sir/drag-to-preview/discussions/13)
+  - [Discord](https://discord.gg/rrAJUC4t)
 
 # Features:
 
