@@ -21,7 +21,7 @@
         "message": "Try to open at mouse position (disabled — open at screen center)"
     },  
     "disabledUrls": {
-        "message": "Disable extension on these URLs (via plain text, regex, wildcarks, one per line)"
+        "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
     },  
     "openPageInMainWindow": {
         "message": "Open page in main window"
@@ -100,5 +100,47 @@
     },
     "imgSupport": {
         "message": "Image support"
+    },
+    "hoverTimeout": {
+        "message": "hover (ms) to preview ( 0 to disabled )"
+    },
+    "urlCheck": {
+        "message": "Open directly if selected is url"
+    },
+    "popupInBackground": {
+        "message": "Popup in background"
+    },
+    "doubleTapKeyToSendPageBack": {
+        "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
+    },
+    "hoverSettings": {
+        "message": "Hover settings"
+    },
+    "hoverPopupInBackground": {
+        "message": "Popup in background"
+    },
+    "hoverImgSupport": {
+        "message": "Image support"
+    },  
+    "hoverDisabledUrls": {
+        "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
+    },
+    "searchSettings": {
+        "message": "Search settings"
+    },
+    "triggerAfterDragRelease": {
+        "message": "Trigger after drag is released. (no directions check if uncheck)"
+    },  
+    "generalSettingsTab": {
+        "message": "General settings"
+    },
+    "exportImportSettings": {
+        "message": "Configurations"
+    },
+    "importButton": {
+        "message": "Import settings"
+    },  
+    "exportButton": {
+        "message": "Export settings"
     }
 } 

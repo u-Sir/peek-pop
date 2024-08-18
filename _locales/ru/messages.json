@@ -100,5 +100,47 @@
     },
     "imgSupport": {
         "message": "Поддержка изображений"
+    },
+    "hoverTimeout": {
+        "message": "hover to preview"
+    },
+    "urlCheck": {
+        "message": "Открыть напрямую, если выбранное является URL"
+    },
+    "popupInBackground": {
+        "message": "Всплывающее окно в фоне"
+    },
+    "doubleTapKeyToSendPageBack": {
+        "message": "Двойное нажатие на определённую клавишу для возврата страницы в оригинальное окно (Пожалуйста, проверьте, работает ли это как ожидалось.)"
+    },
+    "hoverSettings": {
+        "message": "Настройки наведения"
+    },
+    "hoverPopupInBackground": {
+        "message": "Всплывающее окно в фоновом режиме"
+    },
+    "hoverImgSupport": {
+        "message": "Поддержка изображений"
+    },
+    "hoverDisabledUrls": {
+        "message": "Отключить расширение на этих URL (через обычный текст, регулярные выражения, шаблоны, по одной на строку)"
+    },
+    "searchSettings": {
+        "message": "Настройки поиска"
+    },
+    "triggerAfterDragRelease": {
+        "message": "Запустить после завершения перетаскивания. (без указаний, проверьте, если не отмечено)"
+    },
+    "generalSettingsTab": {
+        "message": "Общие настройки"
+    },
+    "exportImportSettings": {
+        "message": "Настройки"
+    },
+    "importButton": {
+        "message": "Импортировать настройки"
+    },
+    "exportButton": {
+        "message": "Экспортировать настройки"
     }
 }

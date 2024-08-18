@@ -100,5 +100,47 @@
     },
     "imgSupport": {
         "message": "预览图片"
+    },
+    "hoverTimeout": {
+        "message": "悬停预览（为 0 时不启用）"
+    },
+    "urlCheck": {
+        "message": "如果选中文本是 URL，直接打开"
+    },
+    "popupInBackground": {
+        "message": "后台弹窗"
+    },
+    "doubleTapKeyToSendPageBack": {
+        "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
+    },
+    "hoverSettings": {
+        "message": "悬停设置"
+    },
+    "hoverPopupInBackground": {
+        "message": "后台弹出"
+    },
+    "hoverImgSupport": {
+        "message": "预览图片"
+    },  
+    "hoverDisabledUrls": {
+        "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
+    },
+    "searchSettings": {
+        "message": "搜索设置"
+    },
+    "triggerAfterDragRelease": {
+        "message": "拖拽释放后才触发(关闭时不支持方向检测)"
+    },  
+    "generalSettingsTab": {
+        "message": "通用"
+    },
+    "exportImportSettings": {
+        "message": "配置信息"
+    },
+    "importButton": {
+        "message": "导入设置"
+    },  
+    "exportButton": {
+        "message": "导出设置"
     }
 }

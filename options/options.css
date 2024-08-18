@@ -1,13 +1,107 @@
+.options-page {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    border-bottom: none;
+}
+
+.tab-link {
+    padding: 10px 0;
+    /* Adjust padding if needed */
+    width: 33.33%;
+    cursor: pointer;
+    background: #f9f9f9;
+    border: none;
+    margin-right: 0px;
+    text-align: center;
+    /* Center-align the text inside each tab link */
+}
+
+.tab-link.active {
+    background: #ffffff;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+    border: none;
+    background: #fff;
+    width: 600px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Basic Button Style */
+button {
+    background-color: #cccccc;
+    /* Green background */
+    color: white;
+    /* White text */
+    padding: 5px 10px;
+    /* Padding around the text */
+    border: none;
+    /* Remove border */
+    border-radius: 4px;
+    /* Rounded corners */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+    font-size: 14px;
+    /* Font size */
+    transition: background-color 0.3s ease;
+    /* Smooth transition */
+}
+
+/* Hover State */
+button:hover {
+    background-color: #8b8b8b;
+    /* Darker green on hover */
+}
+
+/* Active State */
+button:active {
+    background-color: #767676;
+    /* Even darker green on click */
+    transform: translateY(2px);
+    /* Slightly move down when clicked */
+}
+
+/* Disabled State */
+button:disabled {
+    background-color: #cccccc;
+    /* Gray background */
+    color: #666666;
+    /* Darker gray text */
+    cursor: not-allowed;
+    /* Not allowed cursor */
+    opacity: 0.6;
+    /* Slightly transparent */
+}
+
+
 /* General Option Styling */
 .option {
-    padding: 5px;
+    padding: 0px;
+    padding-bottom: 6px;
     cursor: pointer;
+}
+
+.options-page {
+    max-width: 700px;
 }
 
 .option:hover {
     background-color: rgba(237, 237, 237, 0.498);
     transition: background-color 50ms ease-in-out;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 .option output {
@@ -21,29 +115,38 @@
 /* Align text with radio buttons and checkboxes */
 input[type="radio"],
 input[type="checkbox"] {
-    vertical-align: 0px;
+    margin-left: 0px;
 }
 
-legend {
-    font-weight: bold;
+input[type="range"] {
+    margin-left: -1px;
 }
 
-fieldset {
-    border: none;
+/* For labels following a radio button */
+input[type="radio"]+label {
+    vertical-align: 16%;
+    margin-right: 10px;
 }
 
-label {
-    vertical-align: top;
+/* For labels following a checkbox */
+input[type="checkbox"]+label {
+    vertical-align: 15%;
+    margin-right: 10px;
 }
 
 /* Align only the modifiedKey label */
 .align-label {
-    margin-left: 4px;
+    margin-left: 0px;
+    padding-bottom: 6px;
     display: inline-block;
 }
 
 .align-label-1 {
-    margin-left: 9px;
+    margin-left: 0px;
+    margin-right: 10px;
+    margin-bottom: 1px;
+    vertical-align: middle;
+    padding-bottom: 6px;
     display: inline-block;
 }
 
@@ -55,12 +158,12 @@ textarea {
 }
 
 textarea {
-    min-width: 600px;
+    min-width: 500px;
     width: 100%;
     box-sizing: border-box;
     /* Ensure the textarea takes the full width */
     margin-top: 5px;
-    padding: 5px;
+    padding: 0px;
     font-size: 14px;
     resize: vertical;
     /* Allow vertical resize */
@@ -99,7 +202,62 @@ textarea {
         border: 1px solid #444;
     }
 
-    legend {
+    /* Dark Mode for Tabs */
+    .tabs {
+        border-bottom: none;
+    }
+
+    .tab-link {
+        background: #2c2c2c;
         color: #b0b0b0;
+    }
+
+    .tab-link:hover {
+        background: #3c3c3c;
+    }
+
+    .tab-link.active {
+        background: #1c1c1c;
+        color: #ffffff;
+    }
+
+    .tab-content {
+        background: #2c2c2c;
+        color: #b0b0b0;
+        border: none;
+    }
+
+    .tab-content.active {
+        background: #1c1c1c;
+    }
+
+    button {
+        background-color: #444;
+        /* Dark gray background */
+        color: #e0e0e0;
+        /* Light gray text */
+    }
+
+    button:hover {
+        background-color: #666;
+        /* Slightly lighter dark gray on hover */
+    }
+
+    button:active {
+        background-color: #333;
+        /* Even darker gray on click */
+        transform: translateY(2px);
+        /* Slightly move down when clicked */
+    }
+
+    button:disabled {
+        background-color: #555;
+        /* Darker gray background for disabled state */
+        color: #888;
+        /* Lighter gray text */
+        cursor: not-allowed;
+        /* Not allowed cursor */
+        opacity: 0.7;
+        /* Slightly transparent */
     }
 }
