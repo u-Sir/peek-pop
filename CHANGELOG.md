@@ -1,9 +1,9 @@
 0.0.26
-- added an option to open selcted url directly.
+- new options page
+- added an option to open selected url directly.
 - added an option to set double tap specific key to send current popup page back to original window.
-- added an option to popup in backgroud.
+- added an option to popup in background.
 - added an option to trigger after dragging is released.
-- new optiong page
 
 0.0.25
 - added an option to support image.
