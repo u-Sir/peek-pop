@@ -38,8 +38,7 @@ const configs = {
     'hoverPopupInBackground': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
-    'hoverWindowType': 'popup',
-    'triggerAfterDragRelease': true
+    'hoverWindowType': 'popup'
 };
 
 async function loadUserConfigs(keys = Object.keys(configs)) {
@@ -96,14 +95,14 @@ async function handleKeyDown(e) {
         try {
             const data = await loadUserConfigs(['doubleTapKeyToSendPageBack']);
             const doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
-        
+
             if (doubleTapKeyToSendPageBack === 'None') return;
-        
+
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             const key = e.key;
             const currentTime = new Date().getTime();
             const timeDifference = currentTime - lastKeyTime;
-        
+
             if (keyMap[doubleTapKeyToSendPageBack] && key === lastKey && timeDifference < 300) {
                 chrome.runtime.sendMessage({ action: 'sendPageBack' }, () => {
                     // console.log('send current page to original window');
@@ -119,7 +118,7 @@ async function handleKeyDown(e) {
             //     console.error('Error loading user configs:', error);
             // }
         }
-        
+
     }
 }
 
@@ -311,7 +310,7 @@ async function handleDragStart(e) {
 
     if (linkUrl || selectionText || imageUrl) {
         isDragging = true;
-        const data = await loadUserConfigs(['searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport', 'popupInBackground', 'triggerAfterDragRelease']);
+        const data = await loadUserConfigs(['searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport', 'popupInBackground']);
         const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
         const popupInBackground = data.popupInBackground || false;
         // Regular expression to match URLs including IP addresses
@@ -349,75 +348,32 @@ async function handleDragStart(e) {
         if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
             return;
         }
-        
-        const triggerAfterDragRelease = data.triggerAfterDragRelease !== 'undefined' ? data.triggerAfterDragRelease : true;
-        if (triggerAfterDragRelease) {
-
-            document.addEventListener('dragend', function onDragend(e) {
 
 
-                const currentMouseX = e.clientX;
-                const currentMouseY = e.clientY;
-                let direction = '';
-    
-                // do nothing when drag out of current page
-                if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
-                    // console.log(viewportLeft , e.screenX , viewportRight , viewportTop, e.screenY, viewportBottom)
-                    document.removeEventListener('dragend', onDragend, true);
-                    resetDraggingState();
-                    return;
-                }
-    
-                if (dragPx !== 0) {
-                    if ((Math.abs(currentMouseX - initialMouseX) > dragPx) || (Math.abs(currentMouseY - initialMouseY) > dragPx)) {
-                        // identify drag directions
-                        if (Math.abs(currentMouseX - initialMouseX) > Math.abs(currentMouseY - initialMouseY)) {
-                            direction = (currentMouseX > initialMouseX) ? 'right' : 'left';
-                        } else {
-                            direction = (currentMouseY > initialMouseY) ? 'down' : 'up';
-                        }
-    
-                        if (dragDirections.includes(direction)) {
-                            if (blurEnabled && !popupInBackground) {
-                                document.body.style.filter = `blur(${blurPx}px)`;
-                                document.body.style.transition = `filter ${blurTime}s ease`;
-                            }
-                            e.preventDefault();
-                            e.stopImmediatePropagation();
-                            chrome.runtime.sendMessage({
-                                linkUrl: finalLinkUrl,
-                                lastClientX: e.screenX,
-                                lastClientY: e.screenY,
-                                width: window.screen.availWidth,
-                                height: window.screen.availHeight,
-                                top: window.screen.availTop,
-                                left: window.screen.availLeft,
-                                trigger: 'drag'
-                            }, () => {
-                                hasPopupTriggered = true;
-                                document.removeEventListener('dragend', onDragend, true);
-                                finalLinkUrl = null;
-                            });
-                        } else {
-                            // nothing
-                        }
-    
-    
-                    } else {
-                        // do nothing
-                    }
-    
-    
-    
-    
-                } else {
+        document.addEventListener('dragend', function onDragend(e) {
+
+
+            const currentMouseX = e.clientX;
+            const currentMouseY = e.clientY;
+            let direction = '';
+
+            // do nothing when drag out of current page
+            if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
+                // console.log(viewportLeft , e.screenX , viewportRight , viewportTop, e.screenY, viewportBottom)
+                document.removeEventListener('dragend', onDragend, true);
+                resetDraggingState();
+                return;
+            }
+
+            if (dragPx !== 0) {
+                if ((Math.abs(currentMouseX - initialMouseX) > dragPx) || (Math.abs(currentMouseY - initialMouseY) > dragPx)) {
                     // identify drag directions
                     if (Math.abs(currentMouseX - initialMouseX) > Math.abs(currentMouseY - initialMouseY)) {
                         direction = (currentMouseX > initialMouseX) ? 'right' : 'left';
                     } else {
                         direction = (currentMouseY > initialMouseY) ? 'down' : 'up';
                     }
-    
+
                     if (dragDirections.includes(direction)) {
                         if (blurEnabled && !popupInBackground) {
                             document.body.style.filter = `blur(${blurPx}px)`;
@@ -442,31 +398,52 @@ async function handleDragStart(e) {
                     } else {
                         // nothing
                     }
+
+
+                } else {
+                    // do nothing
                 }
-                // document.removeEventListener('dragend', onDragend, true);
-    
-            }, true);
-        } else {
-            if (blurEnabled && !popupInBackground) {
-                document.body.style.filter = `blur(${blurPx}px)`;
-                document.body.style.transition = `filter ${blurTime}s ease`;
+
+
+
+
+            } else {
+                // identify drag directions
+                if (Math.abs(currentMouseX - initialMouseX) > Math.abs(currentMouseY - initialMouseY)) {
+                    direction = (currentMouseX > initialMouseX) ? 'right' : 'left';
+                } else {
+                    direction = (currentMouseY > initialMouseY) ? 'down' : 'up';
+                }
+
+                if (dragDirections.includes(direction)) {
+                    if (blurEnabled && !popupInBackground) {
+                        document.body.style.filter = `blur(${blurPx}px)`;
+                        document.body.style.transition = `filter ${blurTime}s ease`;
+                    }
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    chrome.runtime.sendMessage({
+                        linkUrl: finalLinkUrl,
+                        lastClientX: e.screenX,
+                        lastClientY: e.screenY,
+                        width: window.screen.availWidth,
+                        height: window.screen.availHeight,
+                        top: window.screen.availTop,
+                        left: window.screen.availLeft,
+                        trigger: 'drag'
+                    }, () => {
+                        hasPopupTriggered = true;
+                        document.removeEventListener('dragend', onDragend, true);
+                        finalLinkUrl = null;
+                    });
+                } else {
+                    // nothing
+                }
             }
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            chrome.runtime.sendMessage({
-                linkUrl: finalLinkUrl,
-                lastClientX: e.screenX,
-                lastClientY: e.screenY,
-                width: window.screen.availWidth,
-                height: window.screen.availHeight,
-                top: window.screen.availTop,
-                left: window.screen.availLeft,
-                trigger: 'drag'
-            }, () => {
-                hasPopupTriggered = true;
-                finalLinkUrl = null;
-            });
-        }
+            // document.removeEventListener('dragend', onDragend, true);
+
+        }, true);
+
 
     }
 

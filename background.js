@@ -27,8 +27,7 @@ const configs = {
     'hoverPopupInBackground': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
-    'hoverWindowType': 'popup',
-    'triggerAfterDragRelease': true
+    'hoverWindowType': 'popup'
 };
 
 // Load user configurations from storage
