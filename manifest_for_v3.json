@@ -42,7 +42,6 @@
       "16": "icon-16.png",
       "32": "icon-32.png"
     },
-    "default_title": "Whereami?",
     "default_popup": "options/options.html",
     "theme_icons": [
       {
