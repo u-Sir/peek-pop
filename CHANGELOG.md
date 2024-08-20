@@ -1,9 +1,11 @@
 0.0.26
 - new options page
+- now supports hover to preview.
+- now supports export/import configurations.
 - added an option to open selected url directly.
 - added an option to set double tap specific key to send current popup page back to original window.
 - added an option to popup in background.
-- added an option to trigger after dragging is released.
+- added an option to popup selected url in plain text
 
 0.0.25
 - added an option to support image.
