@@ -1,3 +1,13 @@
+0.0.26
+- new options page
+- now supports hover to preview.
+- now supports export/import configurations.
+- added an option to open selected url directly.
+- added an option to set double tap specific key to send current popup page back to original window.
+- added an option to popup in background.
+- added an option to popup selected url in plain text.
+- action icon now follows with system theme.
+
 0.0.24
 - improved modified key related logic.
 - added option to remember the popup window position and size.(Need to click/scroll on popup window page)
