@@ -21,7 +21,7 @@
         "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
     },
     "disabledUrls": {
-        "message": "Desactivar la extensión en estas URL (a través de texto plano, regex, comodines, una por línea)"
+        "message": "Desactivar extensión en estas URL (mediante texto plano, regex, comodines, una por línea)"
     },
     "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"
