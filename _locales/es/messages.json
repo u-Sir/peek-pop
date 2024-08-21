@@ -21,7 +21,7 @@
         "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
     },
     "disabledUrls": {
-        "message": "Desactivar la extensión en estas URL (a través de texto plano, regex, comodines, una por línea)"
+        "message": "Desactivar extensión en estas URL (mediante texto plano, regex, comodines, una por línea)"
     },
     "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"
@@ -100,5 +100,50 @@
     },
     "imgSupport": {
         "message": "Soporte de imagen"
+    },
+    "hoverTimeout": {
+        "message": "hover to preview"
+    },
+    "urlCheck": {
+        "message": "Abrir directamente si lo seleccionado es una URL"
+    },
+    "popupInBackground": {
+        "message": "Popup en segundo plano"
+    },
+    "doubleTapKeyToSendPageBack": {
+        "message": "Doble toque en una tecla específica para enviar la página a la ventana original (Por favor, verifica si funciona correctamente.)"
+    },
+    "hoverSettings": {
+        "message": "Configuración de hover"
+    },
+    "hoverPopupInBackground": {
+        "message": "Popup en segundo plano"
+    },
+    "hoverImgSupport": {
+        "message": "Soporte de imagen"
+    },
+    "hoverDisabledUrls": {
+        "message": "Desactivar extensión en estas URL (mediante texto plano, regex, comodines, una por línea)"
+    },
+    "searchSettings": {
+        "message": "Configuración de búsqueda"
+    },
+    "triggerAfterDragRelease": {
+        "message": "Activar después de soltar arrastre. (sin direcciones, verifica si no está marcado)"
+    },
+    "generalSettingsTab": {
+        "message": "Configuración general"
+    },
+    "exportImportSettings": {
+        "message": "Configuraciones"
+    },
+    "importButton": {
+        "message": "Importar configuraciones"
+    },
+    "exportButton": {
+        "message": "Exportar configuraciones"
+    },
+    "dragStartEnable": {
+        "message": "El arrastre se activa inmediatamente sin esperar la liberación. (No se admite la detección de dirección)"
     }
 }

@@ -18,7 +18,18 @@ const configs = {
     'dragDirections': ['up', 'down', 'right', 'left'],
     'dragPx': 0,
     'imgSupport': false,
-    'enableContainerIdentify': true
+    'hoverTimeout': 0,
+    'urlCheck': true,
+    'popupInBackground': false,
+    'doubleTapKeyToSendPageBack': 'None',
+    'hoverDisabledUrls': [],
+    'hoverImgSupport': false,
+    'hoverPopupInBackground': false,
+    'hoverSearchEngine': 'https://www.google.com/search?q=%s',
+    'hoverModifiedKey': 'None',
+    'hoverWindowType': 'popup',
+    'enableContainerIdentify': true,
+    'dragStartEnable': false
 };
 
 // Load user configurations from storage
@@ -233,6 +244,51 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 }
 
+                if (request.action === 'sendPageBack') {
+                    loadUserConfigs().then(userConfigs => {
+                        const { popupWindowsInfo, enableContainerIdentify } = userConfigs;
+            
+                        if (popupWindowsInfo && Object.keys(popupWindowsInfo).length > 0) {
+                            // Iterate through popupWindowsInfo to find the original window ID
+                            let originalWindowId = null;
+                            for (const originWindowId in popupWindowsInfo) {
+                                if (popupWindowsInfo[originWindowId][sender.tab.windowId]) {
+                                    originalWindowId = originWindowId;
+                                    break;
+                                }
+                            }
+            
+                            if (originalWindowId) {
+                                const createData = { windowId: parseInt(originalWindowId), url: sender.tab.url };
+                                if (enableContainerIdentify && sender.tab.cookieStoreId && sender.tab.cookieStoreId !== 'firefox-default') {
+                                    createData.cookieStoreId = sender.tab.cookieStoreId;
+                                }
+                                chrome.tabs.create(createData, () => {
+                                    chrome.windows.get(sender.tab.windowId, window => {
+                                        if (window.id) chrome.windows.remove(window.id);
+                                    });
+            
+                                    if (userConfigs.contextItemCreated) {
+                                        chrome.contextMenus.remove('sendPageBack');
+                                        userConfigs.contextItemCreated = false;
+                                        chrome.storage.local.set({ contextItemCreated: false }, () => {
+                                            // console.log('Context menu created and contextItemCreated updated to false');
+                                        });
+                                        chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
+                                    }
+            
+                                });
+                            } else {
+                                //console.error('No original window ID found for current window ID in popupWindowsInfo.');
+                            }
+                        } else {
+                            console.error('popupWindowsInfo is empty or not properly structured.');
+                        }
+                    });
+                    sendResponse({ status: 'send Page Back handled' });
+
+                }
+
 
                 const zoomFactor = new Promise((resolve, reject) => {
                     chrome.tabs.getZoom(sender.tab.id, (zoom) => {
@@ -255,12 +311,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     ]);
                 }).then(() => {
                     return loadUserConfigs().then(userConfigs => {
-                        const { disabledUrls, rememberPopupSizeAndPosition, windowType } = userConfigs;
+                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType } = userConfigs;
+                        let typeToSend;
 
+                        if (request.trigger === 'drag') {
+                            typeToSend = windowType || 'popup';
+                        } else if (request.trigger === 'hover') {
+                            typeToSend = hoverWindowType  || 'popup';
+                        }
                         if (isUrlDisabled(sender.tab.url, disabledUrls)) {
                             sendResponse({ status: 'url disabled' });
                         } else if (request.linkUrl) {
-                            handleLinkInPopup(request.linkUrl, sender.tab, currentWindow, rememberPopupSizeAndPosition, windowType).then(() => {
+                            handleLinkInPopup(request.trigger, request.linkUrl, sender.tab, currentWindow, rememberPopupSizeAndPosition, typeToSend).then(() => {
                                 sendResponse({ status: 'link handled' });
                             });
                         } else {
@@ -279,7 +341,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Handle link opening in a popup
-function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType) {
+function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType) {
     if (!isValidUrl(linkUrl)) {
         console.error('Invalid URL:', linkUrl);
         return Promise.reject(new Error('Invalid URL'));
@@ -306,15 +368,15 @@ function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosi
                     if (Object.keys(savedPositionAndSize).length > 0) {
                         ({ left: dx, top: dy, width, height } = savedPositionAndSize);
 
-                        createPopupWindow(linkUrl, tab, windowType, dx, dy, width, height, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+                        createPopupWindow(trigger, linkUrl, tab, windowType, dx, dy, width, height, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
                     } else {
-                        defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+                        defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
                     }
                 });
             } else {
                 chrome.storage.local.get(['popupWindowsInfo'], result => {
                     const popupWindowsInfo = result.popupWindowsInfo || {};
-                    defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+                    defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
                 });
             }
         });
@@ -322,10 +384,20 @@ function handleLinkInPopup(linkUrl, tab, currentWindow, rememberPopupSizeAndPosi
 }
 
 // Function to create a popup window
-function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
-    chrome.storage.local.get(['enableContainerIdentify'], (result) => {
+function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+    chrome.storage.local.get(['enableContainerIdentify','popupInBackground', 'hoverPopupInBackground'], (result) => {
         const enableContainerIdentify = result.enableContainerIdentify !== undefined ? result.enableContainerIdentify : true;
+        let popupInBackground = false;
+        if (trigger === 'drag') {
+            popupInBackground = result.popupInBackground !== undefined
+                ? result.popupInBackground
+                : false;
+        } else if (trigger === 'hover') {
 
+            popupInBackground = result.hoverPopupInBackground !== undefined
+                ? result.hoverPopupInBackground
+                : false;
+        }
         chrome.windows.create({
             url: linkUrl,
             type: windowType,
@@ -333,7 +405,7 @@ function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, o
             left: parseInt(left, 10),
             width: parseInt(width, 10),
             height: parseInt(height, 10),
-            focused: true,
+            focused: !popupInBackground,
             incognito: tab.incognito,
             ...(enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default' ? { cookieStoreId: tab.cookieStoreId } : {})
         }, (newWindow) => {
@@ -349,7 +421,7 @@ function createPopupWindow(linkUrl, tab, windowType, left, top, width, height, o
 
 
 // Function to handle default popup creation
-function defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+function defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
     let dx, dy;
 
     if (tryOpenAtMousePosition) {
@@ -371,7 +443,7 @@ function defaultPopupCreation(linkUrl, tab, currentWindow, defaultWidth, default
     dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - defaultHeight));
 
 
-    createPopupWindow(linkUrl, tab, windowType, dx, dy, defaultWidth, defaultHeight, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+    createPopupWindow(trigger, linkUrl, tab, windowType, dx, dy, defaultWidth, defaultHeight, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
 }
 
 // Function to update popup info and add listeners
