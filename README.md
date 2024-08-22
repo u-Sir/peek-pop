@@ -11,13 +11,14 @@ This plugin allows you to preview links by dragging them, search selected text b
 
 - Preview any link by dragging it.(Secure, unrestricted, modification-free cross-origin access)
 - Search any selected text by dragging.(configurable)
-- Supports cross-site previews.
-- Syncs login status with the browser.
+- Supports images.(optional)
+- Supports hovering to trigger.(optional)
+- Supports popup in background.(optional)
 - Automatically closes the preview when clicking on the original page.(optional)
 - Automatically remembers the popup window position and size. ***On Firefox, you need to click/scroll on the popup page.*** (optional)
 - Supports all browser's native shortcuts such as forward, backward, and reader mode (for full support, you need to set the popup window type to 'Normal').
 - Customizable popup window style via userChrome.css on ***Firefox*** (you need to set the popup window type to 'Normal').
-- Supports returning the previewed page to display in the original window.(via context menu)
+- Supports returning the previewed page to display in the original window.(via context menu or double tap on specific key)
 - Customizable blur effect.
 - Drag action triggered only when the modifier key is held down. (configurable)
 - Supports private browsing windows.
@@ -25,10 +26,8 @@ This plugin allows you to preview links by dragging them, search selected text b
 - Customizable popup window size.
 - Popups can appear near the mouse cursor or centered (optional, supports multi-monitors).
 - Blacklist supports regular expressions, wildcards, and plain text.
-- Follows system dark/light mode.
 - Supports response on specific directions.(optional)
 - Press Escape to close the current popup page.(optional)
-- Supports dragging images.(optional)
 
 # Screenshots
 
