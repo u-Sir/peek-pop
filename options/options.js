@@ -36,7 +36,7 @@ const configs = {
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
-    if (document.documentElement.clientHeight === 600 ) {
+    if (document.documentElement.scrollHeight > document.documentElement.clientHeight ) {
         // Hide elements if the page is trigger by click on browser action icon on firefox.
         document.getElementById('exportImportSettings').style.display = 'none';
         document.getElementById('importFile').style.display = 'none';
