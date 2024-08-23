@@ -1,6 +1,6 @@
 # Drag to preview:  
 [![](https://img.shields.io/github/v/release/u-Sir/drag-to-preview?display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fdrag-to-preview%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fdrag-to-preview%2Freleases)](https://github.com/u-Sir/drag-to-preview/releases)
-[![](https://img.shields.io/amo/v/drag-to-preview.svg)](https://addons.mozilla.org/en-US/firefox/addon/drag-to-preview)
+[![](https://img.shields.io/amo/v/drag-to-preview.svg)](https://addons.mozilla.org/firefox/addon/drag-to-preview)
 [![](https://img.shields.io/chrome-web-store/v/fjllepdpgikphekgbinhpdkalliiejdh.svg)](https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh)
 [![](https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fecpgdeolbpelhdjcplojlpdmfppjljop)](https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop)
 
