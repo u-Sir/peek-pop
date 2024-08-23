@@ -1,10 +1,15 @@
-# Drag to preview: 
+# Drag to preview:  
+![GitHub Release](https://img.shields.io/github/v/release/u-Sir/drag-to-preview)
+![Mozilla Add-on Version](https://img.shields.io/amo/v/drag_to_privew@uxer)
+![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/fjllepdpgikphekgbinhpdkalliiejdh)
+[![Edge Web Store Version](https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fecpgdeolbpelhdjcplojlpdmfppjljop)]([https://microsoftedge.microsoft.com/addons/detail/arxivutils/ngjpcfjabahdoadnajbhnikbemhmemdg](https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop))
+
 This plugin allows you to preview links by dragging them, search selected text by dragging, and provides ***secure, unrestricted, modification-free cross-origin access***.
 
 ## Install
-  - [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/drag-to-preview/)
+  - [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/drag-to-preview/) 
   - [Edge](https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop)
-  - [Chrome](https://chromewebstore.google.com/detail/fjllepdpgikphekgbinhpdkalliiejdh)
+  - [Chrome](https://chromewebstore.google.com/detail/fjllepdpgikphekgbinhpdkalliiejdh)  
   - Download from [Release](https://github.com/u-Sir/drag-to-preview/releases) and extract to load it with developer mode.
 
 # Features:
