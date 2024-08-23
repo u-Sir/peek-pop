@@ -1,5 +1,5 @@
 # Drag to preview:  
-![GitHub Release](https://img.shields.io/github/v/release/u-Sir/drag-to-preview)
+![GitHub Release](https://img.shields.io/github/v/release/u-Sir/drag-to-preview?display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fdrag-to-preview%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fdrag-to-preview%2Freleases)
 ![Mozilla Add-on Version](https://img.shields.io/amo/v/drag_to_privew@uxer)
 ![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/fjllepdpgikphekgbinhpdkalliiejdh)
 [![Edge Web Store Version](https://img.shields.io/badge/dynamic/json?label=edge%20add-on&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fecpgdeolbpelhdjcplojlpdmfppjljop)]([https://microsoftedge.microsoft.com/addons/detail/arxivutils/ngjpcfjabahdoadnajbhnikbemhmemdg](https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop))
