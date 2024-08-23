@@ -6,8 +6,6 @@
 
 This plugin allows you to preview links by dragging them, search selected text by dragging, and provides ***secure, unrestricted, modification-free cross-origin access***.
 
-Or download from [Release](https://github.com/u-Sir/drag-to-preview/releases) and extract to load it with developer mode.
-
 # Features:
 
 - Preview any link by dragging it.(Secure, unrestricted, modification-free cross-origin access)
