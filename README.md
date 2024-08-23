@@ -11,6 +11,9 @@ This plugin allows you to preview links by dragging them, search selected text b
 
 ![image](https://github.com/user-attachments/assets/6e00b216-907a-42d4-b0af-296414c62d1d)
 
+------
+
+![image](https://github.com/user-attachments/assets/fc997167-3206-4386-b183-612b3a8a5530)
 
 ## Options page
 ![image](https://github.com/user-attachments/assets/09408a5e-e66e-4bd9-9fc5-8c2c396a99ac)
