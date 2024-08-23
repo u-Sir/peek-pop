@@ -7,6 +7,15 @@
 
 This plugin allows you to preview links by dragging them, search selected text by dragging, and provides ***secure, unrestricted, modification-free cross-origin access***.
 
+# Screenshots
+
+![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/27f678c1-3f2d-449e-b37b-f440df3d9dc8)
+
+![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/64f16d7d-1600-42fa-9662-67028c4d4107)
+
+## Options page
+![image](https://github.com/user-attachments/assets/09408a5e-e66e-4bd9-9fc5-8c2c396a99ac)
+
 # Features:
 
 - Preview any link by dragging it.(Secure, unrestricted, modification-free cross-origin access)
@@ -28,15 +37,6 @@ This plugin allows you to preview links by dragging them, search selected text b
 - Blacklist supports regular expressions, wildcards, and plain text.
 - Supports response on specific directions.(optional)
 - Press Escape to close the current popup page.(optional)
-
-# Screenshots
-
-![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/27f678c1-3f2d-449e-b37b-f440df3d9dc8)
-
-![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/64f16d7d-1600-42fa-9662-67028c4d4107)
-
-## Options page
-![image](https://github.com/user-attachments/assets/09408a5e-e66e-4bd9-9fc5-8c2c396a99ac)
 
 # Privacy:
 This plugin does not collect any personal information.
