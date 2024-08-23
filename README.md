@@ -9,9 +9,8 @@ This plugin allows you to preview links by dragging them, search selected text b
 
 # Screenshots
 
-![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/27f678c1-3f2d-449e-b37b-f440df3d9dc8)
+![image](https://github.com/user-attachments/assets/6e00b216-907a-42d4-b0af-296414c62d1d)
 
-![图片](https://github.com/u-Sir/drag-to-preview/assets/93647031/64f16d7d-1600-42fa-9662-67028c4d4107)
 
 ## Options page
 ![image](https://github.com/user-attachments/assets/09408a5e-e66e-4bd9-9fc5-8c2c396a99ac)
