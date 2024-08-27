@@ -7,7 +7,7 @@
 
 
 
-This plugin allows you to preview links by dragging them, search selected text by dragging, and provides ***secure, unrestricted, modification-free cross-origin access***.
+This plugin allows you to preview links, images or search selected text on popup window, and provides ***secure, unrestricted, modification-free cross-origin access***.
 
 # Screenshots
 
