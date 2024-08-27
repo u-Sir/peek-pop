@@ -1,4 +1,4 @@
-# Drag to preview:  
+# Peek Pop (formerly Drag to preview)  
 
 [![](https://img.shields.io/github/v/release/u-Sir/drag-to-preview?label=Release&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fdrag-to-preview%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fdrag-to-preview%2Freleases)](https://github.com/u-Sir/drag-to-preview/releases/latest)
 [![](https://img.shields.io/amo/v/drag-to-preview.svg?label=Firefox)](https://addons.mozilla.org/firefox/addon/drag-to-preview)
