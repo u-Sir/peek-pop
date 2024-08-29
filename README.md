@@ -1,5 +1,5 @@
   
-<h1 align="center"><img src=https://github.com/user-attachments/assets/afae0d1f-e3ad-453a-8b7e-f8e3daa741d5 alt="Peek Pop" style="height: 1em;">    Peek Pop (formerly Drag to preview)</h1>
+<h1 align="center"><img src="https://github.com/user-attachments/assets/afae0d1f-e3ad-453a-8b7e-f8e3daa741d5" alt="Peek Pop" style="height: 1em;">    Peek Pop (formerly Drag to preview)</h1>
 
 <div align="center">
 
