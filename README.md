@@ -1,5 +1,6 @@
-<h1 align="center">Peek Pop (formerly Drag to preview)  
-</h1>
+  
+<h1 align="center"><img src=https://github.com/user-attachments/assets/afae0d1f-e3ad-453a-8b7e-f8e3daa741d5 alt="Peek Pop" style="height: 1em;">    Peek Pop (formerly Drag to preview)</h1>
+
 <div align="center">
 
 [![](https://img.shields.io/github/v/release/u-Sir/peek-pop?label=Release&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases)](https://github.com/u-Sir/peek-pop/releases/latest)
