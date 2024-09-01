@@ -28,7 +28,22 @@ const configs = {
     'hoverPopupInBackground': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
-    'hoverWindowType': 'popup'
+    'hoverWindowType': 'popup',
+    'previewModeDisabledUrls': [],
+    'previewModePopupInBackground': false,
+    'previewModeModifiedKey': 'None',
+    'previewModeWindowType': 'popup',
+    'previewModeEnable': false,
+    'imgSearchEnable': false,
+    'hoverImgSearchEnable': false,
+    'doubleClickToSwitch': false,
+    'doubleClickAsClick': false,
+    'rememberPopupSizeAndPositionForDomain': false,
+    'isFirefox': false,
+    'linkHint': false,
+    'collection': [],
+    'searchTooltipsEnable': false,
+    'collectionTooltipsEnable': false
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -50,54 +65,145 @@ function init() {
             this.classList.add('active');
             document.getElementById(tabId).classList.add('active');
 
+            if (document.querySelector('.tab-link.active').id === 'dragSettingsTab') {
+
+                // Set up for drag search engine
+                setupSearchEngineOptions('searchEngine', 'input[name="searchEngine"]', 'imgSearchOption', 'imgSearchEnable');
+
+            } else if (document.querySelector('.tab-link.active').id === 'hoverSettingsTab') {
+
+                // Set up for hover search engine
+                setupSearchEngineOptions('hoverSearchEngine', 'input[name="hoverSearchEngine"]', 'hoverImgSearchOption', 'hoverImgSearchEnable');
+            }
+
+
         });
     });
 
-    const userLang = navigator.language || navigator.userLanguage;
+const userLang = navigator.language || navigator.userLanguage;
 
-    if (userLang.startsWith('zh')) {
-        document.querySelector('.align-label-1').style.marginBottom = '4px';
+if (userLang.startsWith('zh')) {
+    document.querySelector('.align-label-1').style.marginBottom = '4px';
+}
+
+document.getElementById('exportButton').addEventListener('click', exportSettings);
+
+document.getElementById('importButton').addEventListener('click', () => {
+    document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        importSettings(file);
+    }
+});
+
+document.getElementById('imgSearchEnable').addEventListener('change', function () {
+    const imgSupportCheckbox = document.getElementById('imgSupport');
+    if (this.checked) {
+        imgSupportCheckbox.checked = this.checked;
+        saveConfig('imgSupport', this.checked);
     }
 
-    document.getElementById('exportButton').addEventListener('click', exportSettings);
+});
 
-    document.getElementById('importButton').addEventListener('click', () => {
-        document.getElementById('importFile').click();
+document.getElementById('hoverImgSearchEnable').addEventListener('change', function () {
+    const hoverImgSupportCheckbox = document.getElementById('hoverImgSupport');
+    if (this.checked) {
+        hoverImgSupportCheckbox.checked = this.checked;
+        saveConfig('hoverImgSupport', this.checked);
+
+    }
+});
+
+document.getElementById('imgSupport').addEventListener('change', function () {
+    const imgSearchEnableCheckbox = document.getElementById('imgSearchEnable');
+    if (!this.checked) {
+        imgSearchEnableCheckbox.checked = this.checked;
+        saveConfig('imgSearchEnable', this.checked);
+    }
+
+});
+
+document.getElementById('hoverImgSupport').addEventListener('change', function () {
+    const hoverImgSearchEnableCheckbox = document.getElementById('hoverImgSearchEnable');
+    if (!this.checked) {
+        hoverImgSearchEnableCheckbox.checked = this.checked;
+        saveConfig('hoverImgSearchEnable', this.checked);
+
+    }
+});
+
+
+
+document.getElementById('hoverTimeout').addEventListener('change', function () {
+    const linkHintCheckbox = document.getElementById('linkHint');
+    const hoverTimeoutValue = this.value; // Get the slider value
+    if (parseInt(hoverTimeoutValue, 10) !== 0) {
+        linkHintCheckbox.checked = false;
+        linkHintCheckbox.disabled = true;  // Gray out the checkbox
+        saveConfig('linkHint', false);
+    } else {
+        linkHintCheckbox.disabled = false;  // reset the checkbox
+
+    }
+});
+}
+
+// Function to set up the visibility toggle for image search options
+function setupSearchEngineOptions(engineType, engineSelector, imgOptionId, configKey) {
+    const searchEngines = document.querySelectorAll(engineSelector);
+    const imgSearchOption = document.getElementById(imgOptionId);
+
+    const allowedEngines = ["google", "bing", "baidu", "yandex", "hoverGoogle", "hoverBing", "hoverBaidu", "hoverYandex"];
+    searchEngines.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (allowedEngines.includes(this.id)) {
+                imgSearchOption.style.display = 'block';
+            } else {
+                imgSearchOption.style.display = 'none';
+                saveConfig(configKey, false);
+            }
+        });
     });
 
-    document.getElementById('importFile').addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            importSettings(file);
-        }
-    });
-
-
+    // Initial check to set visibility based on the selected search engine
+    const checkedRadio = document.querySelector(`${engineSelector}:checked`);
+    if (checkedRadio) {
+        checkedRadio.dispatchEvent(new Event('change'));
+    }
 }
 
 function setupPage(userConfigs) {
     userConfigs = userConfigs || {};
-
     // Elements to translate and set labels for
     const elementsToTranslate = [
         { id: 'searchEngineSelection', messageId: 'searchEngineSelection' },
         { id: 'hoverSearchEngineSelection', messageId: 'searchEngineSelection' },
 
+        { id: 'linkSettings', messageId: 'linkSettings' },
         { id: 'dragPopupSettings', messageId: 'popupSettings' },
         { id: 'hoverPopupSettings', messageId: 'popupSettings' },
+        { id: 'previewModePopupSettings', messageId: 'popupSettings' },
         { id: 'popupSettings', messageId: 'popupSettings' },
+
+        { id: 'note', messageId: 'note' },
 
         { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
 
         { id: 'blacklist', messageId: 'blacklist' },
         { id: 'hoverBlacklist', messageId: 'blacklist' },
+        { id: 'previewModeBlacklist', messageId: 'blacklist' },
 
         { id: 'dragSettings', messageId: 'dragSettings' },
         { id: 'hoverSettings', messageId: 'hoverSettings' },
+        { id: 'previewModeSettings', messageId: 'previewModeSettings' },
         { id: 'searchSettings', messageId: 'searchSettings' },
 
         { id: 'dragSettingsTab', messageId: 'dragSettings' },
         { id: 'hoverSettingsTab', messageId: 'hoverSettings' },
+        { id: 'previewModeSettingsTab', messageId: 'previewModeSettings' },
         { id: 'generalSettingsTab', messageId: 'generalSettingsTab' },
 
         { id: 'exportImportSettings', messageId: 'exportImportSettings' },
@@ -116,6 +222,7 @@ function setupPage(userConfigs) {
 
     setInputLabel('noneKey', 'noneKey');
     setInputLabel('hoverNoneKey', 'noneKey');
+    setInputLabel('previewNoneKey', 'noneKey');
 
     setInputLabel('normal', 'normal');
     setInputLabel('hoverNormal', 'normal');
@@ -123,9 +230,11 @@ function setupPage(userConfigs) {
 
     setInputLabel('windowType', 'windowType');
     setInputLabel('hoverWindowType', 'windowType');
+    setInputLabel('previewModeWindowType', 'windowType');
 
     setInputLabel('modifiedKey', 'modifiedKey');
     setInputLabel('hoverModifiedKey', 'modifiedKey');
+    setInputLabel('previewModeModifiedKey', 'modifiedKey');
 
     setInputLabel('dragDirections', 'dragDirections');
     setInputLabel('dragPx', 'dragPx');
@@ -147,6 +256,7 @@ function setupPage(userConfigs) {
     // Initialize textarea and sliders
     initializeTextarea('disabledUrls', userConfigs);
     initializeTextarea('hoverDisabledUrls', userConfigs);
+    initializeTextarea('previewModeDisabledUrls', userConfigs);
 
     initializeSlider('blurPx', userConfigs.blurPx || 3);
     initializeSlider('blurTime', userConfigs.blurTime || 1);
@@ -159,6 +269,7 @@ function setupPage(userConfigs) {
     // Set modified key
     setupModifiedKeySelection(userConfigs.modifiedKey);
     setupHoverModifiedKeySelection(userConfigs.hoverModifiedKey);
+    setupPreviewModeModifiedKeySelection(userConfigs.previewModeModifiedKey);
     setupDoubleTapKeyToSendPageBackSelection(userConfigs.doubleTapKeyToSendPageBack);
 
     // Setup search engine selection
@@ -168,6 +279,7 @@ function setupPage(userConfigs) {
     // Setup window type selection
     setupWindowTypeSelection(userConfigs.windowType);
     setupHoverWindowTypeSelection(userConfigs.hoverWindowType);
+    setupPreviewModeWindowTypeSelection(userConfigs.previewModeWindowType);
 
 }
 
@@ -231,6 +343,23 @@ function initializeSlider(id, defaultValue) {
         output.textContent = input.value;
         localStorage.setItem(id, input.value);
     });
+
+    if (id === 'hoverTimeout') {
+        const linkHintCheckbox = document.getElementById('linkHint');
+        
+        chrome.storage.local.get(['hoverTimeout'], (data) => {
+            const hoverTimeout = typeof data.hoverTimeout !== 'undefined' ? parseInt(data.hoverTimeout, 10) : 0;
+            
+            if ( hoverTimeout !== 0) {
+                linkHintCheckbox.checked = false;
+                linkHintCheckbox.disabled = true;  // Gray out the checkbox
+                saveConfig('linkHint', false);
+            } else { 
+                linkHintCheckbox.disabled = false;  // Reset the checkbox
+            }
+        });
+    }
+    
 }
 
 
@@ -346,6 +475,20 @@ function setupHoverWindowTypeSelection(windowType) {
     });
 }
 
+function setupPreviewModeWindowTypeSelection(windowType) {
+    windowType = windowType ?? 'popup';
+    document.querySelector(`input[name="previewModeWindowType"][value="${windowType}"]`).checked = true;
+
+    document.querySelectorAll('input[name="previewModeWindowType"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newPreviewModeWindowType = event.target.value;
+            chrome.storage.local.set({ previewModeWindowType: newPreviewModeWindowType }, () => {
+                configs.previewModeWindowType = newPreviewModeWindowType;
+            });
+        });
+    });
+}
+
 function setupModifiedKeySelection(modifiedKey) {
     modifiedKey = modifiedKey ?? 'None';
     document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
@@ -369,6 +512,21 @@ function setupHoverModifiedKeySelection(hoverModifiedKey) {
             const newHoverModifiedKey = event.target.value;
             chrome.storage.local.set({ hoverModifiedKey: newHoverModifiedKey }, () => {
                 configs.hoverModifiedKey = newHoverModifiedKey;
+            });
+        });
+    });
+}
+
+
+function setupPreviewModeModifiedKeySelection(previewModeModifiedKey) {
+    previewModeModifiedKey = previewModeModifiedKey ?? 'None';
+    document.querySelector(`input[name="previewModeModifiedKey"][value="${previewModeModifiedKey}"]`).checked = true;
+
+    document.querySelectorAll('input[name="previewModeModifiedKey"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newPreviewModeModifiedKey = event.target.value;
+            chrome.storage.local.set({ previewModeModifiedKey: newPreviewModeModifiedKey }, () => {
+                configs.previewModeModifiedKey = newPreviewModeModifiedKey;
             });
         });
     });
@@ -466,22 +624,29 @@ async function importSettings(file) {
             return;
         }
 
+        // Load user configs and handle Firefox-specific settings
+        const userConfigs = await loadUserConfigs();
+        if (userConfigs['isFirefox']) {
+            // Remove specific keys from the settings for Firefox
+            delete importData.settings.enableContainerIdentify;
+            delete importData.settings.dragStartEnable;
+        }
+
         await chrome.storage.local.set(importData.settings);
-        
+
         // Reload the page to apply the imported settings
         init();
-        
-
 
     } catch (error) {
         console.error('Error importing settings:', error);
     }
 }
 
+
 function readFileAsJSON(file) {
     return new Promise((resolve, reject) => {
         const fileReader = new FileReader();
-        fileReader.onload = function(event) {
+        fileReader.onload = function (event) {
             try {
                 const json = JSON.parse(event.target.result);
                 resolve(json);
@@ -489,7 +654,7 @@ function readFileAsJSON(file) {
                 reject('Error parsing JSON file: ' + error);
             }
         };
-        fileReader.onerror = function() {
+        fileReader.onerror = function () {
             reject('Error reading file: ' + fileReader.error);
         };
         fileReader.readAsText(file);
@@ -507,6 +672,9 @@ function loadUserConfigs(callback) {
         userConfigs.hoverSearchEngine = userConfigs.hoverSearchEngine ?? configs.hoverSearchEngine;
         userConfigs.hoverModifiedKey = userConfigs.hoverModifiedKey ?? configs.hoverModifiedKey;
         userConfigs.hoverWindowType = userConfigs.hoverWindowType ?? configs.hoverWindowType;
+
+        userConfigs.previewModeModifiedKey = userConfigs.previewModeModifiedKey ?? configs.previewModeModifiedKey;
+        userConfigs.previewModeWindowType = userConfigs.previewModeWindowType ?? configs.previewModeWindowType;
 
         keys.forEach(key => {
             if (userConfigs[key] !== null && userConfigs[key] !== undefined) {

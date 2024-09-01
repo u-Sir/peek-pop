@@ -3,10 +3,10 @@
         "message": "Open link in popup window"
     },
     "extensionName": {
-        "message": "Drag to Preview"
+        "message": "formerly Drag to Preview"
     },
     "extensionDescription": {
-        "message": "Drag to preview links or search selected text"
+        "message": "Preview links, images, or search selected text in a popup window."
     },
     "popupHeight": {
         "message": "Popup height (px)"
@@ -18,10 +18,10 @@
         "message": "Close popup when origin window is focused"
     },
     "tryOpenAtMousePosition": {
-        "message": "Try to open at mouse position (disabled — open at screen center)"
+        "message": "Popup at mouse position (disabled — popup at screen center)"
     },  
     "disabledUrls": {
-        "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
+        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
     },  
     "openPageInMainWindow": {
         "message": "Open page in main window"
@@ -30,16 +30,16 @@
         "message": "Send Page Back to Original Window"
     },
     "blurEnabled": {
-        "message": "Set blur effect on Original Window when popup"
+        "message": "Enable blur effect"
     },
     "enableContainerIdentify": {
         "message": "Keep open in the same container as original page"
     },
     "blurPx": {
-        "message": "Blur effect strengh: "
+        "message": "Blur effect idensity: "
     },
     "blurTime": {
-        "message": "Blur in specific seconds (s): "
+        "message": "Blur in specific seconds: "
     },
     "modifiedKey": {
         "message": "Response when selected key is pressing (Please check if it works as expected.)"
@@ -57,16 +57,16 @@
         "message": "None"
     },
     "blurEffectSettings": {
-        "message": "Blur Effect Settings"
+        "message": "Blur Effect"
     },
     "popupSettings": {
-        "message": "Popup Window Settings"
+        "message": "Popup Window"
     },
     "blacklist": {
         "message": "Blacklist"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "Persist popup size and position, ignoring below settings"
+        "message": "Remember the last popup window size and position."
     },
     "normal": {
         "message": "Normal"
@@ -75,10 +75,10 @@
         "message": "Popup window type:"
     },
     "closedByEsc": {
-        "message": "Press Esc to close the current popup page (overrides page's default Esc behavior)"
+        "message": "Esc to close current page (overrides page's default Esc behavior)"
     },
     "dragSettings": {
-        "message": "Drag Settings"
+        "message": "Drag"
     },
     "dragPx": {
         "message": "At least move px (do not check if 0): "
@@ -102,19 +102,19 @@
         "message": "Image support"
     },
     "hoverTimeout": {
-        "message": "hover (ms) to preview ( 0 to disabled )"
+        "message": "hover (ms) to preview ( 0 to disabled ):"
     },
     "urlCheck": {
-        "message": "Open directly if selected is url"
+        "message": "Open selected url text directly "
     },
     "popupInBackground": {
         "message": "Popup in background"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
+        "message": "Double tap specific key to send page back (Please check if it works as expected.)"
     },
     "hoverSettings": {
-        "message": "Hover settings"
+        "message": "Hover"
     },
     "hoverPopupInBackground": {
         "message": "Popup in background"
@@ -123,24 +123,66 @@
         "message": "Image support"
     },  
     "hoverDisabledUrls": {
-        "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
+        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
     },
     "searchSettings": {
-        "message": "Search settings"
+        "message": "Search"
     },
     "triggerAfterDragRelease": {
-        "message": "Trigger after drag is released. (no directions check if uncheck)"
+        "message": "Trigger after drag is released, no directions check."
     },  
     "generalSettingsTab": {
-        "message": "General settings"
+        "message": "General"
     },
     "exportImportSettings": {
         "message": "Configurations"
     },
     "importButton": {
-        "message": "Import settings"
+        "message": "Import"
     },  
     "exportButton": {
-        "message": "Export settings"
+        "message": "Export"
+    },
+    "previewModeSettings": {
+        "message": "Click"
+    },
+    "previewModePopupInBackground": {
+        "message": "Popup in background"
+    }, 
+    "previewModeDisabledUrls": {
+        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
+    }, 
+    "previewModeEnable": {
+        "message": "Clicking on the link to preview"
+    }, 
+    "imgSearchEnable": {
+        "message": "Replace Preview with Image Search."
+    }, 
+    "hoverImgSearchEnable": {
+        "message": "Replace Preview with Image Search."
+    }, 
+    "doubleClickToSwitch": {
+        "message": "Double-click outside images/links to toggle. Resets after page reload or redirect."
+    }, 
+    "doubleClickAsClick": {
+        "message": "Double-click on link to pass through single-click action."
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "Remember the last popup window size and position for each domain."
+    },
+    "note": {
+        "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse."
+    },
+    "linkHint": {
+        "message": "Indicator."
+    },
+    "searchTooltipsEnable": {
+        "message": "Tooltips for selected text."
+    },
+    "collectionTooltipsEnable": {
+        "message": "Collection tooltips."
+    },
+    "linkSettings": {
+        "message": "Link"
     }
 } 

@@ -3,7 +3,7 @@
         "message": "在弹出窗口中打开链接"
     },
     "extensionName": {
-        "message": "拖拽预览"
+        "message": "原拖拽预览"
     },
     "extensionDescription": {
         "message": "在弹出窗口中打开拖拽的链接、搜索拖拽的文本"
@@ -15,22 +15,22 @@
         "message": "窗口宽度 (px)"
     },
     "closeWhenFocusedInitialWindow": {
-        "message": "焦点回到原窗口时自动关闭弹窗"
+        "message": "点击原窗口自动关闭弹窗"
     },
     "tryOpenAtMousePosition": {
         "message": "尝试在鼠标附近弹出 (关闭 — 居中)"
     },
     "openPageInMainWindow": {
-        "message": "在主窗口中打开页面"
+        "message": "在原窗口中打开页面"
     },
     "disabledUrls": {
-        "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本。"
     },
     "sendPageBack": {
         "message": "发送当前页面到原窗口"
     },
     "blurEnabled": {
-        "message": "弹窗时背景模糊"
+        "message": "背景模糊"
     },
     "enableContainerIdentify": {
         "message": "确保弹窗跟原页面处于同一容器内"
@@ -60,13 +60,13 @@
         "message": "模糊效果"
     },
     "popupSettings": {
-        "message": "弹窗设置"
+        "message": "弹窗"
     },
     "blacklist": {
         "message": "黑名单"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "保持弹出窗口的大小和位置，忽略下面相关设置"
+        "message": "记住最后弹出窗口的大小、位置"
     },
     "normal": {
         "message": "普通"
@@ -75,16 +75,16 @@
         "message": "弹出窗口类型："
     },
     "closedByEsc": {
-        "message": "按下 Esc 关闭当前弹窗页面(覆盖页面 Esc 原有行为)"
+        "message": "Esc 关闭当前弹窗页面(覆盖页面 Esc 原有行为)"
     },
     "dragSettings": {
-        "message": "拖拽设置"
+        "message": "拖拽"
     },
     "dragPx": {
-        "message": "至少移动 px （为 0 时不作检查）："
+        "message": "至少移动 px （0: 忽略该项）："
     },
     "dragDirections": {
-        "message": "仅对指定方向响应："
+        "message": "对指定方向响应："
     },
     "dragUp": {
         "message": "上"
@@ -99,22 +99,22 @@
         "message": "左"
     },
     "imgSupport": {
-        "message": "预览图片"
+        "message": "支持图片"
     },
     "hoverTimeout": {
-        "message": "悬停预览（为 0 时不启用）"
+        "message": "悬停预览（0: 禁用）："
     },
     "urlCheck": {
-        "message": "如果选中文本是 URL，直接打开"
+        "message": "直接打开选中 URL 文本"
     },
     "popupInBackground": {
         "message": "后台弹窗"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
+        "message": "双击指定键：发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
     },
     "hoverSettings": {
-        "message": "悬停设置"
+        "message": "悬停"
     },
     "hoverPopupInBackground": {
         "message": "后台弹出"
@@ -123,13 +123,13 @@
         "message": "预览图片"
     },  
     "hoverDisabledUrls": {
-        "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本。"
     },
     "searchSettings": {
-        "message": "搜索设置"
+        "message": "搜索"
     },
     "triggerAfterDragRelease": {
-        "message": "拖拽释放后才触发(关闭时不支持方向检测)"
+        "message": "拖拽释放后才触发，不支持方向检测"
     },  
     "generalSettingsTab": {
         "message": "通用"
@@ -138,9 +138,51 @@
         "message": "配置信息"
     },
     "importButton": {
-        "message": "导入设置"
+        "message": "导入"
     },  
     "exportButton": {
-        "message": "导出设置"
+        "message": "导出"
+    },
+    "previewModeSettings": {
+        "message": "点击"
+    },
+    "previewModePopupInBackground": {
+        "message": "后台弹出"
+    }, 
+    "previewModeDisabledUrls": {
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本。"
+    }, 
+    "previewModeEnable": {
+        "message": "点击链接预览。"
+    }, 
+    "imgSearchEnable": {
+        "message": "以图搜图。"
+    }, 
+    "hoverImgSearchEnable": {
+        "message": "以图搜图。"
+    }, 
+    "doubleClickToSwitch": {
+        "message": "双击临时切换当前页面模式：需在非图片、链接上双击，"
+    }, 
+    "doubleClickAsClick": {
+        "message": "双击变单击：仅对链接有效"
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "记住各域名的最后弹出窗口的大小、位置"
+    },
+    "note": {
+        "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"
+    },
+    "linkHint": {
+        "message": "链接提示。"
+    },
+    "searchTooltipsEnable": {
+        "message": "选中文本时显示搜索条"
+    },
+    "collectionTooltipsEnable": {
+        "message": "收集条"
+    },
+    "linkSettings": {
+        "message": "链接"
     }
 }

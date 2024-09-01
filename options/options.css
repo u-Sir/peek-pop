@@ -14,10 +14,13 @@
 .tab-link {
     padding: 10px 0;
     /* Adjust padding if needed */
-    width: 33.33%;
+    width: 25%;
     cursor: pointer;
     background: #f9f9f9;
-    border: none;
+
+    border: 0px solid #ccc;
+    border-radius: 15px 15px 15px 15px; /* Top-left and top-right corners rounded */
+    transition: background-color 0.3s ease;
     margin-right: 0px;
     text-align: center;
     /* Center-align the text inside each tab link */
@@ -155,6 +158,10 @@ input[type="text"],
 input[type="number"],
 textarea {
     min-width: 40%;
+}
+
+input[type="number"] {
+    min-width: 5%;
 }
 
 textarea {

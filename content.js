@@ -8,8 +8,17 @@ let progressBar;
 let hoverElement;
 let hoverInitialMouseX, hoverInitialMouseY, mouseMoveCheckInterval;
 let lastKeyTime = 0;
+let lastClickTime = 0;
 let lastKey = '';
-const moveThreshold = 15; // Maximum pixels the mouse can move before the timer resets
+let isDoubleClick = false;
+let previewMode;
+let clickTimeout;
+const moveThreshold = 15;
+let linkIndicator;
+let tooltip;
+let searchTooltips;
+let linkCollection;
+let collection;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -38,7 +47,22 @@ const configs = {
     'hoverPopupInBackground': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
-    'hoverWindowType': 'popup'
+    'hoverWindowType': 'popup',
+    'previewModeDisabledUrls': [],
+    'previewModePopupInBackground': false,
+    'previewModeModifiedKey': 'None',
+    'previewModeWindowType': 'popup',
+    'previewModeEnable': false,
+    'imgSearchEnable': false,
+    'hoverImgSearchEnable': false,
+    'doubleClickToSwitch': false,
+    'doubleClickAsClick': false,
+    'rememberPopupSizeAndPositionForDomain': false,
+    'isFirefox': false,
+    'linkHint': false,
+    'collection': [],
+    'searchTooltipsEnable': false,
+    'collectionTooltipsEnable': false
 };
 
 async function loadUserConfigs(keys = Object.keys(configs)) {
@@ -56,10 +80,8 @@ function addListeners() {
     document.addEventListener('scroll', handleContextMenu);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('contextmenu', handleContextMenu);
-    // Attach the handleMouseOut to mouseout event to clear timeout when mouse leaves the element
     document.addEventListener('mouseover', handleMouseOver, true);
     document.addEventListener('mouseout', handleMouseOut, true);
-
 }
 
 function removeListeners() {
@@ -71,14 +93,543 @@ function removeListeners() {
 
 }
 
+function createTooltip(x, y, actions, timeout = 1500) {
+    const tooltip = document.createElement('div');
+    tooltip.style.position = 'fixed';
+    tooltip.style.top = `${y + 20}px`; // Position below the cursor
+    tooltip.style.left = `${x}px`;
+    tooltip.style.backgroundColor = '#333';
+    tooltip.style.color = '#fff';
+    tooltip.style.padding = '5px';
+    tooltip.style.borderRadius = '5px';
+    tooltip.style.zIndex = '10000';
+    tooltip.style.fontSize = '14px';
+    tooltip.style.display = 'inline-block';
+
+    // Container for the first three buttons (or fewer)
+    const firstLineContainer = document.createElement('div');
+    firstLineContainer.style.display = 'flex';
+    firstLineContainer.style.gap = '5px';
+
+    // Add the first three buttons
+    actions.slice(0, 3).forEach(action => {
+        const button = document.createElement('button');
+        button.textContent = action.label;
+        button.style.backgroundColor = '#555';
+        button.style.border = 'none';
+        button.style.color = '#fff';
+        button.style.padding = '5px';
+        button.style.borderRadius = '3px';
+        button.style.cursor = 'pointer';
+        button.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
+
+        button.addEventListener('click', () => {
+            action.handler(); // Trigger the corresponding action
+            tooltip.remove(); // Remove the tooltip after clicking
+        });
+
+        firstLineContainer.appendChild(button);
+    });
+
+    tooltip.appendChild(firstLineContainer);
+    document.body.appendChild(tooltip);
+
+    // Get the tooltip's width after the first three buttons are added
+    let maxWidth = tooltip.offsetWidth;
+
+    // Container for additional buttons
+    const additionalButtonsContainer = document.createElement('div');
+    let newLineContainer = document.createElement('div');
+    newLineContainer.style.display = 'flex';
+    newLineContainer.style.gap = '5px';
+    newLineContainer.style.marginTop = '5px'; // Add margin to separate from the previous line
+
+    let newLineWidth = 0;
+
+    // Process buttons greater than 3
+    actions.slice(3).forEach((action, index) => {
+        const button = document.createElement('button');
+        button.textContent = action.label;
+        button.style.backgroundColor = '#555';
+        button.style.border = 'none';
+        button.style.color = '#fff';
+        button.style.padding = '5px';
+        button.style.borderRadius = '3px';
+        button.style.cursor = 'pointer';
+        button.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
+
+        // Temporarily add button to measure width
+        document.body.appendChild(button);
+        const buttonWidth = button.offsetWidth;
+        document.body.removeChild(button);
+
+        // Check if the button itself is wider than maxWidth
+        if (buttonWidth > maxWidth) {
+            maxWidth = buttonWidth; // Update maxWidth to accommodate this button
+            tooltip.style.width = `${maxWidth}px`;
+        }
+
+        // Check if adding the button would exceed the maxWidth
+        if (newLineWidth + buttonWidth > maxWidth) {
+            // Add the current line to the container and start a new line
+            additionalButtonsContainer.appendChild(newLineContainer);
+            newLineContainer = document.createElement('div');
+            newLineContainer.style.display = 'flex';
+            newLineContainer.style.gap = '5px';
+            newLineContainer.style.marginTop = '5px';
+
+            newLineWidth = 0; // Reset current line width
+        }
+
+        newLineContainer.appendChild(button);
+        newLineWidth += buttonWidth;
+
+        // Update maxWidth if the new line width exceeds the current maxWidth
+        if (newLineWidth > maxWidth) {
+            tooltip.style.width = `${newLineWidth}px`; // Adjust tooltip width
+        }
+
+        // If it's the last button, append the line
+        if (index === actions.length - 4) {
+            additionalButtonsContainer.appendChild(newLineContainer);
+        }
+
+        // Event handler for button click
+        button.addEventListener('click', () => {
+            action.handler(); // Trigger the corresponding action
+            tooltip.remove(); // Remove the tooltip after clicking
+        });
+    });
+
+    // Append the last line container if it has buttons
+    if (newLineContainer.childElementCount > 0) {
+        additionalButtonsContainer.appendChild(newLineContainer);
+    }
+
+    tooltip.appendChild(additionalButtonsContainer); // Add the container to tooltip
+    // Set a timeout to automatically remove the tooltip after the specified duration
+    let timeoutId = setTimeout(removeTooltip, timeout);
+
+    function removeTooltip() {
+        if (tooltip) {
+            tooltip.remove();
+            clearTimeout(timeoutId);
+        }
+    }
+
+    // Reset timeout when cursor is inside the tooltip
+    tooltip.addEventListener('mouseenter', () => {
+        clearTimeout(timeoutId); // Clear the existing timeout
+    });
+
+    // Start timeout again when cursor leaves the tooltip
+    tooltip.addEventListener('mouseleave', () => {
+        timeoutId = setTimeout(removeTooltip, timeout); // Reset the timeout
+    });
+
+    // Optionally, clear the timeout if any button is clicked (to prevent it from disappearing mid-click)
+    tooltip.addEventListener('click', () => {
+        clearTimeout(timeoutId);
+        removeTooltip();
+    });
+
+    return tooltip;
+}
+
+function addTooltipsOnHover(event) {
+    if (event.target.tagName === 'A' || event.target.closest('a')) {
+        chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionTooltipsEnable'], async (data) => {
+
+            if (linkCollection) linkCollection.remove();
+            if (tooltip) tooltip.remove();
+            if (searchTooltips) searchTooltips.remove();
+            if (typeof data.collectionTooltipsEnable === 'undefined' || !data.collectionTooltipsEnable) return;
+
+            const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
+            if (!linkElement) return; // Ensure there's a valid link element
+
+            const linkRect = linkElement.getBoundingClientRect(); // Get link's bounding box
+            const linkUrl = linkElement.href;
+            const linkTitle = linkElement.title || linkElement.textContent;
+
+            // Initialize or load the collection
+            collection = (Array.isArray(data.collection) && data.collection.length > 0)
+                ? data.collection
+                : [
+                    {
+                        label: '+',
+                        handler: () => {
+                            addLinkToCollection(linkUrl, linkTitle);
+                        }
+                    },
+                    {
+                        label: '↗️',
+                        links: [], // This will store the links
+                        handler: function () {
+                            // Ensure links exist before creating the popup
+                            if (this.links && this.links.length > 0) {
+                                const group = {
+                                    action: 'group',
+                                    links: this.links,
+                                    trigger: 'tooltips',
+                                    lastClientX: event.clientX,
+                                    lastClientY: event.clientY,
+                                    width: window.screen.availWidth,
+                                    height: window.screen.availHeight,
+                                    top: window.screen.availTop,
+                                    left: window.screen.availLeft
+                                };
+                                if (data.blurEnabled) {
+                                    document.body.style.filter = `blur(${data.blurPx}px)`;
+                                    document.body.style.transition = `filter ${data.blurTime}s ease`;
+                                }
+                                chrome.runtime.sendMessage(group, () => {
+                                    // Remove all items from the collection except for the '+' item
+                                    collection = collection.filter(item => item.label === '+');
+
+                                    // Store the updated collection back in Chrome storage
+                                    chrome.storage.local.set({ collection: collection }, () => {
+                                        // console.log('Collection updated:', collection);
+                                    });
+                                });
+                            }
+                        }
+                    }
+                ];
+
+
+            // Debugging: Log the collection before processing
+            // console.log('Collection:', collection);
+
+            // Ensure the `links` array is correctly populated
+            collection = collection.map(item => {
+                if (!item.handler) {
+                    if (item.label === '+') {
+                        item.handler = () => addLinkToCollection(linkUrl, linkTitle);
+                    } else if (item.label === '↗️') {
+                        item.handler = function () {
+                            // Ensure links exist before creating the popup
+                            if (this.links && this.links.length > 0) {
+                                const group = {
+                                    action: 'group',
+                                    links: this.links,
+                                    trigger: 'tooltips',
+                                    lastClientX: event.clientX,
+                                    lastClientY: event.clientY,
+                                    width: window.screen.availWidth,
+                                    height: window.screen.availHeight,
+                                    top: window.screen.availTop,
+                                    left: window.screen.availLeft
+                                };
+                                if (data.blurEnabled) {
+                                    document.body.style.filter = `blur(${data.blurPx}px)`;
+                                    document.body.style.transition = `filter ${data.blurTime}s ease`;
+                                }
+                                chrome.runtime.sendMessage(group, () => {
+                                    // Remove all items from the collection except for the '+' item
+                                    collection = collection.filter(item => item.label === '+');
+
+                                    // Store the updated collection back in Chrome storage
+                                    chrome.storage.local.set({ collection: collection }, () => {
+                                        // console.log('Collection updated:', collection);
+                                    });
+                                });
+                            }
+                        };
+                        item.links = collection[1].links;
+
+                    } else {
+                        item.handler = () => removeLinkFromCollection(item.url);
+                    }
+                }
+                return item;
+            });
+
+
+            // Ensure 'popup' is only added if there are links
+            if (collection[1] && collection[1].links && collection[1].links.length === 0) {
+                collection.pop(); // Remove the 'popup' item if no links
+            }
+
+            // Create actions from the collection
+            const actions = collection.map(item => {
+                const action = {
+                    label: item.label,
+                    handler: item.handler
+                };
+
+                // If the item is the popup action, include the links
+                if (item.label === '↗️' && item.links && item.links.length > 0) {
+                    action.links = item.links; // Add the links array to the action
+                }
+
+                return action;
+            });
+
+
+            // Debugging: Log the actions array to check handlers
+            // console.log('Actions:', actions);
+
+            linkCollection = createTooltip(linkRect.left, linkRect.top, actions);
+
+            const checkCursorInsideViewport = (event) => {
+                const x = event.clientX; // Get the cursor's X position
+                const y = event.clientY; // Get the cursor's Y position
+
+                // Check if cursor is inside the viewport
+                const isInsideViewport = (
+                    x >= 0 &&
+                    x <= window.innerWidth &&
+                    y >= 0 &&
+                    y <= window.innerHeight
+                );
+
+                if (!isInsideViewport) {
+                    if (linkCollection) {
+                        linkCollection.remove();
+                        linkCollection = null;
+                    }
+                    document.removeEventListener('mousemove', checkCursorInsideViewport);
+                }
+            };
+
+            document.addEventListener('mousemove', checkCursorInsideViewport);
+
+            // Handle when the mouse leaves the document (i.e., the entire page)
+            document.addEventListener('mouseleave', function removeTooltip() {
+                if (linkCollection) {
+                    linkCollection.remove();
+                    linkCollection = null;
+                }
+                document.removeEventListener('mouseleave', removeTooltip);
+                document.removeEventListener('mousemove', checkCursorInsideViewport);
+            });
+        });
+    }
+}
+
+
+
+function addSearchTooltipsOnHover(event) {
+    const selection = window.getSelection();
+    const selectionText = selection.toString().trim();
+
+    if (selectionText !== '' && selection.rangeCount && selection.rangeCount > 0) {
+
+        if (linkCollection) linkCollection.remove();
+        if (tooltip) tooltip.remove();
+        // if (searchTooltips) searchTooltips.remove();
+        chrome.storage.local.get(['urlCheck', 'searchTooltipsEnable'], (data) => {
+            if (typeof data.searchTooltipsEnable === 'undefined' || !data.searchTooltipsEnable) return;
+            // Regular expression to match URLs including IP addresses
+            const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
+
+            // Check if the selected text is a URL
+            const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
+            // If the text is a URL and doesn't start with "http://" or "https://", prepend "http://"
+            const link = isURL
+                ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
+                    ? selectionText
+                    : 'http://' + selectionText)
+                : null
+
+            const actions = isURL
+                ? [{
+                    label: '↗️',
+                    handler: () => triggerLinkPopup(event, link)
+                }]
+                : [
+                    {
+                        label: 'Google',
+                        handler: () => triggerLinkPopup(event, `https://www.google.com/search?q=${encodeURIComponent(selectionText)}`)
+                    },
+                    {
+                        label: 'Bing',
+                        handler: () => triggerLinkPopup(event, `https://www.bing.com/search?q=${encodeURIComponent(selectionText)}`)
+                    },
+                    {
+                        label: 'Baidu',
+                        handler: () => triggerLinkPopup(event, `https://www.baidu.com/s?wd=${encodeURIComponent(selectionText)}`)
+                    },
+                    {
+                        label: 'Yandex',
+                        handler: () => triggerLinkPopup(event, `https://yandex.com/search/?text=${encodeURIComponent(selectionText)}`)
+                    },
+                    {
+                        label: 'DuckduckGo',
+                        handler: () => triggerLinkPopup(event, `https://duckduckgo.com/?q=${encodeURIComponent(selectionText)}`)
+                    },
+                    {
+                        label: 'Wikipedia',
+                        handler: () => triggerLinkPopup(event, `https://wikipedia.org/w/index.php?title=Special:Search&search=${encodeURIComponent(selectionText)}`)
+                    },
+                ];
+
+            const range = selection.getRangeAt(0).cloneRange();
+            const textRect = range.getBoundingClientRect(); // Get the bounding box of the selected text
+            searchTooltips = createTooltip(textRect.left, textRect.top, actions, 1000);
+
+            const checkSearchCursorInsideViewport = (event) => {
+                const x = event.clientX; // Get the cursor's X position
+                const y = event.clientY; // Get the cursor's Y position
+
+                // Check if cursor is inside the viewport
+                const isInsideSearchViewport = (
+                    x >= 0 &&
+                    x <= window.innerWidth &&
+                    y >= 0 &&
+                    y <= window.innerHeight
+                );
+
+                if (!isInsideSearchViewport) {
+                    if (searchTooltips) {
+                        searchTooltips.remove();
+                        searchTooltips = null;
+                    }
+                    document.removeEventListener('mousemove', checkSearchCursorInsideViewport);
+                }
+            };
+
+            document.addEventListener('mousemove', checkSearchCursorInsideViewport);
+
+            // Handle when the mouse leaves the document (i.e., the entire page)
+            document.addEventListener('mouseleave', function removeSearchTooltip() {
+                if (searchTooltips) {
+                    searchTooltips.remove();
+                    searchTooltips = null;
+                }
+                document.removeEventListener('mouseleave', removeSearchTooltip);
+                document.removeEventListener('mousemove', checkSearchCursorInsideViewport);
+            });
+        });
+    }
+}
+
+
+// Function to check if a link is already in the collection
+function isLinkInCollection(url) {
+    if (collection[1] && Array.isArray(collection[1].links)) {
+        return collection[1].links.some(item => item.url === url);
+    }
+    return false; // If links array doesn't exist, return false
+}
+
+
+// Function to add a link to the collection
+function addLinkToCollection(url, label) {
+    // Ensure collection[1] and collection[1].links are initialized
+    if (!collection[1]) {
+        collection[1] = { label: '↗️', links: [] };
+    }
+    if (!Array.isArray(collection[1].links)) {
+        collection[1].links = [];
+    }
+
+    // Check if the link is already in the collection before adding
+    if (!isLinkInCollection(url)) {
+        const newItem = {
+            label: label || url, // Use the link's title as label, or the URL if title is unavailable
+            url: url,
+            handler: () => {
+                removeLinkFromCollection(url); // Remove the link on click
+            }
+        };
+
+        // Add the new link to the collection
+        collection[1].links.push(newItem);
+        collection.push(newItem); // Add the link as a new entry to the main collection
+
+        // Store the updated collection back in Chrome storage
+        chrome.storage.local.set({ collection: collection }, () => {
+            // console.log('Link added to collection:', collection);
+        });
+    } else {
+        // console.log('Link already exists in the collection.');
+    }
+}
+
+
+// Function to remove a link from the collection
+function removeLinkFromCollection(url) {
+    collection[1].links = collection[1].links.filter(item => item.url !== url);
+    collection = collection.filter(item => item.url !== url); // Remove from the main collection
+
+    // Store the updated collection back in chrome storage
+    chrome.storage.local.set({ collection: collection }, () => {
+        // console.log('Link removed from collection:', collection);
+    });
+}
+
+
+
+// Function to add link indicator when hovering over a link
+function changeCursorOnHover(event) {
+    if (event.target.tagName === 'A' || event.target.closest('a')) {
+        if (linkIndicator) {
+            linkIndicator.remove(); // Remove any existing indicator
+
+        }
+
+        if (tooltip) tooltip.remove();
+
+        const linkRect = event.target.getBoundingClientRect(); // Get link's bounding box
+        linkIndicator = createCandleProgressBar(event.clientX, event.clientY, 6000);
+        const checkCursorInside = (event) => {
+            const x = event.clientX; // Get the cursor's X position
+            const y = event.clientY; // Get the cursor's Y position
+
+            // Check if cursor is inside the link's bounding box
+            const isInsideLink = (
+                x >= linkRect.left &&
+                x <= linkRect.right &&
+                y >= linkRect.top &&
+                y <= linkRect.bottom
+            );
+
+            // Check if cursor is inside the viewport
+            const isInsideViewport = (
+                x >= 0 &&
+                x <= window.innerWidth &&
+                y >= 0 &&
+                y <= window.innerHeight
+            );
+
+            if (isInsideLink && isInsideViewport) {
+                linkIndicator.style.top = `${y + 25}px`; // Update top position
+                linkIndicator.style.left = `${x}px`; // Update left position
+            } else {
+                linkIndicator.remove();
+                linkIndicator = null; // Reset the indicator reference
+                document.removeEventListener('mousemove', checkCursorInside);
+            }
+
+        };
+
+        document.addEventListener('mousemove', checkCursorInside);
+
+        // Clean up when mouse leaves the link
+        event.target.addEventListener('mouseout', function () {
+            if (linkIndicator) {
+                linkIndicator.remove();
+                linkIndicator = null;
+            }
+            document.removeEventListener('mousemove', checkCursorInside);
+        }, { once: true });
+    }
+}
+
 function handleContextMenu() {
     chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
         if (chrome.runtime.lastError) {
             console.error("Runtime error:", chrome.runtime.lastError);
         } else {
-            // console.log("Background script responded:", response);
         }
     });
+
+    if (tooltip) tooltip.remove();
+    if (searchTooltips) searchTooltips.remove();
+    if (linkCollection) linkCollection.remove();
+
 }
 
 async function handleKeyDown(e) {
@@ -105,18 +656,12 @@ async function handleKeyDown(e) {
 
             if (keyMap[doubleTapKeyToSendPageBack] && key === lastKey && timeDifference < 300) {
                 chrome.runtime.sendMessage({ action: 'sendPageBack' }, () => {
-                    // console.log('send current page to original window');
                 });
             } else {
                 lastKeyTime = currentTime;
                 lastKey = key;
             }
         } catch (error) {
-            // if (error.message.includes('Extension context invalidated')) {
-            //     console.warn('Extension context invalidated, unable to load user configs.');
-            // } else {
-            //     console.error('Error loading user configs:', error);
-            // }
         }
 
     }
@@ -125,22 +670,39 @@ async function handleKeyDown(e) {
 
 async function handleMouseDown(e) {
     if (document.body) document.body.style.filter = '';
-
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
 
-    chrome.storage.local.get('modifiedKey', (data) => {
+    chrome.storage.local.get(['modifiedKey', 'previewModeModifiedKey', 'previewModeEnable', 'previewModeDisabledUrls'], (data) => {
         const modifiedKey = data.modifiedKey || 'None';
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
-
+        const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
         if (modifiedKey === 'None' || keyMap[modifiedKey]) {
             const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
-
             events.forEach(event => document.addEventListener(event, handleEvent, true));
+
         } else {
             const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
 
             events.forEach(event => document.removeEventListener(event, handleEvent, true));
+        }
+
+        if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
+            const previewModeModifiedKey = data.previewModeModifiedKey || 'None';
+
+            if (previewModeModifiedKey === 'None' || keyMap[previewModeModifiedKey]) {
+                previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
+                // Add the event listener
+                const events = ["click", "mouseup"];
+
+                events.forEach(event => document.addEventListener(event, handleEvent, true));
+
+
+            } else {
+                const events = ["click", "mouseup"];
+
+                events.forEach(event => document.removeEventListener(event, handleEvent, true));
+            }
         }
 
     });
@@ -159,6 +721,43 @@ async function handleMouseDown(e) {
     hasPopupTriggered = false;
 }
 
+function handleDoubleClick(e) {
+    // Prevent the single-click action from triggering
+    clearTimeout(clickTimeout);
+
+    e.preventDefault(); // Prevent the default double-click action
+    e.stopPropagation(); // Stop the event from bubbling up
+    chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable'], (data) => {
+        if (!data.previewModeEnable) return;
+        // Check if the double-clicked element is a link
+
+        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+        const linkUrl = linkElement ? linkElement.href : null;
+
+
+        const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
+        const imageUrl = imageElement ? imageElement.src : null;
+        if (data.doubleClickToSwitch && !imageUrl && !linkUrl) {
+            hasPopupTriggered = true;
+            isDoubleClick = true;
+
+            previewMode = !previewMode;
+        } else if (linkUrl) {
+            // Simulate a single click
+            if (data.doubleClickAsClick) {
+                hasPopupTriggered = true;
+                isDoubleClick = true;
+                e.target.click();
+            }
+        }
+
+        // Remove the event listener after it triggers once
+        document.removeEventListener('dblclick', handleDoubleClick, true);
+        isDoubleClick = false;
+    });
+}
+
+
 function handleEvent(e) {
     if (e.type === 'dragstart') {
         chrome.storage.local.get('modifiedKey', (data) => {
@@ -170,9 +769,25 @@ function handleEvent(e) {
         });
     } else if (['dragover', 'drop'].includes(e.type) && isDragging) {
         preventEvent(e);
-    } else if (e.type === 'click' && isDragging) {
-        preventEvent(e);
-        isDragging = false;
+    } else if (e.type === 'click') {
+        if (isDragging) {
+            preventEvent(e);
+            isDragging = false;
+        } else {
+            document.addEventListener('dblclick', handleDoubleClick, true);
+            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+            const linkUrl = linkElement ? linkElement.href : null;
+
+            if (previewMode && linkUrl && !isDoubleClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                clickTimeout = setTimeout(() => {
+                    handlePreviewMode(e);
+                }, 250);
+            }
+        }
+
+
     } else if (e.type === 'mouseup' && isDragging) {
         isMouseDown = false;
         e.preventDefault();
@@ -180,8 +795,59 @@ function handleEvent(e) {
         setTimeout(resetDraggingState, 0);
     } else if (e.type === 'mouseup') {
         handleMouseUpWithProgressBar(e);
+
+        addSearchTooltipsOnHover(e);
     }
 }
+
+async function handlePreviewMode(e) {
+    if (!isMouseDown || hasPopupTriggered) return;
+
+
+    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+    const linkUrl = linkElement ? linkElement.href : null;
+
+
+    if (linkUrl) {
+        e.preventDefault();
+        e.stopPropagation();
+        const data = await loadUserConfigs(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground']);
+        const previewModePopupInBackground = data.previewModePopupInBackground || false;
+        const blurTime = data.blurTime || 1;
+        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+        const blurPx = parseFloat(data.blurPx || 3);
+
+
+
+        // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+        let finalLinkUrl = linkUrl || (data.previewModeImgSupport ? imageUrl : null);
+
+        if (!finalLinkUrl) return;
+
+
+        if (blurEnabled && !previewModePopupInBackground) {
+            document.body.style.filter = `blur(${blurPx}px)`;
+            document.body.style.transition = `filter ${blurTime}s ease`;
+        }
+        chrome.runtime.sendMessage({
+            linkUrl: finalLinkUrl,
+            lastClientX: e.screenX,
+            lastClientY: e.screenY,
+            width: window.screen.availWidth,
+            height: window.screen.availHeight,
+            top: window.screen.availTop,
+            left: window.screen.availLeft,
+            trigger: 'click'
+        }, () => {
+            hasPopupTriggered = true;
+            finalLinkUrl = null;
+        });
+
+
+    }
+
+}
+
 function resetDraggingState() {
     isDragging = false;
     hasPopupTriggered = false;
@@ -306,11 +972,11 @@ async function handleDragStart(e) {
     const linkUrl = linkElement ? linkElement.href : null;
 
     const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
-    const imageUrl = imageElement ? imageElement.src : null;
+    let imageUrl = imageElement ? imageElement.src : null;
 
     if (linkUrl || selectionText || imageUrl) {
         isDragging = true;
-        const data = await loadUserConfigs(['searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport', 'popupInBackground']);
+        const data = await loadUserConfigs(['imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport', 'popupInBackground']);
         const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
         const popupInBackground = data.popupInBackground || false;
         // Regular expression to match URLs including IP addresses
@@ -329,6 +995,14 @@ async function handleDragStart(e) {
                 ? selectionText
                 : 'http://' + selectionText)
             : null;
+
+        if (data.imgSearchEnable) {
+            const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
+            if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
+
+                imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
+            }
+        }
 
         // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
         let finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
@@ -359,7 +1033,6 @@ async function handleDragStart(e) {
 
             // do nothing when drag out of current page
             if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
-                // console.log(viewportLeft , e.screenX , viewportRight , viewportTop, e.screenY, viewportBottom)
                 document.removeEventListener('dragend', onDragend, true);
                 resetDraggingState();
                 return;
@@ -394,6 +1067,7 @@ async function handleDragStart(e) {
                             hasPopupTriggered = true;
                             document.removeEventListener('dragend', onDragend, true);
                             finalLinkUrl = null;
+                            imageUrl = null;
                         });
                     } else {
                         // nothing
@@ -435,6 +1109,7 @@ async function handleDragStart(e) {
                         hasPopupTriggered = true;
                         document.removeEventListener('dragend', onDragend, true);
                         finalLinkUrl = null;
+                        imageUrl = null;
                     });
                 } else {
                     // nothing
@@ -460,7 +1135,7 @@ function isUrlDisabled(url, disabledUrls) {
 }
 
 async function checkUrlAndToggleListeners() {
-    const data = await loadUserConfigs(['disabledUrls', 'searchEngine', 'hoverDisabledUrls', 'hoverSearchEngine']);
+    const data = await loadUserConfigs(['disabledUrls', 'searchEngine', 'hoverSearchEngine', 'previewModeDisabledUrls', 'previewModeEnable']);
     const disabledUrls = data.disabledUrls || [];
 
     const currentUrl = window.location.href;
@@ -471,10 +1146,6 @@ async function checkUrlAndToggleListeners() {
         addListeners();
     }
 
-    const hoverDisabledUrls = data.hoverDisabledUrls || [];
-    if (isUrlDisabled(currentUrl, hoverDisabledUrls)) {
-        document.removeEventListener('mouseover', handleMouseOver, true);
-    }
 
     if (typeof data.searchEngine === 'undefined') {
         chrome.storage.local.set({ searchEngine: 'https://www.google.com/search?q=%s' });
@@ -482,10 +1153,28 @@ async function checkUrlAndToggleListeners() {
     if (typeof data.hoverSearchEngine === 'undefined') {
         chrome.storage.local.set({ hoverSearchEngine: 'https://www.google.com/search?q=%s' });
     }
+
+    if (!data.previewModeEnable) {
+        previewMode = false;
+    }
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-    if (namespace === 'local' && (changes.disabledUrls || changes.searchEngine || changes.hoverDisabledUrls || changes.hoverSearchEngine || changes.dragDirections || changes.dragPx)) {
+    if (namespace === 'local' && (changes.hoverTimeout ||
+        changes.linkHint ||
+        changes.disabledUrls ||
+        changes.searchEngine ||
+        changes.hoverDisabledUrls ||
+        changes.hoverSearchEngine ||
+        changes.dragDirections ||
+        changes.dragPx ||
+        changes.previewModeDisabledUrls ||
+        changes.previewModeEnable ||
+        changes.doubleClickAsClick ||
+        changes.doubleClickToSwitch ||
+        changes.searchTooltipsEnable ||
+        changes.collectionTooltipsEnable
+    )) {
         await checkUrlAndToggleListeners();
     }
 });
@@ -517,13 +1206,8 @@ window.addEventListener('focus', async () => {
     hoverInitialMouseX = null;
     hoverInitialMouseY = null;
     try {
-        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow', 'hoverTimeout']);
-        if (data.hoverTimeout === 0) {
-            document.removeEventListener('mouseover', handleMouseOver, true);
-        } else {
-            document.addEventListener('mouseover', handleMouseOver, true);
-
-        }
+        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
+        document.addEventListener('mouseover', handleMouseOver, true);
         const message = data.closeWhenFocusedInitialWindow
             ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
             : { checkContextMenuItem: true };
@@ -551,13 +1235,15 @@ function createCandleProgressBar(x, y, duration) {
 
     document.body.appendChild(barContainer);
 
-    // Use setTimeout to trigger the transition after the element is rendered
-    setTimeout(() => {
-        barContainer.style.width = '0px'; // Decrease width to 0px over the duration
-    }, 20); // Ensure the transition has time to apply
-
+    if (duration <= 5000) {
+        // Use setTimeout to trigger the transition after the element is rendered
+        setTimeout(() => {
+            barContainer.style.width = '0px'; // Decrease width to 0px over the duration
+        }, 20); // Ensure the transition has time to apply
+    }
     return barContainer;
 }
+
 
 // Handle mouseover event
 async function handleMouseOver(e) {
@@ -574,26 +1260,30 @@ async function handleMouseOver(e) {
 
     // do nothing when out of current page
     if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
-        // console.log(viewportLeft , e.screenX , viewportRight , viewportTop, e.screenY, viewportBottom)
         clearTimeoutsAndProgressBars();
 
         return;
     }
 
-    const data = await loadUserConfigs(['blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverImgSupport', 'hoverModifiedKey', 'hoverDisabledUrls']);
+    const data = await loadUserConfigs(['linkHint', 'hoverImgSearchEnable', 'blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverImgSupport', 'hoverModifiedKey', 'hoverDisabledUrls']);
+    const linkHint = data.linkHint || false;
+    const hoverTimeout = data.hoverTimeout || 0;
+
+    addTooltipsOnHover(e);
+    if (linkHint && parseInt(hoverTimeout, 10) === 0) {
+        changeCursorOnHover(e);
+    }
 
     // do nothing when is in blacklist
     const currentUrl = window.location.href;
     const hoverDisabledUrls = data.hoverDisabledUrls || [];
     if (isUrlDisabled(currentUrl, hoverDisabledUrls)) {
-        document.removeEventListener('mouseover', handleMouseOver, true);
         return;
     }
 
     const hoverModifiedKey = data.hoverModifiedKey || 'None';
     const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
     if (hoverModifiedKey === 'None' || keyMap[hoverModifiedKey]) {
-        const hoverTimeout = data.hoverTimeout || 0;
         if (!hoverTimeout || parseInt(hoverTimeout, 10) === 0) {
             return;
         } else {
@@ -602,6 +1292,7 @@ async function handleMouseOver(e) {
 
             const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
             const imageUrl = imageElement ? imageElement.src : null;
+
             if (linkUrl || imageUrl) {
 
                 if (hoverElement === e.target) {
@@ -699,7 +1390,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
 
         if (hoverModifiedKey === 'None' || keyMap[hoverModifiedKey]) {
-            const configData = await loadUserConfigs(['hoverSearchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'hoverImgSupport', 'urlCheck', 'hoverPopupInBackground']);
+            const configData = await loadUserConfigs(['hoverImgSearchEnable', 'hoverSearchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'hoverImgSupport', 'urlCheck', 'hoverPopupInBackground']);
             const hoverSearchEngine = (configData.hoverSearchEngine !== 'None' ? (configData.hoverSearchEngine || 'https://www.google.com/search?q=%s') : null);
             const hoverPopupInBackground = configData.hoverPopupInBackground || false;
             const blurEnabled = configData.blurEnabled !== undefined ? configData.blurEnabled : true;
@@ -719,8 +1410,16 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                     : 'http://' + selectionText)
                 : null;
 
+            let imageUrl = configData.hoverImgSupport ? imageElement?.src : null;
+            if (configData.hoverImgSearchEnable) {
+                const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
+                if (imgSearchEngineMap.hasOwnProperty(configData.hoverSearchEngine)) {
+                    imageUrl = imgSearchEngineMap[configData.hoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
+                }
+            }
+
             // Set finalLinkUrl based on linkUrl, hoverImgSupport, and searchEngine
-            let finalLinkUrl = processedLinkUrl || linkElement?.href || (configData.hoverImgSupport ? imageElement?.src : null) ||
+            let finalLinkUrl = processedLinkUrl || linkElement?.href || imageUrl ||
                 ((hoverSearchEngine && selectionText.trim() !== '')
                     ? hoverSearchEngine.replace('%s', encodeURIComponent(selectionText))
                     : null);
@@ -743,11 +1442,33 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 trigger: 'hover'
             }, () => {
                 hasPopupTriggered = true;
-                // document.removeEventListener('mouseover', handleMouseOver, true);
+                imageUrl = null;
                 document.removeEventListener('mousemove', updateProgressBarPosition, true);
 
             });
         }
+    });
+}
+
+// Trigger the popup logic
+function triggerLinkPopup(e, link) {
+    chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime'], async (data) => {
+        if (data.blurEnabled) {
+            document.body.style.filter = `blur(${data.blurPx}px)`;
+            document.body.style.transition = `filter ${data.blurTime}s ease`;
+        }
+        chrome.runtime.sendMessage({
+            linkUrl: link,
+            lastClientX: e.screenX,
+            lastClientY: e.screenY,
+            width: window.screen.availWidth,
+            height: window.screen.availHeight,
+            top: window.screen.availTop,
+            left: window.screen.availLeft,
+            trigger: 'tooltips'
+        }, () => {
+            // console.log('send:', link)
+        });
     });
 }
 

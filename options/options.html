@@ -11,18 +11,28 @@
         <ul class="tabs">
             <li class="tab-link active" data-tab="general_settings" id="generalSettingsTab"></li>
             <li class="tab-link" data-tab="drag_settings" id="dragSettingsTab"></li>
+            <li class="tab-link" data-tab="previewMode_settings" id="previewModeSettingsTab"></li>
             <li class="tab-link" data-tab="hover_settings" id="hoverSettingsTab"></li>
         </ul>
 
         <div id="general_settings" class="tab-content active">
-            <h4 id="exportImportSettings"></h4>
-            <input type="file" id="importFile" accept=".json" style="display: none;" />
-            <button id="importButton">Import Settings</button>
-            <button id="exportButton">Export Settings</button>
+
+            <h4 id="linkSettings"></h4>
+            <div class='option'>
+                <label><input type="checkbox" id="linkHint"></input></label>
+            </div>
+
+            <div class='option'>
+                <label><input type="checkbox" id="collectionTooltipsEnable"></input></label>
+            </div>
 
             <h4 id="searchSettings"></h4>
             <div class='option'>
                 <label><input type="checkbox" id="urlCheck"></input></label>
+            </div>
+
+            <div class='option'>
+                <label><input type="checkbox" id="searchTooltipsEnable"></input></label>
             </div>
 
             <h4 id="blurEffectSettings"></h4>
@@ -80,10 +90,16 @@
                 <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></input></label>
             </div>
 
+            <h5 id="note"></h5>
 
             <div class='option'>
                 <label><input type="checkbox" id="rememberPopupSizeAndPosition"></input></label>
             </div>
+
+            <div class='option'>
+                <label><input type="checkbox" id="rememberPopupSizeAndPositionForDomain"></input></label>
+            </div>
+
 
             <div class='option'>
                 <label><input type="checkbox" id="tryOpenAtMousePosition"></input></label>
@@ -99,6 +115,11 @@
             </p>
 
 
+
+            <h4 id="exportImportSettings"></h4>
+            <input type="file" id="importFile" accept=".json" style="display: none;" />
+            <button id="importButton">Import Settings</button>
+            <button id="exportButton">Export Settings</button>
 
 
 
@@ -188,6 +209,11 @@
                 <input type="radio" id="custom" name="searchEngine" value="custom" />
                 <label for="custom">Custom</label>
                 <input type="text" id="customSearchEngine" style="display:none;" placeholder="https://example.com/%s" />
+
+
+            <div class='option' id="imgSearchOption">
+                <label><input type="checkbox" id="imgSearchEnable"></input></label>
+            </div>
             </p>
 
 
@@ -293,6 +319,12 @@
                 <label for="hoverCustom">Custom</label>
                 <input type="text" id="hoverCustomSearchEngine" style="display:none;"
                     placeholder="https://example.com/%s" />
+
+
+
+            <div class='option' id="hoverImgSearchOption">
+                <label><input type="checkbox" id="hoverImgSearchEnable"></input></label>
+            </div>
             </p>
 
             <h4 id="hoverPopupSettings"></h4>
@@ -317,6 +349,72 @@
             <div class='option'>
                 <label for="hoverDisabledUrls"></label>
                 <textarea id="hoverDisabledUrls" rows="10" cols="50"></textarea>
+            </div>
+            </p>
+
+        </div>
+
+        <!-- preview mode settings -->
+
+        <div id="previewMode_settings" class="tab-content">
+            <h4 id="previewModeSettings"></h4>
+
+            <div class='option'>
+                <label><input type="checkbox" id="previewModeEnable"></input></label>
+            </div>
+            <div class='option'>
+                <label><input type="checkbox" id="doubleClickToSwitch"></input></label>
+            </div>
+            <div class='option'>
+                <label><input type="checkbox" id="doubleClickAsClick"></input></label>
+            </div>
+
+            <div class="keySelection">
+                <label for="previewModeModifiedKey" class="align-label"></label>
+                <br>
+
+                <input type="radio" id="ctrlKey" name="previewModeModifiedKey" value="Ctrl" />
+                <label for="ctrlKey">Ctrl</label>
+
+                <input type="radio" id="altKey" name="previewModeModifiedKey" value="Alt" />
+                <label for="altKey">Alt/Option</label>
+
+                <input type="radio" id="shiftKey" name="previewModeModifiedKey" value="Shift" />
+                <label for="shiftKey">Shift</label>
+
+                <input type="radio" id="metaKey" name="previewModeModifiedKey" value="Meta" />
+                <label for="metaKey">Windows/Command</label>
+
+                <input type="radio" id="previewModeNoneKey" name="previewModeModifiedKey" value="None" />
+                <label for="previewModeNoneKey">None</label>
+                <br>
+
+            </div>
+
+            <br>
+
+            <h4 id="previewModePopupSettings"></h4>
+            <p>
+            <div class="window-type">
+                <label for="previewModeWindowType" class="align-label-1"></label>
+                <input type="radio" id="previewModeNormal" name="previewModeWindowType" value="normal" />
+                <label for="previewModeNormal">Normal</label>
+
+                <input type="radio" id="popup" name="previewModeWindowType" value="popup" />
+                <label for="popup">Popup</label>
+            </div>
+
+            <div class='option'>
+                <label><input type="checkbox" id="previewModePopupInBackground"></input></label>
+            </div>
+
+            </p>
+
+            <h4 id="previewModeBlacklist"></h4>
+            <p>
+            <div class='option'>
+                <label for="previewModeDisabledUrls"></label>
+                <textarea id="previewModeDisabledUrls" rows="10" cols="50"></textarea>
             </div>
             </p>
 
