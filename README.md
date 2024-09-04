@@ -32,7 +32,7 @@ https://github.com/user-attachments/assets/b967e700-ffd4-4203-bf5e-760d238df816
 
 
 
-https://github.com/user-attachments/assets/ed1d489a-5191-49d9-b7d8-96db7315d85f
+https://github.com/user-attachments/assets/89e06a28-f59f-473d-9b3f-feb46e881078
 
 
 
@@ -48,32 +48,28 @@ https://github.com/user-attachments/assets/ed1d489a-5191-49d9-b7d8-96db7315d85f
 ![chromium-options-1](https://github.com/user-attachments/assets/bc14aa83-f71d-43b4-9898-9cfd2156688b)
 ![chromium-options-2](https://github.com/user-attachments/assets/ee205bb4-2109-4274-bc66-c6472388e600)
 
+
 # Features:
+- Security and unrestricted: Cross-origin access without any modification.
+- No repetitive login: No need to log in again when previewing websites.
+- Multiple trigger methods: Supports drag (default), hover, click, floating bar, and allows adding pre-key combinations.
+- Flexible popup operations:
+  - Close: You can exit by pressing the `Esc` key or by clicking the original window to automatically close the popup.
+  - Back: Double-click a specified key to go back, or select from the right-click menu.
+  - Shortcut key support: Supports all browser shortcut keys like forward, backward, reading mode, etc. (some shortcuts require the window type to be set to "normal").
+- Free interface display:
+  - Customizable background blur effect.
+  - Popup size and position can be customized and automatically saved, supporting separate records by domain and multi-screen display.
+  - Supports background pop-up.
+  - Supports selecting popup window type.
+- Blacklist function: Supports blacklist settings in regular expressions, wildcard, and plain text forms.
+- Supports export and import of configurations.
 
-- Preview any link by dragging it.(Secure, unrestricted, modification-free cross-origin access)
-- Search any selected text by dragging.(configurable)
-- Supports images.(optional)
-- Supports hovering to trigger.(optional)
-- Supports popup in background.(optional)
-- Automatically closes the preview when clicking on the original page.(optional)
-- Automatically remembers the popup window position and size. ***On Firefox, you need to click/scroll on the popup page.*** (optional)
-- Supports all browser's native shortcuts such as forward, backward, and reader mode (for full support, you need to set the popup window type to 'Normal').
-- Customizable popup window style via userChrome.css on ***Firefox*** (you need to set the popup window type to 'Normal').
-- Supports returning the previewed page to display in the original window.(via context menu or double tap on specific key)
-- Customizable blur effect.
-- Drag action triggered only when the modifier key is held down. (configurable)
-- Supports private browsing windows.
-- Works with Firefox Multi-Account Containers (Firefox Only).
-- Customizable popup window size.
-- Popups can appear near the mouse cursor or centered (optional, supports multi-monitors).
-- Blacklist supports regular expressions, wildcards, and plain text.
-- Supports response on specific directions.(optional)
-- Press Escape to close the current popup page.(optional)
+# Privacy Statement:
+This extension does not collect any personal information.
 
-# Privacy:
-This plugin does not collect any personal information.
+# Others:
+This extension is developed based on the open-source project by emvaized https://github.com/emvaized/open-in-popup-window-extension/tree/main. Thanks for their contribution.
 
-# Others
-This plugin is developed based on the following plugin, thanks to emvaized for open-sourcing it:
-https://github.com/emvaized/open-in-popup-window-extension/tree/main
-Of course, this plugin is also open-source.
+This extension is also open-source, and the source code can be found at: https://github.com/u-Sir/peek-pop
+
