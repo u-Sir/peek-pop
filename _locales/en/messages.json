@@ -196,5 +196,11 @@
     },
     "options": {
         "message": "➡️ Options page"
+    },
+    "popAction": {
+        "message": "Open add-on icon popup"
+    },
+    "clickModeToggle": {
+        "message": "Toggle click mode"
     }
 } 

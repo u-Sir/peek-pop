@@ -306,22 +306,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 chrome.action.setIcon({
                                     path: {
                                         "128": "action/inclickmode.png"
-                                      }
+                                    }
                                 });
-                            } else {                            
+                            } else {
 
                                 chrome.action.setIcon({
                                     path: {
                                         "128": "action/icon.png"
-                                      }
+                                    }
                                 });
                             }
-                        } else {                      
+                        } else {
 
                             chrome.action.setIcon({
                                 path: {
                                     "128": "action/icon.png"
-                                  }
+                                }
                             });
 
                         }
@@ -768,3 +768,15 @@ function windowRemovedListener(windowId) {
         }
     });
 }
+
+
+chrome.commands.onCommand.addListener((command) => {
+    if (command === "clickModeToggle") {
+        chrome.storage.local.get('previewModeEnable', (data) => {
+            const currentValue = data.previewModeEnable;
+            const newValue = !currentValue;
+
+            chrome.storage.local.set({ previewModeEnable: newValue });
+        });
+    }
+});

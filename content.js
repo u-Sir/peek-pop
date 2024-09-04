@@ -730,6 +730,8 @@ function handleEvent(e) {
             const linkUrl = linkElement ? linkElement.href : null;
 
             if (previewMode && linkUrl && !isDoubleClick) {
+                if (linkUrl.trim() === 'javascript:void(0);') return;
+
                 e.preventDefault();
                 e.stopPropagation();
                 clickTimeout = setTimeout(() => {
@@ -765,9 +767,10 @@ async function handlePreviewMode(e) {
 
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
+    if (linkUrl.trim() === 'javascript:void(0);') return;
 
 
-    if (linkUrl) {
+    if (linkUrl && finalLinkUrl.trim() !== 'javascript:void(0);') {
         e.preventDefault();
         e.stopPropagation();
         const data = await loadUserConfigs(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground']);
@@ -783,7 +786,7 @@ async function handlePreviewMode(e) {
 
         if (!finalLinkUrl) return;
 
-
+        console.log(finalLinkUrl)
         if (blurEnabled && !previewModePopupInBackground) {
             document.body.style.filter = `blur(${blurPx}px)`;
             document.body.style.transition = `filter ${blurTime}s ease`;
@@ -930,6 +933,7 @@ async function handleDragStart(e) {
     const selectionText = window.getSelection().toString();
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
+    if (linkUrl.trim() === 'javascript:void(0);') return;
 
     const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
     let imageUrl = imageElement ? imageElement.src : null;
@@ -1086,13 +1090,40 @@ async function handleDragStart(e) {
 
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => {
-        if (disabledUrl.includes('*')) {
-            const regex = new RegExp(disabledUrl.replace(/\*/g, '.*'));
-            return regex.test(url);
+        // Check if the pattern is a regex
+        if (disabledUrl.startsWith('/') && disabledUrl.endsWith('/')) {
+            const regexPattern = disabledUrl.slice(1, -1); // Remove leading and trailing slashes
+            try {
+                const regex = new RegExp(regexPattern);
+                return regex.test(url);
+            } catch (e) {
+                console.error('Invalid regex pattern:', regexPattern);
+                return false;
+            }
         }
-        return url.includes(disabledUrl);
+        // Check if the pattern is a wildcard pattern
+        else if (disabledUrl.includes('*')) {
+            const regexPattern = disabledUrl
+                .replace(/\\./g, '\\\\.') // Escape dots
+                .replace(/\*/g, '.*'); // Replace wildcards with regex equivalent
+            try {
+                const regex = new RegExp(`^${regexPattern}$`);
+                return regex.test(url);
+            } catch (e) {
+                console.error('Invalid wildcard pattern:', regexPattern);
+                return false;
+            }
+        }
+        // Check if the pattern is plain text
+        else {
+            return url.includes(disabledUrl);
+        }
     });
 }
+
+
+
+
 
 async function checkUrlAndToggleListeners() {
     chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
@@ -1166,8 +1197,6 @@ chrome.storage.local.get('lastUrl', (data) => {
 });
 
 window.addEventListener('focus', async () => {
-    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
-
     if (document.body) document.body.style.filter = '';
     document.addEventListener('keydown', handleKeyDown);
     clearTimeoutsAndProgressBars();
@@ -1176,6 +1205,7 @@ window.addEventListener('focus', async () => {
     hoverInitialMouseX = null;
     hoverInitialMouseY = null;
     try {
+        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
         const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
         document.addEventListener('mouseover', handleMouseOver, true);
         const message = data.closeWhenFocusedInitialWindow
@@ -1244,7 +1274,6 @@ async function handleMouseOver(e) {
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
         changeCursorOnHover(e);
     }
-
     // do nothing when is in blacklist
     const currentUrl = window.location.href;
     const hoverDisabledUrls = data.hoverDisabledUrls || [];
@@ -1396,6 +1425,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                     : null);
 
             if (!finalLinkUrl) return;
+            if (finalLinkUrl.trim() === 'javascript:void(0);') return;
 
             if (blurEnabled && !hoverPopupInBackground) {
                 document.body.style.filter = `blur(${blurPx}px)`;

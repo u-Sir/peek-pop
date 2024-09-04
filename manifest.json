@@ -14,7 +14,15 @@
       "suggested_key": {
         "default": "Ctrl+U",
         "mac": "Command+U"
-      }
+      },
+      "description": "__MSG_popAction__"
+    },
+    "clickModeToggle": {
+      "suggested_key": {
+        "default": "Alt+U",
+        "mac": "Alt+U"
+      },
+      "description": "__MSG_clickModeToggle__"
     }
   },
   "background": {

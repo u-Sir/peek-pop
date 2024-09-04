@@ -196,5 +196,11 @@
     },
     "options": {
         "message": "➡️ Página de opciones"
+    },
+    "popAction": {
+        "message": "Abrir el icono emergente del complemento"
+    },
+    "clickModeToggle": {
+        "message": "Alternar modo de clic"
     }
 }

@@ -196,5 +196,11 @@
     },
     "options": {
         "message": "➡️ 设置页面"
+    },
+    "popAction": {
+        "message": "弹出插件图标的页面"
+    },
+    "clickModeToggle": {
+        "message": "切换点击链接预览模式"
     }
 }
