@@ -80,75 +80,75 @@ function init() {
         });
     });
 
-const userLang = navigator.language || navigator.userLanguage;
+    const userLang = navigator.language || navigator.userLanguage;
 
-if (userLang.startsWith('zh')) {
-    document.querySelector('.align-label-1').style.marginBottom = '4px';
-}
-
-document.getElementById('exportButton').addEventListener('click', exportSettings);
-
-document.getElementById('importButton').addEventListener('click', () => {
-    document.getElementById('importFile').click();
-});
-
-document.getElementById('importFile').addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        importSettings(file);
-    }
-});
-
-document.getElementById('imgSearchEnable').addEventListener('change', function () {
-    const imgSupportCheckbox = document.getElementById('imgSupport');
-    if (this.checked) {
-        imgSupportCheckbox.checked = this.checked;
-        saveConfig('imgSupport', this.checked);
+    if (userLang.startsWith('zh')) {
+        document.querySelector('.align-label-1').style.marginBottom = '4px';
     }
 
-});
+    document.getElementById('exportButton').addEventListener('click', exportSettings);
 
-document.getElementById('hoverImgSearchEnable').addEventListener('change', function () {
-    const hoverImgSupportCheckbox = document.getElementById('hoverImgSupport');
-    if (this.checked) {
-        hoverImgSupportCheckbox.checked = this.checked;
-        saveConfig('hoverImgSupport', this.checked);
+    document.getElementById('importButton').addEventListener('click', () => {
+        document.getElementById('importFile').click();
+    });
 
-    }
-});
+    document.getElementById('importFile').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            importSettings(file);
+        }
+    });
 
-document.getElementById('imgSupport').addEventListener('change', function () {
-    const imgSearchEnableCheckbox = document.getElementById('imgSearchEnable');
-    if (!this.checked) {
-        imgSearchEnableCheckbox.checked = this.checked;
-        saveConfig('imgSearchEnable', this.checked);
-    }
+    document.getElementById('imgSearchEnable').addEventListener('change', function () {
+        const imgSupportCheckbox = document.getElementById('imgSupport');
+        if (this.checked) {
+            imgSupportCheckbox.checked = this.checked;
+            saveConfig('imgSupport', this.checked);
+        }
 
-});
+    });
 
-document.getElementById('hoverImgSupport').addEventListener('change', function () {
-    const hoverImgSearchEnableCheckbox = document.getElementById('hoverImgSearchEnable');
-    if (!this.checked) {
-        hoverImgSearchEnableCheckbox.checked = this.checked;
-        saveConfig('hoverImgSearchEnable', this.checked);
+    document.getElementById('hoverImgSearchEnable').addEventListener('change', function () {
+        const hoverImgSupportCheckbox = document.getElementById('hoverImgSupport');
+        if (this.checked) {
+            hoverImgSupportCheckbox.checked = this.checked;
+            saveConfig('hoverImgSupport', this.checked);
 
-    }
-});
+        }
+    });
+
+    document.getElementById('imgSupport').addEventListener('change', function () {
+        const imgSearchEnableCheckbox = document.getElementById('imgSearchEnable');
+        if (!this.checked) {
+            imgSearchEnableCheckbox.checked = this.checked;
+            saveConfig('imgSearchEnable', this.checked);
+        }
+
+    });
+
+    document.getElementById('hoverImgSupport').addEventListener('change', function () {
+        const hoverImgSearchEnableCheckbox = document.getElementById('hoverImgSearchEnable');
+        if (!this.checked) {
+            hoverImgSearchEnableCheckbox.checked = this.checked;
+            saveConfig('hoverImgSearchEnable', this.checked);
+
+        }
+    });
 
 
 
-document.getElementById('hoverTimeout').addEventListener('change', function () {
-    const linkHintCheckbox = document.getElementById('linkHint');
-    const hoverTimeoutValue = this.value; // Get the slider value
-    if (parseInt(hoverTimeoutValue, 10) !== 0) {
-        linkHintCheckbox.checked = false;
-        linkHintCheckbox.disabled = true;  // Gray out the checkbox
-        saveConfig('linkHint', false);
-    } else {
-        linkHintCheckbox.disabled = false;  // reset the checkbox
+    document.getElementById('hoverTimeout').addEventListener('change', function () {
+        const linkHintCheckbox = document.getElementById('linkHint');
+        const hoverTimeoutValue = this.value; // Get the slider value
+        if (parseInt(hoverTimeoutValue, 10) !== 0) {
+            linkHintCheckbox.checked = false;
+            linkHintCheckbox.disabled = true;  // Gray out the checkbox
+            saveConfig('linkHint', false);
+        } else {
+            linkHintCheckbox.disabled = false;  // reset the checkbox
 
-    }
-});
+        }
+    });
 }
 
 // Function to set up the visibility toggle for image search options
@@ -346,20 +346,20 @@ function initializeSlider(id, defaultValue) {
 
     if (id === 'hoverTimeout') {
         const linkHintCheckbox = document.getElementById('linkHint');
-        
+
         chrome.storage.local.get(['hoverTimeout'], (data) => {
             const hoverTimeout = typeof data.hoverTimeout !== 'undefined' ? parseInt(data.hoverTimeout, 10) : 0;
-            
-            if ( hoverTimeout !== 0) {
+
+            if (hoverTimeout !== 0) {
                 linkHintCheckbox.checked = false;
                 linkHintCheckbox.disabled = true;  // Gray out the checkbox
                 saveConfig('linkHint', false);
-            } else { 
+            } else {
                 linkHintCheckbox.disabled = false;  // Reset the checkbox
             }
         });
     }
-    
+
 }
 
 
@@ -576,10 +576,16 @@ async function exportSettings() {
             const popupWindowsInfo = allItems.popupWindowsInfo;
 
             if (popupWindowsInfo.savedPositionAndSize) {
-                // Keep only the savedPositionAndSize, remove other information
+                // Keep only the height, width, and left in savedPositionAndSize, remove other information
                 allItems.popupWindowsInfo = {
-                    savedPositionAndSize: popupWindowsInfo.savedPositionAndSize
+                    savedPositionAndSize: {
+                        height: popupWindowsInfo.savedPositionAndSize.height,
+                        width: popupWindowsInfo.savedPositionAndSize.width,
+                        left: popupWindowsInfo.savedPositionAndSize.left,
+                        top: popupWindowsInfo.savedPositionAndSize.top
+                    }
                 };
+
             } else {
                 // If savedPositionAndSize doesn't exist, set popupWindowsInfo as empty
                 allItems.popupWindowsInfo = {};
@@ -618,19 +624,34 @@ async function importSettings(file) {
         const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(jsonContent));
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
+        console.log(importData)
         if (hashHex !== importData.hash) {
             console.error('Hash mismatch! Import aborted.');
             return;
         }
 
         // Load user configs and handle Firefox-specific settings
-        const userConfigs = await loadUserConfigs();
-        if (userConfigs['isFirefox']) {
-            // Remove specific keys from the settings for Firefox
-            delete importData.settings.enableContainerIdentify;
-            delete importData.settings.dragStartEnable;
+        try {
+            const browserInfo = await new Promise((resolve, reject) => {
+                chrome.runtime.getBrowserInfo((info) => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve(info);
+                    }
+                });
+            });
+
+            if (browserInfo.name !== 'Firefox') {
+                // Remove specific keys from the settings for Firefox
+                delete importData.settings.enableContainerIdentify;
+                delete importData.settings.dragStartEnable;
+            }
+        } catch (error) {
+            // console.error('Error getting browser info:', error);
         }
+
+        delete importData.settings.popupWindowsInfo;
 
         await chrome.storage.local.set(importData.settings);
 
@@ -641,6 +662,7 @@ async function importSettings(file) {
         console.error('Error importing settings:', error);
     }
 }
+
 
 
 function readFileAsJSON(file) {

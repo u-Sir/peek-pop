@@ -153,7 +153,7 @@
         "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
     }, 
     "previewModeEnable": {
-        "message": "点击链接预览"
+        "message": "点击链接预览（取消勾选时，下方的设置不会生效）"
     }, 
     "imgSearchEnable": {
         "message": "以图搜图"
@@ -162,10 +162,10 @@
         "message": "以图搜图"
     }, 
     "doubleClickToSwitch": {
-        "message": "双击临时切换当前页面模式：需在非图片、链接上双击"
+        "message": "双击临时切换当前页面模式：需在非图片、链接上双击，工具栏的插件图标会显示当前状态"
     }, 
     "doubleClickAsClick": {
-        "message": "双击变单击：仅对链接有效"
+        "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
     },
     "rememberPopupSizeAndPositionForDomain": {
         "message": "记住各域名的最后弹出窗口的大小、位置"

@@ -82,6 +82,7 @@ function addListeners() {
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('mouseover', handleMouseOver, true);
     document.addEventListener('mouseout', handleMouseOut, true);
+
 }
 
 function removeListeners() {
@@ -295,7 +296,7 @@ function addTooltipsOnHover(event) {
                     handler: function () {
 
                         // chrome.runtime.sendMessage({action: 'openSidePanel'}, () => {
-                            //
+                        //
                         // });
                     }
                 };
@@ -609,6 +610,7 @@ async function handleKeyDown(e) {
 
 
 async function handleMouseDown(e) {
+
     if (document.body) document.body.style.filter = '';
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
@@ -632,6 +634,7 @@ async function handleMouseDown(e) {
 
             if (previewModeModifiedKey === 'None' || keyMap[previewModeModifiedKey]) {
                 previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
+
                 // Add the event listener
                 const events = ["click", "mouseup"];
 
@@ -643,6 +646,7 @@ async function handleMouseDown(e) {
 
                 events.forEach(event => document.removeEventListener(event, handleEvent, true));
             }
+        
         }
 
     });
@@ -662,6 +666,7 @@ async function handleMouseDown(e) {
 }
 
 function handleDoubleClick(e) {
+
     // Prevent the single-click action from triggering
     clearTimeout(clickTimeout);
 
@@ -682,6 +687,9 @@ function handleDoubleClick(e) {
             isDoubleClick = true;
 
             previewMode = !previewMode;
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
+
         } else if (linkUrl) {
             // Simulate a single click
             if (data.doubleClickAsClick) {
@@ -690,11 +698,14 @@ function handleDoubleClick(e) {
                 e.target.click();
             }
         }
-
+    
         // Remove the event listener after it triggers once
         document.removeEventListener('dblclick', handleDoubleClick, true);
         isDoubleClick = false;
+        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
     });
+
 }
 
 
@@ -725,7 +736,11 @@ function handleEvent(e) {
                     handlePreviewMode(e);
                 }, 250);
             }
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
         }
+        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
 
 
     } else if (e.type === 'mouseup' && isDragging) {
@@ -734,10 +749,14 @@ function handleEvent(e) {
         e.stopImmediatePropagation();
         setTimeout(resetDraggingState, 0);
     } else if (e.type === 'mouseup') {
+    
         handleMouseUpWithProgressBar(e);
 
         addSearchTooltipsOnHover(e);
+
     }
+    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
 }
 
 async function handlePreviewMode(e) {
@@ -785,6 +804,7 @@ async function handlePreviewMode(e) {
 
 
     }
+
 
 }
 
@@ -1075,6 +1095,8 @@ function isUrlDisabled(url, disabledUrls) {
 }
 
 async function checkUrlAndToggleListeners() {
+    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
     const data = await loadUserConfigs(['disabledUrls', 'searchEngine', 'hoverSearchEngine', 'previewModeDisabledUrls', 'previewModeEnable']);
     const disabledUrls = data.disabledUrls || [];
 
@@ -1096,7 +1118,13 @@ async function checkUrlAndToggleListeners() {
 
     if (!data.previewModeEnable) {
         previewMode = false;
+
+    } else {
+        previewMode = data.previewMode;
     }
+
+    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
@@ -1138,6 +1166,8 @@ chrome.storage.local.get('lastUrl', (data) => {
 });
 
 window.addEventListener('focus', async () => {
+    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
     if (document.body) document.body.style.filter = '';
     document.addEventListener('keydown', handleKeyDown);
     clearTimeoutsAndProgressBars();
@@ -1155,6 +1185,7 @@ window.addEventListener('focus', async () => {
     } catch (error) {
         // console.error('Error loading user configs:', error);
     }
+
 });
 
 

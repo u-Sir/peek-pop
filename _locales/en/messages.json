@@ -153,7 +153,7 @@
         "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
     }, 
     "previewModeEnable": {
-        "message": "Clicking on the link to preview"
+        "message": "Clicking on the link to preview (disable - ignore below options)"
     }, 
     "imgSearchEnable": {
         "message": "Replace Preview with Image Search."
@@ -162,10 +162,10 @@
         "message": "Replace Preview with Image Search."
     }, 
     "doubleClickToSwitch": {
-        "message": "Double-click outside images/links to toggle. Resets after page reload or redirect."
+        "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar."
     }, 
     "doubleClickAsClick": {
-        "message": "Double-click on link to pass through single-click action."
+        "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links."
     },
     "rememberPopupSizeAndPositionForDomain": {
         "message": "Remember the last popup window size and position for each domain."

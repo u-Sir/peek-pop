@@ -67,10 +67,10 @@ function openAllAndClearCollection(event) {
 
 function handleRemoveLink(linkUrl, callback) {
     chrome.storage.local.get(['collection'], (result) => {
-        const collection = result.collection || [];
+        let collection = result.collection || [];
 
         // Filter out the specific link from the main collection
-        const updatedCollection = collection.filter(item => item.url !== linkUrl);
+        collection = collection.filter(item => item.url !== linkUrl);
 
         // Check if the second item in the collection has a links array
         if (collection.length > 1 && collection[1].links) {
@@ -84,13 +84,22 @@ function handleRemoveLink(linkUrl, callback) {
         }
 
         // Store the updated collection back in Chrome storage
-        chrome.storage.local.set({ collection: updatedCollection }, () => {
-            console.log('Link removed:', updatedCollection);
-            loadLinks(); // Reload the links after removing
+        chrome.storage.local.set({ collection: collection }, () => {
+            console.log('Link removed:', collection);
+
+            // Check if there are no links left after removal
+            if (collection.length === 1 && (!collection[0].links || collection[0].links.length === 0)) {
+                // Redirect to options.html if no links remain
+                window.location.href = '../options/options.html';
+            } else {
+                loadLinks(); // Reload the links after removing
+            }
+
             if (callback) callback(); // Invoke the callback if provided
         });
     });
 }
+
 
 
 function loadLinks() {
@@ -117,7 +126,7 @@ function loadLinks() {
                 const removeButton = document.createElement('button');
                 removeButton.textContent = '-';
                 removeButton.classList.add('remove-button'); // Add a class for styling
-                removeButton.addEventListener('click', function() {
+                removeButton.addEventListener('click', function () {
                     handleRemoveLink(link.url);
                 });
                 linkContainer.appendChild(removeButton); // Append the button to the link container
@@ -130,7 +139,7 @@ function loadLinks() {
 
             if (index === 1) {
                 // Create "Open all" link
-                a.addEventListener('click', function(event) {
+                a.addEventListener('click', function (event) {
                     event.preventDefault();
                     openAllAndClearCollection(event);
                 });
@@ -141,7 +150,7 @@ function loadLinks() {
                 const clearLink = document.createElement('a');
                 clearLink.href = '#'; // Use a placeholder href for the link
                 clearLink.textContent = chrome.i18n.getMessage('clearAll');
-                clearLink.addEventListener('click', function(event) {
+                clearLink.addEventListener('click', function (event) {
                     event.preventDefault();
                     // Remove all items except the first one
                     chrome.storage.local.get(['collection'], (result) => {
@@ -163,7 +172,7 @@ function loadLinks() {
                 linkContainer.appendChild(optionsLink); // Append the options link to the link container
             } else if (index > 1) {
                 // Attach the standard click handler to other items
-                a.addEventListener('click', function(event) {
+                a.addEventListener('click', function (event) {
                     handleLinkClick(event, data);
                 });
                 linkContainer.appendChild(a); // Append the link to the link container
@@ -179,22 +188,17 @@ function loadLinks() {
         } else {
             emptyMessage.style.display = 'block'; // Show the empty message if there are no links
             emptyMessage.textContent = chrome.i18n.getMessage('empty'); // Set your desired message here
-            
-            // Create and show "Options" link at the top if no links exist
-            const optionsLink = document.createElement('a');
-            optionsLink.href = '../options/options.html';
-            optionsLink.textContent = chrome.i18n.getMessage('options');
-            optionsLink.style.display = 'block';
-            optionsLink.style.marginTop = '10px'; // Add some space at the top
-            linksContainer.appendChild(optionsLink); // Append the options link to the links container
+
+            // Redirect to options.html if no links exist
+            window.location.href = '../options/options.html';
         }
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.local.get(['collectionTooltipsEnable'], (result) => {
         const collectionTooltipsEnable = result.collectionTooltipsEnable;
-    
+
         if (!collectionTooltipsEnable) {
             // Redirect to options.html
             window.location.href = '../options/options.html';

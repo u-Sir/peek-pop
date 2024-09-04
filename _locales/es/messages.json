@@ -153,7 +153,7 @@
         "message": "Deshabilitar en estas URL mediante texto plano, regex, comodines, uno por línea."
     },
     "previewModeEnable": {
-        "message": "Hacer clic en el enlace para previsualizar"
+        "message": "Hacer clic en el enlace para previsualizar (deshabilitar - ignorar las opciones a continuación)"
     },
     "imgSearchEnable": {
         "message": "Reemplazar Previsualización con Búsqueda de Imágenes."
@@ -162,10 +162,10 @@
         "message": "Reemplazar Previsualización con Búsqueda de Imágenes."
     },
     "doubleClickToSwitch": {
-        "message": "Hacer doble clic fuera de imágenes/enlaces para alternar. Restablece después de recargar la página o redireccionar."
+        "message": "Doble clic fuera de imágenes/enlaces para alternar. El estado se muestra en el ícono de la extensión en la barra de herramientas."
     },
     "doubleClickAsClick": {
-        "message": "Hacer doble clic en el enlace para pasar a la acción de un solo clic."
+        "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces."
     },
     "rememberPopupSizeAndPositionForDomain": {
         "message": "Recordar el último tamaño y posición de la ventana emergente para cada dominio."
