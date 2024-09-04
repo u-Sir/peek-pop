@@ -45,7 +45,8 @@ https://github.com/user-attachments/assets/ed1d489a-5191-49d9-b7d8-96db7315d85f
 ![image](https://github.com/user-attachments/assets/fc997167-3206-4386-b183-612b3a8a5530)
 
 ## Options page
-![image](https://github.com/user-attachments/assets/09408a5e-e66e-4bd9-9fc5-8c2c396a99ac)
+![chromium-options-1](https://github.com/user-attachments/assets/bc14aa83-f71d-43b4-9898-9cfd2156688b)
+![chromium-options-2](https://github.com/user-attachments/assets/ee205bb4-2109-4274-bc66-c6472388e600)
 
 # Features:
 
