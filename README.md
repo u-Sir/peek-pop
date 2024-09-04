@@ -38,11 +38,11 @@ https://github.com/user-attachments/assets/ed1d489a-5191-49d9-b7d8-96db7315d85f
 
 # Screenshots
 
-![image](https://github.com/user-attachments/assets/6e00b216-907a-42d4-b0af-296414c62d1d)
+![image](https://github.com/user-attachments/assets/6a951f0b-ca4a-4ee0-aea6-2ab50fd6ab6a)
 
 ------
 
-![image](https://github.com/user-attachments/assets/fc997167-3206-4386-b183-612b3a8a5530)
+![image](https://github.com/user-attachments/assets/5920b14d-5603-4f10-ad59-6791041201f6)
 
 ## Options page
 ![chromium-options-1](https://github.com/user-attachments/assets/bc14aa83-f71d-43b4-9898-9cfd2156688b)
