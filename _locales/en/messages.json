@@ -3,7 +3,7 @@
         "message": "Open link in popup window"
     },
     "extensionName": {
-        "message": "formerly Drag to Preview"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
         "message": "Preview links, images, or search selected text in a popup window."
@@ -180,9 +180,21 @@
         "message": "Tooltips for selected text."
     },
     "collectionTooltipsEnable": {
-        "message": "Collection tooltips."
+        "message": "Hover to display collection tooltips. Press Ctrl/Command + U or click the add-on icon to view the collection."
     },
     "linkSettings": {
         "message": "Link"
+    },
+    "empty": {
+        "message": "Nothing here."
+    },
+    "openAll": {
+        "message": "Open all ↗️"
+    },
+    "clearAll": {
+        "message": "Clear all"
+    },
+    "options": {
+        "message": "➡️ Options page"
     }
 } 

@@ -3,7 +3,7 @@
         "message": "Abrir enlace en ventana emergente"
     },
     "extensionName": {
-        "message": "anteriormente Drag to Preview"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
         "message": "Previsualiza enlaces, imágenes o busca texto seleccionado en una ventana emergente."
@@ -180,9 +180,21 @@
         "message": "Tooltips para el texto seleccionado."
     },
     "collectionTooltipsEnable": {
-        "message": "Tooltips de colección."
+        "message": "Pasa el cursor para mostrar las descripciones emergentes de la colección. Presiona Ctrl/Command + U o haz clic en el icono del complemento para ver la colección."
     },
     "linkSettings": {
         "message": "Enlace"
+    },
+    "empty": {
+        "message": "No hay nada aquí."
+    },
+    "openAll": {
+        "message": "Abrir todos los enlaces ↗️"
+    },
+    "clearAll": {
+        "message": "Eliminar todos los enlaces"
+    },
+    "options": {
+        "message": "➡️ Página de opciones"
     }
 }

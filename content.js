@@ -105,14 +105,15 @@ function createTooltip(x, y, actions, timeout = 1500) {
     tooltip.style.zIndex = '10000';
     tooltip.style.fontSize = '14px';
     tooltip.style.display = 'inline-block';
+    tooltip.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
 
-    // Container for the first three buttons (or fewer)
-    const firstLineContainer = document.createElement('div');
-    firstLineContainer.style.display = 'flex';
-    firstLineContainer.style.gap = '5px';
+    // Container for all buttons
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.gap = '5px';
 
-    // Add the first three buttons
-    actions.slice(0, 3).forEach(action => {
+    // Add all buttons to the container
+    actions.forEach(action => {
         const button = document.createElement('button');
         button.textContent = action.label;
         button.style.backgroundColor = '#555';
@@ -121,92 +122,18 @@ function createTooltip(x, y, actions, timeout = 1500) {
         button.style.padding = '5px';
         button.style.borderRadius = '3px';
         button.style.cursor = 'pointer';
-        button.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
 
         button.addEventListener('click', () => {
             action.handler(); // Trigger the corresponding action
             tooltip.remove(); // Remove the tooltip after clicking
         });
 
-        firstLineContainer.appendChild(button);
+        buttonContainer.appendChild(button);
     });
 
-    tooltip.appendChild(firstLineContainer);
+    tooltip.appendChild(buttonContainer);
     document.body.appendChild(tooltip);
 
-    // Get the tooltip's width after the first three buttons are added
-    let maxWidth = tooltip.offsetWidth;
-
-    // Container for additional buttons
-    const additionalButtonsContainer = document.createElement('div');
-    let newLineContainer = document.createElement('div');
-    newLineContainer.style.display = 'flex';
-    newLineContainer.style.gap = '5px';
-    newLineContainer.style.marginTop = '5px'; // Add margin to separate from the previous line
-
-    let newLineWidth = 0;
-
-    // Process buttons greater than 3
-    actions.slice(3).forEach((action, index) => {
-        const button = document.createElement('button');
-        button.textContent = action.label;
-        button.style.backgroundColor = '#555';
-        button.style.border = 'none';
-        button.style.color = '#fff';
-        button.style.padding = '5px';
-        button.style.borderRadius = '3px';
-        button.style.cursor = 'pointer';
-        button.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
-
-        // Temporarily add button to measure width
-        document.body.appendChild(button);
-        const buttonWidth = button.offsetWidth;
-        document.body.removeChild(button);
-
-        // Check if the button itself is wider than maxWidth
-        if (buttonWidth > maxWidth) {
-            maxWidth = buttonWidth; // Update maxWidth to accommodate this button
-            tooltip.style.width = `${maxWidth}px`;
-        }
-
-        // Check if adding the button would exceed the maxWidth
-        if (newLineWidth + buttonWidth > maxWidth) {
-            // Add the current line to the container and start a new line
-            additionalButtonsContainer.appendChild(newLineContainer);
-            newLineContainer = document.createElement('div');
-            newLineContainer.style.display = 'flex';
-            newLineContainer.style.gap = '5px';
-            newLineContainer.style.marginTop = '5px';
-
-            newLineWidth = 0; // Reset current line width
-        }
-
-        newLineContainer.appendChild(button);
-        newLineWidth += buttonWidth;
-
-        // Update maxWidth if the new line width exceeds the current maxWidth
-        if (newLineWidth > maxWidth) {
-            tooltip.style.width = `${newLineWidth}px`; // Adjust tooltip width
-        }
-
-        // If it's the last button, append the line
-        if (index === actions.length - 4) {
-            additionalButtonsContainer.appendChild(newLineContainer);
-        }
-
-        // Event handler for button click
-        button.addEventListener('click', () => {
-            action.handler(); // Trigger the corresponding action
-            tooltip.remove(); // Remove the tooltip after clicking
-        });
-    });
-
-    // Append the last line container if it has buttons
-    if (newLineContainer.childElementCount > 0) {
-        additionalButtonsContainer.appendChild(newLineContainer);
-    }
-
-    tooltip.appendChild(additionalButtonsContainer); // Add the container to tooltip
     // Set a timeout to automatically remove the tooltip after the specified duration
     let timeoutId = setTimeout(removeTooltip, timeout);
 
@@ -235,6 +162,7 @@ function createTooltip(x, y, actions, timeout = 1500) {
 
     return tooltip;
 }
+
 
 function addTooltipsOnHover(event) {
     if (event.target.tagName === 'A' || event.target.closest('a')) {
@@ -352,19 +280,31 @@ function addTooltipsOnHover(event) {
             }
 
             // Create actions from the collection
-            const actions = collection.map(item => {
-                const action = {
+            const actions = collection
+                .filter(item => item.label === '+') // Only map items where item.label is '+'
+                .map(item => ({
                     label: item.label,
                     handler: item.handler
+                }));
+
+            // Check if collection[1] exists and has links
+            if (collection.length > 1 && collection[1].links && collection[1].links.length > 0) {
+                const linkCount = collection[1].links.length;
+                const actionPageButton = {
+                    label: `${linkCount} 🔗`, // Button text is the count of links inside
+                    handler: function () {
+
+                        // chrome.runtime.sendMessage({action: 'openSidePanel'}, () => {
+                            //
+                        // });
+                    }
                 };
 
-                // If the item is the popup action, include the links
-                if (item.label === '↗️' && item.links && item.links.length > 0) {
-                    action.links = item.links; // Add the links array to the action
-                }
+                // Add the new action page button to the actions array
+                actions.push(actionPageButton);
+            }
 
-                return action;
-            });
+
 
 
             // Debugging: Log the actions array to check handlers
@@ -655,7 +595,7 @@ async function handleKeyDown(e) {
             const timeDifference = currentTime - lastKeyTime;
 
             if (keyMap[doubleTapKeyToSendPageBack] && key === lastKey && timeDifference < 300) {
-                chrome.runtime.sendMessage({ action: 'sendPageBack' }, () => {
+                chrome.runtime.sendMessage({ action: 'openSidePanel' }, () => {
                 });
             } else {
                 lastKeyTime = currentTime;

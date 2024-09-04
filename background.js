@@ -304,6 +304,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 }
 
+                if (request.action === 'openSidePanel') {
+                    chrome.sidePanel.open({ windowId: sender.tab.windowId });
+                    sendResponse({ status: 'open SidePanel handled' });
+                }
+
 
                 if (request.action === 'sendPageBack') {
                     loadUserConfigs().then(userConfigs => {
@@ -381,8 +386,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         } else {
                             // console.log(request.action)
                         }
-
-                        if (isUrlDisabled(sender.tab.url, disabledUrls)) {
+                        const currentUrl = typeof sender.tab !== 'undefined' ? sender.tab.url : 'https://www.example.com' ;
+                        if (isUrlDisabled(currentUrl, disabledUrls)) {
                             sendResponse({ status: 'url disabled' });
                         } else if (request.linkUrl) {
                             handleLinkInPopup(request.trigger, request.linkUrl, sender.tab, currentWindow, rememberPopupSizeAndPosition, typeToSend).then(() => {
@@ -494,7 +499,7 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
             width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
             height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
             focused: !popupInBackground,
-            incognito: tab.incognito
+            incognito: tab && tab.incognito !== undefined ? tab.incognito : false
         }, (newWindow) => {
             if (chrome.runtime.lastError) {
                 console.error('Error creating popup window:', chrome.runtime.lastError);

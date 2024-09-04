@@ -3,7 +3,7 @@
         "message": "在弹出窗口中打开链接"
     },
     "extensionName": {
-        "message": "原拖拽预览"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
         "message": "在弹出窗口中打开拖拽的链接、搜索拖拽的文本"
@@ -24,7 +24,7 @@
         "message": "在原窗口中打开页面"
     },
     "disabledUrls": {
-        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本。"
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "sendPageBack": {
         "message": "发送当前页面到原窗口"
@@ -123,7 +123,7 @@
         "message": "预览图片"
     },  
     "hoverDisabledUrls": {
-        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本。"
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "searchSettings": {
         "message": "搜索"
@@ -150,19 +150,19 @@
         "message": "后台弹出"
     }, 
     "previewModeDisabledUrls": {
-        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本。"
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
     }, 
     "previewModeEnable": {
-        "message": "点击链接预览。"
+        "message": "点击链接预览"
     }, 
     "imgSearchEnable": {
-        "message": "以图搜图。"
+        "message": "以图搜图"
     }, 
     "hoverImgSearchEnable": {
-        "message": "以图搜图。"
+        "message": "以图搜图"
     }, 
     "doubleClickToSwitch": {
-        "message": "双击临时切换当前页面模式：需在非图片、链接上双击，"
+        "message": "双击临时切换当前页面模式：需在非图片、链接上双击"
     }, 
     "doubleClickAsClick": {
         "message": "双击变单击：仅对链接有效"
@@ -174,15 +174,27 @@
         "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"
     },
     "linkHint": {
-        "message": "链接提示。"
+        "message": "链接提示"
     },
     "searchTooltipsEnable": {
         "message": "选中文本时显示搜索条"
     },
     "collectionTooltipsEnable": {
-        "message": "收集条"
+        "message": "悬停时显示收集条，收集后通过 Ctrl/Command + U 或者点击插件图标查看所有收集"
     },
     "linkSettings": {
         "message": "链接"
+    },
+    "empty": {
+        "message": "这什么也没有"
+    },
+    "openAll": {
+        "message": "打开全部 ↗️"
+    },
+    "clearAll": {
+        "message": "清除全部"
+    },
+    "options": {
+        "message": "➡️ 设置页面"
     }
 }

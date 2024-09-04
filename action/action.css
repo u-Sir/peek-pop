@@ -1,0 +1,89 @@
+/* Light mode (default) */
+body {
+    margin: 0;
+    padding: 10px;
+    min-width: 500px;
+    background-color: #ffffff; /* Light background */
+    color: #000000; /* Dark text */
+}
+
+a {
+    display: block;
+    margin: 5px 0;
+    text-decoration: none;
+    color: #000000;
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+a:hover {
+    color: #cf7272;
+}
+
+#empty {
+    display: none; /* Hide by default */
+}
+
+.link-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    /* Adds some space between each link */
+}
+
+.link-container a {
+    flex-grow: 1;
+    text-decoration: none;
+    color: #000; /* Customize the link color */
+}
+
+.link-container a:hover {
+    color: #cf7272; /* Ensure the hover color is applied */
+}
+
+.link-container .remove-button {
+    margin-left: 10px; /* Space between link and button */
+    padding: 5px 10px;
+    background-color: #cdcdcd; /* Customize the button color */
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.link-container .remove-button:hover {
+    background-color: #cf7272; /* Darker color on hover */
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1e1e1e; /* Dark background */
+        color: #ffffff; /* Light text */
+    }
+
+    a {
+        color: #ffffff;
+    }
+
+    a:hover {
+        color: #ff9999;
+    }
+
+    .link-container a {
+        color: #ffffff; /* Light link color */
+    }
+
+    .link-container a:hover {
+        color: #ff9999; /* Light hover color */
+    }
+
+    .link-container .remove-button {
+        background-color: #444444; /* Dark button color */
+        color: #ffffff;
+    }
+
+    .link-container .remove-button:hover {
+        background-color: #ff9999; /* Darker hover color */
+    }
+}
