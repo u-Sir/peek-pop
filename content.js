@@ -770,7 +770,7 @@ async function handlePreviewMode(e) {
     if (linkUrl.trim() === 'javascript:void(0);') return;
 
 
-    if (linkUrl && finalLinkUrl.trim() !== 'javascript:void(0);') {
+    if (linkUrl && linkUrl.trim() !== 'javascript:void(0);') {
         e.preventDefault();
         e.stopPropagation();
         const data = await loadUserConfigs(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground']);
