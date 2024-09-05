@@ -312,7 +312,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                                 chrome.action.setIcon({
                                     path: {
-                                        "128": "action/icon.png"
+                                        "128": "action/icon_with_border-128.png"
                                     }
                                 });
                             }
@@ -776,7 +776,23 @@ chrome.commands.onCommand.addListener((command) => {
             const currentValue = data.previewModeEnable;
             const newValue = !currentValue;
 
-            chrome.storage.local.set({ previewModeEnable: newValue });
+            chrome.storage.local.set({ previewModeEnable: newValue }, () => {
+                if (newValue) {
+
+                    chrome.action.setIcon({
+                        path: {
+                            "128": "action/icon_with_border-128.png"
+                        }
+                    });
+
+                } else {
+                    chrome.action.setIcon({
+                        path: {
+                            "128": "action/icon.png"
+                        }
+                    });
+                }
+            });
         });
     }
 });

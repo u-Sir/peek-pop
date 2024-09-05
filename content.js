@@ -19,6 +19,7 @@ let tooltip;
 let searchTooltips;
 let linkCollection;
 let collection;
+let hoverLink = false;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -94,17 +95,16 @@ function removeListeners() {
 
 }
 
-function createTooltip(x, y, actions, timeout = 1500) {
+function createTooltip(x, y, actions, timeout = 2000) {
     const tooltip = document.createElement('div');
     tooltip.style.position = 'fixed';
-    tooltip.style.top = `${y + 20}px`; // Position below the cursor
+    tooltip.style.top = `${y + 20}px`; // Initial position below the cursor
     tooltip.style.left = `${x}px`;
-    tooltip.style.backgroundColor = '#333';
-    tooltip.style.color = '#fff';
-    tooltip.style.padding = '5px';
-    tooltip.style.borderRadius = '5px';
+    tooltip.style.backgroundColor = 'transparent'; // Make tooltip background transparent
+    tooltip.style.padding = '0'; // Remove padding
+    tooltip.style.borderRadius = '0'; // Remove border radius
     tooltip.style.zIndex = '10000';
-    tooltip.style.fontSize = '14px';
+    tooltip.style.fontSize = '14px'; // Adjust font size for the text inside buttons
     tooltip.style.display = 'inline-block';
     tooltip.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
 
@@ -117,12 +117,15 @@ function createTooltip(x, y, actions, timeout = 1500) {
     actions.forEach(action => {
         const button = document.createElement('button');
         button.textContent = action.label;
-        button.style.backgroundColor = '#555';
+
+        // Style for buttons
+        button.style.backgroundColor = '#ffa742'; // Button background color
         button.style.border = 'none';
-        button.style.color = '#fff';
-        button.style.padding = '5px';
-        button.style.borderRadius = '3px';
+        button.style.color = '#000'; // Button text color
+        button.style.padding = '4px 5px'; // Adjust size by changing padding
+        button.style.borderRadius = '5px'; // Adjust corner roundness
         button.style.cursor = 'pointer';
+        button.style.fontSize = '10px'; // Adjust button text size
 
         button.addEventListener('click', () => {
             action.handler(); // Trigger the corresponding action
@@ -135,13 +138,47 @@ function createTooltip(x, y, actions, timeout = 1500) {
     tooltip.appendChild(buttonContainer);
     document.body.appendChild(tooltip);
 
+    // Function to adjust tooltip position if it's out of viewport
+    function adjustPosition() {
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let newX = x;
+        let newY = y + 20; // Initial position
+
+        // Adjust position if tooltip overflows horizontally
+        if (tooltipRect.right > viewportWidth) {
+            newX -= (tooltipRect.right - viewportWidth); // Move left
+        }
+        if (tooltipRect.left < 0) {
+            newX -= tooltipRect.left; // Move right
+        }
+
+        // Adjust position if tooltip overflows vertically
+        if (tooltipRect.bottom > viewportHeight) {
+            newY -= (tooltipRect.bottom - viewportHeight); // Move up
+        }
+        if (tooltipRect.top < 0) {
+            newY -= tooltipRect.top; // Move down
+        }
+
+        // Apply the adjusted position
+        tooltip.style.left = `${newX}px`;
+        tooltip.style.top = `${newY}px`;
+    }
+
+    // Adjust the position initially
+    adjustPosition();
+
     // Set a timeout to automatically remove the tooltip after the specified duration
     let timeoutId = setTimeout(removeTooltip, timeout);
 
     function removeTooltip() {
-        if (tooltip) {
+        if (tooltip && !hoverLink) {
             tooltip.remove();
             clearTimeout(timeoutId);
+            hoverLink = false;
         }
     }
 
@@ -153,12 +190,6 @@ function createTooltip(x, y, actions, timeout = 1500) {
     // Start timeout again when cursor leaves the tooltip
     tooltip.addEventListener('mouseleave', () => {
         timeoutId = setTimeout(removeTooltip, timeout); // Reset the timeout
-    });
-
-    // Optionally, clear the timeout if any button is clicked (to prevent it from disappearing mid-click)
-    tooltip.addEventListener('click', () => {
-        clearTimeout(timeoutId);
-        removeTooltip();
     });
 
     return tooltip;
@@ -176,11 +207,13 @@ function addTooltipsOnHover(event) {
 
             const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
             if (!linkElement) return; // Ensure there's a valid link element
+            const visibleWidth = linkElement.clientWidth; // Width of the visible part
 
             const linkRect = linkElement.getBoundingClientRect(); // Get link's bounding box
             const linkUrl = linkElement.href;
             const linkTitle = linkElement.title || linkElement.textContent;
-
+            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+            hoverLink = true;
             // Initialize or load the collection
             collection = (Array.isArray(data.collection) && data.collection.length > 0)
                 ? data.collection
@@ -208,6 +241,11 @@ function addTooltipsOnHover(event) {
                                     top: window.screen.availTop,
                                     left: window.screen.availLeft
                                 };
+
+                                if (linkIndicator) {
+                                    linkIndicator.remove();
+                                }
+                                linkIndicator = null;
                                 if (data.blurEnabled) {
                                     document.body.style.filter = `blur(${data.blurPx}px)`;
                                     document.body.style.transition = `filter ${data.blurTime}s ease`;
@@ -217,19 +255,12 @@ function addTooltipsOnHover(event) {
                                     collection = collection.filter(item => item.label === '+');
 
                                     // Store the updated collection back in Chrome storage
-                                    chrome.storage.local.set({ collection: collection }, () => {
-                                        // console.log('Collection updated:', collection);
-                                    });
+                                    chrome.storage.local.set({ collection: collection });
                                 });
                             }
                         }
                     }
                 ];
-
-
-            // Debugging: Log the collection before processing
-            // console.log('Collection:', collection);
-
             // Ensure the `links` array is correctly populated
             collection = collection.map(item => {
                 if (!item.handler) {
@@ -250,6 +281,12 @@ function addTooltipsOnHover(event) {
                                     top: window.screen.availTop,
                                     left: window.screen.availLeft
                                 };
+
+                                if (linkIndicator) {
+                                    linkIndicator.remove();
+                                }
+                                linkIndicator = null;
+
                                 if (data.blurEnabled) {
                                     document.body.style.filter = `blur(${data.blurPx}px)`;
                                     document.body.style.transition = `filter ${data.blurTime}s ease`;
@@ -259,9 +296,7 @@ function addTooltipsOnHover(event) {
                                     collection = collection.filter(item => item.label === '+');
 
                                     // Store the updated collection back in Chrome storage
-                                    chrome.storage.local.set({ collection: collection }, () => {
-                                        // console.log('Collection updated:', collection);
-                                    });
+                                    chrome.storage.local.set({ collection: collection });
                                 });
                             }
                         };
@@ -288,11 +323,13 @@ function addTooltipsOnHover(event) {
                     handler: item.handler
                 }));
 
+            let offset = 30;
             // Check if collection[1] exists and has links
             if (collection.length > 1 && collection[1].links && collection[1].links.length > 0) {
+                offset = 40;
                 const linkCount = collection[1].links.length;
                 const actionPageButton = {
-                    label: `${linkCount} 🔗`, // Button text is the count of links inside
+                    label: `${linkCount}`, // Button text is the count of links inside
                     handler: function () {
 
                         // chrome.runtime.sendMessage({action: 'openSidePanel'}, () => {
@@ -305,13 +342,24 @@ function addTooltipsOnHover(event) {
                 actions.push(actionPageButton);
             }
 
+            // Get the computed styles of the element
+            const computedStyles = window.getComputedStyle(linkElement);
+
+            // Get the element's height
+            const elementHeight = linkElement.getBoundingClientRect().height;
+
+            // Get the line-height from the computed styles
+            const lineHeight = parseFloat(computedStyles.lineHeight);
+
+            // If line-height is not defined in the CSS, we can fall back to font-size
+            const fontSize = parseFloat(computedStyles.fontSize);
+            const actualLineHeight = lineHeight || fontSize * 1.2; // Assuming line-height is about 1.2x font-size if undefined
+
+            // Calculate how many lines the text has wrapped into
+            const lineCount = Math.round(elementHeight / actualLineHeight);
 
 
-
-            // Debugging: Log the actions array to check handlers
-            // console.log('Actions:', actions);
-
-            linkCollection = createTooltip(linkRect.left, linkRect.top, actions);
+            linkCollection = createTooltip(linkRect.left + visibleWidth, linkRect.top - linkRect.height/lineCount + 5 , actions);
 
             const checkCursorInsideViewport = (event) => {
                 const x = event.clientX; // Get the cursor's X position
@@ -481,9 +529,7 @@ function addLinkToCollection(url, label) {
         collection.push(newItem); // Add the link as a new entry to the main collection
 
         // Store the updated collection back in Chrome storage
-        chrome.storage.local.set({ collection: collection }, () => {
-            // console.log('Link added to collection:', collection);
-        });
+        chrome.storage.local.set({ collection: collection });
     } else {
         // console.log('Link already exists in the collection.');
     }
@@ -496,9 +542,7 @@ function removeLinkFromCollection(url) {
     collection = collection.filter(item => item.url !== url); // Remove from the main collection
 
     // Store the updated collection back in chrome storage
-    chrome.storage.local.set({ collection: collection }, () => {
-        // console.log('Link removed from collection:', collection);
-    });
+    chrome.storage.local.set({ collection: collection });
 }
 
 
@@ -506,10 +550,18 @@ function removeLinkFromCollection(url) {
 // Function to add link indicator when hovering over a link
 function changeCursorOnHover(event) {
     if (event.target.tagName === 'A' || event.target.closest('a')) {
+
+        const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
+        const linkUrl = linkElement ? linkElement.href : null;
+        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+
+        if (!document.body.contains(event.target)) {
+            return; // If the element is not in the DOM anymore, do nothing
+        }
         if (linkIndicator) {
             linkIndicator.remove(); // Remove any existing indicator
-
         }
+        linkIndicator = null;
 
         if (tooltip) tooltip.remove();
 
@@ -518,6 +570,8 @@ function changeCursorOnHover(event) {
         const checkCursorInside = (event) => {
             const x = event.clientX; // Get the cursor's X position
             const y = event.clientY; // Get the cursor's Y position
+            const sx = event.screenX; // Get the cursor's X position
+            const sy = event.screenY; // Get the cursor's Y position
 
             // Check if cursor is inside the link's bounding box
             const isInsideLink = (
@@ -526,20 +580,19 @@ function changeCursorOnHover(event) {
                 y >= linkRect.top &&
                 y <= linkRect.bottom
             );
-
-            // Check if cursor is inside the viewport
+            // Check if cursor is inside the viewport use screen cordination
             const isInsideViewport = (
-                x >= 0 &&
-                x <= window.innerWidth &&
-                y >= 0 &&
-                y <= window.innerHeight
+                sx >= window.screenX &&
+                sx <= (window.screenX + window.innerWidth) &&
+                sy >= window.screenY &&
+                sy <= (window.screenY + window.innerHeight)
             );
 
-            if (isInsideLink && isInsideViewport) {
+            if (isInsideLink && isInsideViewport && linkIndicator) {
                 linkIndicator.style.top = `${y + 25}px`; // Update top position
                 linkIndicator.style.left = `${x}px`; // Update left position
             } else {
-                linkIndicator.remove();
+                if (linkIndicator) linkIndicator.remove();
                 linkIndicator = null; // Reset the indicator reference
                 document.removeEventListener('mousemove', checkCursorInside);
             }
@@ -552,12 +605,15 @@ function changeCursorOnHover(event) {
         event.target.addEventListener('mouseout', function () {
             if (linkIndicator) {
                 linkIndicator.remove();
-                linkIndicator = null;
             }
+            linkIndicator = null;
+
             document.removeEventListener('mousemove', checkCursorInside);
         }, { once: true });
     }
 }
+
+
 
 function handleContextMenu() {
     chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
@@ -570,7 +626,10 @@ function handleContextMenu() {
     if (tooltip) tooltip.remove();
     if (searchTooltips) searchTooltips.remove();
     if (linkCollection) linkCollection.remove();
-
+    if (linkIndicator) {
+        linkIndicator.remove();
+    }
+    linkIndicator = null;
 }
 
 async function handleKeyDown(e) {
@@ -596,6 +655,12 @@ async function handleKeyDown(e) {
             const timeDifference = currentTime - lastKeyTime;
 
             if (keyMap[doubleTapKeyToSendPageBack] && key === lastKey && timeDifference < 300) {
+
+                if (linkIndicator) {
+                    linkIndicator.remove();
+                }
+                linkIndicator = null;
+
                 chrome.runtime.sendMessage({ action: 'openSidePanel' }, () => {
                 });
             } else {
@@ -611,7 +676,9 @@ async function handleKeyDown(e) {
 
 async function handleMouseDown(e) {
 
-    if (document.body) document.body.style.filter = '';
+    if (document.body) {
+        document.body.style.filter = '';
+    }
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
 
@@ -646,7 +713,7 @@ async function handleMouseDown(e) {
 
                 events.forEach(event => document.removeEventListener(event, handleEvent, true));
             }
-        
+
         }
 
     });
@@ -678,6 +745,7 @@ function handleDoubleClick(e) {
 
         const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
         const linkUrl = linkElement ? linkElement.href : null;
+        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
 
 
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
@@ -698,7 +766,7 @@ function handleDoubleClick(e) {
                 e.target.click();
             }
         }
-    
+
         // Remove the event listener after it triggers once
         document.removeEventListener('dblclick', handleDoubleClick, true);
         isDoubleClick = false;
@@ -728,10 +796,9 @@ function handleEvent(e) {
             document.addEventListener('dblclick', handleDoubleClick, true);
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
+            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
 
             if (previewMode && linkUrl && !isDoubleClick) {
-                if (linkUrl.trim() === 'javascript:void(0);') return;
-
                 e.preventDefault();
                 e.stopPropagation();
                 clickTimeout = setTimeout(() => {
@@ -751,7 +818,7 @@ function handleEvent(e) {
         e.stopImmediatePropagation();
         setTimeout(resetDraggingState, 0);
     } else if (e.type === 'mouseup') {
-    
+
         handleMouseUpWithProgressBar(e);
 
         addSearchTooltipsOnHover(e);
@@ -767,10 +834,10 @@ async function handlePreviewMode(e) {
 
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl.trim() === 'javascript:void(0);') return;
+    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
 
 
-    if (linkUrl && linkUrl.trim() !== 'javascript:void(0);') {
+    if (linkUrl) {
         e.preventDefault();
         e.stopPropagation();
         const data = await loadUserConfigs(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground']);
@@ -786,11 +853,16 @@ async function handlePreviewMode(e) {
 
         if (!finalLinkUrl) return;
 
-        console.log(finalLinkUrl)
+        if (linkIndicator) {
+            linkIndicator.remove();
+        }
+        linkIndicator = null;
+
         if (blurEnabled && !previewModePopupInBackground) {
             document.body.style.filter = `blur(${blurPx}px)`;
             document.body.style.transition = `filter ${blurTime}s ease`;
         }
+
         chrome.runtime.sendMessage({
             linkUrl: finalLinkUrl,
             lastClientX: e.screenX,
@@ -801,6 +873,8 @@ async function handlePreviewMode(e) {
             left: window.screen.availLeft,
             trigger: 'click'
         }, () => {
+            if (linkIndicator) linkIndicator.remove();
+            linkIndicator = null;
             hasPopupTriggered = true;
             finalLinkUrl = null;
         });
@@ -933,7 +1007,7 @@ async function handleDragStart(e) {
     const selectionText = window.getSelection().toString();
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl.trim() === 'javascript:void(0);') return;
+    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
 
     const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
     let imageUrl = imageElement ? imageElement.src : null;
@@ -1012,6 +1086,13 @@ async function handleDragStart(e) {
                     }
 
                     if (dragDirections.includes(direction)) {
+
+
+                        if (linkIndicator) {
+                            linkIndicator.remove();
+                        }
+                        linkIndicator = null;
+
                         if (blurEnabled && !popupInBackground) {
                             document.body.style.filter = `blur(${blurPx}px)`;
                             document.body.style.transition = `filter ${blurTime}s ease`;
@@ -1032,6 +1113,9 @@ async function handleDragStart(e) {
                             document.removeEventListener('dragend', onDragend, true);
                             finalLinkUrl = null;
                             imageUrl = null;
+                            if (linkIndicator) linkIndicator.remove();
+                            linkIndicator = null;
+
                         });
                     } else {
                         // nothing
@@ -1054,6 +1138,12 @@ async function handleDragStart(e) {
                 }
 
                 if (dragDirections.includes(direction)) {
+
+                    if (linkIndicator) {
+                        linkIndicator.remove();
+                    }
+                    linkIndicator = null;
+
                     if (blurEnabled && !popupInBackground) {
                         document.body.style.filter = `blur(${blurPx}px)`;
                         document.body.style.transition = `filter ${blurTime}s ease`;
@@ -1074,6 +1164,9 @@ async function handleDragStart(e) {
                         document.removeEventListener('dragend', onDragend, true);
                         finalLinkUrl = null;
                         imageUrl = null;
+                        if (linkIndicator) linkIndicator.remove();
+                        linkIndicator = null;
+
                     });
                 } else {
                     // nothing
@@ -1197,7 +1290,15 @@ chrome.storage.local.get('lastUrl', (data) => {
 });
 
 window.addEventListener('focus', async () => {
-    if (document.body) document.body.style.filter = '';
+
+    if (linkIndicator) {
+        linkIndicator.remove();
+    }
+    linkIndicator = null;
+
+    if (document.body) {
+        document.body.style.filter = '';
+    }
     document.addEventListener('keydown', handleKeyDown);
     clearTimeoutsAndProgressBars();
     hoverElement = null;
@@ -1221,7 +1322,9 @@ window.addEventListener('focus', async () => {
 
 // Create candle-like progress bar element
 function createCandleProgressBar(x, y, duration) {
+
     const barContainer = document.createElement('div');
+    barContainer.classList.add('link-indicator'); // Add a class to identify this element
     barContainer.style.position = 'fixed';
     barContainer.style.top = `${y + 25}px`; // Place below the cursor
     barContainer.style.left = `${x}px`; // Center the progress bar horizontally
@@ -1265,14 +1368,16 @@ async function handleMouseOver(e) {
 
         return;
     }
+    addTooltipsOnHover(e);
+
 
     const data = await loadUserConfigs(['linkHint', 'hoverImgSearchEnable', 'blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverImgSupport', 'hoverModifiedKey', 'hoverDisabledUrls']);
     const linkHint = data.linkHint || false;
     const hoverTimeout = data.hoverTimeout || 0;
 
-    addTooltipsOnHover(e);
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
         changeCursorOnHover(e);
+
     }
     // do nothing when is in blacklist
     const currentUrl = window.location.href;
@@ -1289,6 +1394,7 @@ async function handleMouseOver(e) {
         } else {
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
+            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
 
             const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
             const imageUrl = imageElement ? imageElement.src : null;
@@ -1425,13 +1531,17 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                     : null);
 
             if (!finalLinkUrl) return;
-            if (finalLinkUrl.trim() === 'javascript:void(0);') return;
+            if (finallinkUrl.trim().startsWith('javascript:')) return;
+
+            if (linkIndicator) {
+                linkIndicator.remove();
+            }
+            linkIndicator = null;
 
             if (blurEnabled && !hoverPopupInBackground) {
                 document.body.style.filter = `blur(${blurPx}px)`;
                 document.body.style.transition = `filter ${blurTime}s ease`;
             }
-
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
                 lastClientX: e.screenX,
@@ -1445,6 +1555,8 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 hasPopupTriggered = true;
                 imageUrl = null;
                 document.removeEventListener('mousemove', updateProgressBarPosition, true);
+                if (linkIndicator) linkIndicator.remove();
+                linkIndicator = null;
 
             });
         }
@@ -1454,6 +1566,12 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
 // Trigger the popup logic
 function triggerLinkPopup(e, link) {
     chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime'], async (data) => {
+
+        if (linkIndicator) {
+            linkIndicator.remove();
+        }
+        linkIndicator = null;
+
         if (data.blurEnabled) {
             document.body.style.filter = `blur(${data.blurPx}px)`;
             document.body.style.transition = `filter ${data.blurTime}s ease`;
@@ -1468,7 +1586,8 @@ function triggerLinkPopup(e, link) {
             left: window.screen.availLeft,
             trigger: 'tooltips'
         }, () => {
-            // console.log('send:', link)
+            if (linkIndicator) linkIndicator.remove();
+            linkIndicator = null;
         });
     });
 }
