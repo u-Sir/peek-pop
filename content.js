@@ -19,7 +19,7 @@ let tooltip;
 let searchTooltips;
 let linkCollection;
 let collection;
-let hoverLink = false;
+let hoverlinkOrText = false;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -175,10 +175,10 @@ function createTooltip(x, y, actions, timeout = 2000) {
     let timeoutId = setTimeout(removeTooltip, timeout);
 
     function removeTooltip() {
-        if (tooltip && !hoverLink) {
+        if (tooltip && !hoverlinkOrText) {
             tooltip.remove();
             clearTimeout(timeoutId);
-            hoverLink = false;
+            hoverlinkOrText = false;
         }
     }
 
@@ -203,6 +203,7 @@ function addTooltipsOnHover(event) {
             if (linkCollection) linkCollection.remove();
             if (tooltip) tooltip.remove();
             if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
             if (typeof data.collectionTooltipsEnable === 'undefined' || !data.collectionTooltipsEnable) return;
 
             const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
@@ -213,7 +214,7 @@ function addTooltipsOnHover(event) {
             const linkUrl = linkElement.href;
             const linkTitle = linkElement.title || linkElement.textContent;
             if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-            hoverLink = true;
+            hoverlinkOrText = true;
             // Initialize or load the collection
             collection = (Array.isArray(data.collection) && data.collection.length > 0)
                 ? data.collection
@@ -246,6 +247,10 @@ function addTooltipsOnHover(event) {
                                     linkIndicator.remove();
                                 }
                                 linkIndicator = null;
+
+                                if (searchTooltips) searchTooltips.remove();
+                                searchTooltips = null;
+
                                 if (data.blurEnabled) {
                                     document.body.style.filter = `blur(${data.blurPx}px)`;
                                     document.body.style.transition = `filter ${data.blurTime}s ease`;
@@ -286,6 +291,9 @@ function addTooltipsOnHover(event) {
                                     linkIndicator.remove();
                                 }
                                 linkIndicator = null;
+
+                                if (searchTooltips) searchTooltips.remove();
+                                searchTooltips = null;
 
                                 if (data.blurEnabled) {
                                     document.body.style.filter = `blur(${data.blurPx}px)`;
@@ -359,7 +367,7 @@ function addTooltipsOnHover(event) {
             const lineCount = Math.round(elementHeight / actualLineHeight);
 
 
-            linkCollection = createTooltip(linkRect.left + visibleWidth, linkRect.top - linkRect.height/lineCount + 5 , actions);
+            linkCollection = createTooltip(linkRect.left + visibleWidth, linkRect.top - linkRect.height / lineCount + 5, actions);
 
             const checkCursorInsideViewport = (event) => {
                 const x = event.clientX; // Get the cursor's X position
@@ -456,7 +464,8 @@ function addSearchTooltipsOnHover(event) {
 
             const range = selection.getRangeAt(0).cloneRange();
             const textRect = range.getBoundingClientRect(); // Get the bounding box of the selected text
-            searchTooltips = createTooltip(textRect.left, textRect.top, actions, 1000);
+            hoverlinkOrText = true;
+            searchTooltips = createTooltip(textRect.left, textRect.bottom, actions, 1500);
 
             const checkSearchCursorInsideViewport = (event) => {
                 const x = event.clientX; // Get the cursor's X position
@@ -474,6 +483,7 @@ function addSearchTooltipsOnHover(event) {
                     if (searchTooltips) {
                         searchTooltips.remove();
                         searchTooltips = null;
+                        hoverlinkOrText = false;
                     }
                     document.removeEventListener('mousemove', checkSearchCursorInsideViewport);
                 }
@@ -491,6 +501,10 @@ function addSearchTooltipsOnHover(event) {
                 document.removeEventListener('mousemove', checkSearchCursorInsideViewport);
             });
         });
+    } else {
+
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
     }
 }
 
@@ -563,6 +577,9 @@ function changeCursorOnHover(event) {
         }
         linkIndicator = null;
 
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
+
         if (tooltip) tooltip.remove();
 
         const linkRect = event.target.getBoundingClientRect(); // Get link's bounding box
@@ -594,6 +611,9 @@ function changeCursorOnHover(event) {
             } else {
                 if (linkIndicator) linkIndicator.remove();
                 linkIndicator = null; // Reset the indicator reference
+
+                if (searchTooltips) searchTooltips.remove();
+                searchTooltips = null;
                 document.removeEventListener('mousemove', checkCursorInside);
             }
 
@@ -608,6 +628,8 @@ function changeCursorOnHover(event) {
             }
             linkIndicator = null;
 
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
             document.removeEventListener('mousemove', checkCursorInside);
         }, { once: true });
     }
@@ -630,6 +652,8 @@ function handleContextMenu() {
         linkIndicator.remove();
     }
     linkIndicator = null;
+    hoverlinkOrText = false;
+    searchTooltips = null;
 }
 
 async function handleKeyDown(e) {
@@ -661,6 +685,8 @@ async function handleKeyDown(e) {
                 }
                 linkIndicator = null;
 
+                if (searchTooltips) searchTooltips.remove();
+                searchTooltips = null;
                 chrome.runtime.sendMessage({ action: 'openSidePanel' }, () => {
                 });
             } else {
@@ -858,6 +884,8 @@ async function handlePreviewMode(e) {
         }
         linkIndicator = null;
 
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
         if (blurEnabled && !previewModePopupInBackground) {
             document.body.style.filter = `blur(${blurPx}px)`;
             document.body.style.transition = `filter ${blurTime}s ease`;
@@ -875,6 +903,8 @@ async function handlePreviewMode(e) {
         }, () => {
             if (linkIndicator) linkIndicator.remove();
             linkIndicator = null;
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
             hasPopupTriggered = true;
             finalLinkUrl = null;
         });
@@ -1093,6 +1123,8 @@ async function handleDragStart(e) {
                         }
                         linkIndicator = null;
 
+                        if (searchTooltips) searchTooltips.remove();
+                        searchTooltips = null;
                         if (blurEnabled && !popupInBackground) {
                             document.body.style.filter = `blur(${blurPx}px)`;
                             document.body.style.transition = `filter ${blurTime}s ease`;
@@ -1115,6 +1147,8 @@ async function handleDragStart(e) {
                             imageUrl = null;
                             if (linkIndicator) linkIndicator.remove();
                             linkIndicator = null;
+                            if (searchTooltips) searchTooltips.remove();
+                            searchTooltips = null;
 
                         });
                     } else {
@@ -1143,6 +1177,8 @@ async function handleDragStart(e) {
                         linkIndicator.remove();
                     }
                     linkIndicator = null;
+                    if (searchTooltips) searchTooltips.remove();
+                    searchTooltips = null;
 
                     if (blurEnabled && !popupInBackground) {
                         document.body.style.filter = `blur(${blurPx}px)`;
@@ -1166,6 +1202,8 @@ async function handleDragStart(e) {
                         imageUrl = null;
                         if (linkIndicator) linkIndicator.remove();
                         linkIndicator = null;
+                        if (searchTooltips) searchTooltips.remove();
+                        searchTooltips = null;
 
                     });
                 } else {
@@ -1295,6 +1333,8 @@ window.addEventListener('focus', async () => {
         linkIndicator.remove();
     }
     linkIndicator = null;
+    if (searchTooltips) searchTooltips.remove();
+    searchTooltips = null;
 
     if (document.body) {
         document.body.style.filter = '';
@@ -1537,6 +1577,8 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 linkIndicator.remove();
             }
             linkIndicator = null;
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
 
             if (blurEnabled && !hoverPopupInBackground) {
                 document.body.style.filter = `blur(${blurPx}px)`;
@@ -1557,6 +1599,8 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 document.removeEventListener('mousemove', updateProgressBarPosition, true);
                 if (linkIndicator) linkIndicator.remove();
                 linkIndicator = null;
+                if (searchTooltips) searchTooltips.remove();
+                searchTooltips = null;
 
             });
         }
@@ -1571,6 +1615,8 @@ function triggerLinkPopup(e, link) {
             linkIndicator.remove();
         }
         linkIndicator = null;
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
 
         if (data.blurEnabled) {
             document.body.style.filter = `blur(${data.blurPx}px)`;
@@ -1588,6 +1634,8 @@ function triggerLinkPopup(e, link) {
         }, () => {
             if (linkIndicator) linkIndicator.remove();
             linkIndicator = null;
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
         });
     });
 }

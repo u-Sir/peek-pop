@@ -17,7 +17,7 @@ a {
 }
 
 a:hover {
-    color: #cf7272;
+    color: #ffa742;
 }
 
 #empty {
@@ -38,7 +38,7 @@ a:hover {
 }
 
 .link-container a:hover {
-    color: #cf7272; /* Ensure the hover color is applied */
+    color: #ffa742; /* Ensure the hover color is applied */
 }
 
 .link-container .remove-button {
@@ -52,7 +52,7 @@ a:hover {
 }
 
 .link-container .remove-button:hover {
-    background-color: #cf7272; /* Darker color on hover */
+    background-color: #ffa742; /* Darker color on hover */
 }
 
 /* Dark mode */
