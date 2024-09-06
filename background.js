@@ -42,7 +42,8 @@ const configs = {
     'linkHint': false,
     'collection': [],
     'searchTooltipsEnable': false,
-    'collectionTooltipsEnable': false
+    'collectionEnable': false,
+    'collectionTimeout': 1000
 };
 
 // Load user configurations from storage

@@ -179,8 +179,8 @@
     "searchTooltipsEnable": {
         "message": "Tooltips for selected text."
     },
-    "collectionTooltipsEnable": {
-        "message": "Hover to display collection tooltips. Press Ctrl/Command + U or click the add-on icon to view the collection."
+    "collectionEnable": {
+        "message": "Hold the left mouse button to add the link to your collection. Press Ctrl/Command + U or click the add-on icon to list the collection."
     },
     "linkSettings": {
         "message": "Link"
@@ -202,5 +202,8 @@
     },
     "clickModeToggle": {
         "message": "Toggle click mode"
+    },
+    "collectionTimeout": {
+        "message": "At least hold in ms: "
     }
 } 

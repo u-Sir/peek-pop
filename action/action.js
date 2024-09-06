@@ -196,14 +196,14 @@ function loadLinks() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    chrome.storage.local.get(['collectionTooltipsEnable'], (result) => {
-        const collectionTooltipsEnable = result.collectionTooltipsEnable;
+    chrome.storage.local.get(['collectionEnable'], (result) => {
+        const collectionEnable = result.collectionEnable;
 
-        if (!collectionTooltipsEnable) {
+        if (!collectionEnable) {
             // Redirect to options.html
             window.location.href = '../options/options.html';
         } else {
-            // Continue with the rest of the code if collectionTooltipsEnable is true
+            // Continue with the rest of the code if collectionEnable is true
             loadLinks(); // or any other function you want to run
         }
     });

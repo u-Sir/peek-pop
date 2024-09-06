@@ -179,8 +179,8 @@
     "searchTooltipsEnable": {
         "message": "Tooltips para el texto seleccionado."
     },
-    "collectionTooltipsEnable": {
-        "message": "Pasa el cursor para mostrar las descripciones emergentes de la colección. Presiona Ctrl/Command + U o haz clic en el icono del complemento para ver la colección."
+    "collectionEnable": {
+        "message": "Mantén presionado el botón izquierdo del ratón para agregar el enlace a tu colección. Presiona Ctrl/Comando + U o haz clic en el icono del complemento para ver la colección."
     },
     "linkSettings": {
         "message": "Enlace"
@@ -202,5 +202,8 @@
     },
     "clickModeToggle": {
         "message": "Alternar modo de clic"
+    },
+    "collectionTimeout": {
+        "message": "Tiempo mínimo en ms: "
     }
 }

@@ -17,9 +17,12 @@ const moveThreshold = 15;
 let linkIndicator;
 let tooltip;
 let searchTooltips;
-let linkCollection;
 let collection;
 let hoverlinkOrText = false;
+let isMouseDownOnLink = false;
+let firstDownOnLinkAt;
+let collectionProgressBar;
+let collectionTimeout = 1000
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -63,7 +66,8 @@ const configs = {
     'linkHint': false,
     'collection': [],
     'searchTooltipsEnable': false,
-    'collectionTooltipsEnable': false
+    'collectionEnable': false,
+    'collectionTimeout': 1000
 };
 
 async function loadUserConfigs(keys = Object.keys(configs)) {
@@ -198,13 +202,12 @@ function createTooltip(x, y, actions, timeout = 2000) {
 
 function addTooltipsOnHover(event) {
     if (event.target.tagName === 'A' || event.target.closest('a')) {
-        chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionTooltipsEnable'], async (data) => {
+        chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionEnable'], async (data) => {
 
-            if (linkCollection) linkCollection.remove();
             if (tooltip) tooltip.remove();
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
-            if (typeof data.collectionTooltipsEnable === 'undefined' || !data.collectionTooltipsEnable) return;
+            if (typeof data.collectionEnable === 'undefined' || !data.collectionEnable) return;
 
             const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
             if (!linkElement) return; // Ensure there's a valid link element
@@ -413,7 +416,6 @@ function addSearchTooltipsOnHover(event) {
 
     if (selectionText !== '' && selection.rangeCount && selection.rangeCount > 0) {
 
-        if (linkCollection) linkCollection.remove();
         if (tooltip) tooltip.remove();
         // if (searchTooltips) searchTooltips.remove();
         chrome.storage.local.get(['urlCheck', 'searchTooltipsEnable'], (data) => {
@@ -547,6 +549,8 @@ function addLinkToCollection(url, label) {
     } else {
         // console.log('Link already exists in the collection.');
     }
+    isMouseDownOnLink = false;
+    firstDownOnLinkAt = null;
 }
 
 
@@ -583,7 +587,7 @@ function changeCursorOnHover(event) {
         if (tooltip) tooltip.remove();
 
         const linkRect = event.target.getBoundingClientRect(); // Get link's bounding box
-        linkIndicator = createCandleProgressBar(event.clientX, event.clientY, 6000);
+        linkIndicator = createCandleProgressBar(event.clientX - 20, event.clientY, 6000);
         const checkCursorInside = (event) => {
             const x = event.clientX; // Get the cursor's X position
             const y = event.clientY; // Get the cursor's Y position
@@ -607,7 +611,7 @@ function changeCursorOnHover(event) {
 
             if (isInsideLink && isInsideViewport && linkIndicator) {
                 linkIndicator.style.top = `${y + 25}px`; // Update top position
-                linkIndicator.style.left = `${x}px`; // Update left position
+                linkIndicator.style.left = `${x - 20}px`; // Update left position
             } else {
                 if (linkIndicator) linkIndicator.remove();
                 linkIndicator = null; // Reset the indicator reference
@@ -647,7 +651,6 @@ function handleContextMenu() {
 
     if (tooltip) tooltip.remove();
     if (searchTooltips) searchTooltips.remove();
-    if (linkCollection) linkCollection.remove();
     if (linkIndicator) {
         linkIndicator.remove();
     }
@@ -687,8 +690,7 @@ async function handleKeyDown(e) {
 
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
-                chrome.runtime.sendMessage({ action: 'openSidePanel' }, () => {
-                });
+                chrome.runtime.sendMessage({ action: 'openSidePanel' });
             } else {
                 lastKeyTime = currentTime;
                 lastKey = key;
@@ -708,7 +710,7 @@ async function handleMouseDown(e) {
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
 
-    chrome.storage.local.get(['modifiedKey', 'previewModeModifiedKey', 'previewModeEnable', 'previewModeDisabledUrls'], (data) => {
+    chrome.storage.local.get(['modifiedKey', 'previewModeModifiedKey', 'previewModeEnable', 'previewModeDisabledUrls', 'collectionEnable', 'collectionTimeout'], (data) => {
         const modifiedKey = data.modifiedKey || 'None';
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
         const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
@@ -742,6 +744,45 @@ async function handleMouseDown(e) {
 
         }
 
+        if (data.collectionEnable) {
+            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+            const linkUrl = linkElement ? linkElement.href : null;
+            if (e.button !== 0) return;
+            if (!linkUrl || (linkUrl && linkUrl.trim().startsWith('javascript:'))) {
+                isMouseDownOnLink = false;
+                clearTimeoutsAndProgressBars();
+
+                document.removeEventListener(['mouseup'], handleCollection, true)
+                return;
+            } else {
+                isMouseDownOnLink = true;
+
+                document.addEventListener(['mouseup'], handleCollection, true)
+                collectionProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 60, (collectionTimeout ?? 1000));
+
+                setTimeout(() => {
+                    clearTimeoutsAndProgressBars();
+                }, (collectionTimeout ?? 1000));
+                if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000)) {
+                    e.preventDefault();
+                    clearTimeoutsAndProgressBars();
+                    firstDownOnLinkAt = null;
+                    hasPopupTriggered = true;
+
+                } else {
+                    firstDownOnLinkAt = Date.now();
+                }
+            }
+        } else {
+
+            isMouseDownOnLink = false;
+            if (collectionProgressBar) {
+                collectionProgressBar.remove();
+                collectionProgressBar = null;
+            }
+            document.removeEventListener(['mouseup'], handleCollection, true)
+        }
+
     });
 
     try {
@@ -756,6 +797,135 @@ async function handleMouseDown(e) {
 
     isMouseDown = true;
     hasPopupTriggered = false;
+}
+
+function handleCollection(event) {
+    if (event.button !== 0) return;
+    if (!firstDownOnLinkAt) return;
+    const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
+    if (!linkElement) return; // Ensure linkElement and linkUrl are valid
+
+    const linkUrl = linkElement ? linkElement.href : null;
+    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    isMouseDownOnLink = true;
+    chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionTimeout'], (data) => {
+        // Initialize or load the collection
+        collection = (Array.isArray(data.collection) && data.collection.length > 0)
+            ? data.collection
+            : [
+                {
+                    label: '+',
+                    handler: () => {
+                        addLinkToCollection(linkUrl, linkTitle);
+                    }
+                },
+                {
+                    label: '↗️',
+                    links: [], // This will store the links
+                    handler: function () {
+                        // Ensure links exist before creating the popup
+                        if (this.links && this.links.length > 0) {
+                            const group = {
+                                action: 'group',
+                                links: this.links,
+                                trigger: 'tooltips',
+                                lastClientX: event.clientX,
+                                lastClientY: event.clientY,
+                                width: window.screen.availWidth,
+                                height: window.screen.availHeight,
+                                top: window.screen.availTop,
+                                left: window.screen.availLeft
+                            };
+
+                            if (linkIndicator) {
+                                linkIndicator.remove();
+                            }
+                            linkIndicator = null;
+
+                            if (searchTooltips) searchTooltips.remove();
+                            searchTooltips = null;
+
+                            if (data.blurEnabled) {
+                                document.body.style.filter = `blur(${data.blurPx}px)`;
+                                document.body.style.transition = `filter ${data.blurTime}s ease`;
+                            }
+                            chrome.runtime.sendMessage(group, () => {
+                                // Remove all items from the collection except for the '+' item
+                                collection = collection.filter(item => item.label === '+');
+
+                                // Store the updated collection back in Chrome storage
+                                chrome.storage.local.set({ collection: collection });
+                            });
+                        }
+                    }
+                }
+            ];
+        // Ensure the `links` array is correctly populated
+        collection = collection.map(item => {
+            if (!item.handler) {
+                if (item.label === '+') {
+                    item.handler = () => addLinkToCollection(linkUrl, linkTitle);
+                } else if (item.label === '↗️') {
+                    item.handler = function () {
+                        // Ensure links exist before creating the popup
+                        if (this.links && this.links.length > 0) {
+                            const group = {
+                                action: 'group',
+                                links: this.links,
+                                trigger: 'tooltips',
+                                lastClientX: event.clientX,
+                                lastClientY: event.clientY,
+                                width: window.screen.availWidth,
+                                height: window.screen.availHeight,
+                                top: window.screen.availTop,
+                                left: window.screen.availLeft
+                            };
+
+                            if (linkIndicator) {
+                                linkIndicator.remove();
+                            }
+                            linkIndicator = null;
+
+                            if (searchTooltips) searchTooltips.remove();
+                            searchTooltips = null;
+
+                            if (data.blurEnabled) {
+                                document.body.style.filter = `blur(${data.blurPx}px)`;
+                                document.body.style.transition = `filter ${data.blurTime}s ease`;
+                            }
+                            chrome.runtime.sendMessage(group, () => {
+                                // Remove all items from the collection except for the '+' item
+                                collection = collection.filter(item => item.label === '+');
+
+                                // Store the updated collection back in Chrome storage
+                                chrome.storage.local.set({ collection: collection });
+                            });
+                        }
+                    };
+                    item.links = collection[1].links;
+
+                } else {
+                    item.handler = () => removeLinkFromCollection(item.url);
+                }
+            }
+            return item;
+        });
+
+
+        // Ensure 'popup' is only added if there are links
+        if (collection[1] && collection[1].links && collection[1].links.length === 0) {
+            collection.pop(); // Remove the 'popup' item if no links
+        }
+
+        const linkTitle = linkElement.title || linkElement.textContent;
+        if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000) && isMouseDownOnLink) {
+            hasPopupTriggered = true;
+            addLinkToCollection(linkUrl, linkTitle);
+        } else {
+            firstDownOnLinkAt = null;
+            clearTimeoutsAndProgressBars();
+        }
+    });
 }
 
 function handleDoubleClick(e) {
@@ -818,10 +988,16 @@ function handleEvent(e) {
         if (isDragging) {
             preventEvent(e);
             isDragging = false;
+        } else if (firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000))) {
+                // prevent click on the link 
+                e.preventDefault();
+                e.stopPropagation();
+            
         } else {
             document.addEventListener('dblclick', handleDoubleClick, true);
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
+            // console.log(linkUrl,previewMode, isDoubleClick)
             if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
 
             if (previewMode && linkUrl && !isDoubleClick) {
@@ -838,12 +1014,14 @@ function handleEvent(e) {
 
 
 
-    } else if (e.type === 'mouseup' && isDragging) {
+    } else if (e.type === 'mouseup' && isDragging && e.button === 0) {
+        firstDownOnLinkAt = null;
+        isMouseDownOnLink = false;
         isMouseDown = false;
         e.preventDefault();
         e.stopImmediatePropagation();
         setTimeout(resetDraggingState, 0);
-    } else if (e.type === 'mouseup') {
+    } else if (e.type === 'mouseup' && e.button === 0) {
 
         handleMouseUpWithProgressBar(e);
 
@@ -1259,9 +1437,9 @@ function isUrlDisabled(url, disabledUrls) {
 async function checkUrlAndToggleListeners() {
     chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
-    const data = await loadUserConfigs(['disabledUrls', 'searchEngine', 'hoverSearchEngine', 'previewModeDisabledUrls', 'previewModeEnable']);
+    const data = await loadUserConfigs(['disabledUrls', 'searchEngine', 'hoverSearchEngine', 'previewModeDisabledUrls', 'previewModeEnable', 'collectionTimeout']);
     const disabledUrls = data.disabledUrls || [];
-
+    collectionTimeout = data.collectionTimeout || 1000;
     const currentUrl = window.location.href;
 
     if (isUrlDisabled(currentUrl, disabledUrls)) {
@@ -1303,7 +1481,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.doubleClickAsClick ||
         changes.doubleClickToSwitch ||
         changes.searchTooltipsEnable ||
-        changes.collectionTooltipsEnable
+        changes.collectionEnable ||
+        changes.collectionTimeout
     )) {
         await checkUrlAndToggleListeners();
     }
@@ -1319,6 +1498,7 @@ new MutationObserver(() => {
         chrome.storage.local.set({ lastUrl: url });
         checkUrlAndToggleListeners();
     }
+
 }).observe(document, { subtree: true, childList: true });
 
 chrome.storage.local.get('lastUrl', (data) => {
@@ -1367,7 +1547,7 @@ function createCandleProgressBar(x, y, duration) {
     barContainer.classList.add('link-indicator'); // Add a class to identify this element
     barContainer.style.position = 'fixed';
     barContainer.style.top = `${y + 25}px`; // Place below the cursor
-    barContainer.style.left = `${x}px`; // Center the progress bar horizontally
+    barContainer.style.left = `${x}px`;
     barContainer.style.width = '50px'; // Initial full width of the progress bar
     barContainer.style.height = '10px';
     barContainer.style.backgroundColor = '#ffa742'; // Bright red color for the progress bar
@@ -1408,8 +1588,6 @@ async function handleMouseOver(e) {
 
         return;
     }
-    addTooltipsOnHover(e);
-
 
     const data = await loadUserConfigs(['linkHint', 'hoverImgSearchEnable', 'blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverImgSupport', 'hoverModifiedKey', 'hoverDisabledUrls']);
     const linkHint = data.linkHint || false;
@@ -1520,6 +1698,10 @@ function clearTimeoutsAndProgressBars() {
         progressBar.remove();
         progressBar = null;
     }
+    if (collectionProgressBar) {
+        collectionProgressBar.remove();
+        collectionProgressBar = null;
+    }
     clearInterval(mouseMoveCheckInterval);
     hoverElement = null;
 
@@ -1571,7 +1753,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                     : null);
 
             if (!finalLinkUrl) return;
-            if (finallinkUrl.trim().startsWith('javascript:')) return;
+            if (finalLinkUrl.trim().startsWith('javascript:')) return;
 
             if (linkIndicator) {
                 linkIndicator.remove();

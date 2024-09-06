@@ -43,7 +43,8 @@ const configs = {
     'linkHint': false,
     'collection': [],
     'searchTooltipsEnable': false,
-    'collectionTooltipsEnable': false
+    'collectionEnable': false,
+    'collectionTimeout': 1000
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -262,6 +263,7 @@ function setupPage(userConfigs) {
     initializeSlider('blurTime', userConfigs.blurTime || 1);
     initializeSlider('dragPx', userConfigs.dragPx || 0);
     initializeSlider('hoverTimeout', userConfigs.hoverTimeout || 0);
+    initializeSlider('collectionTimeout', userConfigs.collectionTimeout || 1000);
 
     // Initialize drag direction checkboxes
     initializeDragDirectionCheckboxes(userConfigs.dragDirections || configs.dragDirections);

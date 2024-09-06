@@ -179,8 +179,8 @@
     "searchTooltipsEnable": {
         "message": "选中文本时显示搜索条"
     },
-    "collectionTooltipsEnable": {
-        "message": "悬停时显示收集条，收集后通过 Ctrl/Command + U 或者点击插件图标查看所有收集"
+    "collectionEnable": {
+        "message": "长按鼠标左键添加到稍后阅读，列表可通过 Ctrl/Command + U 或者点击插件图标查看"
     },
     "linkSettings": {
         "message": "链接"
@@ -202,5 +202,8 @@
     },
     "clickModeToggle": {
         "message": "切换点击链接预览模式"
+    },
+    "collectionTimeout": {
+        "message": "至少按住 ms: "
     }
 }
