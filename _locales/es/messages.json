@@ -168,7 +168,7 @@
         "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces."
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "Recordar el último tamaño y posición de la ventana emergente para cada dominio."
+        "message": "Popup dinámico: recuerda el último tamaño y posición de la ventana emergente para cada dominio."
     },
     "note": {
         "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón."
@@ -205,5 +205,14 @@
     },
     "collectionTimeout": {
         "message": "Tiempo mínimo en ms: "
+    },
+    "holdToPreview": {
+        "message": "Mantén presionado el botón izquierdo del mouse para previsualizar"
+    },
+    "holdToPreviewTimeout": {
+        "message": "Mantén presionado al menos en ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "Mantener"
     }
 }

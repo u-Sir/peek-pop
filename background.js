@@ -30,7 +30,6 @@ const configs = {
     'hoverWindowType': 'popup',
     'previewModeDisabledUrls': [],
     'previewModePopupInBackground': false,
-    'previewModeModifiedKey': 'None',
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
     'imgSearchEnable': false,
@@ -43,7 +42,9 @@ const configs = {
     'collection': [],
     'searchTooltipsEnable': false,
     'collectionEnable': false,
-    'collectionTimeout': 1000
+    'collectionTimeout': 1000,
+    'holdToPreview': false,
+    'holdToPreviewTimeout': 1500
 };
 
 // Load user configurations from storage
@@ -246,7 +247,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 }
                             });
                             if (result.contextItemCreated) {
-                                chrome.contextMenus.remove('sendPageBack');
+                                chrome.contextMenus.remove('sendPageBack', () => {
+                                    if (chrome.runtime.lastError) {
+                                        // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                    } else {
+                                        // console.log("Context menu 'sendPageBack' removed successfully.");
+                                    }
+                                });
+                                
                                 result.contextItemCreated = false;
                                 chrome.storage.local.set({ contextItemCreated: false });
                             }
@@ -277,11 +285,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             chrome.windows.getAll({ populate: true }, windows => {
                                 windows.forEach(window => {
                                     if (popupsToRemove.includes(window.id.toString())) {
-                                        chrome.windows.remove(window.id);
+                                        chrome.windows.remove(window.id, () => {
+                                            if (chrome.runtime.lastError) {
+                                                // console.error("Error removing window: ", chrome.runtime.lastError.message);
+                                            } else {
+                                                // console.log("Window removed successfully.");
+                                            }
+                                        });
+                                        
                                     }
                                 });
                                 if (result.contextItemCreated) {
-                                    chrome.contextMenus.remove('sendPageBack');
+                                    chrome.contextMenus.remove('sendPageBack', () => {
+                                        if (chrome.runtime.lastError) {
+                                            // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                        } else {
+                                            // console.log("Context menu 'sendPageBack' removed successfully.");
+                                        }
+                                    });
+                                    
                                     result.contextItemCreated = false;
                                     chrome.storage.local.set({ contextItemCreated: false });
                                 }
@@ -292,11 +314,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     });
                     sendResponse({ status: 'window focus handled' });
 
-                }
-
-                if (request.action === 'openSidePanel') {
-                    chrome.sidePanel.open({ windowId: sender.tab.windowId });
-                    sendResponse({ status: 'open SidePanel handled' });
                 }
 
                 if (request.action === 'updateIcon') {
@@ -353,11 +370,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 const createData = { windowId: parseInt(originalWindowId), url: sender.tab.url };
                                 chrome.tabs.create(createData, () => {
                                     chrome.windows.get(sender.tab.windowId, window => {
-                                        if (window.id) chrome.windows.remove(window.id);
+                                        if (window.id) {
+                                            chrome.windows.remove(sender.tab.windowId, () => {
+                                                if (chrome.runtime.lastError) {
+                                                    // console.error("Error removing window: ", chrome.runtime.lastError.message);
+                                                } else {
+                                                    // console.log("Window removed successfully.");
+                                                }
+                                            });                                            
+                                        }
                                     });
 
                                     if (userConfigs.contextItemCreated) {
-                                        chrome.contextMenus.remove('sendPageBack');
+                                        chrome.contextMenus.remove('sendPageBack', () => {
+                                            if (chrome.runtime.lastError) {
+                                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                            } else {
+                                                // console.log("Context menu 'sendPageBack' removed successfully.");
+                                            }
+                                        });
+                                        
                                         userConfigs.contextItemCreated = false;
                                         chrome.storage.local.set({ contextItemCreated: false });
                                         chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
@@ -728,11 +760,27 @@ function onMenuItemClicked(info, tab) {
                     const createData = { windowId: parseInt(originalWindowId), url: tab.url };
                     chrome.tabs.create(createData, () => {
                         chrome.windows.get(tab.windowId, window => {
-                            if (window.id) chrome.windows.remove(window.id);
+                            if (window.id) {
+                                chrome.windows.remove(windowId, () => {
+                                    if (chrome.runtime.lastError) {
+                                        // console.error("Error removing window: ", chrome.runtime.lastError.message);
+                                    } else {
+                                        // console.log("Window removed successfully.");
+                                    }
+                                });
+                                
+                            }
                         });
 
                         if (userConfigs.contextItemCreated) {
-                            chrome.contextMenus.remove('sendPageBack');
+                            chrome.contextMenus.remove('sendPageBack', () => {
+                                if (chrome.runtime.lastError) {
+                                    // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                } else {
+                                    // console.log("Context menu 'sendPageBack' removed successfully.");
+                                }
+                            });
+                            
                             userConfigs.contextItemCreated = false;
                             chrome.storage.local.set({ contextItemCreated: false });
                             chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);

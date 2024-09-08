@@ -366,10 +366,11 @@
 
         <div id="previewMode_settings" class="tab-content">
             <h4 id="previewModeSettings"></h4>
-
+         
             <div class='option'>
                 <label><input type="checkbox" id="previewModeEnable"></input></label>
             </div>
+
             <div class='option'>
                 <label><input type="checkbox" id="doubleClickToSwitch"></input></label>
             </div>
@@ -377,29 +378,19 @@
                 <label><input type="checkbox" id="doubleClickAsClick"></input></label>
             </div>
 
-            <div class="keySelection">
-                <label for="previewModeModifiedKey" class="align-label"></label>
-                <br>
+            <br>
 
-                <input type="radio" id="ctrlKey" name="previewModeModifiedKey" value="Ctrl" />
-                <label for="ctrlKey">Ctrl</label>
 
-                <input type="radio" id="altKey" name="previewModeModifiedKey" value="Alt" />
-                <label for="altKey">Alt/Option</label>
-
-                <input type="radio" id="shiftKey" name="previewModeModifiedKey" value="Shift" />
-                <label for="shiftKey">Shift</label>
-
-                <input type="radio" id="metaKey" name="previewModeModifiedKey" value="Meta" />
-                <label for="metaKey">Windows/Command</label>
-
-                <input type="radio" id="previewModeNoneKey" name="previewModeModifiedKey" value="None" />
-                <label for="previewModeNoneKey">None</label>
-                <br>
-
+            <h4 id="holdToPreviewSettings"></h4>
+            <div class='option'>
+                <label><input type="checkbox" id="holdToPreview"></input></label>
             </div>
 
-            <br>
+            <div class='option'>
+                <label for="holdToPreviewTimeout" class="align-label"></label><output for="holdToPreviewTimeout" id="holdToPreviewTimeoutOutput"></output>
+                <br>
+                <input type="range" id="holdToPreviewTimeout" name="holdToPreviewTimeout" min="250" max="2000" step="50">
+            </div>
 
             <h4 id="previewModePopupSettings"></h4>
             <p>

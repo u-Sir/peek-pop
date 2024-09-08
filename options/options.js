@@ -31,7 +31,6 @@ const configs = {
     'hoverWindowType': 'popup',
     'previewModeDisabledUrls': [],
     'previewModePopupInBackground': false,
-    'previewModeModifiedKey': 'None',
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
     'imgSearchEnable': false,
@@ -44,7 +43,9 @@ const configs = {
     'collection': [],
     'searchTooltipsEnable': false,
     'collectionEnable': false,
-    'collectionTimeout': 1000
+    'collectionTimeout': 1000,
+    'holdToPreview': false,
+    'holdToPreviewTimeout': 1500
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -150,6 +151,32 @@ function init() {
 
         }
     });
+
+
+    document.getElementById('previewModeEnable').addEventListener('change', function () {
+        const holdToPreviewCheckbox = document.getElementById('holdToPreview');
+        const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
+        const doubleClickAsClickCheckbox = document.getElementById('doubleClickAsClick');
+
+        if (this.checked) {
+            holdToPreviewCheckbox.checked = false;
+            holdToPreviewCheckbox.disabled = true;  // Gray out the checkbox
+            saveConfig('holdToPreview', false);
+
+            doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
+            doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
+        } else {
+            holdToPreviewCheckbox.disabled = false;  // reset the checkbox
+            
+            doubleClickToSwitchCheckbox.checked = false;
+            doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
+            saveConfig('holdToPreview', false);
+
+            doubleClickAsClickCheckbox.checked = false;
+            doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
+            saveConfig('holdToPreview', false);
+        }
+    });
 }
 
 // Function to set up the visibility toggle for image search options
@@ -201,6 +228,7 @@ function setupPage(userConfigs) {
         { id: 'hoverSettings', messageId: 'hoverSettings' },
         { id: 'previewModeSettings', messageId: 'previewModeSettings' },
         { id: 'searchSettings', messageId: 'searchSettings' },
+        { id: 'holdToPreviewSettings', messageId: 'holdToPreviewSettings' },
 
         { id: 'dragSettingsTab', messageId: 'dragSettings' },
         { id: 'hoverSettingsTab', messageId: 'hoverSettings' },
@@ -235,7 +263,6 @@ function setupPage(userConfigs) {
 
     setInputLabel('modifiedKey', 'modifiedKey');
     setInputLabel('hoverModifiedKey', 'modifiedKey');
-    setInputLabel('previewModeModifiedKey', 'modifiedKey');
 
     setInputLabel('dragDirections', 'dragDirections');
     setInputLabel('dragPx', 'dragPx');
@@ -264,6 +291,7 @@ function setupPage(userConfigs) {
     initializeSlider('dragPx', userConfigs.dragPx || 0);
     initializeSlider('hoverTimeout', userConfigs.hoverTimeout || 0);
     initializeSlider('collectionTimeout', userConfigs.collectionTimeout || 1000);
+    initializeSlider('holdToPreviewTimeout', userConfigs.holdToPreviewTimeout || 1500);
 
     // Initialize drag direction checkboxes
     initializeDragDirectionCheckboxes(userConfigs.dragDirections || configs.dragDirections);
@@ -271,7 +299,6 @@ function setupPage(userConfigs) {
     // Set modified key
     setupModifiedKeySelection(userConfigs.modifiedKey);
     setupHoverModifiedKeySelection(userConfigs.hoverModifiedKey);
-    setupPreviewModeModifiedKeySelection(userConfigs.previewModeModifiedKey);
     setupDoubleTapKeyToSendPageBackSelection(userConfigs.doubleTapKeyToSendPageBack);
 
     // Setup search engine selection
@@ -283,6 +310,27 @@ function setupPage(userConfigs) {
     setupHoverWindowTypeSelection(userConfigs.hoverWindowType);
     setupPreviewModeWindowTypeSelection(userConfigs.previewModeWindowType);
 
+    const holdToPreviewCheckbox = document.getElementById('holdToPreview');
+    const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
+    const doubleClickAsClickCheckbox = document.getElementById('doubleClickAsClick');
+    if (userConfigs.previewModeEnable) {
+        holdToPreviewCheckbox.checked = false;
+        holdToPreviewCheckbox.disabled = true;  // Gray out the checkbox
+        saveConfig('holdToPreview', false);
+
+        doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
+        doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
+    } else {
+        holdToPreviewCheckbox.disabled = false;  // reset the checkbox
+
+        doubleClickToSwitchCheckbox.checked = false;
+        doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
+        saveConfig('holdToPreview', false);
+
+        doubleClickAsClickCheckbox.checked = false;
+        doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
+        saveConfig('holdToPreview', false);
+    }
 }
 
 function setTextContent(elementId, messageId) {
@@ -520,20 +568,6 @@ function setupHoverModifiedKeySelection(hoverModifiedKey) {
 }
 
 
-function setupPreviewModeModifiedKeySelection(previewModeModifiedKey) {
-    previewModeModifiedKey = previewModeModifiedKey ?? 'None';
-    document.querySelector(`input[name="previewModeModifiedKey"][value="${previewModeModifiedKey}"]`).checked = true;
-
-    document.querySelectorAll('input[name="previewModeModifiedKey"]').forEach(input => {
-        input.addEventListener('change', event => {
-            const newPreviewModeModifiedKey = event.target.value;
-            chrome.storage.local.set({ previewModeModifiedKey: newPreviewModeModifiedKey }, () => {
-                configs.previewModeModifiedKey = newPreviewModeModifiedKey;
-            });
-        });
-    });
-}
-
 function setupDoubleTapKeyToSendPageBackSelection(doubleTapKeyToSendPageBack) {
     doubleTapKeyToSendPageBack = doubleTapKeyToSendPageBack ?? 'None';
     document.querySelector(`input[name="doubleTapKeyToSendPageBack"][value="${doubleTapKeyToSendPageBack}"]`).checked = true;
@@ -697,7 +731,6 @@ function loadUserConfigs(callback) {
         userConfigs.hoverModifiedKey = userConfigs.hoverModifiedKey ?? configs.hoverModifiedKey;
         userConfigs.hoverWindowType = userConfigs.hoverWindowType ?? configs.hoverWindowType;
 
-        userConfigs.previewModeModifiedKey = userConfigs.previewModeModifiedKey ?? configs.previewModeModifiedKey;
         userConfigs.previewModeWindowType = userConfigs.previewModeWindowType ?? configs.previewModeWindowType;
 
         keys.forEach(key => {

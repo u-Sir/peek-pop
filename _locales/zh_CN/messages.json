@@ -168,7 +168,7 @@
         "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "记住各域名的最后弹出窗口的大小、位置"
+        "message": "动态弹窗：记住每个域名最后的窗口大小和位置"
     },
     "note": {
         "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"
@@ -205,5 +205,14 @@
     },
     "collectionTimeout": {
         "message": "至少按住 ms: "
+    },
+    "holdToPreview": {
+        "message": "长按链接预览"
+    },
+    "holdToPreviewTimeout": {
+        "message": "至少按住 ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "长按"
     }
 }

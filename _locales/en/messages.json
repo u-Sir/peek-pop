@@ -168,7 +168,7 @@
         "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links."
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "Remember the last popup window size and position for each domain."
+        "message": "Dynamic Popup: remember the last popup window size and position for each domain."
     },
     "note": {
         "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse."
@@ -205,5 +205,14 @@
     },
     "collectionTimeout": {
         "message": "At least hold in ms: "
+    },
+    "holdToPreview": {
+        "message": "Hold the left mouse button to preview"
+    },
+    "holdToPreviewTimeout": {
+        "message": "At least hold in ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "Hold"
     }
 } 

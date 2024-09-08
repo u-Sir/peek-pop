@@ -10,9 +10,9 @@ let hoverInitialMouseX, hoverInitialMouseY, mouseMoveCheckInterval;
 let lastKeyTime = 0;
 let lastClickTime = 0;
 let lastKey = '';
-let isDoubleClick = false;
+let isDoubleClick;
 let previewMode;
-let clickTimeout;
+let clickTimeout = null;
 const moveThreshold = 15;
 let linkIndicator;
 let tooltip;
@@ -21,8 +21,10 @@ let collection;
 let hoverlinkOrText = false;
 let isMouseDownOnLink = false;
 let firstDownOnLinkAt;
-let collectionProgressBar;
-let collectionTimeout = 1000
+let collectionProgressBar, previewProgressBar;
+let collectionTimeout = 1000;
+let holdToPreviewTimeout = 1500;
+let focusAt;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -54,7 +56,6 @@ const configs = {
     'hoverWindowType': 'popup',
     'previewModeDisabledUrls': [],
     'previewModePopupInBackground': false,
-    'previewModeModifiedKey': 'None',
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
     'imgSearchEnable': false,
@@ -67,7 +68,9 @@ const configs = {
     'collection': [],
     'searchTooltipsEnable': false,
     'collectionEnable': false,
-    'collectionTimeout': 1000
+    'collectionTimeout': 1000,
+    'holdToPreview': false,
+    'holdToPreviewTimeout': 1500
 };
 
 async function loadUserConfigs(keys = Object.keys(configs)) {
@@ -90,8 +93,10 @@ function addListeners() {
 
 }
 
+
 function removeListeners() {
     const events = ["click", "dragstart", "dragover", "drop"];
+
     events.forEach(event => document.removeEventListener(event, handleEvent, true));
     document.removeEventListener('mousedown', handleMouseDown);
     document.removeEventListener('scroll', handleContextMenu);
@@ -258,6 +263,7 @@ function addTooltipsOnHover(event) {
                                     document.body.style.filter = `blur(${data.blurPx}px)`;
                                     document.body.style.transition = `filter ${data.blurTime}s ease`;
                                 }
+                                addClickMask();
                                 chrome.runtime.sendMessage(group, () => {
                                     // Remove all items from the collection except for the '+' item
                                     collection = collection.filter(item => item.label === '+');
@@ -302,6 +308,7 @@ function addTooltipsOnHover(event) {
                                     document.body.style.filter = `blur(${data.blurPx}px)`;
                                     document.body.style.transition = `filter ${data.blurTime}s ease`;
                                 }
+                                addClickMask();
                                 chrome.runtime.sendMessage(group, () => {
                                     // Remove all items from the collection except for the '+' item
                                     collection = collection.filter(item => item.label === '+');
@@ -411,6 +418,11 @@ function addTooltipsOnHover(event) {
 
 
 function addSearchTooltipsOnHover(event) {
+    if (isDragging) {
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
+        return;
+    }
     const selection = window.getSelection();
     const selectionText = selection.toString().trim();
 
@@ -467,6 +479,9 @@ function addSearchTooltipsOnHover(event) {
             const range = selection.getRangeAt(0).cloneRange();
             const textRect = range.getBoundingClientRect(); // Get the bounding box of the selected text
             hoverlinkOrText = true;
+
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
             searchTooltips = createTooltip(textRect.left, textRect.bottom, actions, 1500);
 
             const checkSearchCursorInsideViewport = (event) => {
@@ -690,7 +705,7 @@ async function handleKeyDown(e) {
 
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
-                chrome.runtime.sendMessage({ action: 'openSidePanel' });
+                chrome.runtime.sendMessage({ action: 'sendPageBack' });
             } else {
                 lastKeyTime = currentTime;
                 lastKey = key;
@@ -702,15 +717,29 @@ async function handleKeyDown(e) {
 }
 
 
-async function handleMouseDown(e) {
-
+function handleMouseDown(e) {
+    if (focusAt && Date.now() - focusAt < 50 ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+    }
+    focusAt = null;
+    isDragging = false;
     if (document.body) {
         document.body.style.filter = '';
     }
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
 
-    chrome.storage.local.get(['modifiedKey', 'previewModeModifiedKey', 'previewModeEnable', 'previewModeDisabledUrls', 'collectionEnable', 'collectionTimeout'], (data) => {
+    chrome.storage.local.get(['modifiedKey',
+        'previewModeEnable',
+        'previewModeDisabledUrls',
+        'collectionEnable',
+        'collectionTimeout',
+        'closeWhenFocusedInitialWindow',
+        'holdToPreview',
+        'holdToPreviewTimeout'
+    ], (data) => {
         const modifiedKey = data.modifiedKey || 'None';
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
         const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
@@ -725,22 +754,12 @@ async function handleMouseDown(e) {
         }
 
         if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
-            const previewModeModifiedKey = data.previewModeModifiedKey || 'None';
+            previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
 
-            if (previewModeModifiedKey === 'None' || keyMap[previewModeModifiedKey]) {
-                previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
+            // Add the event listener
+            const events = ["click", "mouseup"];
 
-                // Add the event listener
-                const events = ["click", "mouseup"];
-
-                events.forEach(event => document.addEventListener(event, handleEvent, true));
-
-
-            } else {
-                const events = ["click", "mouseup"];
-
-                events.forEach(event => document.removeEventListener(event, handleEvent, true));
-            }
+            events.forEach(event => document.addEventListener(event, handleEvent, true));
 
         }
 
@@ -783,20 +802,123 @@ async function handleMouseDown(e) {
             document.removeEventListener(['mouseup'], handleCollection, true)
         }
 
-    });
+        if (data.holdToPreview) {
+            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+            const linkUrl = linkElement ? linkElement.href : null;
+            if (e.button !== 0) return;
+            if (!linkUrl || (linkUrl && linkUrl.trim().startsWith('javascript:'))) {
+                isMouseDownOnLink = false;
+                clearTimeoutsAndProgressBars();
+                document.removeEventListener(['mouseup'], handleHoldLink, true)
+                return;
+            } else {
+                isMouseDownOnLink = true;
 
-    try {
-        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
-        const message = data.closeWhenFocusedInitialWindow
-            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
-            : { checkContextMenuItem: true };
-        chrome.runtime.sendMessage(message);
-    } catch (error) {
-        console.error('Error loading user configs:', error);
-    }
+                document.addEventListener(['mouseup'], handleHoldLink, true)
+                previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 75, (holdToPreviewTimeout ?? 1500));
+                setTimeout(() => {
+                    clearTimeoutsAndProgressBars();
+                }, (holdToPreviewTimeout ?? 1500));
+
+                if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
+                    e.preventDefault();
+                    clearTimeoutsAndProgressBars();
+                    firstDownOnLinkAt = null;
+                    hasPopupTriggered = true;
+
+                } else {
+                    firstDownOnLinkAt = Date.now();
+                }
+            }
+        } else {
+
+            isMouseDownOnLink = false;
+            if (previewProgressBar) {
+                previewProgressBar.remove();
+                previewProgressBar = null;
+            }
+            document.removeEventListener(['mouseup'], handleHoldLink, true)
+        }
+
+        try {
+            const message = data.closeWhenFocusedInitialWindow
+                ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
+                : { checkContextMenuItem: true };
+            chrome.runtime.sendMessage(message);
+        } catch (error) {
+            console.error('Error loading user configs:', error);
+        }
+
+    });
 
     isMouseDown = true;
     hasPopupTriggered = false;
+}
+
+function handleHoldLink(e) {
+
+    if (e.button !== 0 || isDoubleClick) return;
+    if (!firstDownOnLinkAt) return;
+    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+    if (!linkElement) return; // Ensure linkElement and linkUrl are valid
+
+    const linkUrl = linkElement ? linkElement.href : null;
+    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    isMouseDownOnLink = true;
+    if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
+        hasPopupTriggered = true;
+        // handlePreviewMode(e);
+
+        if (linkUrl) {
+            e.preventDefault();
+            e.stopPropagation();
+            chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground'], data => {
+                const previewModePopupInBackground = data.previewModePopupInBackground || false;
+                const blurTime = data.blurTime || 1;
+                const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+                const blurPx = parseFloat(data.blurPx || 3);
+
+                // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+                let finalLinkUrl = linkUrl || (data.previewModeImgSupport ? imageUrl : null);
+
+                if (!finalLinkUrl) return;
+
+                if (linkIndicator) {
+                    linkIndicator.remove();
+                }
+                linkIndicator = null;
+
+                if (searchTooltips) searchTooltips.remove();
+                searchTooltips = null;
+                if (blurEnabled && !previewModePopupInBackground) {
+                    document.body.style.filter = `blur(${blurPx}px)`;
+                    document.body.style.transition = `filter ${blurTime}s ease`;
+                }
+                addClickMask();
+
+                chrome.runtime.sendMessage({
+                    linkUrl: finalLinkUrl,
+                    lastClientX: e.screenX,
+                    lastClientY: e.screenY,
+                    width: window.screen.availWidth,
+                    height: window.screen.availHeight,
+                    top: window.screen.availTop,
+                    left: window.screen.availLeft,
+                    trigger: 'click'
+                }, () => {
+                    if (linkIndicator) linkIndicator.remove();
+                    linkIndicator = null;
+                    if (searchTooltips) searchTooltips.remove();
+                    searchTooltips = null;
+                    hasPopupTriggered = true;
+                    finalLinkUrl = null;
+                });
+            });
+        }
+    } else {
+        firstDownOnLinkAt = null;
+        clearTimeoutsAndProgressBars();
+    }
 }
 
 function handleCollection(event) {
@@ -849,6 +971,7 @@ function handleCollection(event) {
                                 document.body.style.filter = `blur(${data.blurPx}px)`;
                                 document.body.style.transition = `filter ${data.blurTime}s ease`;
                             }
+                            addClickMask();
                             chrome.runtime.sendMessage(group, () => {
                                 // Remove all items from the collection except for the '+' item
                                 collection = collection.filter(item => item.label === '+');
@@ -893,6 +1016,7 @@ function handleCollection(event) {
                                 document.body.style.filter = `blur(${data.blurPx}px)`;
                                 document.body.style.transition = `filter ${data.blurTime}s ease`;
                             }
+                            addClickMask();
                             chrome.runtime.sendMessage(group, () => {
                                 // Remove all items from the collection except for the '+' item
                                 collection = collection.filter(item => item.label === '+');
@@ -929,10 +1053,9 @@ function handleCollection(event) {
 }
 
 function handleDoubleClick(e) {
-
+    isDoubleClick = true;
     // Prevent the single-click action from triggering
     clearTimeout(clickTimeout);
-
     e.preventDefault(); // Prevent the default double-click action
     e.stopPropagation(); // Stop the event from bubbling up
     chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable'], (data) => {
@@ -955,7 +1078,6 @@ function handleDoubleClick(e) {
 
 
         } else if (linkUrl) {
-            // Simulate a single click
             if (data.doubleClickAsClick) {
                 hasPopupTriggered = true;
                 isDoubleClick = true;
@@ -965,16 +1087,25 @@ function handleDoubleClick(e) {
 
         // Remove the event listener after it triggers once
         document.removeEventListener('dblclick', handleDoubleClick, true);
-        isDoubleClick = false;
+        // isDoubleClick = false;
         chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
+        // Reset click states after double-click
+        // resetClickState();
     });
-
+}
+function resetClickState() {
+    // Reset variables after click or double-click
+    skipNextClick = false;
+    isDoubleClick = false;
+    hasPopupTriggered = false;
+    clearTimeout(clickTimeout);
 }
 
-
 function handleEvent(e) {
+
     if (e.type === 'dragstart') {
+        isDragging = true;
         chrome.storage.local.get('modifiedKey', (data) => {
             const modifiedKey = data.modifiedKey || 'None';
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
@@ -985,30 +1116,34 @@ function handleEvent(e) {
     } else if (['dragover', 'drop'].includes(e.type) && isDragging) {
         preventEvent(e);
     } else if (e.type === 'click') {
+
         if (isDragging) {
             preventEvent(e);
             isDragging = false;
-        } else if (firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000))) {
-                // prevent click on the link 
-                e.preventDefault();
-                e.stopPropagation();
-            
+        } else if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000)))) {
+            // Prevent default action on the link immediately
+            e.preventDefault();
+            e.stopPropagation();
+
+        } else if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)))) {
+            // Prevent default action on the link immediately
+            e.preventDefault();
+            e.stopPropagation();
+
         } else {
             document.addEventListener('dblclick', handleDoubleClick, true);
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
-            // console.log(linkUrl,previewMode, isDoubleClick)
             if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-
             if (previewMode && linkUrl && !isDoubleClick) {
                 e.preventDefault();
                 e.stopPropagation();
                 clickTimeout = setTimeout(() => {
                     handlePreviewMode(e);
+
                 }, 250);
             }
             chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
-
         }
         chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
@@ -1022,7 +1157,7 @@ function handleEvent(e) {
         e.stopImmediatePropagation();
         setTimeout(resetDraggingState, 0);
     } else if (e.type === 'mouseup' && e.button === 0) {
-
+        isDragging = false;
         handleMouseUpWithProgressBar(e);
 
         addSearchTooltipsOnHover(e);
@@ -1032,9 +1167,8 @@ function handleEvent(e) {
 
 }
 
-async function handlePreviewMode(e) {
-    if (!isMouseDown || hasPopupTriggered) return;
-
+function handlePreviewMode(e) {
+    if (!isMouseDown || hasPopupTriggered || isDoubleClick) return;
 
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
@@ -1044,48 +1178,53 @@ async function handlePreviewMode(e) {
     if (linkUrl) {
         e.preventDefault();
         e.stopPropagation();
-        const data = await loadUserConfigs(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground']);
-        const previewModePopupInBackground = data.previewModePopupInBackground || false;
-        const blurTime = data.blurTime || 1;
-        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-        const blurPx = parseFloat(data.blurPx || 3);
+        chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground'], (data) => {
+            const previewModePopupInBackground = data.previewModePopupInBackground || false;
+            const blurTime = data.blurTime || 1;
+            const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+            const blurPx = parseFloat(data.blurPx || 3);
 
 
 
-        // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-        let finalLinkUrl = linkUrl || (data.previewModeImgSupport ? imageUrl : null);
+            // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+            let finalLinkUrl = linkUrl || (data.previewModeImgSupport ? imageUrl : null);
 
-        if (!finalLinkUrl) return;
+            if (!finalLinkUrl) return;
 
-        if (linkIndicator) {
-            linkIndicator.remove();
-        }
-        linkIndicator = null;
-
-        if (searchTooltips) searchTooltips.remove();
-        searchTooltips = null;
-        if (blurEnabled && !previewModePopupInBackground) {
-            document.body.style.filter = `blur(${blurPx}px)`;
-            document.body.style.transition = `filter ${blurTime}s ease`;
-        }
-
-        chrome.runtime.sendMessage({
-            linkUrl: finalLinkUrl,
-            lastClientX: e.screenX,
-            lastClientY: e.screenY,
-            width: window.screen.availWidth,
-            height: window.screen.availHeight,
-            top: window.screen.availTop,
-            left: window.screen.availLeft,
-            trigger: 'click'
-        }, () => {
-            if (linkIndicator) linkIndicator.remove();
+            if (linkIndicator) {
+                linkIndicator.remove();
+            }
             linkIndicator = null;
+
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
-            hasPopupTriggered = true;
-            finalLinkUrl = null;
+            if (blurEnabled && !previewModePopupInBackground) {
+                document.body.style.filter = `blur(${blurPx}px)`;
+                document.body.style.transition = `filter ${blurTime}s ease`;
+            }
+            addClickMask();
+
+            chrome.runtime.sendMessage({
+                linkUrl: finalLinkUrl,
+                lastClientX: e.screenX,
+                lastClientY: e.screenY,
+                width: window.screen.availWidth,
+                height: window.screen.availHeight,
+                top: window.screen.availTop,
+                left: window.screen.availLeft,
+                trigger: 'click'
+            }, () => {
+                if (linkIndicator) linkIndicator.remove();
+                linkIndicator = null;
+                if (searchTooltips) searchTooltips.remove();
+                searchTooltips = null;
+                hasPopupTriggered = true;
+                finalLinkUrl = null;
+                isDoubleClick = false;
+
+            });
         });
+
 
 
     }
@@ -1104,7 +1243,10 @@ async function preventEvent(e) {
 }
 
 async function handleMouseUpWithProgressBar(e) {
-
+    if (isDragging) {
+        clearTimeoutsAndProgressBars();
+        return;
+    }
     const data = await loadUserConfigs(['hoverSearchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverModifiedKey', 'urlCheck']);
     const hoverTimeout = data.hoverTimeout || 0;
     const hoverModifiedKey = data.hoverModifiedKey || 'None';
@@ -1158,6 +1300,16 @@ async function handleMouseUpWithProgressBar(e) {
             progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
 
             const onMouseMove = (moveEvent) => {
+
+                if (isDragging) {
+                    clearTimeoutsAndProgressBars();
+                    return;
+                }
+
+                const selection = window.getSelection();
+                const selectionText = selection.toString().trim();
+                if (selectionText === '') return;
+
                 const currentMouseX = moveEvent.clientX;
                 const currentMouseY = moveEvent.clientY;
 
@@ -1211,6 +1363,9 @@ async function handleMouseUpWithProgressBar(e) {
 
 
 async function handleDragStart(e) {
+
+    if (searchTooltips) searchTooltips.remove();
+    searchTooltips = null;
     if (!isMouseDown || hasPopupTriggered) return;
     const selectionText = window.getSelection().toString();
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
@@ -1309,6 +1464,7 @@ async function handleDragStart(e) {
                         }
                         e.preventDefault();
                         e.stopImmediatePropagation();
+                        addClickMask();
                         chrome.runtime.sendMessage({
                             linkUrl: finalLinkUrl,
                             lastClientX: e.screenX,
@@ -1327,6 +1483,12 @@ async function handleDragStart(e) {
                             linkIndicator = null;
                             if (searchTooltips) searchTooltips.remove();
                             searchTooltips = null;
+                            isDragging = false;
+
+                            if (window.getSelection().toString()) {
+                                window.getSelection().removeAllRanges();
+                            }
+
 
                         });
                     } else {
@@ -1364,6 +1526,7 @@ async function handleDragStart(e) {
                     }
                     e.preventDefault();
                     e.stopImmediatePropagation();
+                    addClickMask();
                     chrome.runtime.sendMessage({
                         linkUrl: finalLinkUrl,
                         lastClientX: e.screenX,
@@ -1382,6 +1545,12 @@ async function handleDragStart(e) {
                         linkIndicator = null;
                         if (searchTooltips) searchTooltips.remove();
                         searchTooltips = null;
+                        isDragging = false;
+
+                        if (window.getSelection().toString()) {
+                            window.getSelection().removeAllRanges();
+                        }
+
 
                     });
                 } else {
@@ -1435,11 +1604,23 @@ function isUrlDisabled(url, disabledUrls) {
 
 
 async function checkUrlAndToggleListeners() {
+    hasPopupTriggered = false;
     chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
-    const data = await loadUserConfigs(['disabledUrls', 'searchEngine', 'hoverSearchEngine', 'previewModeDisabledUrls', 'previewModeEnable', 'collectionTimeout']);
+    const data = await loadUserConfigs([
+        'disabledUrls',
+        'searchEngine',
+        'hoverSearchEngine',
+        'previewModeDisabledUrls',
+        'previewModeEnable',
+        'collectionTimeout',
+        'holdToPreview',
+        'collectionEnable',
+        'holdToPreviewTimeout'
+    ]);
     const disabledUrls = data.disabledUrls || [];
     collectionTimeout = data.collectionTimeout || 1000;
+    holdToPreviewTimeout = data.holdToPreviewTimeout || 1500;
     const currentUrl = window.location.href;
 
     if (isUrlDisabled(currentUrl, disabledUrls)) {
@@ -1465,6 +1646,32 @@ async function checkUrlAndToggleListeners() {
 
     chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
+    const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
+
+    if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
+        previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
+
+        // Add the event listener
+        const events = ["click", "mouseup"];
+        events.forEach(event => document.addEventListener(event, handleEvent, true));
+    }
+
+    if (data.holdToPreview) {
+        document.addEventListener(['mouseup'], handleHoldLink, true);
+        // document.addEventListener('mousedown', handleMouseDown);
+
+    } else {
+        document.removeEventListener(['mouseup'], handleHoldLink, true);
+    }
+
+    if (data.collectionEnable) {
+        document.addEventListener(['mouseup'], handleCollection, true);
+        // document.addEventListener('mousedown', handleMouseDown);
+
+    } else {
+        document.removeEventListener(['mouseup'], handleCollection, true);
+    }
+
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
@@ -1482,7 +1689,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.doubleClickToSwitch ||
         changes.searchTooltipsEnable ||
         changes.collectionEnable ||
-        changes.collectionTimeout
+        changes.collectionTimeout ||
+        changes.holdToPreview
     )) {
         await checkUrlAndToggleListeners();
     }
@@ -1508,7 +1716,9 @@ chrome.storage.local.get('lastUrl', (data) => {
 });
 
 window.addEventListener('focus', async () => {
-
+    focusAt = Date.now();
+    isDoubleClick = false;
+    firstDownOnLinkAt = null;
     if (linkIndicator) {
         linkIndicator.remove();
     }
@@ -1536,13 +1746,15 @@ window.addEventListener('focus', async () => {
     } catch (error) {
         // console.error('Error loading user configs:', error);
     }
-
+    if (window.getSelection().toString()) {
+        window.getSelection().removeAllRanges();
+    }
+        removeClickMask();
 });
 
 
 // Create candle-like progress bar element
 function createCandleProgressBar(x, y, duration) {
-
     const barContainer = document.createElement('div');
     barContainer.classList.add('link-indicator'); // Add a class to identify this element
     barContainer.style.position = 'fixed';
@@ -1577,6 +1789,14 @@ async function handleMouseOver(e) {
         hoverElement = null;
         return; // Exit if the window is not focused
     }
+
+    if (isDragging) {
+        if (progressBar) {
+            progressBar.remove();
+        }
+        progressBar = null;
+        return;
+    }
     const viewportTop = e.screenY - e.clientY;
     const viewportBottom = e.screenY - e.clientY + window.innerHeight;
     const viewportLeft = e.screenX - e.clientX;
@@ -1585,7 +1805,6 @@ async function handleMouseOver(e) {
     // do nothing when out of current page
     if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
         clearTimeoutsAndProgressBars();
-
         return;
     }
 
@@ -1702,6 +1921,12 @@ function clearTimeoutsAndProgressBars() {
         collectionProgressBar.remove();
         collectionProgressBar = null;
     }
+
+    if (previewProgressBar) {
+        previewProgressBar.remove();
+        previewProgressBar = null;
+    }
+
     clearInterval(mouseMoveCheckInterval);
     hoverElement = null;
 
@@ -1766,6 +1991,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 document.body.style.filter = `blur(${blurPx}px)`;
                 document.body.style.transition = `filter ${blurTime}s ease`;
             }
+            addClickMask();
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
                 lastClientX: e.screenX,
@@ -1783,6 +2009,10 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 linkIndicator = null;
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
+
+                if (window.getSelection().toString()) {
+                    window.getSelection().removeAllRanges();
+                }
 
             });
         }
@@ -1804,6 +2034,7 @@ function triggerLinkPopup(e, link) {
             document.body.style.filter = `blur(${data.blurPx}px)`;
             document.body.style.transition = `filter ${data.blurTime}s ease`;
         }
+        addClickMask();
         chrome.runtime.sendMessage({
             linkUrl: link,
             lastClientX: e.screenX,
@@ -1818,6 +2049,10 @@ function triggerLinkPopup(e, link) {
             linkIndicator = null;
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
+
+            if (window.getSelection().toString()) {
+                window.getSelection().removeAllRanges();
+            }
         });
     });
 }
@@ -1826,4 +2061,86 @@ function triggerLinkPopup(e, link) {
 function handleMouseOut(e) {
     clearTimeoutsAndProgressBars(); // Clean up when the mouse leaves the element
     hoverElement = null;
+}
+
+
+function addClickMask() {
+    if (!document.head || !document.body) {
+        console.error('Document head or body not available');
+        return;
+    }
+
+    // Create the mask element
+    const mask = document.createElement('div');
+    mask.id = 'clickMask';
+
+    // Insert CSS styles for the mask
+    const style = document.createElement('style');
+    style.id = 'clickMaskStyle';  // Add an id to reference it later
+    style.innerHTML = `
+      #clickMask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0); /* Semi-transparent mask */
+        z-index: 9999;
+        cursor: not-allowed;
+        pointer-events: all; /* Ensure the mask captures all events */
+      }
+
+      /* Prevent clicks and hovers on everything behind the mask */
+      body * {
+        pointer-events: none !important; /* Disable click and hover events on all elements */
+      }
+
+      /* Allow focusable elements to still work (e.g., inputs, buttons) */
+      input, button, textarea, select {
+        pointer-events: auto !important; /* Enable interaction for form elements */
+      }
+
+      /* Specifically block links (<a>) from being clicked */
+      a {
+        pointer-events: none !important; /* Block any clicks on links */
+      }
+
+      #clickMask {
+        pointer-events: all; /* Enable interaction on the mask itself */
+      }
+    `;
+
+    // Append the style to the head and mask to the body
+    document.head.appendChild(style);
+    document.body.appendChild(mask);
+
+    // Prevent clicks and other events on the mask itself
+    mask.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+    // Optional: Block other interactions like keypresses if needed
+    mask.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+    });
+}
+
+function removeClickMask() {
+    const mask = document.getElementById('clickMask');
+    const style = document.getElementById('clickMaskStyle');
+
+    if (mask) {
+        mask.remove();
+    }
+
+    if (style) {
+        style.remove(); // Remove the injected style
+    }
+
+    // Restore default pointer-events behavior for all elements
+    document.querySelectorAll('*').forEach((element) => {
+        element.style.pointerEvents = ''; // Reset pointer-events to default
+    });
 }
