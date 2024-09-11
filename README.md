@@ -1,5 +1,6 @@
 
-<h1 align="center"><img src="https://github.com/user-attachments/assets/3fe6e4d2-3fc8-4b80-876c-cdfbf20979fd" alt="Peek Pop" style="height: 1em;">    Peek Pop (formerly Drag to preview)</h1>
+<h1 align="center"><img src="https://github.com/user-attachments/assets/3ac21a0e-c5ff-4e5c-a61a-990e295c0b6b" alt="Peek Pop"  style="height: 300px; width: 300px;"></h1>
+
 
 <div align="center">
 
