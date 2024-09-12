@@ -342,18 +342,45 @@ function addTooltipsOnHover(event) {
             let tooltipWidth = 20;
             let tooltipHeight = 20;
         
-            // Handle positioning relative to text node
+            // Handle positioning relative to the visible portion of the text node
             if (textNode) {
                 const range = document.createRange();
                 range.selectNodeContents(textNode);
-                const textRect = range.getBoundingClientRect();
+        
+                const containerWidth = element.getBoundingClientRect().width; // Visible width of the container
+                let textRect = range.getBoundingClientRect();
+        
+                // If the text is overflowing (truncated), we shrink the range to fit within the container's width
+                if (textRect.width > containerWidth) {
+                    // We will collapse the range to the visible part by adjusting the end point
+                    let newRange = document.createRange();
+                    newRange.setStart(range.startContainer, range.startOffset);
+                    let charCount = textNode.textContent.length;
+                    let visibleWidth = containerWidth;
+        
+                    // Iteratively shrink the range until it fits the visible container
+                    for (let i = 0; i < charCount; i++) {
+                        newRange.setEnd(range.endContainer, i + 1);
+                        if (newRange.getBoundingClientRect().width > visibleWidth) {
+                            newRange.setEnd(range.endContainer, i); // Stop when we've passed the visible width
+                            break;
+                        }
+                    }
+        
+                    textRect = newRange.getBoundingClientRect();
+                }
+        
                 top = textRect.top;
                 left = textRect.left + textRect.width;
-            } else if (image) {
+            } 
+            // Handle positioning relative to an image
+            else if (image) {
                 const imageRect = image.getBoundingClientRect();
                 top = imageRect.top;
                 left = imageRect.left + imageRect.width;
-            } else {
+            } 
+            // Default to positioning relative to the link element if no text or image
+            else {
                 const linkRect = element.getBoundingClientRect();
                 top = linkRect.top;
                 left = linkRect.left + linkRect.width;
@@ -378,6 +405,7 @@ function addTooltipsOnHover(event) {
             tooltipElement.style.top = `${top}px`;
             tooltipElement.style.left = `${left}px`;
         };
+        
         
 
         // Function to get the first text node inside an element
