@@ -777,40 +777,69 @@ function handleMouseDown(e) {
         if (data.holdToPreview) {
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
+            
+            // Check for left mouse button click
             if (e.button !== 0) return;
+        
+            // Check if the URL is valid and not a JavaScript link
             if (!linkUrl || (linkUrl && linkUrl.trim().startsWith('javascript:'))) {
                 isMouseDownOnLink = false;
                 clearTimeoutsAndProgressBars();
-                document.removeEventListener(['mouseup'], handleHoldLink, true)
+                document.removeEventListener('mouseup', handleHoldLink, true);
+                document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+                document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                 return;
             } else {
                 isMouseDownOnLink = true;
-
-                document.addEventListener(['mouseup'], handleHoldLink, true)
+                document.addEventListener('mouseup', handleHoldLink, true);
+                document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+                document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+        
+                // Show progress bar for preview
                 previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 75, (holdToPreviewTimeout ?? 1500));
+        
                 setTimeout(() => {
                     clearTimeoutsAndProgressBars();
                 }, (holdToPreviewTimeout ?? 1500));
-
+        
                 if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
                     e.preventDefault();
                     clearTimeoutsAndProgressBars();
                     firstDownOnLinkAt = null;
                     hasPopupTriggered = true;
-
                 } else {
                     firstDownOnLinkAt = Date.now();
                 }
             }
         } else {
-
             isMouseDownOnLink = false;
             if (previewProgressBar) {
                 previewProgressBar.remove();
                 previewProgressBar = null;
             }
-            document.removeEventListener(['mouseup'], handleHoldLink, true)
+            document.removeEventListener('mouseup', handleHoldLink, true);
+            document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+            document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
+        
+        // Function to cancel hold-to-preview when mouse is moved
+        function cancelHoldToPreviewOnMove() {
+            isMouseDownOnLink = false;
+            clearTimeoutsAndProgressBars();
+            document.removeEventListener('mouseup', handleHoldLink, true);
+            document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+            document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+        }
+        
+        // Function to cancel hold-to-preview when dragging starts
+        function cancelHoldToPreviewOnDrag() {
+            isMouseDownOnLink = false;
+            clearTimeoutsAndProgressBars();
+            document.removeEventListener('mouseup', handleHoldLink, true);
+            document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+            document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+        }
+        
 
         try {
             const message = data.closeWhenFocusedInitialWindow
