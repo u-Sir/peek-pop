@@ -1,5 +1,5 @@
 
-<h1 align="center"><img src="https://github.com/user-attachments/assets/3ac21a0e-c5ff-4e5c-a61a-990e295c0b6b" alt="Peek Pop"  style="height: 200px; width: 200px;"></h1>
+<h1 align="center"><img src="https://github.com/user-attachments/assets/3ac21a0e-c5ff-4e5c-a61a-990e295c0b6b" alt="Peek Pop"  style="height: 100px; width: 100px;"></h1>
 
 
 <div align="center">
