@@ -180,7 +180,7 @@
         "message": "选中文本时显示搜索条"
     },
     "collectionEnable": {
-        "message": "长按鼠标左键添加到稍后阅读，列表可通过 Ctrl/Command + U 或者点击插件图标查看"
+        "message": "悬停显示添加到收集按钮，列表可通过 Ctrl/Command + U 或者点击插件图标查看"
     },
     "linkSettings": {
         "message": "链接"

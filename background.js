@@ -42,9 +42,9 @@ const configs = {
     'collection': [],
     'searchTooltipsEnable': false,
     'collectionEnable': false,
-    'collectionTimeout': 1000,
     'holdToPreview': false,
-    'holdToPreviewTimeout': 1500
+    'holdToPreviewTimeout': 1500,
+    'clickModifiedKey': 'None'
 };
 
 // Load user configurations from storage

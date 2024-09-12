@@ -22,9 +22,11 @@ let hoverlinkOrText = false;
 let isMouseDownOnLink = false;
 let firstDownOnLinkAt;
 let collectionProgressBar, previewProgressBar;
-let collectionTimeout = 1000;
 let holdToPreviewTimeout = 1500;
 let focusAt;
+let linkCollection;
+let currentHoveredLink = null; // Store reference to the current hovered link
+let clickModifiedKey = 'None';
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -68,9 +70,9 @@ const configs = {
     'collection': [],
     'searchTooltipsEnable': false,
     'collectionEnable': false,
-    'collectionTimeout': 1000,
     'holdToPreview': false,
-    'holdToPreviewTimeout': 1500
+    'holdToPreviewTimeout': 1500,
+    'clickModifiedKey': 'None'
 };
 
 async function loadUserConfigs(keys = Object.keys(configs)) {
@@ -204,217 +206,219 @@ function createTooltip(x, y, actions, timeout = 2000) {
     return tooltip;
 }
 
-
 function addTooltipsOnHover(event) {
-    if (event.target.tagName === 'A' || event.target.closest('a')) {
-        chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionEnable'], async (data) => {
+    const linkElement = event.target.tagName === 'A' || event.target.closest('a')
+        ? (event.target.tagName === 'A' ? event.target : event.target.closest('a'))
+        : null;
 
-            if (tooltip) tooltip.remove();
-            if (searchTooltips) searchTooltips.remove();
-            searchTooltips = null;
-            if (typeof data.collectionEnable === 'undefined' || !data.collectionEnable) return;
+    if (!linkElement) return;
 
-            const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
-            if (!linkElement) return; // Ensure there's a valid link element
-            const visibleWidth = linkElement.clientWidth; // Width of the visible part
+    // Check if tooltip already added
+    if (linkElement.dataset.tooltipAdded === 'true') return;
 
-            const linkRect = linkElement.getBoundingClientRect(); // Get link's bounding box
-            const linkUrl = linkElement.href;
-            const linkTitle = linkElement.title || linkElement.textContent;
-            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-            hoverlinkOrText = true;
-            // Initialize or load the collection
-            collection = (Array.isArray(data.collection) && data.collection.length > 0)
-                ? data.collection
-                : [
-                    {
-                        label: '+',
-                        handler: () => {
-                            addLinkToCollection(linkUrl, linkTitle);
-                        }
-                    },
-                    {
-                        label: '↗️',
-                        links: [], // This will store the links
-                        handler: function () {
-                            // Ensure links exist before creating the popup
-                            if (this.links && this.links.length > 0) {
-                                const group = {
-                                    action: 'group',
-                                    links: this.links,
-                                    trigger: 'tooltips',
-                                    lastClientX: event.clientX,
-                                    lastClientY: event.clientY,
-                                    width: window.screen.availWidth,
-                                    height: window.screen.availHeight,
-                                    top: window.screen.availTop,
-                                    left: window.screen.availLeft
-                                };
+    // Add a data attribute to mark that the tooltip is already added
+    linkElement.dataset.tooltipAdded = 'true';
 
-                                if (linkIndicator) {
-                                    linkIndicator.remove();
-                                }
-                                linkIndicator = null;
+    chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionEnable'], async (data) => {
+        if (typeof data.collectionEnable === 'undefined' || !data.collectionEnable) return;
 
-                                if (searchTooltips) searchTooltips.remove();
-                                searchTooltips = null;
-
-                                if (data.blurEnabled) {
-                                    document.body.style.filter = `blur(${data.blurPx}px)`;
-                                    document.body.style.transition = `filter ${data.blurTime}s ease`;
-                                }
-                                addClickMask();
-                                chrome.runtime.sendMessage(group, () => {
-                                    // Remove all items from the collection except for the '+' item
-                                    collection = collection.filter(item => item.label === '+');
-
-                                    // Store the updated collection back in Chrome storage
-                                    chrome.storage.local.set({ collection: collection });
-                                });
-                            }
-                        }
+        // Initialize or load the collection
+        collection = (Array.isArray(data.collection) && data.collection.length > 0)
+            ? data.collection
+            : [
+                {
+                    label: '+',
+                    handler: () => {
+                        addLinkToCollection(linkElement.href, linkElement.title || linkElement.textContent);
                     }
-                ];
-            // Ensure the `links` array is correctly populated
-            collection = collection.map(item => {
-                if (!item.handler) {
-                    if (item.label === '+') {
-                        item.handler = () => addLinkToCollection(linkUrl, linkTitle);
-                    } else if (item.label === '↗️') {
-                        item.handler = function () {
-                            // Ensure links exist before creating the popup
-                            if (this.links && this.links.length > 0) {
-                                const group = {
-                                    action: 'group',
-                                    links: this.links,
-                                    trigger: 'tooltips',
-                                    lastClientX: event.clientX,
-                                    lastClientY: event.clientY,
-                                    width: window.screen.availWidth,
-                                    height: window.screen.availHeight,
-                                    top: window.screen.availTop,
-                                    left: window.screen.availLeft
-                                };
-
-                                if (linkIndicator) {
-                                    linkIndicator.remove();
-                                }
-                                linkIndicator = null;
-
-                                if (searchTooltips) searchTooltips.remove();
-                                searchTooltips = null;
-
-                                if (data.blurEnabled) {
-                                    document.body.style.filter = `blur(${data.blurPx}px)`;
-                                    document.body.style.transition = `filter ${data.blurTime}s ease`;
-                                }
-                                addClickMask();
-                                chrome.runtime.sendMessage(group, () => {
-                                    // Remove all items from the collection except for the '+' item
-                                    collection = collection.filter(item => item.label === '+');
-
-                                    // Store the updated collection back in Chrome storage
-                                    chrome.storage.local.set({ collection: collection });
-                                });
-                            }
-                        };
-                        item.links = collection[1].links;
-
-                    } else {
-                        item.handler = () => removeLinkFromCollection(item.url);
-                    }
-                }
-                return item;
-            });
-
-
-            // Ensure 'popup' is only added if there are links
-            if (collection[1] && collection[1].links && collection[1].links.length === 0) {
-                collection.pop(); // Remove the 'popup' item if no links
-            }
-
-            // Create actions from the collection
-            const actions = collection
-                .filter(item => item.label === '+') // Only map items where item.label is '+'
-                .map(item => ({
-                    label: item.label,
-                    handler: item.handler
-                }));
-
-            let offset = 30;
-            // Check if collection[1] exists and has links
-            if (collection.length > 1 && collection[1].links && collection[1].links.length > 0) {
-                offset = 40;
-                const linkCount = collection[1].links.length;
-                const actionPageButton = {
-                    label: `${linkCount}`, // Button text is the count of links inside
+                },
+                {
+                    label: '↗️',
+                    links: [],
                     handler: function () {
+                        if (this.links && this.links.length > 0) {
+                            const group = {
+                                action: 'group',
+                                links: this.links,
+                                trigger: 'tooltips',
+                                lastClientX: event.clientX,
+                                lastClientY: event.clientY,
+                                width: window.screen.availWidth,
+                                height: window.screen.availHeight,
+                                top: window.screen.availTop,
+                                left: window.screen.availLeft
+                            };
 
-                        // chrome.runtime.sendMessage({action: 'openSidePanel'}, () => {
-                        //
-                        // });
+                            chrome.runtime.sendMessage(group, () => {
+                                // Remove all items from the collection except for the '+' item
+                                collection = collection.filter(item => item.label === '+');
+                                chrome.storage.local.set({ collection: collection });
+                            });
+                        }
                     }
-                };
-
-                // Add the new action page button to the actions array
-                actions.push(actionPageButton);
-            }
-
-            // Get the computed styles of the element
-            const computedStyles = window.getComputedStyle(linkElement);
-
-            // Get the element's height
-            const elementHeight = linkElement.getBoundingClientRect().height;
-
-            // Get the line-height from the computed styles
-            const lineHeight = parseFloat(computedStyles.lineHeight);
-
-            // If line-height is not defined in the CSS, we can fall back to font-size
-            const fontSize = parseFloat(computedStyles.fontSize);
-            const actualLineHeight = lineHeight || fontSize * 1.2; // Assuming line-height is about 1.2x font-size if undefined
-
-            // Calculate how many lines the text has wrapped into
-            const lineCount = Math.round(elementHeight / actualLineHeight);
-
-
-            linkCollection = createTooltip(linkRect.left + visibleWidth, linkRect.top - linkRect.height / lineCount + 5, actions);
-
-            const checkCursorInsideViewport = (event) => {
-                const x = event.clientX; // Get the cursor's X position
-                const y = event.clientY; // Get the cursor's Y position
-
-                // Check if cursor is inside the viewport
-                const isInsideViewport = (
-                    x >= 0 &&
-                    x <= window.innerWidth &&
-                    y >= 0 &&
-                    y <= window.innerHeight
-                );
-
-                if (!isInsideViewport) {
-                    if (linkCollection) {
-                        linkCollection.remove();
-                        linkCollection = null;
-                    }
-                    document.removeEventListener('mousemove', checkCursorInsideViewport);
                 }
-            };
+            ];
 
-            document.addEventListener('mousemove', checkCursorInsideViewport);
+        // Create the tooltip element
+        const tooltipElement = document.createElement('div');
+        tooltipElement.classList.add('tooltip');
 
-            // Handle when the mouse leaves the document (i.e., the entire page)
-            document.addEventListener('mouseleave', function removeTooltip() {
-                if (linkCollection) {
-                    linkCollection.remove();
-                    linkCollection = null;
-                }
-                document.removeEventListener('mouseleave', removeTooltip);
-                document.removeEventListener('mousemove', checkCursorInsideViewport);
+        // Add only the first button from the collection (index 0)
+        const firstItem = collection[0];
+        if (firstItem) {
+            const button = document.createElement('button');
+            button.textContent = firstItem.label;
+            button.onclick = firstItem.handler || (() => {
+                addLinkToCollection(linkElement.href, linkElement.title || linkElement.textContent);
             });
-        });
-    }
-}
+            tooltipElement.appendChild(button);
+        }
 
+        // Append tooltip to the body
+        document.body.appendChild(tooltipElement);
+
+        // Dynamically insert CSS styles
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            .tooltip {
+                position: fixed; /* Use fixed instead of absolute */
+                background-color: transparent;
+                padding: 0;
+                border-radius: 4px;
+                white-space: nowrap;
+                z-index: 9999;
+                display: none;
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+            
+            .tooltip button {
+                background-color: #ffa742;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 0;
+                line-height: 20px;
+                font-size: 20px;
+                cursor: pointer;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            
+
+            a[data-tooltip-added="true"]:hover + .tooltip {
+                display: block;
+            }
+        `;
+        document.head.appendChild(styleElement);
+
+        const getScrollbarWidth = () => {
+            // Create a temporary div element to measure scrollbar width
+            const div = document.createElement('div');
+            div.style.position = 'absolute';
+            div.style.top = '-9999px'; // Make it invisible
+            div.style.width = '100px';
+            div.style.height = '100px';
+            div.style.overflow = 'scroll'; // Force scrollbar to appear
+        
+            document.body.appendChild(div);
+        
+            // Measure the scrollbar width
+            const scrollbarWidth = div.offsetWidth - div.clientWidth;
+        
+            // Remove the temporary div
+            document.body.removeChild(div);
+        
+            return scrollbarWidth;
+        };
+        
+
+        const setTooltipPosition = (element, textNode, image) => {
+            let top = 0, left = 0;
+            let tooltipWidth = 20;
+            let tooltipHeight = 20;
+        
+            // Handle positioning relative to text node
+            if (textNode) {
+                const range = document.createRange();
+                range.selectNodeContents(textNode);
+                const textRect = range.getBoundingClientRect();
+                top = textRect.top;
+                left = textRect.left + textRect.width;
+            } else if (image) {
+                const imageRect = image.getBoundingClientRect();
+                top = imageRect.top;
+                left = imageRect.left + imageRect.width;
+            } else {
+                const linkRect = element.getBoundingClientRect();
+                top = linkRect.top;
+                left = linkRect.left + linkRect.width;
+            }
+        
+            // Ensure tooltip doesn't go out of the viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const scrollbarWidth = getScrollbarWidth(); // Get the scrollbar width
+        
+            // Adjust tooltip if it overflows the right side of the viewport
+            if (left + tooltipWidth > viewportWidth - scrollbarWidth) {
+                left = viewportWidth - scrollbarWidth - tooltipWidth;
+            }
+        
+            // Adjust tooltip if it overflows the bottom side of the viewport
+            if (top + tooltipHeight > viewportHeight) {
+                top = viewportHeight - tooltipHeight;
+            }
+        
+            // Set tooltip's final position
+            tooltipElement.style.top = `${top}px`;
+            tooltipElement.style.left = `${left}px`;
+        };
+        
+
+        // Function to get the first text node inside an element
+        const getFirstTextNode = (element) => {
+            if (!element) return null;
+            const nodes = Array.from(element.childNodes);
+            for (const node of nodes) {
+                if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                    return node;
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    const foundTextNode = getFirstTextNode(node);
+                    if (foundTextNode) return foundTextNode;
+                }
+            }
+            return null;
+        };
+
+        // Display the tooltip immediately on first hover
+        setTooltipPosition(linkElement, getFirstTextNode(linkElement), linkElement.querySelector('img'));
+        tooltipElement.style.display = 'block';
+
+        // Prevent tooltip from hiding when moving the mouse from link to tooltip
+        tooltipElement.addEventListener('mouseenter', () => {
+            tooltipElement.style.display = 'block';
+        });
+
+        // Auto-hide tooltip when the mouse leaves the tooltip or link
+        tooltipElement.addEventListener('mouseleave', () => {
+            tooltipElement.style.display = 'none';
+        });
+        linkElement.addEventListener('mouseleave', () => {
+            tooltipElement.style.display = 'none';
+        });
+
+        // Recalculate tooltip position on subsequent hovers
+        linkElement.addEventListener('mouseenter', () => {
+            setTooltipPosition(linkElement, getFirstTextNode(linkElement), linkElement.querySelector('img'));
+            tooltipElement.style.display = 'block';
+        });
+    });
+}
 
 
 function addSearchTooltipsOnHover(event) {
@@ -669,6 +673,10 @@ function handleContextMenu() {
     if (linkIndicator) {
         linkIndicator.remove();
     }
+    if (linkCollection) {
+        linkCollection.remove();
+    }
+    linkCollection = null;
     linkIndicator = null;
     hoverlinkOrText = false;
     searchTooltips = null;
@@ -718,7 +726,7 @@ async function handleKeyDown(e) {
 
 
 function handleMouseDown(e) {
-    if (focusAt && Date.now() - focusAt < 50 ) {
+    if (focusAt && Date.now() - focusAt < 50) {
         e.preventDefault();
         e.stopPropagation();
         return;
@@ -734,8 +742,6 @@ function handleMouseDown(e) {
     chrome.storage.local.get(['modifiedKey',
         'previewModeEnable',
         'previewModeDisabledUrls',
-        'collectionEnable',
-        'collectionTimeout',
         'closeWhenFocusedInitialWindow',
         'holdToPreview',
         'holdToPreviewTimeout'
@@ -754,52 +760,18 @@ function handleMouseDown(e) {
         }
 
         if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
-            previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
+            if (clickModifiedKey === 'None' || keyMap[clickModifiedKey]) {
+                previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
 
-            // Add the event listener
-            const events = ["click", "mouseup"];
+                // Add the event listener
+                const events = ["click", "mouseup"];
 
-            events.forEach(event => document.addEventListener(event, handleEvent, true));
-
-        }
-
-        if (data.collectionEnable) {
-            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-            const linkUrl = linkElement ? linkElement.href : null;
-            if (e.button !== 0) return;
-            if (!linkUrl || (linkUrl && linkUrl.trim().startsWith('javascript:'))) {
-                isMouseDownOnLink = false;
-                clearTimeoutsAndProgressBars();
-
-                document.removeEventListener(['mouseup'], handleCollection, true)
-                return;
+                events.forEach(event => document.addEventListener(event, handleEvent, true));
             } else {
-                isMouseDownOnLink = true;
-
-                document.addEventListener(['mouseup'], handleCollection, true)
-                collectionProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 60, (collectionTimeout ?? 1000));
-
-                setTimeout(() => {
-                    clearTimeoutsAndProgressBars();
-                }, (collectionTimeout ?? 1000));
-                if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000)) {
-                    e.preventDefault();
-                    clearTimeoutsAndProgressBars();
-                    firstDownOnLinkAt = null;
-                    hasPopupTriggered = true;
-
-                } else {
-                    firstDownOnLinkAt = Date.now();
-                }
+                previewMode = false;
             }
-        } else {
 
-            isMouseDownOnLink = false;
-            if (collectionProgressBar) {
-                collectionProgressBar.remove();
-                collectionProgressBar = null;
-            }
-            document.removeEventListener(['mouseup'], handleCollection, true)
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
         }
 
         if (data.holdToPreview) {
@@ -921,136 +893,7 @@ function handleHoldLink(e) {
     }
 }
 
-function handleCollection(event) {
-    if (event.button !== 0) return;
-    if (!firstDownOnLinkAt) return;
-    const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
-    if (!linkElement) return; // Ensure linkElement and linkUrl are valid
 
-    const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-    isMouseDownOnLink = true;
-    chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionTimeout'], (data) => {
-        // Initialize or load the collection
-        collection = (Array.isArray(data.collection) && data.collection.length > 0)
-            ? data.collection
-            : [
-                {
-                    label: '+',
-                    handler: () => {
-                        addLinkToCollection(linkUrl, linkTitle);
-                    }
-                },
-                {
-                    label: '↗️',
-                    links: [], // This will store the links
-                    handler: function () {
-                        // Ensure links exist before creating the popup
-                        if (this.links && this.links.length > 0) {
-                            const group = {
-                                action: 'group',
-                                links: this.links,
-                                trigger: 'tooltips',
-                                lastClientX: event.clientX,
-                                lastClientY: event.clientY,
-                                width: window.screen.availWidth,
-                                height: window.screen.availHeight,
-                                top: window.screen.availTop,
-                                left: window.screen.availLeft
-                            };
-
-                            if (linkIndicator) {
-                                linkIndicator.remove();
-                            }
-                            linkIndicator = null;
-
-                            if (searchTooltips) searchTooltips.remove();
-                            searchTooltips = null;
-
-                            if (data.blurEnabled) {
-                                document.body.style.filter = `blur(${data.blurPx}px)`;
-                                document.body.style.transition = `filter ${data.blurTime}s ease`;
-                            }
-                            addClickMask();
-                            chrome.runtime.sendMessage(group, () => {
-                                // Remove all items from the collection except for the '+' item
-                                collection = collection.filter(item => item.label === '+');
-
-                                // Store the updated collection back in Chrome storage
-                                chrome.storage.local.set({ collection: collection });
-                            });
-                        }
-                    }
-                }
-            ];
-        // Ensure the `links` array is correctly populated
-        collection = collection.map(item => {
-            if (!item.handler) {
-                if (item.label === '+') {
-                    item.handler = () => addLinkToCollection(linkUrl, linkTitle);
-                } else if (item.label === '↗️') {
-                    item.handler = function () {
-                        // Ensure links exist before creating the popup
-                        if (this.links && this.links.length > 0) {
-                            const group = {
-                                action: 'group',
-                                links: this.links,
-                                trigger: 'tooltips',
-                                lastClientX: event.clientX,
-                                lastClientY: event.clientY,
-                                width: window.screen.availWidth,
-                                height: window.screen.availHeight,
-                                top: window.screen.availTop,
-                                left: window.screen.availLeft
-                            };
-
-                            if (linkIndicator) {
-                                linkIndicator.remove();
-                            }
-                            linkIndicator = null;
-
-                            if (searchTooltips) searchTooltips.remove();
-                            searchTooltips = null;
-
-                            if (data.blurEnabled) {
-                                document.body.style.filter = `blur(${data.blurPx}px)`;
-                                document.body.style.transition = `filter ${data.blurTime}s ease`;
-                            }
-                            addClickMask();
-                            chrome.runtime.sendMessage(group, () => {
-                                // Remove all items from the collection except for the '+' item
-                                collection = collection.filter(item => item.label === '+');
-
-                                // Store the updated collection back in Chrome storage
-                                chrome.storage.local.set({ collection: collection });
-                            });
-                        }
-                    };
-                    item.links = collection[1].links;
-
-                } else {
-                    item.handler = () => removeLinkFromCollection(item.url);
-                }
-            }
-            return item;
-        });
-
-
-        // Ensure 'popup' is only added if there are links
-        if (collection[1] && collection[1].links && collection[1].links.length === 0) {
-            collection.pop(); // Remove the 'popup' item if no links
-        }
-
-        const linkTitle = linkElement.title || linkElement.textContent;
-        if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000) && isMouseDownOnLink) {
-            hasPopupTriggered = true;
-            addLinkToCollection(linkUrl, linkTitle);
-        } else {
-            firstDownOnLinkAt = null;
-            clearTimeoutsAndProgressBars();
-        }
-    });
-}
 
 function handleDoubleClick(e) {
     isDoubleClick = true;
@@ -1120,11 +963,6 @@ function handleEvent(e) {
         if (isDragging) {
             preventEvent(e);
             isDragging = false;
-        } else if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (collectionTimeout ?? 1000)))) {
-            // Prevent default action on the link immediately
-            e.preventDefault();
-            e.stopPropagation();
-
         } else if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)))) {
             // Prevent default action on the link immediately
             e.preventDefault();
@@ -1613,13 +1451,12 @@ async function checkUrlAndToggleListeners() {
         'hoverSearchEngine',
         'previewModeDisabledUrls',
         'previewModeEnable',
-        'collectionTimeout',
         'holdToPreview',
         'collectionEnable',
-        'holdToPreviewTimeout'
+        'holdToPreviewTimeout',
+        'clickModifiedKey'
     ]);
     const disabledUrls = data.disabledUrls || [];
-    collectionTimeout = data.collectionTimeout || 1000;
     holdToPreviewTimeout = data.holdToPreviewTimeout || 1500;
     const currentUrl = window.location.href;
 
@@ -1629,6 +1466,7 @@ async function checkUrlAndToggleListeners() {
         addListeners();
     }
 
+    clickModifiedKey = data.clickModifiedKey || 'None';
 
     if (typeof data.searchEngine === 'undefined') {
         chrome.storage.local.set({ searchEngine: 'https://www.google.com/search?q=%s' });
@@ -1665,11 +1503,10 @@ async function checkUrlAndToggleListeners() {
     }
 
     if (data.collectionEnable) {
-        document.addEventListener(['mouseup'], handleCollection, true);
-        // document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mouseover', addTooltipsOnHover, true);
 
     } else {
-        document.removeEventListener(['mouseup'], handleCollection, true);
+        document.removeEventListener('mouseover', addTooltipsOnHover, true);
     }
 
 }
@@ -1689,8 +1526,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.doubleClickToSwitch ||
         changes.searchTooltipsEnable ||
         changes.collectionEnable ||
-        changes.collectionTimeout ||
-        changes.holdToPreview
+        changes.holdToPreview ||
+        changes.clickModifiedKey
     )) {
         await checkUrlAndToggleListeners();
     }
@@ -1749,7 +1586,7 @@ window.addEventListener('focus', async () => {
     if (window.getSelection().toString()) {
         window.getSelection().removeAllRanges();
     }
-        removeClickMask();
+    removeClickMask();
 });
 
 

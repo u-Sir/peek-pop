@@ -26,14 +26,6 @@
                 <label><input type="checkbox" id="collectionEnable"></input></label>
             </div>
 
-            <div class='option'>
-                <label for="collectionTimeout" class="align-label"></label><output for="collectionTimeout" id="collectionTimeoutOutput"></output>
-                <br>
-                <input type="range" id="collectionTimeout" name="collectionTimeout" min="250" max="2000" step="50">
-            </div>
-
-
-
             <h4 id="searchSettings"></h4>
             <div class='option'>
                 <label><input type="checkbox" id="urlCheck"></input></label>
@@ -366,7 +358,7 @@
 
         <div id="previewMode_settings" class="tab-content">
             <h4 id="previewModeSettings"></h4>
-         
+
             <div class='option'>
                 <label><input type="checkbox" id="previewModeEnable"></input></label>
             </div>
@@ -379,7 +371,25 @@
             </div>
 
             <br>
+            <div class="keySelection">
+                <label for="clickModifiedKey" class="align-label"></label>
+                <br>
+                <input type="radio" id="ctrlKey" name="clickModifiedKey" value="Ctrl" />
+                <label for="ctrlKey">Ctrl</label>
 
+                <input type="radio" id="altKey" name="clickModifiedKey" value="Alt" />
+                <label for="altKey">Alt/Option</label>
+
+                <input type="radio" id="shiftKey" name="clickModifiedKey" value="Shift" />
+                <label for="shiftKey">Shift</label>
+
+                <input type="radio" id="metaKey" name="clickModifiedKey" value="Meta" />
+                <label for="metaKey">Windows/Command</label>
+
+                <input type="radio" id="clickNoneKey" name="clickModifiedKey" value="None" />
+                <label for="clickNoneKey">None</label>
+                <br>
+            </div>
 
             <h4 id="holdToPreviewSettings"></h4>
             <div class='option'>
@@ -387,9 +397,11 @@
             </div>
 
             <div class='option'>
-                <label for="holdToPreviewTimeout" class="align-label"></label><output for="holdToPreviewTimeout" id="holdToPreviewTimeoutOutput"></output>
+                <label for="holdToPreviewTimeout" class="align-label"></label><output for="holdToPreviewTimeout"
+                    id="holdToPreviewTimeoutOutput"></output>
                 <br>
-                <input type="range" id="holdToPreviewTimeout" name="holdToPreviewTimeout" min="250" max="2000" step="50">
+                <input type="range" id="holdToPreviewTimeout" name="holdToPreviewTimeout" min="250" max="2000"
+                    step="50">
             </div>
 
             <h4 id="previewModePopupSettings"></h4>

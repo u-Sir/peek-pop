@@ -180,7 +180,7 @@
         "message": "Tooltips para el texto seleccionado."
     },
     "collectionEnable": {
-        "message": "Mantén presionado el botón izquierdo del ratón para agregar el enlace a tu colección. Presiona Ctrl/Comando + U o haz clic en el icono del complemento para ver la colección."
+        "message": "Desliza el cursor para mostrar el botón para agregar el enlace a tu colección. Presiona Ctrl/Command + U o haz clic en el ícono del complemento para ver tu colección."
     },
     "linkSettings": {
         "message": "Enlace"

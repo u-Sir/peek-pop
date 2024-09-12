@@ -43,9 +43,9 @@ const configs = {
     'collection': [],
     'searchTooltipsEnable': false,
     'collectionEnable': false,
-    'collectionTimeout': 1000,
     'holdToPreview': false,
-    'holdToPreviewTimeout': 1500
+    'holdToPreviewTimeout': 1500,
+    'clickModifiedKey': 'None'
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -170,11 +170,11 @@ function init() {
             
             doubleClickToSwitchCheckbox.checked = false;
             doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
-            saveConfig('holdToPreview', false);
+            saveConfig('doubleClickToSwitch', false);
 
             doubleClickAsClickCheckbox.checked = false;
             doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
-            saveConfig('holdToPreview', false);
+            saveConfig('doubleClickAsClick', false);
         }
     });
 }
@@ -255,6 +255,7 @@ function setupPage(userConfigs) {
 
     setInputLabel('normal', 'normal');
     setInputLabel('hoverNormal', 'normal');
+    setInputLabel('previewModeNormal', 'normal');
 
 
     setInputLabel('windowType', 'windowType');
@@ -263,6 +264,7 @@ function setupPage(userConfigs) {
 
     setInputLabel('modifiedKey', 'modifiedKey');
     setInputLabel('hoverModifiedKey', 'modifiedKey');
+    setInputLabel('clickModifiedKey', 'modifiedKey');
 
     setInputLabel('dragDirections', 'dragDirections');
     setInputLabel('dragPx', 'dragPx');
@@ -290,7 +292,6 @@ function setupPage(userConfigs) {
     initializeSlider('blurTime', userConfigs.blurTime || 1);
     initializeSlider('dragPx', userConfigs.dragPx || 0);
     initializeSlider('hoverTimeout', userConfigs.hoverTimeout || 0);
-    initializeSlider('collectionTimeout', userConfigs.collectionTimeout || 1000);
     initializeSlider('holdToPreviewTimeout', userConfigs.holdToPreviewTimeout || 1500);
 
     // Initialize drag direction checkboxes
@@ -299,6 +300,7 @@ function setupPage(userConfigs) {
     // Set modified key
     setupModifiedKeySelection(userConfigs.modifiedKey);
     setupHoverModifiedKeySelection(userConfigs.hoverModifiedKey);
+    setupClickModifiedKeySelection(userConfigs.clickModifiedKey);
     setupDoubleTapKeyToSendPageBackSelection(userConfigs.doubleTapKeyToSendPageBack);
 
     // Setup search engine selection
@@ -325,11 +327,11 @@ function setupPage(userConfigs) {
 
         doubleClickToSwitchCheckbox.checked = false;
         doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
-        saveConfig('holdToPreview', false);
+        saveConfig('doubleClickToSwitch', false);
 
         doubleClickAsClickCheckbox.checked = false;
         doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
-        saveConfig('holdToPreview', false);
+        saveConfig('doubleClickAsClick', false);
     }
 }
 
@@ -568,6 +570,20 @@ function setupHoverModifiedKeySelection(hoverModifiedKey) {
 }
 
 
+function setupClickModifiedKeySelection(clickModifiedKey) {
+    clickModifiedKey = clickModifiedKey ?? 'None';
+    document.querySelector(`input[name="clickModifiedKey"][value="${clickModifiedKey}"]`).checked = true;
+
+    document.querySelectorAll('input[name="clickModifiedKey"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newClickModifiedKey = event.target.value;
+            chrome.storage.local.set({ clickModifiedKey: newClickModifiedKey }, () => {
+                configs.clickModifiedKey = newClickModifiedKey;
+            });
+        });
+    });
+}
+
 function setupDoubleTapKeyToSendPageBackSelection(doubleTapKeyToSendPageBack) {
     doubleTapKeyToSendPageBack = doubleTapKeyToSendPageBack ?? 'None';
     document.querySelector(`input[name="doubleTapKeyToSendPageBack"][value="${doubleTapKeyToSendPageBack}"]`).checked = true;
@@ -729,6 +745,7 @@ function loadUserConfigs(callback) {
 
         userConfigs.hoverSearchEngine = userConfigs.hoverSearchEngine ?? configs.hoverSearchEngine;
         userConfigs.hoverModifiedKey = userConfigs.hoverModifiedKey ?? configs.hoverModifiedKey;
+        userConfigs.clickrModifiedKey = userConfigs.clickModifiedKey ?? configs.clickModifiedKey;
         userConfigs.hoverWindowType = userConfigs.hoverWindowType ?? configs.hoverWindowType;
 
         userConfigs.previewModeWindowType = userConfigs.previewModeWindowType ?? configs.previewModeWindowType;
