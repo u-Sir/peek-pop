@@ -132,7 +132,7 @@ function createTooltip(x, y, actions, timeout = 2000) {
         // Style for buttons
         button.style.backgroundColor = '#ffa742'; // Button background color
         button.style.border = 'none';
-        button.style.color = '#000'; // Button text color
+        button.style.color = '#fff'; // Button text color
         button.style.padding = '4px 5px'; // Adjust size by changing padding
         button.style.borderRadius = '5px'; // Adjust corner roundness
         button.style.cursor = 'pointer';
@@ -206,9 +206,9 @@ function createTooltip(x, y, actions, timeout = 2000) {
     return tooltip;
 }
 
-function addTooltipsOnHover(event) {
-    const linkElement = event.target.tagName === 'A' || event.target.closest('a')
-        ? (event.target.tagName === 'A' ? event.target : event.target.closest('a'))
+function addTooltipsOnHover(e) {
+    const linkElement = e.target.tagName === 'A' || e.target.closest('a')
+        ? (e.target.tagName === 'A' ? e.target : e.target.closest('a'))
         : null;
 
     if (!linkElement) return;
@@ -241,8 +241,8 @@ function addTooltipsOnHover(event) {
                                 action: 'group',
                                 links: this.links,
                                 trigger: 'tooltips',
-                                lastClientX: event.clientX,
-                                lastClientY: event.clientY,
+                                lastClientX: e.clientX,
+                                lastClientY: e.clientY,
                                 width: window.screen.availWidth,
                                 height: window.screen.availHeight,
                                 top: window.screen.availTop,
@@ -309,7 +309,6 @@ function addTooltipsOnHover(event) {
                 text-align: center;
             }
             
-
             a[data-tooltip-added="true"]:hover + .tooltip {
                 display: block;
             }
@@ -317,65 +316,73 @@ function addTooltipsOnHover(event) {
         document.head.appendChild(styleElement);
 
         const getScrollbarWidth = () => {
-            // Create a temporary div element to measure scrollbar width
             const div = document.createElement('div');
             div.style.position = 'absolute';
-            div.style.top = '-9999px'; // Make it invisible
+            div.style.top = '-9999px';
             div.style.width = '100px';
             div.style.height = '100px';
-            div.style.overflow = 'scroll'; // Force scrollbar to appear
+            div.style.overflow = 'scroll';
         
             document.body.appendChild(div);
         
-            // Measure the scrollbar width
             const scrollbarWidth = div.offsetWidth - div.clientWidth;
         
-            // Remove the temporary div
             document.body.removeChild(div);
         
             return scrollbarWidth;
         };
-        
 
         const setTooltipPosition = (element, textNode, image) => {
             let top = 0, left = 0;
             let tooltipWidth = 20;
             let tooltipHeight = 20;
-        
-            // Handle positioning relative to the visible portion of the text node
+
+            const elementRect = element.getBoundingClientRect();
+            let textRect, imageRect;
+
             if (textNode) {
                 const range = document.createRange();
                 range.selectNodeContents(textNode);
-        
-                const containerWidth = element.getBoundingClientRect().width; // Visible width of the container
-                let textRect = range.getBoundingClientRect();
-        
-                // If the text is overflowing (truncated), we shrink the range to fit within the container's width
+
+                const containerWidth = elementRect.width;
+                textRect = range.getBoundingClientRect();
+
+                // Adjust textRect if the text overflows the container
                 if (textRect.width > containerWidth) {
-                    // We will collapse the range to the visible part by adjusting the end point
                     let newRange = document.createRange();
                     newRange.setStart(range.startContainer, range.startOffset);
                     let charCount = textNode.textContent.length;
                     let visibleWidth = containerWidth;
-        
-                    // Iteratively shrink the range until it fits the visible container
+
                     for (let i = 0; i < charCount; i++) {
                         newRange.setEnd(range.endContainer, i + 1);
                         if (newRange.getBoundingClientRect().width > visibleWidth) {
-                            newRange.setEnd(range.endContainer, i); // Stop when we've passed the visible width
+                            newRange.setEnd(range.endContainer, i);
                             break;
                         }
                     }
-        
+
                     textRect = newRange.getBoundingClientRect();
                 }
-        
-                top = textRect.top;
-                left = textRect.left + textRect.width;
+
+                // Adjust position if an inline image is present
+                if (image) {
+                    imageRect = image.getBoundingClientRect();
+                    if (imageRect.left > textRect.left) {
+                        top = imageRect.top;
+                        left = imageRect.left + imageRect.width;
+                    } else {
+                        top = textRect.top;
+                        left = textRect.left + textRect.width;
+                    }
+                } else {
+                    top = textRect.top;
+                    left = textRect.left + textRect.width;
+                }
             } 
-            // Handle positioning relative to an image
+            // Handle positioning relative to an image if no text node
             else if (image) {
-                const imageRect = image.getBoundingClientRect();
+                imageRect = image.getBoundingClientRect();
                 top = imageRect.top;
                 left = imageRect.left + imageRect.width;
             } 
@@ -385,46 +392,52 @@ function addTooltipsOnHover(event) {
                 top = linkRect.top;
                 left = linkRect.left + linkRect.width;
             }
-        
+
             // Ensure tooltip doesn't go out of the viewport
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-            const scrollbarWidth = getScrollbarWidth(); // Get the scrollbar width
-        
-            // Adjust tooltip if it overflows the right side of the viewport
+            const scrollbarWidth = getScrollbarWidth();
+
             if (left + tooltipWidth > viewportWidth - scrollbarWidth) {
                 left = viewportWidth - scrollbarWidth - tooltipWidth;
             }
-        
-            // Adjust tooltip if it overflows the bottom side of the viewport
+
             if (top + tooltipHeight > viewportHeight) {
                 top = viewportHeight - tooltipHeight;
             }
-        
-            // Set tooltip's final position
+
             tooltipElement.style.top = `${top}px`;
             tooltipElement.style.left = `${left}px`;
         };
-        
-        
 
-        // Function to get the first text node inside an element
-        const getFirstTextNode = (element) => {
-            if (!element) return null;
+        // Function to get the text nodes and handle inline images
+        const getTextNodesWithImages = (element) => {
+            if (!element) return { textNode: null, image: null };
             const nodes = Array.from(element.childNodes);
+            let textNode = null;
+            let image = null;
+
             for (const node of nodes) {
-                if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-                    return node;
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    const foundTextNode = getFirstTextNode(node);
-                    if (foundTextNode) return foundTextNode;
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.tagName === 'IMG') {
+                        image = node;
+                    } else {
+                        const result = getTextNodesWithImages(node);
+                        if (result.textNode) textNode = result.textNode;
+                        if (result.image) image = result.image;
+                    }
+                } else if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                    textNode = node;
                 }
             }
-            return null;
+
+            return { textNode, image };
         };
 
+        const { textNode, image } = getTextNodesWithImages(linkElement);
+
         // Display the tooltip immediately on first hover
-        setTooltipPosition(linkElement, getFirstTextNode(linkElement), linkElement.querySelector('img'));
+        setTooltipPosition(linkElement, textNode, image);
         tooltipElement.style.display = 'block';
 
         // Prevent tooltip from hiding when moving the mouse from link to tooltip
@@ -442,14 +455,18 @@ function addTooltipsOnHover(event) {
 
         // Recalculate tooltip position on subsequent hovers
         linkElement.addEventListener('mouseenter', () => {
-            setTooltipPosition(linkElement, getFirstTextNode(linkElement), linkElement.querySelector('img'));
+            const { textNode, image } = getTextNodesWithImages(linkElement);
+            setTooltipPosition(linkElement, textNode, image);
             tooltipElement.style.display = 'block';
         });
     });
 }
 
 
-function addSearchTooltipsOnHover(event) {
+
+
+
+function addSearchTooltipsOnHover(e) {
     if (isDragging) {
         if (searchTooltips) searchTooltips.remove();
         searchTooltips = null;
@@ -479,32 +496,32 @@ function addSearchTooltipsOnHover(event) {
             const actions = isURL
                 ? [{
                     label: '↗️',
-                    handler: () => triggerLinkPopup(event, link)
+                    handler: () => triggerLinkPopup(e, link)
                 }]
                 : [
                     {
                         label: 'Google',
-                        handler: () => triggerLinkPopup(event, `https://www.google.com/search?q=${encodeURIComponent(selectionText)}`)
+                        handler: () => triggerLinkPopup(e, `https://www.google.com/search?q=${encodeURIComponent(selectionText)}`)
                     },
                     {
                         label: 'Bing',
-                        handler: () => triggerLinkPopup(event, `https://www.bing.com/search?q=${encodeURIComponent(selectionText)}`)
+                        handler: () => triggerLinkPopup(e, `https://www.bing.com/search?q=${encodeURIComponent(selectionText)}`)
                     },
                     {
                         label: 'Baidu',
-                        handler: () => triggerLinkPopup(event, `https://www.baidu.com/s?wd=${encodeURIComponent(selectionText)}`)
+                        handler: () => triggerLinkPopup(e, `https://www.baidu.com/s?wd=${encodeURIComponent(selectionText)}`)
                     },
                     {
                         label: 'Yandex',
-                        handler: () => triggerLinkPopup(event, `https://yandex.com/search/?text=${encodeURIComponent(selectionText)}`)
+                        handler: () => triggerLinkPopup(e, `https://yandex.com/search/?text=${encodeURIComponent(selectionText)}`)
                     },
                     {
                         label: 'DuckduckGo',
-                        handler: () => triggerLinkPopup(event, `https://duckduckgo.com/?q=${encodeURIComponent(selectionText)}`)
+                        handler: () => triggerLinkPopup(e, `https://duckduckgo.com/?q=${encodeURIComponent(selectionText)}`)
                     },
                     {
                         label: 'Wikipedia',
-                        handler: () => triggerLinkPopup(event, `https://wikipedia.org/w/index.php?title=Special:Search&search=${encodeURIComponent(selectionText)}`)
+                        handler: () => triggerLinkPopup(e, `https://wikipedia.org/w/index.php?title=Special:Search&search=${encodeURIComponent(selectionText)}`)
                     },
                 ];
 
@@ -516,9 +533,9 @@ function addSearchTooltipsOnHover(event) {
             searchTooltips = null;
             searchTooltips = createTooltip(textRect.left, textRect.bottom, actions, 1500);
 
-            const checkSearchCursorInsideViewport = (event) => {
-                const x = event.clientX; // Get the cursor's X position
-                const y = event.clientY; // Get the cursor's Y position
+            const checkSearchCursorInsideViewport = (e) => {
+                const x = e.clientX; // Get the cursor's X position
+                const y = e.clientY; // Get the cursor's Y position
 
                 // Check if cursor is inside the viewport
                 const isInsideSearchViewport = (
@@ -613,14 +630,14 @@ function removeLinkFromCollection(url) {
 
 
 // Function to add link indicator when hovering over a link
-function changeCursorOnHover(event) {
-    if (event.target.tagName === 'A' || event.target.closest('a')) {
+function changeCursorOnHover(e) {
+    if (e.target.tagName === 'A' || e.target.closest('a')) {
 
-        const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
+        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
         const linkUrl = linkElement ? linkElement.href : null;
         if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
 
-        if (!document.body.contains(event.target)) {
+        if (!document.body.contains(e.target)) {
             return; // If the element is not in the DOM anymore, do nothing
         }
         if (linkIndicator) {
@@ -633,13 +650,13 @@ function changeCursorOnHover(event) {
 
         if (tooltip) tooltip.remove();
 
-        const linkRect = event.target.getBoundingClientRect(); // Get link's bounding box
-        linkIndicator = createCandleProgressBar(event.clientX - 20, event.clientY, 6000);
-        const checkCursorInside = (event) => {
-            const x = event.clientX; // Get the cursor's X position
-            const y = event.clientY; // Get the cursor's Y position
-            const sx = event.screenX; // Get the cursor's X position
-            const sy = event.screenY; // Get the cursor's Y position
+        const linkRect = e.target.getBoundingClientRect(); // Get link's bounding box
+        linkIndicator = createCandleProgressBar(e.clientX - 20, e.clientY, 6000);
+        const checkCursorInside = (e) => {
+            const x = e.clientX; // Get the cursor's X position
+            const y = e.clientY; // Get the cursor's Y position
+            const sx = e.screenX; // Get the cursor's X position
+            const sy = e.screenY; // Get the cursor's Y position
 
             // Check if cursor is inside the link's bounding box
             const isInsideLink = (
@@ -673,7 +690,7 @@ function changeCursorOnHover(event) {
         document.addEventListener('mousemove', checkCursorInside);
 
         // Clean up when mouse leaves the link
-        event.target.addEventListener('mouseout', function () {
+        e.target.addEventListener('mouseout', function () {
             if (linkIndicator) {
                 linkIndicator.remove();
             }
@@ -824,7 +841,7 @@ function handleMouseDown(e) {
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         
                 // Show progress bar for preview
-                previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 75, (holdToPreviewTimeout ?? 1500));
+                previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 50, (holdToPreviewTimeout ?? 1500));
         
                 setTimeout(() => {
                     clearTimeoutsAndProgressBars();

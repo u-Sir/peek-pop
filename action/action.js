@@ -1,14 +1,14 @@
-function handleLinkClick(event, data) {
-    event.preventDefault(); // Prevent the default link behavior
+function handleLinkClick(e, data) {
+    e.preventDefault(); // Prevent the default link behavior
 
-    const linkElement = event.target instanceof HTMLElement && (event.target.tagName === 'A' ? event.target : event.target.closest('a'));
+    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
 
     if (linkUrl) {
         const group = {
             linkUrl: linkUrl,
-            lastClientX: event.screenX,
-            lastClientY: event.screenY,
+            lastClientX: e.screenX,
+            lastClientY: e.screenY,
             width: window.screen.availWidth,
             height: window.screen.availHeight,
             top: window.screen.availTop,
@@ -24,7 +24,7 @@ function handleLinkClick(event, data) {
     }
 }
 
-function openAllAndClearCollection(event) {
+function openAllAndClearCollection(e) {
     chrome.storage.local.get(['collection'], (result) => {
         let collection = result.collection || []; // Ensure collection is an array
 
@@ -38,8 +38,8 @@ function openAllAndClearCollection(event) {
                     action: 'group',
                     links: collection[1].links, // Get the links from the second item
                     trigger: 'tooltips',
-                    lastClientX: event.clientX,
-                    lastClientY: event.clientY,
+                    lastClientX: e.clientX,
+                    lastClientY: e.clientY,
                     width: window.screen.availWidth,
                     height: window.screen.availHeight,
                     top: window.screen.availTop,
@@ -139,9 +139,9 @@ function loadLinks() {
 
             if (index === 1) {
                 // Create "Open all" link
-                a.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    openAllAndClearCollection(event);
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    openAllAndClearCollection(e);
                 });
                 a.textContent = chrome.i18n.getMessage('openAll');
                 linkContainer.appendChild(a);
@@ -150,8 +150,8 @@ function loadLinks() {
                 const clearLink = document.createElement('a');
                 clearLink.href = '#'; // Use a placeholder href for the link
                 clearLink.textContent = chrome.i18n.getMessage('clearAll');
-                clearLink.addEventListener('click', function (event) {
-                    event.preventDefault();
+                clearLink.addEventListener('click', function (e) {
+                    e.preventDefault();
                     // Remove all items except the first one
                     chrome.storage.local.get(['collection'], (result) => {
                         const collection = result.collection || [];
@@ -172,8 +172,8 @@ function loadLinks() {
                 linkContainer.appendChild(optionsLink); // Append the options link to the link container
             } else if (index > 1) {
                 // Attach the standard click handler to other items
-                a.addEventListener('click', function (event) {
-                    handleLinkClick(event, data);
+                a.addEventListener('click', function (e) {
+                    handleLinkClick(e, data);
                 });
                 linkContainer.appendChild(a); // Append the link to the link container
             }

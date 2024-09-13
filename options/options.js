@@ -94,8 +94,8 @@ function init() {
         document.getElementById('importFile').click();
     });
 
-    document.getElementById('importFile').addEventListener('change', (event) => {
-        const file = event.target.files[0];
+    document.getElementById('importFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
         if (file) {
             importSettings(file);
         }
@@ -720,9 +720,9 @@ async function importSettings(file) {
 function readFileAsJSON(file) {
     return new Promise((resolve, reject) => {
         const fileReader = new FileReader();
-        fileReader.onload = function (event) {
+        fileReader.onload = function (e) {
             try {
-                const json = JSON.parse(event.target.result);
+                const json = JSON.parse(e.target.result);
                 resolve(json);
             } catch (error) {
                 reject('Error parsing JSON file: ' + error);
