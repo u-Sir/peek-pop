@@ -293,25 +293,20 @@ function addTooltipsOnHover(e) {
             }
             
             .tooltip button {
-                background-color: #ffa742;
-                color: #fff;
-                border: none;
-                border-radius: 10px;
-                padding: 0;
-                line-height: 20px;
-                font-size: 20px;
-                cursor: pointer;
-                width: 20px;
-                height: 20px;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-    vertical-align: center; /* Ensures vertical alignment */
-        text-transform: none; /* Ensure text is not transformed */
-        box-sizing: border-box; /* Include padding and border in the element's total width and height */
-        margin: 0; /* Remove default margin if any */
-            }
+	            margin: 0;
+	            padding: 0;
+	            font-size: 20px;
+	            border: none;
+	            border-radius: 50%;
+	            background: #ffa742;
+	            color: white;
+	            width: 20px;
+	            height: 20px;
+	            transition: transform 2s;
+	            font-family: arial;
+	            line-height: 20px;
+
+}
             
             a[data-tooltip-added="true"]:hover + .tooltip {
                 display: block;
@@ -1305,7 +1300,11 @@ async function handleDragStart(e) {
             : null;
 
         if (data.imgSearchEnable) {
-            const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
+            const imgSearchEngineMap = { 
+                "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", 
+                "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", 
+                "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", 
+                "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
             if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
 
                 imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
