@@ -303,10 +303,14 @@ function addTooltipsOnHover(e) {
                 cursor: pointer;
                 width: 20px;
                 height: 20px;
-                display: flex;
+                display: inline-flex;
                 justify-content: center;
                 align-items: center;
                 text-align: center;
+    vertical-align: center; /* Ensures vertical alignment */
+        text-transform: none; /* Ensure text is not transformed */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        margin: 0; /* Remove default margin if any */
             }
             
             a[data-tooltip-added="true"]:hover + .tooltip {
@@ -322,13 +326,13 @@ function addTooltipsOnHover(e) {
             div.style.width = '100px';
             div.style.height = '100px';
             div.style.overflow = 'scroll';
-        
+
             document.body.appendChild(div);
-        
+
             const scrollbarWidth = div.offsetWidth - div.clientWidth;
-        
+
             document.body.removeChild(div);
-        
+
             return scrollbarWidth;
         };
 
@@ -379,13 +383,13 @@ function addTooltipsOnHover(e) {
                     top = textRect.top;
                     left = textRect.left + textRect.width;
                 }
-            } 
+            }
             // Handle positioning relative to an image if no text node
             else if (image) {
                 imageRect = image.getBoundingClientRect();
                 top = imageRect.top;
                 left = imageRect.left + imageRect.width;
-            } 
+            }
             // Default to positioning relative to the link element if no text or image
             else {
                 const linkRect = element.getBoundingClientRect();
@@ -655,8 +659,6 @@ function changeCursorOnHover(e) {
         const checkCursorInside = (e) => {
             const x = e.clientX; // Get the cursor's X position
             const y = e.clientY; // Get the cursor's Y position
-            const sx = e.screenX; // Get the cursor's X position
-            const sy = e.screenY; // Get the cursor's Y position
 
             // Check if cursor is inside the link's bounding box
             const isInsideLink = (
@@ -665,15 +667,8 @@ function changeCursorOnHover(e) {
                 y >= linkRect.top &&
                 y <= linkRect.bottom
             );
-            // Check if cursor is inside the viewport use screen cordination
-            const isInsideViewport = (
-                sx >= window.screenX &&
-                sx <= (window.screenX + window.innerWidth) &&
-                sy >= window.screenY &&
-                sy <= (window.screenY + window.innerHeight)
-            );
 
-            if (isInsideLink && isInsideViewport && linkIndicator) {
+            if (isInsideLink && linkIndicator) {
                 linkIndicator.style.top = `${y + 25}px`; // Update top position
                 linkIndicator.style.left = `${x - 20}px`; // Update left position
             } else {
@@ -822,10 +817,10 @@ function handleMouseDown(e) {
         if (data.holdToPreview) {
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
-            
+
             // Check for left mouse button click
             if (e.button !== 0) return;
-        
+
             // Check if the URL is valid and not a JavaScript link
             if (!linkUrl || (linkUrl && linkUrl.trim().startsWith('javascript:'))) {
                 isMouseDownOnLink = false;
@@ -839,14 +834,14 @@ function handleMouseDown(e) {
                 document.addEventListener('mouseup', handleHoldLink, true);
                 document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-        
+
                 // Show progress bar for preview
                 previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 50, (holdToPreviewTimeout ?? 1500));
-        
+
                 setTimeout(() => {
                     clearTimeoutsAndProgressBars();
                 }, (holdToPreviewTimeout ?? 1500));
-        
+
                 if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
                     e.preventDefault();
                     clearTimeoutsAndProgressBars();
@@ -866,7 +861,7 @@ function handleMouseDown(e) {
             document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
-        
+
         // Function to cancel hold-to-preview when mouse is moved
         function cancelHoldToPreviewOnMove() {
             isMouseDownOnLink = false;
@@ -875,7 +870,7 @@ function handleMouseDown(e) {
             document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
-        
+
         // Function to cancel hold-to-preview when dragging starts
         function cancelHoldToPreviewOnDrag() {
             isMouseDownOnLink = false;
@@ -884,7 +879,7 @@ function handleMouseDown(e) {
             document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
-        
+
 
         try {
             const message = data.closeWhenFocusedInitialWindow
