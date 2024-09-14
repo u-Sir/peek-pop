@@ -119,6 +119,7 @@ button:disabled {
 input[type="radio"],
 input[type="checkbox"] {
     margin-left: 0px;
+    margin-right: 8px;
 }
 
 input[type="range"] {
@@ -128,13 +129,13 @@ input[type="range"] {
 /* For labels following a radio button */
 input[type="radio"]+label {
     vertical-align: 16%;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 /* For labels following a checkbox */
 input[type="checkbox"]+label {
     vertical-align: 15%;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 /* Align only the modifiedKey label */
@@ -146,7 +147,7 @@ input[type="checkbox"]+label {
 
 .align-label-1 {
     margin-left: 0px;
-    margin-right: 10px;
+    margin-right: 8px;
     margin-bottom: 1px;
     vertical-align: middle;
     padding-bottom: 6px;
@@ -184,7 +185,6 @@ textarea {
     }
 
     .option {
-        background-color: #2c2c2c;
         color: #b0b0b0;
     }
 
