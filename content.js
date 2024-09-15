@@ -977,12 +977,12 @@ function handleDoubleClick(e) {
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
         const imageUrl = imageElement ? imageElement.src : null;
         if (data.doubleClickToSwitch && !imageUrl && !linkUrl) {
+            console.log(data.doubleClickToSwitch)
             hasPopupTriggered = true;
             isDoubleClick = true;
 
             previewMode = !previewMode;
             chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
-
 
         } else if (linkUrl) {
             if (data.doubleClickAsClick) {
@@ -990,6 +990,8 @@ function handleDoubleClick(e) {
                 isDoubleClick = true;
                 e.target.click();
             }
+        } else {
+            resetClickState();
         }
 
         // Remove the event listener after it triggers once
@@ -1003,7 +1005,6 @@ function handleDoubleClick(e) {
 }
 function resetClickState() {
     // Reset variables after click or double-click
-    skipNextClick = false;
     isDoubleClick = false;
     hasPopupTriggered = false;
     clearTimeout(clickTimeout);
