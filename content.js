@@ -977,12 +977,14 @@ function handleDoubleClick(e) {
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
         const imageUrl = imageElement ? imageElement.src : null;
         if (data.doubleClickToSwitch && !imageUrl && !linkUrl) {
-            console.log(data.doubleClickToSwitch)
             hasPopupTriggered = true;
             isDoubleClick = true;
 
-            previewMode = !previewMode;
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+            previewMode = !previewMode;            
+
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode }), () => {
+                resetClickState();
+            };
 
         } else if (linkUrl) {
             if (data.doubleClickAsClick) {
@@ -1001,6 +1003,8 @@ function handleDoubleClick(e) {
 
         // Reset click states after double-click
         // resetClickState();
+
+        isDoubleClick = false;
     });
 }
 function resetClickState() {
