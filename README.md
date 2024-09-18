@@ -1,4 +1,4 @@
-<div align="center"><img src="https://github.com/user-attachments/assets/676b0472-c114-4b97-aa25-602934734b29" alt="Peek Pop"  style="height: 150px; width: 150px;">
+<div align="center"><img src="https://github.com/user-attachments/assets/1f37a7a3-bb84-4df2-b4ce-3b5742179671" alt="Peek Pop"  style="height: 150px; width: 150px;">
 </div>
 <h1 align="center">Peek Pop</h1>
 
