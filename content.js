@@ -908,6 +908,7 @@ function handleHoldLink(e) {
         if (linkUrl) {
             e.preventDefault();
             e.stopPropagation();
+
             chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground'], data => {
                 const previewModePopupInBackground = data.previewModePopupInBackground || false;
                 const blurTime = data.blurTime || 1;
@@ -965,6 +966,7 @@ function handleDoubleClick(e) {
     clearTimeout(clickTimeout);
     e.preventDefault(); // Prevent the default double-click action
     e.stopPropagation(); // Stop the event from bubbling up
+
     chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable'], (data) => {
         if (!data.previewModeEnable) return;
         // Check if the double-clicked element is a link
@@ -1017,20 +1019,24 @@ function resetClickState() {
 function handleEvent(e) {
 
     if (e.type === 'dragstart') {
-        isDragging = true;
-        chrome.storage.local.get('modifiedKey', (data) => {
+        // isDragging = true;
+        chrome.storage.local.get(['modifiedKey', 'dragDirections'], (data) => {
             const modifiedKey = data.modifiedKey || 'None';
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             if (modifiedKey === 'None' || keyMap[modifiedKey]) {
                 handleDragStart(e);
+            } else {
+                isDragging = false;
             }
         });
     } else if (['dragover', 'drop'].includes(e.type) && isDragging) {
         preventEvent(e);
+
     } else if (e.type === 'click') {
 
         if (isDragging) {
             preventEvent(e);
+
             isDragging = false;
         } else if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)))) {
             // Prevent default action on the link immediately
@@ -1045,6 +1051,7 @@ function handleEvent(e) {
             if (previewMode && linkUrl && !isDoubleClick) {
                 e.preventDefault();
                 e.stopPropagation();
+
                 clickTimeout = setTimeout(() => {
                     handlePreviewMode(e);
 
@@ -1057,11 +1064,13 @@ function handleEvent(e) {
 
 
     } else if (e.type === 'mouseup' && isDragging && e.button === 0) {
+        isDragging = false;
         firstDownOnLinkAt = null;
         isMouseDownOnLink = false;
         isMouseDown = false;
         e.preventDefault();
         e.stopImmediatePropagation();
+
         setTimeout(resetDraggingState, 0);
     } else if (e.type === 'mouseup' && e.button === 0) {
         isDragging = false;
@@ -1085,6 +1094,7 @@ function handlePreviewMode(e) {
     if (linkUrl) {
         e.preventDefault();
         e.stopPropagation();
+
         chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground'], (data) => {
             const previewModePopupInBackground = data.previewModePopupInBackground || false;
             const blurTime = data.blurTime || 1;
@@ -1147,6 +1157,7 @@ function resetDraggingState() {
 async function preventEvent(e) {
     e.preventDefault();
     e.stopPropagation();
+
 }
 
 async function handleMouseUpWithProgressBar(e) {
@@ -1283,7 +1294,6 @@ async function handleDragStart(e) {
     let imageUrl = imageElement ? imageElement.src : null;
 
     if (linkUrl || selectionText || imageUrl) {
-        isDragging = true;
         const data = await loadUserConfigs(['imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport', 'popupInBackground']);
         const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
         const popupInBackground = data.popupInBackground || false;
@@ -1332,6 +1342,7 @@ async function handleDragStart(e) {
         const dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
 
         if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
+            isDragging = false;
             return;
         }
 
@@ -1361,6 +1372,7 @@ async function handleDragStart(e) {
 
                     if (dragDirections.includes(direction)) {
 
+                        isDragging = true;
 
                         if (linkIndicator) {
                             linkIndicator.remove();
@@ -1375,6 +1387,7 @@ async function handleDragStart(e) {
                         }
                         e.preventDefault();
                         e.stopImmediatePropagation();
+
                         addClickMask();
                         chrome.runtime.sendMessage({
                             linkUrl: finalLinkUrl,
@@ -1403,12 +1416,12 @@ async function handleDragStart(e) {
 
                         });
                     } else {
-                        // nothing
+                        isDragging = false;
                     }
 
 
                 } else {
-                    // do nothing
+                    isDragging = false;
                 }
 
 
@@ -1424,6 +1437,10 @@ async function handleDragStart(e) {
 
                 if (dragDirections.includes(direction)) {
 
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    isDragging = true;
+
                     if (linkIndicator) {
                         linkIndicator.remove();
                     }
@@ -1435,8 +1452,7 @@ async function handleDragStart(e) {
                         document.body.style.filter = `blur(${blurPx}px)`;
                         document.body.style.transition = `filter ${blurTime}s ease`;
                     }
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
+
                     addClickMask();
                     chrome.runtime.sendMessage({
                         linkUrl: finalLinkUrl,
@@ -1465,7 +1481,7 @@ async function handleDragStart(e) {
 
                     });
                 } else {
-                    // nothing
+                    isDragging = false;
                 }
             }
             // document.removeEventListener('dragend', onDragend, true);
@@ -2028,12 +2044,14 @@ function addClickMask() {
     mask.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
+
     });
 
     // Optional: Block other interactions like keypresses if needed
     mask.addEventListener('keydown', (e) => {
         e.stopPropagation();
         e.preventDefault();
+
     });
 }
 
