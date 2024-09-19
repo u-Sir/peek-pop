@@ -214,5 +214,8 @@
     },
     "holdToPreviewSettings": {
         "message": "Mantener"
+    },
+    "linkDisabledUrls": {
+        "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano."
     }
 }

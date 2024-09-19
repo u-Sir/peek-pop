@@ -27,6 +27,7 @@ let focusAt;
 let linkCollection;
 let currentHoveredLink = null; // Store reference to the current hovered link
 let clickModifiedKey = 'None';
+let linkDisabledUrls;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -72,7 +73,8 @@ const configs = {
     'collectionEnable': false,
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
-    'clickModifiedKey': 'None'
+    'clickModifiedKey': 'None',
+    'linkDisabledUrls': []
 };
 
 async function loadUserConfigs(keys = Object.keys(configs)) {
@@ -213,6 +215,11 @@ function addTooltipsOnHover(e) {
 
     if (!linkElement) return;
 
+
+    const linkUrl = linkElement ? linkElement.href : null;
+    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+    
     // Check if tooltip already added
     if (linkElement.dataset.tooltipAdded === 'true') return;
 
@@ -784,6 +791,11 @@ function handleMouseDown(e) {
         const modifiedKey = data.modifiedKey || 'None';
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
         const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
+        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+        const linkUrl = linkElement ? linkElement.href : null;
+        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+        if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
         if (modifiedKey === 'None' || keyMap[modifiedKey]) {
             const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
             events.forEach(event => document.addEventListener(event, handleEvent, true));
@@ -900,6 +912,8 @@ function handleHoldLink(e) {
 
     const linkUrl = linkElement ? linkElement.href : null;
     if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
     isMouseDownOnLink = true;
     if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
         hasPopupTriggered = true;
@@ -964,18 +978,18 @@ function handleDoubleClick(e) {
     isDoubleClick = true;
     // Prevent the single-click action from triggering
     clearTimeout(clickTimeout);
+
+    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+    const linkUrl = linkElement ? linkElement.href : null;
+    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
     e.preventDefault(); // Prevent the default double-click action
     e.stopPropagation(); // Stop the event from bubbling up
 
     chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable'], (data) => {
         if (!data.previewModeEnable) return;
         // Check if the double-clicked element is a link
-
-        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-        const linkUrl = linkElement ? linkElement.href : null;
-        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-
-
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
         const imageUrl = imageElement ? imageElement.src : null;
         if (data.doubleClickToSwitch && !imageUrl && !linkUrl) {
@@ -1048,6 +1062,8 @@ function handleEvent(e) {
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
             if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+            if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
             if (previewMode && linkUrl && !isDoubleClick) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1204,6 +1220,8 @@ async function handleMouseUpWithProgressBar(e) {
                     : null);
 
             if (!finalLinkUrl) return;
+            if (isUrlDisabled(finalLinkUrl, linkDisabledUrls)) return;
+
 
             // Clear any existing timeout, interval, and progress bar
             clearTimeoutsAndProgressBars();
@@ -1521,7 +1539,7 @@ function isUrlDisabled(url, disabledUrls) {
         }
         // Check if the pattern is plain text
         else {
-            return url.includes(disabledUrl);
+            return url === disabledUrl;
         }
     });
 }
@@ -1543,9 +1561,11 @@ async function checkUrlAndToggleListeners() {
         'holdToPreview',
         'collectionEnable',
         'holdToPreviewTimeout',
-        'clickModifiedKey'
+        'clickModifiedKey',
+        'linkDisabledUrls'
     ]);
     const disabledUrls = data.disabledUrls || [];
+    linkDisabledUrls = data.linkDisabledUrls || [];
     holdToPreviewTimeout = data.holdToPreviewTimeout || 1500;
     const currentUrl = window.location.href;
 
@@ -1616,7 +1636,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.searchTooltipsEnable ||
         changes.collectionEnable ||
         changes.holdToPreview ||
-        changes.clickModifiedKey
+        changes.clickModifiedKey ||
+        changes.linkDisabledUrls 
     )) {
         await checkUrlAndToggleListeners();
     }
@@ -1737,17 +1758,25 @@ async function handleMouseOver(e) {
     const data = await loadUserConfigs(['linkHint', 'hoverImgSearchEnable', 'blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverImgSupport', 'hoverModifiedKey', 'hoverDisabledUrls']);
     const linkHint = data.linkHint || false;
     const hoverTimeout = data.hoverTimeout || 0;
-
-    if (linkHint && parseInt(hoverTimeout, 10) === 0) {
-        changeCursorOnHover(e);
-
-    }
     // do nothing when is in blacklist
     const currentUrl = window.location.href;
     const hoverDisabledUrls = data.hoverDisabledUrls || [];
     if (isUrlDisabled(currentUrl, hoverDisabledUrls)) {
         return;
     }
+
+    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+    const linkUrl = linkElement ? linkElement.href : null;
+    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) {
+        return;
+    }
+    
+    if (linkHint && parseInt(hoverTimeout, 10) === 0) {
+        changeCursorOnHover(e);
+
+    }
+
 
     const hoverModifiedKey = data.hoverModifiedKey || 'None';
     const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
@@ -1905,6 +1934,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
 
             if (!finalLinkUrl) return;
             if (finalLinkUrl.trim().startsWith('javascript:')) return;
+            if (isUrlDisabled(finalLinkUrl, linkDisabledUrls)) return;
 
             if (linkIndicator) {
                 linkIndicator.remove();

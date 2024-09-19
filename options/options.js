@@ -45,7 +45,8 @@ const configs = {
     'collectionEnable': false,
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
-    'clickModifiedKey': 'None'
+    'clickModifiedKey': 'None',
+    'linkDisabledUrls': []
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -285,6 +286,7 @@ function setupPage(userConfigs) {
 
     // Initialize textarea and sliders
     initializeTextarea('disabledUrls', userConfigs);
+    initializeTextarea('linkDisabledUrls', userConfigs);
     initializeTextarea('hoverDisabledUrls', userConfigs);
     initializeTextarea('previewModeDisabledUrls', userConfigs);
 

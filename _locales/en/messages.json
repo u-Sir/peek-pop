@@ -214,5 +214,8 @@
     },
     "holdToPreviewSettings": {
         "message": "Hold"
+    },  
+    "linkDisabledUrls": {
+        "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
     }
 } 

@@ -214,5 +214,8 @@
     },
     "holdToPreviewSettings": {
         "message": "长按"
+    },  
+    "linkDisabledUrls": {
+        "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
     }
 }

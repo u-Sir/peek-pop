@@ -44,7 +44,8 @@ const configs = {
     'collectionEnable': false,
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
-    'clickModifiedKey': 'None'
+    'clickModifiedKey': 'None',
+    'linkDisabledUrls': []
 };
 
 // Load user configurations from storage
