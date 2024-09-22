@@ -1,3 +1,14 @@
+0.0.27
+- Change name to "Peek Pop"
+- New feature: collection.
+- New feature: show search tooltips for selected text.
+- New trigger: clicking on the link to preview.
+- New option to search by picture (Google, Bing, Baidu, Yandex only)。
+- New option to remember popup window size and positon for each domain.
+- New option to  show link indicator when hovering.
+- New feature: Link blacklist.
+- Remove popup in background on Firefox.
+
 0.0.26
 - new options page
 - now supports hover to preview.
