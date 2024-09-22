@@ -942,7 +942,7 @@ function handleHoldLink(e) {
                 const blurPx = parseFloat(data.blurPx || 3);
 
                 // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-                let finalLinkUrl = linkUrl || (data.previewModeImgSupport ? imageUrl : null);
+                let finalLinkUrl = linkUrl;
 
                 if (!finalLinkUrl) return;
 
@@ -1171,7 +1171,7 @@ function handlePreviewMode(e) {
 
 
             // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-            let finalLinkUrl = linkUrl || (data.previewModeImgSupport ? imageUrl : null);
+            let finalLinkUrl = linkUrl;
 
             if (!finalLinkUrl) return;
 
