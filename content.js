@@ -941,7 +941,7 @@ function handleHoldLink(e) {
             e.preventDefault();
             e.stopPropagation();
 
-            chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground'], data => {
+            chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime', 'previewModePopupInBackground'], (data) => {
                 const previewModePopupInBackground = data.previewModePopupInBackground || false;
                 const blurTime = data.blurTime || 1;
                 const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
