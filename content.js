@@ -852,7 +852,15 @@ function handleMouseDown(e) {
                 document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 
-                // Show progress bar for preview
+                document.addEventListener('click', (e) => {
+                         if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)))) {
+                            // Prevent default action on the link immediately
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                }, {once: true});
+
+		// Show progress bar for preview
                 previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 50, (holdToPreviewTimeout ?? 1500));
 
                 setTimeout(() => {
