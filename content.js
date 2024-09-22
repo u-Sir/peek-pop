@@ -28,6 +28,7 @@ let linkCollection;
 let currentHoveredLink = null; // Store reference to the current hovered link
 let clickModifiedKey = 'None';
 let linkDisabledUrls;
+let theme;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -219,7 +220,7 @@ function addTooltipsOnHover(e) {
     const linkUrl = linkElement ? linkElement.href : null;
     if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-    
+
     // Check if tooltip already added
     if (linkElement.dataset.tooltipAdded === 'true') return;
 
@@ -234,35 +235,11 @@ function addTooltipsOnHover(e) {
             ? data.collection
             : [
                 {
-                    label: '+',
-                    handler: () => {
-                        addLinkToCollection(linkElement.href, linkElement.title || linkElement.textContent);
-                    }
+                    label: '+'
                 },
                 {
                     label: '↗️',
-                    links: [],
-                    handler: function () {
-                        if (this.links && this.links.length > 0) {
-                            const group = {
-                                action: 'group',
-                                links: this.links,
-                                trigger: 'tooltips',
-                                lastClientX: e.clientX,
-                                lastClientY: e.clientY,
-                                width: window.screen.availWidth,
-                                height: window.screen.availHeight,
-                                top: window.screen.availTop,
-                                left: window.screen.availLeft
-                            };
-
-                            chrome.runtime.sendMessage(group, () => {
-                                // Remove all items from the collection except for the '+' item
-                                collection = collection.filter(item => item.label === '+');
-                                chrome.storage.local.set({ collection: collection });
-                            });
-                        }
-                    }
+                    links: []
                 }
             ];
 
@@ -275,7 +252,7 @@ function addTooltipsOnHover(e) {
         if (firstItem) {
             const button = document.createElement('button');
             button.textContent = firstItem.label;
-            button.onclick = firstItem.handler || (() => {
+            button.onclick = (() => {
                 addLinkToCollection(linkElement.href, linkElement.title || linkElement.textContent);
             });
             tooltipElement.appendChild(button);
@@ -416,29 +393,58 @@ function addTooltipsOnHover(e) {
             tooltipElement.style.left = `${left}px`;
         };
 
-        // Function to get the text nodes and handle inline images
         const getTextNodesWithImages = (element) => {
             if (!element) return { textNode: null, image: null };
+
             const nodes = Array.from(element.childNodes);
             let textNode = null;
             let image = null;
 
             for (const node of nodes) {
                 if (node.nodeType === Node.ELEMENT_NODE) {
+                    // Check if the element contains any visible, non-whitespace text
+                    const textContent = node.textContent.trim();
+                    if (textContent) {
+                        return { textNode: node, image: null }; // Return the first element with non-empty text
+                    }
+
+                    // If it's an image, store it
                     if (node.tagName === 'IMG') {
                         image = node;
                     } else {
+                        // Recursively check inside child elements
                         const result = getTextNodesWithImages(node);
                         if (result.textNode) textNode = result.textNode;
                         if (result.image) image = result.image;
                     }
                 } else if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                    // If it's a text node with content, store it
                     textNode = node;
+                }
+            }
+
+            // Handling case where text is after the image
+            if (textNode && image) {
+                let currentNode = textNode;
+                let foundImage = false;
+
+                while (currentNode.previousSibling) {
+                    currentNode = currentNode.previousSibling;
+                    if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.tagName === 'IMG') {
+                        foundImage = true;
+                        break;
+                    }
+                }
+
+                if (foundImage) {
+                    // Ignore the image if text comes after
+                    image = null;
                 }
             }
 
             return { textNode, image };
         };
+
 
         const { textNode, image } = getTextNodesWithImages(linkElement);
 
@@ -604,10 +610,7 @@ function addLinkToCollection(url, label) {
     if (!isLinkInCollection(url)) {
         const newItem = {
             label: label || url, // Use the link's title as label, or the URL if title is unavailable
-            url: url,
-            handler: () => {
-                removeLinkFromCollection(url); // Remove the link on click
-            }
+            url: url
         };
 
         // Add the new link to the collection
@@ -818,7 +821,14 @@ function handleMouseDown(e) {
                 previewMode = false;
             }
 
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+            // In popup.js or content.js
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                theme = 'dark';
+            } else {
+                theme = 'light';
+            }
+
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         }
 
         if (data.holdToPreview) {
@@ -996,9 +1006,16 @@ function handleDoubleClick(e) {
             hasPopupTriggered = true;
             isDoubleClick = true;
 
-            previewMode = !previewMode;            
+            previewMode = !previewMode;
 
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode }), () => {
+            // In popup.js or content.js
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                theme = 'dark';
+            } else {
+                theme = 'light';
+            }
+
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme }), () => {
                 resetClickState();
             };
 
@@ -1015,8 +1032,15 @@ function handleDoubleClick(e) {
         // Remove the event listener after it triggers once
         document.removeEventListener('dblclick', handleDoubleClick, true);
         // isDoubleClick = false;
-        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
+        // In popup.js or content.js
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+        } else {
+            theme = 'light';
+        }
+
+        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         // Reset click states after double-click
         // resetClickState();
 
@@ -1073,10 +1097,25 @@ function handleEvent(e) {
 
                 }, 250);
             }
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
-        }
-        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
+            // In popup.js or content.js
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                theme = 'dark';
+            } else {
+                theme = 'light';
+            }
+
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+        }
+
+        // In popup.js or content.js
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+        } else {
+            theme = 'light';
+        }
+
+        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 
 
     } else if (e.type === 'mouseup' && isDragging && e.button === 0) {
@@ -1095,8 +1134,15 @@ function handleEvent(e) {
         addSearchTooltipsOnHover(e);
 
     }
-    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
+    // In popup.js or content.js
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        theme = 'dark';
+    } else {
+        theme = 'light';
+    }
+
+    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 }
 
 function handlePreviewMode(e) {
@@ -1333,11 +1379,12 @@ async function handleDragStart(e) {
             : null;
 
         if (data.imgSearchEnable) {
-            const imgSearchEngineMap = { 
-                "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", 
-                "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", 
-                "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", 
-                "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
+            const imgSearchEngineMap = {
+                "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
+                "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
+                "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
+                "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
+            };
             if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
 
                 imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
@@ -1550,7 +1597,15 @@ function isUrlDisabled(url, disabledUrls) {
 
 async function checkUrlAndToggleListeners() {
     hasPopupTriggered = false;
-    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
+    // In popup.js or content.js
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        theme = 'dark';
+    } else {
+        theme = 'light';
+    }
+
+    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 
     const data = await loadUserConfigs([
         'disabledUrls',
@@ -1591,8 +1646,15 @@ async function checkUrlAndToggleListeners() {
         previewMode = data.previewMode;
     }
 
-    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
 
+    // In popup.js or content.js
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        theme = 'dark';
+    } else {
+        theme = 'light';
+    }
+
+    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
 
     if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
@@ -1637,7 +1699,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.collectionEnable ||
         changes.holdToPreview ||
         changes.clickModifiedKey ||
-        changes.linkDisabledUrls 
+        changes.linkDisabledUrls
     )) {
         await checkUrlAndToggleListeners();
     }
@@ -1683,7 +1745,15 @@ window.addEventListener('focus', async () => {
     hoverInitialMouseX = null;
     hoverInitialMouseY = null;
     try {
-        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode });
+
+        // In popup.js or content.js
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+        } else {
+            theme = 'light';
+        }
+
+        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
         document.addEventListener('mouseover', handleMouseOver, true);
         const message = data.closeWhenFocusedInitialWindow
@@ -1771,7 +1841,7 @@ async function handleMouseOver(e) {
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) {
         return;
     }
-    
+
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
         changeCursorOnHover(e);
 

@@ -187,9 +187,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                                 height: currentWindow.height
                                             };
 
-                                            ({ left: currentWindow.left, top: currentWindow.top, width: currentWindow.width, height: currentWindow.height } = popupWindowsInfo.savedPositionAndSize);
-
-
                                             // Handle domain-specific saving
                                             if (userConfigs.rememberPopupSizeAndPositionForDomain && sender && sender.tab && sender.tab.url) {
                                                 try {
@@ -319,39 +316,67 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 if (request.action === 'updateIcon') {
                     chrome.storage.local.get(['previewModeEnable'], userConfigs => {
-                        if (userConfigs.previewModeEnable) {
-                            if (request.previewMode !== undefined && !request.previewMode) {
+                        chrome.windows.getCurrent({ populate: true }, (window) => {
+                            if (request.theme === 'dark') {
+                                if (userConfigs.previewModeEnable) {
+                                    if (request.previewMode !== undefined && !request.previewMode) {
 
-                                chrome.action.setIcon({
-                                    path: {
-                                        "128": "action/inclickmode.png"
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/non-inclickmode-dark.png"
+                                            }
+                                        });
+                                    } else {
+
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/inclickmode-dark.png"
+                                            }
+                                        });
                                     }
-                                });
-                            } else {
+                                } else {
 
-                                chrome.action.setIcon({
-                                    path: {
-                                        "128": "action/icon_with_border-128.png"
-                                    }
-                                });
-                            }
-                        } else {
+                                    chrome.browserAction.setIcon({
+                                        path: {
+                                            "128": "action/icon-dark.png"
+                                        }
+                                    });
 
-                            chrome.action.setIcon({
-                                path: {
-                                    "128": "action/icon.png"
                                 }
-                            });
+                            } else {
+                                if (userConfigs.previewModeEnable) {
+                                    if (request.previewMode !== undefined && !request.previewMode) {
 
-                        }
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/non-inclickmode.png"
+                                            }
+                                        });
+                                    } else {
+
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/inclickmode.png"
+                                            }
+                                        });
+                                    }
+                                } else {
+
+                                    chrome.browserAction.setIcon({
+                                        path: {
+                                            "128": "action/icon.png"
+                                        }
+                                    });
+
+                                }
+                            }
+                        });
+
                     });
 
 
                     sendResponse({ status: 'Icon update handled' });
                 }
-
-
-
 
                 if (request.action === 'sendPageBack') {
                     loadUserConfigs().then(userConfigs => {
@@ -659,7 +684,36 @@ function isValidUrl(url) {
 
 // Function to handle disabled URL checking
 function isUrlDisabled(url, disabledUrls) {
-    return disabledUrls.some(disabledUrl => url.includes(disabledUrl));
+    return disabledUrls.some(disabledUrl => {
+        // Check if the pattern is a regex
+        if (disabledUrl.startsWith('/') && disabledUrl.endsWith('/')) {
+            const regexPattern = disabledUrl.slice(1, -1); // Remove leading and trailing slashes
+            try {
+                const regex = new RegExp(regexPattern);
+                return regex.test(url);
+            } catch (e) {
+                console.error('Invalid regex pattern:', regexPattern);
+                return false;
+            }
+        }
+        // Check if the pattern is a wildcard pattern
+        else if (disabledUrl.includes('*')) {
+            const regexPattern = disabledUrl
+                .replace(/\\./g, '\\\\.') // Escape dots
+                .replace(/\*/g, '.*'); // Replace wildcards with regex equivalent
+            try {
+                const regex = new RegExp(`^${regexPattern}$`);
+                return regex.test(url);
+            } catch (e) {
+                console.error('Invalid wildcard pattern:', regexPattern);
+                return false;
+            }
+        }
+        // Check if the pattern is plain text
+        else {
+            return url === disabledUrl;
+        }
+    });
 }
 
 function addBoundsChangeListener(linkUrl, windowId, originWindowId) {
@@ -827,21 +881,45 @@ chrome.commands.onCommand.addListener((command) => {
             const newValue = !currentValue;
 
             chrome.storage.local.set({ previewModeEnable: newValue }, () => {
-                if (newValue) {
 
-                    chrome.action.setIcon({
-                        path: {
-                            "128": "action/icon_with_border-128.png"
-                        }
-                    });
+                chrome.windows.getCurrent({ populate: true }, (window) => {
+                    if (request.theme === 'dark') {
 
-                } else {
-                    chrome.action.setIcon({
-                        path: {
-                            "128": "action/icon.png"
+                        if (newValue) {
+
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/inclickmode-dark.png"
+                                }
+                            });
+
+                        } else {
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/icon-dark.png"
+                                }
+                            });
                         }
-                    });
-                }
+                    } else {
+
+                        if (newValue) {
+
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/inclickmode.png"
+                                }
+                            });
+
+                        } else {
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/icon.png"
+                                }
+                            });
+                        }
+                    }
+                });
+
             });
         });
     }
