@@ -858,7 +858,7 @@ function handleMouseDown(e) {
                             e.preventDefault();
                             e.stopPropagation();
                         }
-                }, {once: true});
+                }, true);
 
 		// Show progress bar for preview
                 previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 50, (holdToPreviewTimeout ?? 1500));
