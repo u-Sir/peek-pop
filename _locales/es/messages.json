@@ -3,10 +3,10 @@
         "message": "Abrir enlace en ventana emergente"
     },
     "extensionName": {
-        "message": "Drag to Preview"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Arrastra para previsualizar enlaces o buscar texto seleccionado"
+        "message": "Previsualiza enlaces, imágenes o busca texto seleccionado en una ventana emergente."
     },
     "popupHeight": {
         "message": "Altura emergente (px)"
@@ -107,17 +107,11 @@
     "urlCheck": {
         "message": "Abrir directamente si lo seleccionado es una URL"
     },
-    "popupInBackground": {
-        "message": "Popup en segundo plano"
-    },
     "doubleTapKeyToSendPageBack": {
         "message": "Doble toque en una tecla específica para enviar la página a la ventana original (Por favor, verifica si funciona correctamente.)"
     },
     "hoverSettings": {
         "message": "Configuración de hover"
-    },
-    "hoverPopupInBackground": {
-        "message": "Popup en segundo plano"
     },
     "hoverImgSupport": {
         "message": "Soporte de imagen"
@@ -138,12 +132,84 @@
         "message": "Configuraciones"
     },
     "importButton": {
-        "message": "Importar configuraciones"
+        "message": "Importar"
     },
     "exportButton": {
-        "message": "Exportar configuraciones"
+        "message": "Exportar"
     },
     "dragStartEnable": {
         "message": "El arrastre se activa inmediatamente sin esperar la liberación. (No se admite la detección de dirección)"
+    },
+    "previewModeSettings": {
+        "message": "Clic"
+    },
+    "previewModeDisabledUrls": {
+        "message": "Deshabilitar en estas URL mediante texto plano, regex, comodines, uno por línea."
+    },
+    "previewModeEnable": {
+        "message": "Hacer clic en el enlace para previsualizar (deshabilitar - ignorar las opciones a continuación)"
+    },
+    "imgSearchEnable": {
+        "message": "Reemplazar Previsualización con Búsqueda de Imágenes."
+    },
+    "hoverImgSearchEnable": {
+        "message": "Reemplazar Previsualización con Búsqueda de Imágenes."
+    },
+    "doubleClickToSwitch": {
+        "message": "Doble clic fuera de imágenes/enlaces para alternar. El estado se muestra en el ícono de la extensión en la barra de herramientas."
+    },
+    "doubleClickAsClick": {
+        "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces."
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "Popup dinámico: recuerda el último tamaño y posición de la ventana emergente para cada dominio."
+    },
+    "note": {
+        "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón."
+    },
+    "linkHint": {
+        "message": "Indicador de enlace."
+    },
+    "searchTooltipsEnable": {
+        "message": "Tooltips para el texto seleccionado."
+    },
+    "collectionEnable": {
+        "message": "Desliza el cursor para mostrar el botón para agregar el enlace a tu colección. Presiona Ctrl/Command + U o haz clic en el ícono del complemento para ver tu colección."
+    },
+    "linkSettings": {
+        "message": "Enlace"
+    },
+    "empty": {
+        "message": "No hay nada aquí."
+    },
+    "openAll": {
+        "message": "Abrir todos los enlaces ↗️"
+    },
+    "clearAll": {
+        "message": "Eliminar todos los enlaces"
+    },
+    "options": {
+        "message": "➡️ Página de opciones"
+    },
+    "popAction": {
+        "message": "Abrir el icono emergente del complemento"
+    },
+    "clickModeToggle": {
+        "message": "Alternar modo de clic"
+    },
+    "collectionTimeout": {
+        "message": "Tiempo mínimo en ms: "
+    },
+    "holdToPreview": {
+        "message": "Mantén presionado el botón izquierdo del mouse para previsualizar"
+    },
+    "holdToPreviewTimeout": {
+        "message": "Mantén presionado al menos en ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "Mantener"
+    },
+    "linkDisabledUrls": {
+        "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano."
     }
 }

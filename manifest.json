@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "default_locale": "en",
   "icons": {
     "48": "icon-48.png",
@@ -27,24 +27,28 @@
     "cookies",
     "*://*/*"
   ],
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+U",
+        "mac": "Command+U"
+      },
+      "description": "__MSG_popAction__"
+    },
+    "clickModeToggle": {
+      "suggested_key": {
+        "default": "Alt+U",
+        "mac": "Alt+U"
+      },
+      "description": "__MSG_clickModeToggle__"
+    }
+  },
   "browser_action": {
     "default_icon": {
       "16": "icon-16.png",
       "32": "icon-32.png"
     },
-    "default_popup": "options/options.html",
-    "theme_icons": [
-      {
-        "light": "icon-dark-16.png",
-        "dark": "icon-16.png",
-        "size": 16
-      },
-      {
-        "light": "icon-dark-32.png",
-        "dark": "icon-32.png",
-        "size": 32
-      }
-    ]
+    "default_popup": "action/action.html"
   },
   "options_ui": {
     "page": "options/options.html",

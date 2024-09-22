@@ -14,10 +14,13 @@
 .tab-link {
     padding: 10px 0;
     /* Adjust padding if needed */
-    width: 33.33%;
+    width: 25%;
     cursor: pointer;
     background: #f9f9f9;
-    border: none;
+
+    border: 0px solid #ccc;
+    border-radius: 15px 15px 15px 15px; /* Top-left and top-right corners rounded */
+    transition: background-color 0.3s ease;
     margin-right: 0px;
     text-align: center;
     /* Center-align the text inside each tab link */
@@ -33,7 +36,7 @@
     padding: 20px;
     border: none;
     background: #fff;
-    width: 650px;
+    width: 600px;
 }
 
 .tab-content.active {
@@ -116,6 +119,7 @@ button:disabled {
 input[type="radio"],
 input[type="checkbox"] {
     margin-left: 0px;
+    margin-right: 8px;
 }
 
 input[type="range"] {
@@ -125,13 +129,12 @@ input[type="range"] {
 /* For labels following a radio button */
 input[type="radio"]+label {
     vertical-align: 4%;
-    margin-right: 10px;
+    margin-right:10px;
 }
 
 /* For labels following a checkbox */
 input[type="checkbox"]+label {
     vertical-align: 4%;
-    margin-left: 4px;
     margin-right: 20px;
 }
 
@@ -158,6 +161,10 @@ textarea {
     min-width: 40%;
 }
 
+input[type="number"] {
+    min-width: 5%;
+}
+
 textarea {
     min-width: 500px;
     width: 100%;
@@ -178,7 +185,6 @@ textarea {
     }
 
     .option {
-        background-color: #2c2c2c;
         color: #b0b0b0;
     }
 

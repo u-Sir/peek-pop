@@ -20,14 +20,29 @@ const configs = {
     'imgSupport': false,
     'hoverTimeout': 0,
     'urlCheck': true,
-    'popupInBackground': false,
     'doubleTapKeyToSendPageBack': 'None',
     'hoverDisabledUrls': [],
     'hoverImgSupport': false,
-    'hoverPopupInBackground': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
     'hoverWindowType': 'popup',
+    'previewModeDisabledUrls': [],
+    'previewModeWindowType': 'popup',
+    'previewModeEnable': false,
+    'imgSearchEnable': false,
+    'hoverImgSearchEnable': false,
+    'doubleClickToSwitch': false,
+    'doubleClickAsClick': false,
+    'rememberPopupSizeAndPositionForDomain': false,
+    'isFirefox': false,
+    'linkHint': false,
+    'collection': [],
+    'searchTooltipsEnable': false,
+    'collectionEnable': false,
+    'holdToPreview': false,
+    'holdToPreviewTimeout': 1500,
+    'clickModifiedKey': 'None',
+    'linkDisabledUrls': [],
     'enableContainerIdentify': true,
     'dragStartEnable': false
 };
@@ -58,11 +73,29 @@ async function saveConfig(key, value) {
 // Initialize the extension
 chrome.runtime.onInstalled.addListener(() => {
     loadUserConfigs().then(userConfigs => {
-        const keysToSave = Object.keys(configs).filter(key => userConfigs[key] === undefined);
-        Promise.all(keysToSave.map(key => saveConfig(key, configs[key])))
-            .catch(error => console.error('Error during installation setup:', error));
+        const setBrowserInfo = new Promise((resolve, reject) => {
+            try {
+                chrome.runtime.getBrowserInfo((browserInfo) => {
+                    if (browserInfo.name === 'Firefox') {
+                        userConfigs['isFirefox'] = true;
+                    } else {
+                        userConfigs['isFirefox'] = false;
+                    }
+                    resolve();
+                });
+            } catch (error) {
+                userConfigs['isFirefox'] = false;
+                resolve();
+            }
+        });
+
+        setBrowserInfo.then(() => {
+            const keysToSave = Object.keys(configs).filter(key => userConfigs[key] === undefined);
+            return Promise.all(keysToSave.map(key => saveConfig(key, configs[key])));
+        }).catch(error => console.error('Error during installation setup:', error));
     });
 });
+
 
 // Handle incoming messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -127,14 +160,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     }, () => {
                                         if (chrome.runtime.lastError) {
                                             userConfigs.contextItemCreated = true;
-                                            chrome.storage.local.set({ contextItemCreated: true }, () => {
-                                                // console.log('Context menu created and contextItemCreated updated to true' + Date.now());
-                                            });
+                                            chrome.storage.local.set({ contextItemCreated: true });
                                         } else {
                                             userConfigs.contextItemCreated = true;
-                                            chrome.storage.local.set({ contextItemCreated: true }, () => {
-                                                // console.log('Context menu created and contextItemCreated updated to true' + Date.now());
-                                            });
+                                            chrome.storage.local.set({ contextItemCreated: true });
                                         }
                                     });
                                 }
@@ -157,21 +186,56 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                                 height: currentWindow.height
                                             };
 
-                                            popupWindowsInfo.savedPositionAndSize = {
-                                                top: currentWindow.top,
-                                                left: currentWindow.left,
-                                                width: currentWindow.width,
-                                                height: currentWindow.height
-                                            };
 
+
+                                            // Handle domain-specific saving
+                                            if (userConfigs.rememberPopupSizeAndPositionForDomain && sender && sender.tab && sender.tab.url) {
+                                                try {
+                                                    const domain = new URL(sender.tab.url).hostname;
+                                                    if (!popupWindowsInfo['savedPositionAndSize']) {
+                                                        popupWindowsInfo['savedPositionAndSize'] = {};
+                                                    }
+
+
+                                                    if (popupWindowsInfo.savedPositionAndSize) {
+                                                        popupWindowsInfo.savedPositionAndSize.left = currentWindow.left;
+                                                        popupWindowsInfo.savedPositionAndSize.top = currentWindow.top;
+                                                        popupWindowsInfo.savedPositionAndSize.width = currentWindow.width;
+                                                        popupWindowsInfo.savedPositionAndSize.height = currentWindow.height;
+
+                                                    } else {
+                                                        popupWindowsInfo.savedPositionAndSize = {
+                                                            top: currentWindow.top,
+                                                            left: currentWindow.left,
+                                                            width: currentWindow.width,
+                                                            height: currentWindow.height
+                                                        };
+                                                    }
+
+                                                    // Ensure domain-specific object exists
+                                                    if (!popupWindowsInfo['savedPositionAndSize'][domain]) {
+                                                        popupWindowsInfo['savedPositionAndSize'][domain] = {};
+                                                    }
+                                                    // Store the position and size under the domain
+                                                    // Update or add the domain-specific position and size
+                                                    popupWindowsInfo.savedPositionAndSize[domain] = {
+                                                        top: currentWindow.top,
+                                                        left: currentWindow.left,
+                                                        width: currentWindow.width,
+                                                        height: currentWindow.height
+                                                    };
+                                                } catch (error) {
+                                                    console.error('Invalid URL for domain extraction:', error);
+                                                }
+                                            }
 
                                             chrome.storage.local.set({ popupWindowsInfo }, () => {
-                                                //addBoundsChangeListener(currentWindow.id, originWindowId);
+
+                                                // addBoundsChangeListener(sender.tab.url, currentWindow.id, originWindowId);
                                                 chrome.windows.onRemoved.addListener(windowRemovedListener);
                                             });
                                         }
                                     }
-                                
                                 }
                             } else {
                                 // console.log('not popup window, do nothing')
@@ -198,11 +262,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 }
                             });
                             if (result.contextItemCreated) {
-                                chrome.contextMenus.remove('sendPageBack');
-                                result.contextItemCreated = false;
-                                chrome.storage.local.set({ contextItemCreated: false }, () => {
-                                    // console.log('Context menu created and contextItemCreated updated to false');
+                                chrome.contextMenus.remove('sendPageBack', () => {
+                                    if (chrome.runtime.lastError) {
+                                        // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                    } else {
+                                        // console.log("Context menu 'sendPageBack' removed successfully.");
+                                    }
                                 });
+
+                                result.contextItemCreated = false;
+                                chrome.storage.local.set({ contextItemCreated: false });
                             }
                         }
 
@@ -218,22 +287,34 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             return parseInt(windowId) === currentWindow.id;
                         });
                         if (isCurrentWindowOriginal) {
-                            // console.log('start check:' + isCurrentWindowOriginal)
 
-                            const popupsToRemove = Object.keys(popupWindowsInfo[currentWindow.id] || {});
+                            let popupsToRemove = Object.keys(popupWindowsInfo[currentWindow.id] || {});
+
 
                             chrome.windows.getAll({ populate: true }, windows => {
                                 windows.forEach(window => {
                                     if (popupsToRemove.includes(window.id.toString())) {
-                                        chrome.windows.remove(window.id);
+                                        chrome.windows.remove(window.id, () => {
+                                            if (chrome.runtime.lastError) {
+                                                // console.error("Error removing window: ", chrome.runtime.lastError.message);
+                                            } else {
+                                                // console.log("Window removed successfully.");
+                                            }
+                                        });
+
                                     }
                                 });
                                 if (result.contextItemCreated) {
-                                    chrome.contextMenus.remove('sendPageBack');
-                                    result.contextItemCreated = false;
-                                    chrome.storage.local.set({ contextItemCreated: false }, () => {
-                                        // console.log('Context menu created and contextItemCreated updated to false');
+                                    chrome.contextMenus.remove('sendPageBack', () => {
+                                        if (chrome.runtime.lastError) {
+                                            // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                        } else {
+                                            // console.log("Context menu 'sendPageBack' removed successfully.");
+                                        }
                                     });
+
+                                    result.contextItemCreated = false;
+                                    chrome.storage.local.set({ contextItemCreated: false });
                                 }
 
                             });
@@ -244,10 +325,77 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 }
 
+                if (request.action === 'updateIcon') {
+                    chrome.storage.local.get(['previewModeEnable'], userConfigs => {
+                        chrome.windows.getCurrent({ populate: true }, (window) => {
+                            if (request.theme === 'dark') {
+                                if (userConfigs.previewModeEnable) {
+                                    if (request.previewMode !== undefined && !request.previewMode) {
+
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/non-inclickmode-dark.png"
+                                            }
+                                        });
+                                    } else {
+
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/inclickmode-dark.png"
+                                            }
+                                        });
+                                    }
+                                } else {
+
+                                    chrome.browserAction.setIcon({
+                                        path: {
+                                            "128": "action/icon-dark.png"
+                                        }
+                                    });
+
+                                }
+                            } else {
+                                if (userConfigs.previewModeEnable) {
+                                    if (request.previewMode !== undefined && !request.previewMode) {
+
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/non-inclickmode.png"
+                                            }
+                                        });
+                                    } else {
+
+                                        chrome.browserAction.setIcon({
+                                            path: {
+                                                "128": "action/inclickmode.png"
+                                            }
+                                        });
+                                    }
+                                } else {
+
+                                    chrome.browserAction.setIcon({
+                                        path: {
+                                            "128": "action/icon.png"
+                                        }
+                                    });
+
+                                }
+                            }
+                        });
+
+                    });
+
+
+                    sendResponse({ status: 'Icon update handled' });
+                }
+
+
+
+
                 if (request.action === 'sendPageBack') {
                     loadUserConfigs().then(userConfigs => {
                         const { popupWindowsInfo, enableContainerIdentify } = userConfigs;
-            
+
                         if (popupWindowsInfo && Object.keys(popupWindowsInfo).length > 0) {
                             // Iterate through popupWindowsInfo to find the original window ID
                             let originalWindowId = null;
@@ -257,7 +405,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     break;
                                 }
                             }
-            
+
                             if (originalWindowId) {
                                 const createData = { windowId: parseInt(originalWindowId), url: sender.tab.url };
                                 if (enableContainerIdentify && sender.tab.cookieStoreId && sender.tab.cookieStoreId !== 'firefox-default') {
@@ -265,18 +413,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 }
                                 chrome.tabs.create(createData, () => {
                                     chrome.windows.get(sender.tab.windowId, window => {
-                                        if (window.id) chrome.windows.remove(window.id);
+                                        if (window.id) {
+                                            chrome.windows.remove(sender.tab.windowId, () => {
+                                                if (chrome.runtime.lastError) {
+                                                    // console.error("Error removing window: ", chrome.runtime.lastError.message);
+                                                } else {
+                                                    // console.log("Window removed successfully.");
+                                                }
+                                            });
+                                        }
                                     });
-            
+
                                     if (userConfigs.contextItemCreated) {
-                                        chrome.contextMenus.remove('sendPageBack');
-                                        userConfigs.contextItemCreated = false;
-                                        chrome.storage.local.set({ contextItemCreated: false }, () => {
-                                            // console.log('Context menu created and contextItemCreated updated to false');
+                                        chrome.contextMenus.remove('sendPageBack', () => {
+                                            if (chrome.runtime.lastError) {
+                                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                            } else {
+                                                // console.log("Context menu 'sendPageBack' removed successfully.");
+                                            }
                                         });
+
+                                        userConfigs.contextItemCreated = false;
+                                        chrome.storage.local.set({ contextItemCreated: false });
                                         chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                                     }
-            
+
                                 });
                             } else {
                                 //console.error('No original window ID found for current window ID in popupWindowsInfo.');
@@ -289,18 +450,45 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 }
 
+                const getZoomFactor = () => {
+                    return new Promise((resolve, reject) => {
+                        // Check if sender.tab.id is defined
+                        const tabId = sender.tab ? sender.tab.id : null;
 
-                const zoomFactor = new Promise((resolve, reject) => {
-                    chrome.tabs.getZoom(sender.tab.id, (zoom) => {
-                        if (chrome.runtime.lastError) {
-                            reject(chrome.runtime.lastError);
+                        if (tabId) {
+                            // If sender.tab.id is defined, use it to get the zoom factor
+                            chrome.tabs.getZoom(tabId, (zoom) => {
+                                if (chrome.runtime.lastError) {
+                                    reject(chrome.runtime.lastError);
+                                } else {
+                                    resolve(zoom);
+                                }
+                            });
                         } else {
-                            resolve(zoom);
+                            // If sender.tab.id is undefined, query the active tab
+                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                                if (chrome.runtime.lastError) {
+                                    return reject(chrome.runtime.lastError);
+                                }
+                                if (tabs.length > 0) {
+                                    const currentTab = tabs[0];
+                                    chrome.tabs.getZoom(currentTab.id, (zoom) => {
+                                        if (chrome.runtime.lastError) {
+                                            reject(chrome.runtime.lastError);
+                                        } else {
+                                            resolve(zoom);
+                                        }
+                                    });
+                                } else {
+                                    reject('No active tabs found.');
+                                }
+                            });
                         }
                     });
-                });
+                };
 
-                return zoomFactor.then(zoom => {
+
+                return getZoomFactor().then(zoom => {
                     return Promise.all([
                         saveConfig('lastClientX', request.lastClientX * zoom),
                         saveConfig('lastClientY', request.lastClientY * zoom),
@@ -311,19 +499,63 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     ]);
                 }).then(() => {
                     return loadUserConfigs().then(userConfigs => {
-                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType } = userConfigs;
+                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType } = userConfigs;
                         let typeToSend;
+                        let urls;
 
                         if (request.trigger === 'drag') {
                             typeToSend = windowType || 'popup';
                         } else if (request.trigger === 'hover') {
-                            typeToSend = hoverWindowType  || 'popup';
+                            typeToSend = hoverWindowType || 'popup';
+                        } else if (request.trigger === 'click') {
+                            typeToSend = previewModeWindowType || 'popup';
+                        } else if (request.action === 'group' && request.links && request.links.length > 0) {
+                            // Extract URLs from the message
+                            urls = request.links.map(link => link.url);
+                            typeToSend = 'normal';
+
+                        } else {
+                            // console.log(request.action)
                         }
-                        if (isUrlDisabled(sender.tab.url, disabledUrls)) {
+                        const currentUrl = typeof sender.tab !== 'undefined' ? sender.tab.url : 'https://www.example.com';
+                        if (isUrlDisabled(currentUrl, disabledUrls)) {
                             sendResponse({ status: 'url disabled' });
                         } else if (request.linkUrl) {
-                            handleLinkInPopup(request.trigger, request.linkUrl, sender.tab, currentWindow, rememberPopupSizeAndPosition, typeToSend).then(() => {
-                                sendResponse({ status: 'link handled' });
+                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                                if (chrome.runtime.lastError) {
+                                    //
+                                }
+                                if (tabs.length > 0) {
+                                    let currentTab = tabs[0];
+                                    if (sender.tab) currentTab = sender.tab;
+                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend).then(() => {
+                                        // sendResponse({ status: 'link handled' });
+                                    });
+                                    sendResponse({ status: 'link handled' });
+
+                                } else {
+                                    //
+                                }
+                            });
+
+                        } else if (request.action === 'group') {
+
+                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                                if (chrome.runtime.lastError) {
+                                    //
+                                }
+                                if (tabs.length > 0) {
+                                    let currentTab = tabs[0];
+                                    if (sender.tab) currentTab = sender.tab;
+
+                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend).then(() => {
+                                        // sendResponse({ status: 'group handled' });
+                                    });
+
+                                    sendResponse({ status: 'message processed' });
+                                } else {
+                                    //
+                                }
                             });
                         } else {
                             sendResponse({ status: 'message processed' });
@@ -385,40 +617,47 @@ function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSi
 
 // Function to create a popup window
 function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
-    chrome.storage.local.get(['enableContainerIdentify','popupInBackground', 'hoverPopupInBackground'], (result) => {
+    chrome.storage.local.get(['enableContainerIdentify', 'rememberPopupSizeAndPositionForDomain'], (result) => {
         const enableContainerIdentify = result.enableContainerIdentify !== undefined ? result.enableContainerIdentify : true;
-        let popupInBackground = false;
-        if (trigger === 'drag') {
-            popupInBackground = result.popupInBackground !== undefined
-                ? result.popupInBackground
-                : false;
-        } else if (trigger === 'hover') {
+        let savedPositionAndSize;
+        const domain = new URL(linkUrl).hostname;
+        // Safely access the saved position and size if `rememberPopupSizeAndPositionForDomain` is enabled
+        if (result.rememberPopupSizeAndPositionForDomain && popupWindowsInfo.savedPositionAndSize) {
+            if (popupWindowsInfo.savedPositionAndSize[domain]) {
+                savedPositionAndSize = {
+                    top: popupWindowsInfo.savedPositionAndSize[domain].top,
+                    left: popupWindowsInfo.savedPositionAndSize[domain].left,
+                    width: popupWindowsInfo.savedPositionAndSize[domain].width,
+                    height: popupWindowsInfo.savedPositionAndSize[domain].height,
 
-            popupInBackground = result.hoverPopupInBackground !== undefined
-                ? result.hoverPopupInBackground
-                : false;
+                };
+            }
+        } else {
+            savedPositionAndSize = false;
         }
         chrome.windows.create({
             url: linkUrl,
             type: windowType,
-            top: parseInt(top, 10),
-            left: parseInt(left, 10),
-            width: parseInt(width, 10),
-            height: parseInt(height, 10),
-            focused: !popupInBackground,
-            incognito: tab.incognito,
+            top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
+            left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
+            width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
+            height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
+            focused: true,
+            incognito: tab && tab.incognito !== undefined ? tab.incognito : false,
             ...(enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default' ? { cookieStoreId: tab.cookieStoreId } : {})
         }, (newWindow) => {
             if (chrome.runtime.lastError) {
-                console.error('Error creating popup window:', chrome.runtime.lastError);
+                console.error('Error creating popup window:', chrome.runtime.lastError.message, chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
             } else {
-                updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+                updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, result.rememberPopupSizeAndPositionForDomain, resolve, reject);
             }
         });
-    });
-}
 
+
+    });
+
+}
 
 // Function to handle default popup creation
 function defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
@@ -447,7 +686,7 @@ function defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth
 }
 
 // Function to update popup info and add listeners
-function updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+function updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, rememberPopupSizeAndPositionForDomain, resolve, reject) {
     if (!popupWindowsInfo[originWindowId]) {
         popupWindowsInfo[originWindowId] = {};
     }
@@ -456,20 +695,47 @@ function updatePopupInfoAndListeners(newWindow, originWindowId, popupWindowsInfo
         top: newWindow.top,
         left: newWindow.left,
         width: newWindow.width,
-        height: newWindow.height
+        height: newWindow.height,
+        focused: newWindow.focused
     };
 
     if (rememberPopupSizeAndPosition) {
-        popupWindowsInfo.savedPositionAndSize = {
-            top: newWindow.top,
-            left: newWindow.left,
-            width: newWindow.width,
-            height: newWindow.height
-        };
+        if (popupWindowsInfo.savedPositionAndSize) {
+            popupWindowsInfo.savedPositionAndSize.left = newWindow.left;
+            popupWindowsInfo.savedPositionAndSize.top = newWindow.top;
+            popupWindowsInfo.savedPositionAndSize.width = newWindow.width;
+            popupWindowsInfo.savedPositionAndSize.height = newWindow.height;
+        }
+
+    }
+
+
+    // Handle domain-specific saving
+    if (rememberPopupSizeAndPositionForDomain) {
+        try {
+            const domain = new URL(linkUrl).hostname;
+            if (!popupWindowsInfo.savedPositionAndSize) {
+                popupWindowsInfo.savedPositionAndSize = {};
+            }
+            // Ensure domain-specific object exists
+            if (!popupWindowsInfo.savedPositionAndSize[domain]) {
+                popupWindowsInfo.savedPositionAndSize[domain] = {};
+            }
+            // Store the position and size under the domain
+            // Update or add the domain-specific position and size
+            popupWindowsInfo.savedPositionAndSize[domain] = {
+                top: newWindow.top,
+                left: newWindow.left,
+                width: newWindow.width,
+                height: newWindow.height
+            };
+        } catch (error) {
+            console.error('Invalid URL for domain extraction:', error);
+        }
     }
 
     chrome.storage.local.set({ popupWindowsInfo }, () => {
-        // addBoundsChangeListener(newWindow.id, originWindowId);
+        // addBoundsChangeListener(linkUrl, newWindow.id, originWindowId);
         chrome.windows.onRemoved.addListener(windowRemovedListener);
         resolve();
     });
@@ -489,7 +755,6 @@ function isValidUrl(url) {
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => url.includes(disabledUrl));
 }
-
 
 // Handle context menu item click
 function onMenuItemClicked(info, tab) {
@@ -514,15 +779,29 @@ function onMenuItemClicked(info, tab) {
                     }
                     chrome.tabs.create(createData, () => {
                         chrome.windows.get(tab.windowId, window => {
-                            if (window.id) chrome.windows.remove(window.id);
+                            if (window.id) {
+                                chrome.windows.remove(windowId, () => {
+                                    if (chrome.runtime.lastError) {
+                                        // console.error("Error removing window: ", chrome.runtime.lastError.message);
+                                    } else {
+                                        // console.log("Window removed successfully.");
+                                    }
+                                });
+
+                            }
                         });
 
                         if (userConfigs.contextItemCreated) {
-                            chrome.contextMenus.remove('sendPageBack');
-                            userConfigs.contextItemCreated = false;
-                            chrome.storage.local.set({ contextItemCreated: false }, () => {
-                                // console.log('Context menu created and contextItemCreated updated to false');
+                            chrome.contextMenus.remove('sendPageBack', () => {
+                                if (chrome.runtime.lastError) {
+                                    // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                } else {
+                                    // console.log("Context menu 'sendPageBack' removed successfully.");
+                                }
                             });
+
+                            userConfigs.contextItemCreated = false;
+                            chrome.storage.local.set({ contextItemCreated: false });
                             chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                         }
 
@@ -557,3 +836,55 @@ function windowRemovedListener(windowId) {
         }
     });
 }
+
+
+chrome.commands.onCommand.addListener((command) => {
+    if (command === "clickModeToggle") {
+        chrome.storage.local.get('previewModeEnable', (data) => {
+            const currentValue = data.previewModeEnable;
+            const newValue = !currentValue;
+
+            chrome.storage.local.set({ previewModeEnable: newValue }, () => {
+
+                chrome.windows.getCurrent({ populate: true }, (window) => {
+                    if (request.theme === 'dark') {
+
+                        if (newValue) {
+
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/inclickmode-dark.png"
+                                }
+                            });
+
+                        } else {
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/icon-dark.png"
+                                }
+                            });
+                        }
+                    } else {
+
+                        if (newValue) {
+
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/inclickmode.png"
+                                }
+                            });
+
+                        } else {
+                            chrome.browserAction.setIcon({
+                                path: {
+                                    "128": "action/icon.png"
+                                }
+                            });
+                        }
+                    }
+                });
+
+            });
+        });
+    }
+});

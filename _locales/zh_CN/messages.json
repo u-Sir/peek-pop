@@ -3,7 +3,7 @@
         "message": "在弹出窗口中打开链接"
     },
     "extensionName": {
-        "message": "拖拽预览"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
         "message": "在弹出窗口中打开拖拽的链接、搜索拖拽的文本"
@@ -107,17 +107,11 @@
     "urlCheck": {
         "message": "如果选中文本是 URL，直接打开"
     },
-    "popupInBackground": {
-        "message": "后台弹窗"
-    },
     "doubleTapKeyToSendPageBack": {
         "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
     },
     "hoverSettings": {
         "message": "悬停设置"
-    },
-    "hoverPopupInBackground": {
-        "message": "后台弹出"
     },
     "hoverImgSupport": {
         "message": "预览图片"
@@ -138,13 +132,85 @@
         "message": "配置信息"
     },
     "importButton": {
-        "message": "导入设置"
+        "message": "导入"
     },  
     "exportButton": {
-        "message": "导出设置"
+        "message": "导出"
     },
     "dragStartEnable": {
         "message": "拖拽立即触发，不等待释放。（不支持方向检测）"
+    },
+    "previewModeSettings": {
+        "message": "点击"
+    },
+    "previewModeDisabledUrls": {
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
+    }, 
+    "previewModeEnable": {
+        "message": "点击链接预览（取消勾选时，下方的设置不会生效）"
+    }, 
+    "imgSearchEnable": {
+        "message": "以图搜图"
+    }, 
+    "hoverImgSearchEnable": {
+        "message": "以图搜图"
+    }, 
+    "doubleClickToSwitch": {
+        "message": "双击临时切换当前页面模式：需在非图片、链接上双击，工具栏的插件图标会显示当前状态"
+    }, 
+    "doubleClickAsClick": {
+        "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "动态弹窗：记住每个域名最后的窗口大小和位置"
+    },
+    "note": {
+        "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"
+    },
+    "linkHint": {
+        "message": "链接提示"
+    },
+    "searchTooltipsEnable": {
+        "message": "选中文本时显示搜索条"
+    },
+    "collectionEnable": {
+        "message": "悬停显示添加到收集按钮，列表可通过 Ctrl/Command + U 或者点击插件图标查看"
+    },
+    "linkSettings": {
+        "message": "链接"
+    },
+    "empty": {
+        "message": "这什么也没有"
+    },
+    "openAll": {
+        "message": "打开全部 ↗️"
+    },
+    "clearAll": {
+        "message": "清除全部"
+    },
+    "options": {
+        "message": "➡️ 设置页面"
+    },
+    "popAction": {
+        "message": "弹出插件图标的页面"
+    },
+    "clickModeToggle": {
+        "message": "切换点击链接预览模式"
+    },
+    "collectionTimeout": {
+        "message": "至少按住 ms: "
+    },
+    "holdToPreview": {
+        "message": "长按链接预览"
+    },
+    "holdToPreviewTimeout": {
+        "message": "至少按住 ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "长按"
+    },  
+    "linkDisabledUrls": {
+        "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
     }
 }
 

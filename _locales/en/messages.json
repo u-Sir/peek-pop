@@ -3,10 +3,10 @@
         "message": "Open link in popup window"
     },
     "extensionName": {
-        "message": "Drag to Preview"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Drag to preview links or search selected text"
+        "message": "Preview links, images, or search selected text in a popup window."
     },
     "popupHeight": {
         "message": "Popup height (px)"
@@ -107,17 +107,11 @@
     "urlCheck": {
         "message": "Open directly if selected is url"
     },
-    "popupInBackground": {
-        "message": "Popup in background"
-    },
     "doubleTapKeyToSendPageBack": {
         "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
     },
     "hoverSettings": {
         "message": "Hover settings"
-    },
-    "hoverPopupInBackground": {
-        "message": "Popup in background"
     },
     "hoverImgSupport": {
         "message": "Image support"
@@ -138,12 +132,84 @@
         "message": "Configurations"
     },
     "importButton": {
-        "message": "Import settings"
+        "message": "Import"
     },  
     "exportButton": {
-        "message": "Export settings"
+        "message": "Export"
     },
     "dragStartEnable": {
         "message": "Drag triggers immediately without waiting for release. (Direction detection is not supported)"
+    },
+    "previewModeSettings": {
+        "message": "Click"
+    },
+    "previewModeDisabledUrls": {
+        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
+    }, 
+    "previewModeEnable": {
+        "message": "Clicking on the link to preview (disable - ignore below options)"
+    }, 
+    "imgSearchEnable": {
+        "message": "Replace Preview with Image Search."
+    }, 
+    "hoverImgSearchEnable": {
+        "message": "Replace Preview with Image Search."
+    }, 
+    "doubleClickToSwitch": {
+        "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar."
+    }, 
+    "doubleClickAsClick": {
+        "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links."
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "Dynamic Popup: remember the last popup window size and position for each domain."
+    },
+    "note": {
+        "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse."
+    },
+    "linkHint": {
+        "message": "Indicator."
+    },
+    "searchTooltipsEnable": {
+        "message": "Tooltips for selected text."
+    },
+    "collectionEnable": {
+        "message": "Hover to reveal the button for adding the link to your collection. Press Ctrl/Command + U or click the add-on icon to view your collection."
+    },
+    "linkSettings": {
+        "message": "Link"
+    },
+    "empty": {
+        "message": "Nothing here."
+    },
+    "openAll": {
+        "message": "Open all ↗️"
+    },
+    "clearAll": {
+        "message": "Clear all"
+    },
+    "options": {
+        "message": "➡️ Options page"
+    },
+    "popAction": {
+        "message": "Open add-on icon popup"
+    },
+    "clickModeToggle": {
+        "message": "Toggle click mode"
+    },
+    "collectionTimeout": {
+        "message": "At least hold in ms: "
+    },
+    "holdToPreview": {
+        "message": "Hold the left mouse button to preview"
+    },
+    "holdToPreviewTimeout": {
+        "message": "At least hold in ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "Hold"
+    },  
+    "linkDisabledUrls": {
+        "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
     }
 }
