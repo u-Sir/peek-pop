@@ -629,7 +629,7 @@ function initializeDragDirectionCheckboxes(directions) {
 
 async function exportSettings() {
     try {
-        const allItems = await chrome.storage.local.get(null);
+        const allItems = await browser.storage.local.get(null);
         delete allItems['originWindowId'];
         // Remove any settings that start with 'last'
         for (const key in allItems) {
@@ -720,7 +720,7 @@ async function importSettings(file) {
 
         delete importData.settings.popupWindowsInfo;
 
-        await chrome.storage.local.set(importData.settings);
+        await browser.storage.local.set(importData.settings);
 
         // Reload the page to apply the imported settings
         init();
