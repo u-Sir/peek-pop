@@ -252,7 +252,8 @@ function setupPage(userConfigs) {
 
     setInputLabel('noneKey', 'noneKey');
     setInputLabel('hoverNoneKey', 'noneKey');
-    setInputLabel('previewNoneKey', 'noneKey');
+    setInputLabel('dragNoneKey', 'noneKey');
+    setInputLabel('clickNoneKey', 'noneKey');
 
     setInputLabel('normal', 'normal');
     setInputLabel('hoverNormal', 'normal');
