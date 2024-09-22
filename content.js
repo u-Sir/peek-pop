@@ -936,7 +936,7 @@ function handleHoldLink(e) {
             e.preventDefault();
             e.stopPropagation();
 
-            chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime'], data => {
+            chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime'], (data) => {
                 const blurTime = data.blurTime || 1;
                 const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
                 const blurPx = parseFloat(data.blurPx || 3);
