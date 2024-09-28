@@ -861,7 +861,10 @@ function handleMouseDown(e) {
                 }, true);
 
 		// Show progress bar for preview
-                previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 50, (holdToPreviewTimeout ?? 1500));
+                setTimeout(() => {
+                    if (!isMouseDownOnLink) return;
+                    previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 50, (holdToPreviewTimeout ?? 1500) - 100);
+                }, 100);
 
                 setTimeout(() => {
                     clearTimeoutsAndProgressBars();
