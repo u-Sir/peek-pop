@@ -14,7 +14,7 @@
 
 This plugin allows you to preview links, images or search selected text on popup window, and provides ***secure, unrestricted, modification-free cross-origin access***.
 # Next coming up features demo
-## drag to preview, remember size and position for each domain
+## remember size and position for each domain
 
 
 https://github.com/user-attachments/assets/306b8c39-57e8-4beb-957c-4164e9252175
