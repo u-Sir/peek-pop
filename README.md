@@ -13,7 +13,7 @@
 </div>
 
 This plugin allows you to preview links, images or search selected text on popup window, and provides ***secure, unrestricted, modification-free cross-origin access***.
-# demo
+# Next coming up features demo
 ## drag to preview, remember size and position for each domain
 
 
@@ -59,10 +59,10 @@ https://github.com/user-attachments/assets/89e06a28-f59f-473d-9b3f-feb46e881078
   - Close: You can exit by pressing the `Esc` key or by clicking the original window to automatically close the popup.
   - Back: Double-click a specified key to go back, or select from the right-click menu.
   - Shortcut key support: Supports all browser shortcut keys like forward, backward, reading mode, etc. (some shortcuts require the window type to be set to "normal").
-- Free interface display:
+- Free popup display:
   - Customizable background blur effect.
   - Popup size and position can be customized and automatically saved, supporting separate records by domain and multi-screen display.
-  - Supports background pop-up.
+  - Supports background pop-up. (Chromium only)
   - Supports selecting popup window type.
 - Blacklist function: Supports blacklist settings in regular expressions, wildcard, and plain text forms.
 - Supports export and import of configurations.
@@ -71,7 +71,4 @@ https://github.com/user-attachments/assets/89e06a28-f59f-473d-9b3f-feb46e881078
 This extension does not collect any personal information.
 
 # Others:
-This extension is developed based on the open-source project by emvaized https://github.com/emvaized/open-in-popup-window-extension/tree/main. Thanks for their contribution.
-
-This extension is also open-source, and the source code can be found at: https://github.com/u-Sir/peek-pop
-
+This extension is developed based on the open-source project by emvaized https://github.com/emvaized/open-in-popup-window-extension/tree/main.
