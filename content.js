@@ -775,9 +775,7 @@ function handleMouseDown(e) {
     }
     focusAt = null;
     isDragging = false;
-    if (document.body) {
-        document.body.style.filter = '';
-    }
+    removeBlurOverlay();
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
 
@@ -957,8 +955,7 @@ function handleHoldLink(e) {
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
                 if (blurEnabled) {
-                    document.body.style.filter = `blur(${blurPx}px)`;
-                    document.body.style.transition = `filter ${blurTime}s ease`;
+                    addBlurOverlay(blurPx, blurTime);
                 }
                 addClickMask();
 
@@ -1186,8 +1183,7 @@ function handlePreviewMode(e) {
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
             if (blurEnabled) {
-                document.body.style.filter = `blur(${blurPx}px)`;
-                document.body.style.transition = `filter ${blurTime}s ease`;
+                addBlurOverlay(blurPx, blurTime);
             }
             addClickMask();
 
@@ -1456,8 +1452,7 @@ async function handleDragStart(e) {
                             if (searchTooltips) searchTooltips.remove();
                             searchTooltips = null;
                             if (blurEnabled) {
-                                document.body.style.filter = `blur(${blurPx}px)`;
-                                document.body.style.transition = `filter ${blurTime}s ease`;
+                                addBlurOverlay(blurPx, blurTime);
                             }
                             e.preventDefault();
                             e.stopImmediatePropagation();
@@ -1523,8 +1518,7 @@ async function handleDragStart(e) {
                         searchTooltips = null;
 
                         if (blurEnabled) {
-                            document.body.style.filter = `blur(${blurPx}px)`;
-                            document.body.style.transition = `filter ${blurTime}s ease`;
+                            addBlurOverlay(blurPx, blurTime);
                         }
 
                         addClickMask();
@@ -1575,8 +1569,7 @@ async function handleDragStart(e) {
             searchTooltips = null;
 
             if (blurEnabled) {
-                document.body.style.filter = `blur(${blurPx}px)`;
-                document.body.style.transition = `filter ${blurTime}s ease`;
+                addBlurOverlay(blurPx, blurTime);
             }
 
             addClickMask();
@@ -1789,10 +1782,7 @@ window.addEventListener('focus', async () => {
     linkIndicator = null;
     if (searchTooltips) searchTooltips.remove();
     searchTooltips = null;
-
-    if (document.body) {
-        document.body.style.filter = '';
-    }
+    removeBlurOverlay();
     document.addEventListener('keydown', handleKeyDown);
     clearTimeoutsAndProgressBars();
     hoverElement = null;
@@ -2071,8 +2061,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
             searchTooltips = null;
 
             if (blurEnabled) {
-                document.body.style.filter = `blur(${blurPx}px)`;
-                document.body.style.transition = `filter ${blurTime}s ease`;
+                addBlurOverlay(blurPx, blurTime);
             }
             addClickMask();
             chrome.runtime.sendMessage({
@@ -2114,9 +2103,9 @@ function triggerLinkPopup(e, link) {
         searchTooltips = null;
 
         if (data.blurEnabled) {
-            document.body.style.filter = `blur(${data.blurPx}px)`;
-            document.body.style.transition = `filter ${data.blurTime}s ease`;
+            addBlurOverlay(data.blurPx, data.blurTime);
         }
+        
         addClickMask();
         chrome.runtime.sendMessage({
             linkUrl: link,
@@ -2228,4 +2217,30 @@ function removeClickMask() {
     document.querySelectorAll('*').forEach((element) => {
         element.style.pointerEvents = ''; // Reset pointer-events to default
     });
+}
+
+
+// Function to add the blur overlay
+function addBlurOverlay(blurPx, blurTime) {
+    if (!blurOverlay) { // Check if the overlay does not already exist
+        blurOverlay = document.createElement('div');
+        blurOverlay.style.position = 'fixed';
+        blurOverlay.style.top = '0';
+        blurOverlay.style.left = '0';
+        blurOverlay.style.width = '100%';
+        blurOverlay.style.height = '100%';
+        blurOverlay.style.zIndex = '2147483647';
+        blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
+        blurOverlay.style.transition = `backdrop-filter ${blurTime}s ease`;
+        blurOverlay.style.pointerEvents = 'none'; // Optional: Allows clicks to pass through
+        document.body.appendChild(blurOverlay);
+    }
+}
+
+// Function to remove the blur overlay
+function removeBlurOverlay() {
+    if (blurOverlay) {
+        blurOverlay.remove(); // Removes the overlay from the DOM
+        blurOverlay = null; // Clear the reference
+    }
 }
