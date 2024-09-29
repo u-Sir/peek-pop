@@ -1777,7 +1777,9 @@ window.addEventListener('focus', async () => {
     if (window.getSelection().toString()) {
         window.getSelection().removeAllRanges();
     }
-    removeClickMask();
+    setTimeout(() => {
+        removeClickMask();
+    }, 50);
 });
 
 
