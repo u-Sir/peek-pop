@@ -25,14 +25,8 @@ https://github.com/user-attachments/assets/306b8c39-57e8-4beb-957c-4164e9252175
 ## click to preview, double click => single click on link
 https://github.com/user-attachments/assets/0abccbb4-5af9-4210-95c2-9470a6c97502
 
-## hover to preview
-
-
-https://github.com/user-attachments/assets/b967e700-ffd4-4203-bf5e-760d238df816
 
 ## collect to popup later
-
-
 
 https://github.com/user-attachments/assets/89e06a28-f59f-473d-9b3f-feb46e881078
 
