@@ -29,6 +29,7 @@ let currentHoveredLink = null; // Store reference to the current hovered link
 let clickModifiedKey = 'None';
 let linkDisabledUrls;
 let theme;
+let blurOverlay;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
