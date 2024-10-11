@@ -1,7 +1,7 @@
-<div align="center"><img src="https://github.com/user-attachments/assets/d8898f27-9e28-4252-a513-b51a61fb68e8" alt="Peek Pop"  style="height: 150px; width: 150px;">
+
+<div align="center"><img src="https://github.com/user-attachments/assets/bb1c45bc-3ef9-49cc-a3ab-5a7348daaabc" alt="Peek Pop"  style="height: 150px; width: 150px;">
 </div>
 <h1 align="center">Peek Pop</h1>
-
 
 <div align="center">
 
