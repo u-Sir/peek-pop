@@ -2171,11 +2171,6 @@ function removeClickMask() {
     if (style) {
         style.remove(); // Remove the injected style
     }
-
-    // Restore default pointer-events behavior for all elements
-    document.querySelectorAll('*').forEach((element) => {
-        element.style.pointerEvents = ''; // Reset pointer-events to default
-    });
 }
 
 // Function to add the blur overlay
