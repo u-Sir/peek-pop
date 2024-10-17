@@ -59,5 +59,10 @@
       "32": "icon-32.png"
     },
     "default_popup": "action/action.html"
-  }
+  },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "peek_pop@uxer"
+        }
+    }
 }
