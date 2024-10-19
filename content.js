@@ -1032,7 +1032,7 @@ function handleDoubleClick(e) {
             if (data.doubleClickAsClick) {
                 hasPopupTriggered = true;
                 isDoubleClick = true;
-                e.target.click();
+                linkElement.click();
             }
         } else {
             resetClickState();
