@@ -2082,6 +2082,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 linkIndicator = null;
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
+		finalLinkUrl = null;
 
                 if (window.getSelection().toString()) {
                     window.getSelection().removeAllRanges();
@@ -2122,6 +2123,7 @@ function triggerLinkPopup(e, link) {
             linkIndicator = null;
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
+	    finalLinkUrl = null;
 
             if (window.getSelection().toString()) {
                 window.getSelection().removeAllRanges();
