@@ -175,6 +175,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         }
 
                                         if (popupWindowsInfo[originWindowId][currentWindow.id]) {
+                                            const domain = (popupWindowsInfo[originWindowId][currentWindow.id].originDomain !== new URL(sender.tab.url).hostname)
+                                                ? popupWindowsInfo[originWindowId][currentWindow.id].originDomain
+                                                : new URL(sender.tab.url).hostname;
+
                                             if (!popupWindowsInfo[originWindowId]) {
                                                 popupWindowsInfo[originWindowId] = {};
                                             }
@@ -183,7 +187,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                                 top: currentWindow.top,
                                                 left: currentWindow.left,
                                                 width: currentWindow.width,
-                                                height: currentWindow.height
+                                                height: currentWindow.height,
+                                                originDomain: domain
                                             };
 
 
@@ -191,7 +196,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                             // Handle domain-specific saving
                                             if (userConfigs.rememberPopupSizeAndPositionForDomain && sender && sender.tab && sender.tab.url) {
                                                 try {
-                                                    const domain = new URL(sender.tab.url).hostname;
                                                     if (!popupWindowsInfo['savedPositionAndSize']) {
                                                         popupWindowsInfo['savedPositionAndSize'] = {};
                                                     }
@@ -690,13 +694,15 @@ function updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWi
     if (!popupWindowsInfo[originWindowId]) {
         popupWindowsInfo[originWindowId] = {};
     }
+    const domain = new URL(linkUrl).hostname;
     popupWindowsInfo[originWindowId][newWindow.id] = {
         windowType: newWindow.type,
         top: newWindow.top,
         left: newWindow.left,
         width: newWindow.width,
         height: newWindow.height,
-        focused: newWindow.focused
+        focused: newWindow.focused,
+        originDomain: domain
     };
 
     if (rememberPopupSizeAndPosition) {
