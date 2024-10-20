@@ -823,7 +823,7 @@ function onMenuItemClicked(info, tab) {
                     chrome.tabs.create(createData, () => {
                         chrome.windows.get(tab.windowId, window => {
                             if (window.id) {
-                                chrome.windows.remove(windowId, () => {
+                                chrome.windows.remove(tab.windowId, () => {
                                     if (chrome.runtime.lastError) {
                                         // console.error("Error removing window: ", chrome.runtime.lastError.message);
                                     } else {
