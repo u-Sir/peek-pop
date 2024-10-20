@@ -325,14 +325,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 if (userConfigs.previewModeEnable) {
                                     if (request.previewMode !== undefined && !request.previewMode) {
 
-                                        chrome.browserAction.setIcon({
+                                        chrome.action.setIcon({
                                             path: {
                                                 "128": "action/non-inclickmode-dark.png"
                                             }
                                         });
                                     } else {
 
-                                        chrome.browserAction.setIcon({
+                                        chrome.action.setIcon({
                                             path: {
                                                 "128": "action/inclickmode-dark.png"
                                             }
@@ -340,7 +340,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     }
                                 } else {
 
-                                    chrome.browserAction.setIcon({
+                                    chrome.action.setIcon({
                                         path: {
                                             "128": "action/icon-dark.png"
                                         }
@@ -351,14 +351,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 if (userConfigs.previewModeEnable) {
                                     if (request.previewMode !== undefined && !request.previewMode) {
 
-                                        chrome.browserAction.setIcon({
+                                        chrome.action.setIcon({
                                             path: {
                                                 "128": "action/non-inclickmode.png"
                                             }
                                         });
                                     } else {
 
-                                        chrome.browserAction.setIcon({
+                                        chrome.action.setIcon({
                                             path: {
                                                 "128": "action/inclickmode.png"
                                             }
@@ -366,7 +366,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     }
                                 } else {
 
-                                    chrome.browserAction.setIcon({
+                                    chrome.action.setIcon({
                                         path: {
                                             "128": "action/icon.png"
                                         }
@@ -894,14 +894,14 @@ chrome.commands.onCommand.addListener((command) => {
 
                         if (newValue) {
 
-                            chrome.browserAction.setIcon({
+                            chrome.action.setIcon({
                                 path: {
                                     "128": "action/inclickmode-dark.png"
                                 }
                             });
 
                         } else {
-                            chrome.browserAction.setIcon({
+                            chrome.action.setIcon({
                                 path: {
                                     "128": "action/icon-dark.png"
                                 }
@@ -911,14 +911,14 @@ chrome.commands.onCommand.addListener((command) => {
 
                         if (newValue) {
 
-                            chrome.browserAction.setIcon({
+                            chrome.action.setIcon({
                                 path: {
                                     "128": "action/inclickmode.png"
                                 }
                             });
 
                         } else {
-                            chrome.browserAction.setIcon({
+                            chrome.action.setIcon({
                                 path: {
                                     "128": "action/icon.png"
                                 }
