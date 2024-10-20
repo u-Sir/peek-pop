@@ -707,7 +707,7 @@ function changeCursorOnHover(e) {
 
 
 function handleContextMenu() {
-    chrome.runtime.sendMessage({ checkContextMenuItem: true }, response => {
+    chrome.runtime.sendMessage({ checkContextMenuItem: true }, (response) => {
         if (chrome.runtime.lastError) {
             console.error("Runtime error:", chrome.runtime.lastError);
         } else {
