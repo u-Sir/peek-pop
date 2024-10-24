@@ -101,6 +101,19 @@ function init() {
 
     }
 
+    // Check if the current context is the popup
+    const views = browser.extension.getViews({ type: "popup" });
+
+    // If the view is a popup, hide the import/export block
+    if (views.length > 0) {
+        
+        // Hide the elements by setting display: none
+        document.getElementById('exportImportSettings').style.display = 'none';
+        document.getElementById('importFile').style.display = 'none';
+        document.getElementById('importButton').style.display = 'none';
+        document.getElementById('exportButton').style.display = 'none';
+    }
+
     document.getElementById('exportButton').addEventListener('click', exportSettings);
 
     document.getElementById('importButton').addEventListener('click', () => {
