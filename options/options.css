@@ -101,12 +101,6 @@ button:disabled {
     max-width: 700px;
 }
 
-.option:hover {
-    background-color: rgba(237, 237, 237, 0.498);
-    transition: background-color 50ms ease-in-out;
-    border-radius: 6px;
-}
-
 .option output {
     vertical-align: -0.5px;
     /* Aligns the output element vertically */
@@ -186,10 +180,6 @@ textarea {
 
     .option {
         color: #b0b0b0;
-    }
-
-    .option:hover {
-        background-color: #3c3c3c;
     }
 
     .option output {
