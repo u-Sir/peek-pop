@@ -816,7 +816,7 @@ function handleMouseDown(e) {
             } else {
                 previewMode = false;
             }
-            
+
             // In popup.js or content.js
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 theme = 'dark';
@@ -827,7 +827,7 @@ function handleMouseDown(e) {
             chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         }
 
-        if (data.holdToPreview) {
+        if (data.holdToPreview && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
             const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
             const linkUrl = linkElement ? linkElement.href : null;
 
@@ -848,11 +848,11 @@ function handleMouseDown(e) {
                 document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                 document.addEventListener('click', (e) => {
-                         if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)))) {
-                            // Prevent default action on the link immediately
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }
+                    if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)))) {
+                        // Prevent default action on the link immediately
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
                 }, true);
                 // Show progress bar for preview
                 setTimeout(() => {
@@ -884,24 +884,6 @@ function handleMouseDown(e) {
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
 
-        // Function to cancel hold-to-preview when mouse is moved
-        function cancelHoldToPreviewOnMove() {
-            isMouseDownOnLink = false;
-            clearTimeoutsAndProgressBars();
-            document.removeEventListener('mouseup', handleHoldLink, true);
-            document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
-            document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-        }
-
-        // Function to cancel hold-to-preview when dragging starts
-        function cancelHoldToPreviewOnDrag() {
-            isMouseDownOnLink = false;
-            clearTimeoutsAndProgressBars();
-            document.removeEventListener('mouseup', handleHoldLink, true);
-            document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
-            document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-        }
-
 
         try {
             const message = data.closeWhenFocusedInitialWindow
@@ -916,6 +898,24 @@ function handleMouseDown(e) {
 
     isMouseDown = true;
     hasPopupTriggered = false;
+}
+
+// Function to cancel hold-to-preview when mouse is moved
+function cancelHoldToPreviewOnMove() {
+    isMouseDownOnLink = false;
+    clearTimeoutsAndProgressBars();
+    document.removeEventListener('mouseup', handleHoldLink, true);
+    document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+    document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+}
+
+// Function to cancel hold-to-preview when dragging starts
+function cancelHoldToPreviewOnDrag() {
+    isMouseDownOnLink = false;
+    clearTimeoutsAndProgressBars();
+    document.removeEventListener('mouseup', handleHoldLink, true);
+    document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+    document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
 
 function handleHoldLink(e) {
@@ -970,6 +970,11 @@ function handleHoldLink(e) {
                     left: window.screen.availLeft,
                     trigger: 'click'
                 }, () => {
+                    isMouseDownOnLink = false;
+                    clearTimeoutsAndProgressBars();
+                    document.removeEventListener('mouseup', handleHoldLink, true);
+                    document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
+                    document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                     if (linkIndicator) linkIndicator.remove();
                     linkIndicator = null;
                     if (searchTooltips) searchTooltips.remove();
@@ -1011,7 +1016,7 @@ function handleDoubleClick(e) {
 
             previewMode = !previewMode;
 
-            
+
             // In popup.js or content.js
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 theme = 'dark';
@@ -1036,7 +1041,7 @@ function handleDoubleClick(e) {
         document.removeEventListener('dblclick', handleDoubleClick, true);
         // isDoubleClick = false;
 
-        
+
         // In popup.js or content.js
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             theme = 'dark';
@@ -1102,7 +1107,7 @@ function handleEvent(e) {
                 }, 250);
             }
 
-            
+
             // In popup.js or content.js
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 theme = 'dark';
@@ -1113,7 +1118,7 @@ function handleEvent(e) {
             chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         }
 
-        
+
         // In popup.js or content.js
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             theme = 'dark';
@@ -1141,7 +1146,7 @@ function handleEvent(e) {
 
     }
 
-    
+
     // In popup.js or content.js
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         theme = 'dark';
@@ -1647,7 +1652,7 @@ function isUrlDisabled(url, disabledUrls) {
 async function checkUrlAndToggleListeners() {
     hasPopupTriggered = false;
 
-    
+
     // In popup.js or content.js
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         theme = 'dark';
@@ -1792,7 +1797,7 @@ window.addEventListener('focus', async () => {
     hoverInitialMouseY = null;
     try {
 
-        
+
         // In popup.js or content.js
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             theme = 'dark';
@@ -2082,7 +2087,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 linkIndicator = null;
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
-		finalLinkUrl = null;
+                finalLinkUrl = null;
 
                 if (window.getSelection().toString()) {
                     window.getSelection().removeAllRanges();
@@ -2107,7 +2112,7 @@ function triggerLinkPopup(e, link) {
         if (data.blurEnabled) {
             addBlurOverlay(data.blurPx, data.blurTime);
         }
-        
+
         addClickMask();
         chrome.runtime.sendMessage({
             linkUrl: link,
@@ -2123,7 +2128,7 @@ function triggerLinkPopup(e, link) {
             linkIndicator = null;
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
-	    finalLinkUrl = null;
+            finalLinkUrl = null;
 
             if (window.getSelection().toString()) {
                 window.getSelection().removeAllRanges();
