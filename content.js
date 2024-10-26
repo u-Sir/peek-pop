@@ -136,7 +136,7 @@ function createTooltip(x, y, actions, timeout = 2000) {
         // Style for buttons
         button.style.backgroundColor = '#ffa742'; // Button background color
         button.style.border = 'none';
-        button.style.color = '#fff'; // Button text color
+        button.style.color = '#4A2C14'; // Button text color
         button.style.padding = '4px 5px'; // Adjust size by changing padding
         button.style.borderRadius = '5px'; // Adjust corner roundness
         button.style.cursor = 'pointer';
