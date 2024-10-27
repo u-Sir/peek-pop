@@ -1,7 +1,6 @@
 const configs = {
     'closeWhenFocusedInitialWindow': true,
     'tryOpenAtMousePosition': false,
-    'hideBrowserControls': true,
     'popupHeight': 800,
     'popupWidth': 1000,
     'searchEngine': 'https://www.google.com/search?q=%s',
