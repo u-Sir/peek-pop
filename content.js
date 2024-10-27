@@ -21,11 +21,9 @@ let collection;
 let hoverlinkOrText = false;
 let isMouseDownOnLink = false;
 let firstDownOnLinkAt;
-let collectionProgressBar, previewProgressBar;
+let previewProgressBar;
 let holdToPreviewTimeout = 1500;
 let focusAt;
-let linkCollection;
-let currentHoveredLink = null; // Store reference to the current hovered link
 let clickModifiedKey = 'None';
 let linkDisabledUrls;
 let theme;
@@ -34,7 +32,6 @@ let blurOverlay;
 const configs = {
     'closeWhenFocusedInitialWindow': true,
     'tryOpenAtMousePosition': false,
-    'hideBrowserControls': true,
     'popupHeight': 800,
     'popupWidth': 1000,
     'searchEngine': 'https://www.google.com/search?q=%s',
@@ -716,10 +713,6 @@ function handleContextMenu() {
     if (linkIndicator) {
         linkIndicator.remove();
     }
-    if (linkCollection) {
-        linkCollection.remove();
-    }
-    linkCollection = null;
     linkIndicator = null;
     hoverlinkOrText = false;
     searchTooltips = null;
@@ -1995,10 +1988,6 @@ function clearTimeoutsAndProgressBars() {
     if (progressBar) {
         progressBar.remove();
         progressBar = null;
-    }
-    if (collectionProgressBar) {
-        collectionProgressBar.remove();
-        collectionProgressBar = null;
     }
 
     if (previewProgressBar) {
