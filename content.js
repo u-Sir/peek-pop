@@ -1033,7 +1033,11 @@ function handleDoubleClick(e) {
                 if (e.target.shadowRoot) {
                     linkElement.click();
                 } else {
-                    e.target.click();
+                    try {
+                        e.target.click(); // Attempt to call click on e.target
+                    } catch (error) {
+                        e.target.closest('a').click();
+                    }
                 }
             }
         } else {
