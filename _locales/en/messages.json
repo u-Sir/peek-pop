@@ -174,7 +174,7 @@
         "message": "Tooltips for selected text."
     },
     "collectionEnable": {
-        "message": "Hover to reveal the button for adding the link to your collection. Press Ctrl/Command + U or click the add-on icon to view your collection."
+        "message": "Hold Ctrl and Right Click to add the link to your collection. Press Ctrl/Command + U or click the add-on icon to view your collection."
     },
     "linkSettings": {
         "message": "Link"

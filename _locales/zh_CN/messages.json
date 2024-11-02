@@ -174,7 +174,7 @@
         "message": "选中文本时显示搜索条"
     },
     "collectionEnable": {
-        "message": "悬停显示添加到收集按钮，列表可通过 Ctrl/Command + U 或者点击插件图标查看"
+        "message": "Ctrl + 右击将链接添加到收集列表，列表可通过 Ctrl/Command + U 或者点击插件图标查看"
     },
     "linkSettings": {
         "message": "链接"
