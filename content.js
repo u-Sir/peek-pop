@@ -208,275 +208,6 @@ function createTooltip(x, y, actions, timeout = 2000) {
     return tooltip;
 }
 
-function addTooltipsOnHover(e) {
-    const linkElement = e.target.tagName === 'A' || e.target.closest('a')
-        ? (e.target.tagName === 'A' ? e.target : e.target.closest('a'))
-        : null;
-
-    if (!linkElement) return;
-
-
-    const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-
-    // Check if tooltip already added
-    if (linkElement.dataset.tooltipAdded === 'true') return;
-
-    // Add a data attribute to mark that the tooltip is already added
-    linkElement.dataset.tooltipAdded = 'true';
-
-    chrome.storage.local.get(['collection', 'blurEnabled', 'blurPx', 'blurTime', 'collectionEnable'], async (data) => {
-        if (typeof data.collectionEnable === 'undefined' || !data.collectionEnable) return;
-
-        // Initialize or load the collection
-        collection = (Array.isArray(data.collection) && data.collection.length > 0)
-            ? data.collection
-            : [
-                {
-                    label: '+'
-                },
-                {
-                    label: '↗️',
-                    links: []
-                }
-            ];
-
-        // Create the tooltip element
-        const tooltipElement = document.createElement('div');
-        tooltipElement.classList.add('tooltip');
-
-        // Add only the first button from the collection (index 0)
-        const firstItem = collection[0];
-        if (firstItem) {
-            const button = document.createElement('button');
-            button.textContent = firstItem.label;
-            button.onclick = (() => {
-                addLinkToCollection(linkElement.href, linkElement.title || linkElement.textContent);
-            });
-            tooltipElement.appendChild(button);
-        }
-
-        // Append tooltip to the body
-        document.body.appendChild(tooltipElement);
-
-        // Dynamically insert CSS styles
-        const styleElement = document.createElement('style');
-        styleElement.textContent = `
-            .tooltip {
-                position: fixed; /* Use fixed instead of absolute */
-                background-color: transparent;
-                padding: 0;
-                border-radius: 4px;
-                white-space: nowrap;
-                z-index: 2147483647;
-                display: none;
-                opacity: 1;
-                transition: opacity 0.3s ease;
-            }
-            
-            .tooltip button {
-	            margin: 0;
-	            padding: 0;
-	            font-size: 20px;
-	            border: none;
-	            border-radius: 50%;
-	            background: #ffa742;
-	            color: white;
-	            width: 20px;
-	            height: 20px;
-	            transition: transform 2s;
-	            font-family: arial;
-	            line-height: 20px;
-
-}
-            
-            a[data-tooltip-added="true"]:hover + .tooltip {
-                display: block;
-            }
-        `;
-        document.head.appendChild(styleElement);
-
-        const getScrollbarWidth = () => {
-            const div = document.createElement('div');
-            div.style.position = 'absolute';
-            div.style.top = '-9999px';
-            div.style.width = '100px';
-            div.style.height = '100px';
-            div.style.overflow = 'scroll';
-
-            document.body.appendChild(div);
-
-            const scrollbarWidth = div.offsetWidth - div.clientWidth;
-
-            document.body.removeChild(div);
-
-            return scrollbarWidth;
-        };
-
-        const setTooltipPosition = (element, textNode, image) => {
-            let top = 0, left = 0;
-            let tooltipWidth = 20;
-            let tooltipHeight = 20;
-
-            const elementRect = element.getBoundingClientRect();
-            let textRect, imageRect;
-
-            if (textNode) {
-                const range = document.createRange();
-                range.selectNodeContents(textNode);
-
-                const containerWidth = elementRect.width;
-                textRect = range.getBoundingClientRect();
-
-                // Adjust textRect if the text overflows the container
-                if (textRect.width > containerWidth) {
-                    let newRange = document.createRange();
-                    newRange.setStart(range.startContainer, range.startOffset);
-                    let charCount = textNode.textContent.length;
-                    let visibleWidth = containerWidth;
-
-                    for (let i = 0; i < charCount; i++) {
-                        newRange.setEnd(range.endContainer, i + 1);
-                        if (newRange.getBoundingClientRect().width > visibleWidth) {
-                            newRange.setEnd(range.endContainer, i);
-                            break;
-                        }
-                    }
-
-                    textRect = newRange.getBoundingClientRect();
-                }
-
-                // Adjust position if an inline image is present
-                if (image) {
-                    imageRect = image.getBoundingClientRect();
-                    if (imageRect.left > textRect.left) {
-                        top = imageRect.top;
-                        left = imageRect.left + imageRect.width;
-                    } else {
-                        top = textRect.top;
-                        left = textRect.left + textRect.width;
-                    }
-                } else {
-                    top = textRect.top;
-                    left = textRect.left + textRect.width;
-                }
-            }
-            // Handle positioning relative to an image if no text node
-            else if (image) {
-                imageRect = image.getBoundingClientRect();
-                top = imageRect.top;
-                left = imageRect.left + imageRect.width;
-            }
-            // Default to positioning relative to the link element if no text or image
-            else {
-                const linkRect = element.getBoundingClientRect();
-                top = linkRect.top;
-                left = linkRect.left + linkRect.width;
-            }
-
-            // Ensure tooltip doesn't go out of the viewport
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const scrollbarWidth = getScrollbarWidth();
-
-            if (left + tooltipWidth > viewportWidth - scrollbarWidth) {
-                left = viewportWidth - scrollbarWidth - tooltipWidth;
-            }
-
-            if (top + tooltipHeight > viewportHeight) {
-                top = viewportHeight - tooltipHeight;
-            }
-
-            tooltipElement.style.top = `${top}px`;
-            tooltipElement.style.left = `${left}px`;
-        };
-
-        const getTextNodesWithImages = (element) => {
-            if (!element) return { textNode: null, image: null };
-
-            const nodes = Array.from(element.childNodes);
-            let textNode = null;
-            let image = null;
-
-            for (const node of nodes) {
-                if (node.nodeType === Node.ELEMENT_NODE) {
-                    // Check if the element contains any visible, non-whitespace text
-                    const textContent = node.textContent.trim();
-                    if (textContent) {
-                        return { textNode: node, image: null }; // Return the first element with non-empty text
-                    }
-
-                    // If it's an image, store it
-                    if (node.tagName === 'IMG') {
-                        image = node;
-                    } else {
-                        // Recursively check inside child elements
-                        const result = getTextNodesWithImages(node);
-                        if (result.textNode) textNode = result.textNode;
-                        if (result.image) image = result.image;
-                    }
-                } else if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-                    // If it's a text node with content, store it
-                    textNode = node;
-                }
-            }
-
-            // Handling case where text is after the image
-            if (textNode && image) {
-                let currentNode = textNode;
-                let foundImage = false;
-
-                while (currentNode.previousSibling) {
-                    currentNode = currentNode.previousSibling;
-                    if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.tagName === 'IMG') {
-                        foundImage = true;
-                        break;
-                    }
-                }
-
-                if (foundImage) {
-                    // Ignore the image if text comes after
-                    image = null;
-                }
-            }
-
-            return { textNode, image };
-        };
-
-
-        const { textNode, image } = getTextNodesWithImages(linkElement);
-
-        // Display the tooltip immediately on first hover
-        setTooltipPosition(linkElement, textNode, image);
-        tooltipElement.style.display = 'block';
-
-        // Prevent tooltip from hiding when moving the mouse from link to tooltip
-        tooltipElement.addEventListener('mouseenter', () => {
-            tooltipElement.style.display = 'block';
-        });
-
-        // Auto-hide tooltip when the mouse leaves the tooltip or link
-        tooltipElement.addEventListener('mouseleave', () => {
-            tooltipElement.style.display = 'none';
-        });
-        linkElement.addEventListener('mouseleave', () => {
-            tooltipElement.style.display = 'none';
-        });
-
-        // Recalculate tooltip position on subsequent hovers
-        linkElement.addEventListener('mouseenter', () => {
-            const { textNode, image } = getTextNodesWithImages(linkElement);
-            setTooltipPosition(linkElement, textNode, image);
-            tooltipElement.style.display = 'block';
-        });
-    });
-}
-
-
-
-
-
 function addSearchTooltipsOnHover(e) {
     if (isDragging) {
         if (searchTooltips) searchTooltips.remove();
@@ -593,48 +324,6 @@ function isLinkInCollection(url) {
     }
     return false; // If links array doesn't exist, return false
 }
-
-
-// Function to add a link to the collection
-function addLinkToCollection(url, label) {
-    // Ensure collection[1] and collection[1].links are initialized
-    if (!collection[1]) {
-        collection[1] = { label: '↗️', links: [] };
-    }
-    if (!Array.isArray(collection[1].links)) {
-        collection[1].links = [];
-    }
-
-    // Check if the link is already in the collection before adding
-    if (!isLinkInCollection(url)) {
-        const newItem = {
-            label: label || url, // Use the link's title as label, or the URL if title is unavailable
-            url: url
-        };
-
-        // Add the new link to the collection
-        collection[1].links.push(newItem);
-        collection.push(newItem); // Add the link as a new entry to the main collection
-
-        // Store the updated collection back in Chrome storage
-        chrome.storage.local.set({ collection: collection });
-    } else {
-        // console.log('Link already exists in the collection.');
-    }
-    isMouseDownOnLink = false;
-    firstDownOnLinkAt = null;
-}
-
-
-// Function to remove a link from the collection
-function removeLinkFromCollection(url) {
-    collection[1].links = collection[1].links.filter(item => item.url !== url);
-    collection = collection.filter(item => item.url !== url); // Remove from the main collection
-
-    // Store the updated collection back in chrome storage
-    chrome.storage.local.set({ collection: collection });
-}
-
 
 
 // Function to add link indicator when hovering over a link
@@ -1695,11 +1384,72 @@ async function checkUrlAndToggleListeners() {
     }
 
     if (data.collectionEnable) {
-        document.addEventListener('mouseover', addTooltipsOnHover, true);
+        document.addEventListener(['contextmenu'], addLinkToCollection, true);
 
     } else {
-        document.removeEventListener('mouseover', addTooltipsOnHover, true);
+        document.removeEventListener(['contextmenu'], addLinkToCollection, true);
     }
+
+}
+
+// Function to add a link to the collection
+function addLinkToCollection(e) {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    e.stopPropagation();
+    chrome.storage.local.get('collection', async (data) => {
+        const linkElement = e.target.tagName === 'A' || e.target.closest('a')
+            ? (e.target.tagName === 'A' ? e.target : e.target.closest('a'))
+            : null;
+
+        if (!linkElement) return;
+
+
+        const linkUrl = linkElement ? linkElement.href : null;
+        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+        if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+        // Initialize or load the collection
+        collection = (Array.isArray(data.collection) && data.collection.length > 0)
+            ? data.collection
+            : [
+                {
+                    label: '+'
+                },
+                {
+                    label: '↗️',
+                    links: []
+                }
+            ];
+
+        // Ensure collection[1] and collection[1].links are initialized
+        if (!collection[1]) {
+            collection[1] = { label: '↗️', links: [] };
+        }
+        if (!Array.isArray(collection[1].links)) {
+            collection[1].links = [];
+        }
+
+        // Check if the link is already in the collection before adding
+        if (!isLinkInCollection(linkUrl)) {
+            const newItem = {
+                label: linkElement.title || linkElement.textContent || linkUrl, // Use the link's title as label, or the URL if title is unavailable
+                url: linkUrl
+            };
+
+            // Add the new link to the collection
+            collection[1].links.push(newItem);
+            collection.push(newItem); // Add the link as a new entry to the main collection
+
+            // Store the updated collection back in Chrome storage
+            chrome.storage.local.set({ collection: collection });
+        } else {
+            // console.log('Link already exists in the collection.');
+        }
+        isMouseDownOnLink = false;
+        firstDownOnLinkAt = null;
+
+    });
+
 
 }
 
