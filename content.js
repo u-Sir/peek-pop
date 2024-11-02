@@ -87,6 +87,7 @@ function addListeners() {
     document.addEventListener('mousedown', handleMouseDown);
     document.addEventListener('scroll', handleContextMenu);
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('mouseover', handleMouseOver, true);
     document.addEventListener('mouseout', handleMouseOut, true);
@@ -728,19 +729,21 @@ async function handleKeyDown(e) {
         } catch (error) {
             console.error('Error loading user configs:', error);
         }
-    } else {
+    } 
+}
+
+async function handleKeyUp(e) {
+    
         try {
             const data = await loadUserConfigs(['doubleTapKeyToSendPageBack']);
             const doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
-
-            if (doubleTapKeyToSendPageBack === 'None') return;
-
-            const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             const key = e.key;
+            if (doubleTapKeyToSendPageBack === 'None' || key !== doubleTapKeyToSendPageBack) return;
+
             const currentTime = new Date().getTime();
             const timeDifference = currentTime - lastKeyTime;
 
-            if (keyMap[doubleTapKeyToSendPageBack] && key === lastKey && timeDifference < 300) {
+            if (key === lastKey && timeDifference < 300) {
 
                 if (linkIndicator) {
                     linkIndicator.remove();
@@ -757,7 +760,7 @@ async function handleKeyDown(e) {
         } catch (error) {
         }
 
-    }
+    
 }
 
 
@@ -1796,6 +1799,7 @@ window.addEventListener('focus', async () => {
     searchTooltips = null;
     removeBlurOverlay();
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
     clearTimeoutsAndProgressBars();
     hoverElement = null;
 
