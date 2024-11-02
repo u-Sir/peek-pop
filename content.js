@@ -793,7 +793,7 @@ function handleMouseDown(e) {
             events.forEach(event => document.addEventListener(event, handleEvent, true));
 
         } else {
-            const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
+            const events = ["click", "dragstart", "dragover", "drop"];
 
             events.forEach(event => document.removeEventListener(event, handleEvent, true));
         }
