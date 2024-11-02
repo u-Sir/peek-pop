@@ -115,7 +115,7 @@ function createTooltip(x, y, actions, timeout = 2000) {
     tooltip.style.backgroundColor = 'transparent'; // Make tooltip background transparent
     tooltip.style.padding = '0'; // Remove padding
     tooltip.style.borderRadius = '0'; // Remove border radius
-    tooltip.style.zIndex = '10000';
+    tooltip.style.zIndex = '2147483647';
     tooltip.style.fontSize = '14px'; // Adjust font size for the text inside buttons
     tooltip.style.display = 'inline-block';
     tooltip.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
@@ -131,9 +131,9 @@ function createTooltip(x, y, actions, timeout = 2000) {
         button.textContent = action.label;
 
         // Style for buttons
-        button.style.backgroundColor = '#ffa742'; // Button background color
+        button.style.backgroundColor = '#fafafa'; // Button background color
         button.style.border = 'none';
-        button.style.color = '#4A2C14'; // Button text color
+        button.style.color = '#999'; // Button text color
         button.style.padding = '4px 5px'; // Adjust size by changing padding
         button.style.borderRadius = '5px'; // Adjust corner roundness
         button.style.cursor = 'pointer';
@@ -1796,7 +1796,7 @@ function createCandleProgressBar(x, y, duration) {
     barContainer.style.border = '1px solid #ffa742'; // Black border for visibility
     barContainer.style.borderRadius = '5px';
     barContainer.style.overflow = 'hidden';
-    barContainer.style.zIndex = '10000';
+    barContainer.style.zIndex = '2147483647';
     barContainer.style.transition = `width ${duration}ms linear`; // Transition definition here
 
     document.body.appendChild(barContainer);
