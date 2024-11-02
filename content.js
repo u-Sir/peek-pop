@@ -1630,7 +1630,8 @@ async function checkUrlAndToggleListeners() {
         'collectionEnable',
         'holdToPreviewTimeout',
         'clickModifiedKey',
-        'linkDisabledUrls'
+        'linkDisabledUrls',
+	'searchTooltipsEnable'
     ]);
     const disabledUrls = data.disabledUrls || [];
     linkDisabledUrls = data.linkDisabledUrls || [];
@@ -1641,6 +1642,10 @@ async function checkUrlAndToggleListeners() {
         removeListeners();
     } else {
         addListeners();
+    }
+    
+    if (data.searchTooltipsEnable) {
+        document.addEventListener('mouseup', handleEvent)
     }
 
     clickModifiedKey = data.clickModifiedKey || 'None';
