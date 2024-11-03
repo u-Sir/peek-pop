@@ -690,6 +690,7 @@ function handleDoubleClick(e) {
 
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
+    if (!linkUrl) return;
     if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
