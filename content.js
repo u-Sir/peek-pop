@@ -1119,8 +1119,7 @@ async function handleDragStart(e) {
             return;
         }
 
-
-        document.addEventListener('dragend', function onDragend(e) {
+        function onDragend(e) {
 
 
             const currentMouseX = e.clientX;
@@ -1173,7 +1172,6 @@ async function handleDragStart(e) {
                         }, () => {
                             hasPopupTriggered = true;
                             document.removeEventListener('dragend', onDragend, true);
-                            finalLinkUrl = null;
                             imageUrl = null;
                             if (linkIndicator) linkIndicator.remove();
                             linkIndicator = null;
@@ -1237,7 +1235,6 @@ async function handleDragStart(e) {
                     }, () => {
                         hasPopupTriggered = true;
                         document.removeEventListener('dragend', onDragend, true);
-                        finalLinkUrl = null;
                         imageUrl = null;
                         if (linkIndicator) linkIndicator.remove();
                         linkIndicator = null;
@@ -1257,7 +1254,17 @@ async function handleDragStart(e) {
             }
             // document.removeEventListener('dragend', onDragend, true);
 
-        }, true);
+        }
+        document.addEventListener('dragend', onDragend, true);
+        document.addEventListener('dragover', handleDrag);
+
+        function handleDrag(e) {
+            // do nothing when drag out of current page
+            if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
+                document.removeEventListener('dragend', onDragend, true);
+                document.removeEventListener('dragover', handleDrag);
+            }
+        }
 
 
     }
