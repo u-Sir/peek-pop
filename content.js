@@ -426,7 +426,7 @@ async function handleKeyUp(e) {
         try {
             const data = await loadUserConfigs(['doubleTapKeyToSendPageBack']);
             const doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
-            const key = e.key;
+            const key = e.key === 'Control' ? 'Ctrl' : e.key;
             if (doubleTapKeyToSendPageBack === 'None' || key !== doubleTapKeyToSendPageBack) return;
 
             const currentTime = new Date().getTime();
