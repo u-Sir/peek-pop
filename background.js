@@ -285,47 +285,62 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 if (request.action === 'windowRegainedFocus') {
                     chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
-                        const popupWindowsInfo = result.popupWindowsInfo;
-                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).some(windowId => {
-                            return parseInt(windowId) === currentWindow.id;
-                        });
+                        const popupWindowsInfo = result.popupWindowsInfo || {};
+                        const isCurrentWindowOriginal = popupWindowsInfo.hasOwnProperty(currentWindow.id);
+
                         if (isCurrentWindowOriginal) {
+                            let popupsToRemove = new Set();
 
-                            let popupsToRemove = Object.keys(popupWindowsInfo[currentWindow.id] || {});
+                            // Recursive function to find all nested sub-popups
+                            const addNestedPopups = (popupId) => {
+                                const subPopups = popupWindowsInfo[popupId];
 
+                                if (subPopups) {
+                                    Object.keys(subPopups).forEach(subPopupId => {
+                                        // Add all popups without checking focus if checkFocus is false
+                                        popupsToRemove.add(subPopupId);
+                                        addNestedPopups(subPopupId); // Recurse into further nested sub-popups
+                                    });
+                                }
+                            };
+
+                            // Step 1: Add popups directly under the current window
+                            Object.keys(popupWindowsInfo[currentWindow.id] || {}).forEach(popupId => {
+                                // If no focus check needed, add all popups
+                                popupsToRemove.add(popupId);
+                                addNestedPopups(popupId);
+                            });
 
                             chrome.windows.getAll({ populate: true }, windows => {
                                 windows.forEach(window => {
-                                    if (popupsToRemove.includes(window.id.toString())) {
+                                    if (popupsToRemove.has(window.id.toString())) {
                                         chrome.windows.remove(window.id, () => {
                                             if (chrome.runtime.lastError) {
-                                                // console.error("Error removing window: ", chrome.runtime.lastError.message);
+                                                // Error handling for window removal
                                             } else {
-                                                // console.log("Window removed successfully.");
+                                                // Window removed successfully
                                             }
                                         });
-
                                     }
                                 });
+
+                                // Remove context menu item if necessary
                                 if (result.contextItemCreated) {
                                     chrome.contextMenus.remove('sendPageBack', () => {
                                         if (chrome.runtime.lastError) {
-                                            // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                                            // Error handling for context menu removal
                                         } else {
-                                            // console.log("Context menu 'sendPageBack' removed successfully.");
+                                            // Context menu 'sendPageBack' removed successfully
                                         }
                                     });
 
                                     result.contextItemCreated = false;
                                     chrome.storage.local.set({ contextItemCreated: false });
                                 }
-
                             });
                         }
-
                     });
                     sendResponse({ status: 'window focus handled' });
-
                 }
 
                 if (request.action === 'updateIcon') {
