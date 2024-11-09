@@ -649,7 +649,7 @@ function handleHoldLink(e) {
                 if (blurEnabled && !previewModePopupInBackground) {
                     addBlurOverlay(blurPx, blurTime);
                 }
-                addClickMask();
+                if (!previewModePopupInBackground) addClickMask();
 
                 chrome.runtime.sendMessage({
                     linkUrl: finalLinkUrl,
@@ -889,7 +889,7 @@ function handlePreviewMode(e) {
                 addBlurOverlay(blurPx, blurTime);
             }
 
-            addClickMask();
+            if (!previewModePopupInBackground) addClickMask();
 
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
@@ -1159,7 +1159,7 @@ async function handleDragStart(e) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
 
-                        addClickMask();
+                        if (!popupInBackground) addClickMask();
                         chrome.runtime.sendMessage({
                             linkUrl: finalLinkUrl,
                             lastClientX: e.screenX,
@@ -1222,7 +1222,7 @@ async function handleDragStart(e) {
                         addBlurOverlay(blurPx, blurTime);
                     }
 
-                    addClickMask();
+                    if (!popupInBackground) addClickMask();
                     chrome.runtime.sendMessage({
                         linkUrl: finalLinkUrl,
                         lastClientX: e.screenX,
@@ -1792,7 +1792,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
             if (blurEnabled && !hoverPopupInBackground) {
                 addBlurOverlay(blurPx, blurTime);
             }
-            addClickMask();
+            if (!hoverPopupInBackground) addClickMask();
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
                 lastClientX: e.screenX,
