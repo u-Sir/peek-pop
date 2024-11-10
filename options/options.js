@@ -69,12 +69,16 @@ function init() {
             if (document.querySelector('.tab-link.active').id === 'dragSettingsTab') {
 
                 // Set up for drag search engine
-                setupSearchEngineOptions('searchEngine', 'input[name="searchEngine"]', 'imgSearchOption', 'imgSearchEnable');
+                setupSearchEngineOptions(input[name="searchEngine"]', 'imgSearchOption', 'imgSearchEnable');
 
             } else if (document.querySelector('.tab-link.active').id === 'hoverSettingsTab') {
 
                 // Set up for hover search engine
-                setupSearchEngineOptions('hoverSearchEngine', 'input[name="hoverSearchEngine"]', 'hoverImgSearchOption', 'hoverImgSearchEnable');
+                setupSearchEngineOptions(input[name="hoverSearchEngine"]', 'hoverImgSearchOption', 'hoverImgSearchEnable');
+            } else if (document.querySelector('.tab-link.active').id === 'previewModeSettingsTab') {
+
+                setupSearchEngineOptions('input[name="clickModifiedKey"]', 'doubleClickToSwitchOption', 'doubleClickToSwitch');
+                setupSearchEngineOptions('input[name="clickModifiedKey"]', 'doubleClickAsClickOption', 'doubleClickAsClick');
             }
 
 
@@ -205,11 +209,11 @@ function init() {
 }
 
 // Function to set up the visibility toggle for image search options
-function setupSearchEngineOptions(engineType, engineSelector, imgOptionId, configKey) {
+function setupSearchEngineOptions(engineSelector, imgOptionId, configKey) {
     const searchEngines = document.querySelectorAll(engineSelector);
     const imgSearchOption = document.getElementById(imgOptionId);
 
-    const allowedEngines = ["google", "bing", "baidu", "yandex", "hoverGoogle", "hoverBing", "hoverBaidu", "hoverYandex"];
+    const allowedEngines = ["google", "bing", "baidu", "yandex", "hoverGoogle", "hoverBing", "hoverBaidu", "hoverYandex", "clickNoneKey"];
     searchEngines.forEach(radio => {
         radio.addEventListener('change', function () {
             if (allowedEngines.includes(this.id)) {
