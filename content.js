@@ -1100,18 +1100,13 @@ async function handleDragStart(e) {
     let imageUrl = imageElement ? imageElement.src : null;
 
     if (linkUrl || selectionText || imageUrl) {
-        const data = await loadUserConfigs(['imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport', 'popupInBackground']);
+        const data = await loadUserConfigs(['imgSearchEnable', 'searchEngine', 'dragPx', 'dragDirections', 'imgSupport']);
         const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
-        const popupInBackground = data.popupInBackground || false;
         // Regular expression to match URLs including IP addresses
         const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
         // Check if the selected text is a URL
         const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
-
-        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-        const blurPx = parseFloat(data.blurPx || 3);
-        const blurTime = parseFloat(data.blurTime || 1);
 
         // Ensure that URLs without a protocol are handled
         const processedLinkUrl = isURL
@@ -1134,7 +1129,7 @@ async function handleDragStart(e) {
         }
 
         // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-        let finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
+        const finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
             ((searchEngine && selectionText.trim() !== '')
                 ? searchEngine.replace('%s', encodeURIComponent(selectionText))
                 : null);
@@ -1152,23 +1147,139 @@ async function handleDragStart(e) {
             isDragging = false;
             return;
         }
+        const lastLink = finalLinkUrl;
+        async function onDragend(e) {
 
-        function onDragend(e) {
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
+            if (!isMouseDown || hasPopupTriggered) return;
+            const selectionText = window.getSelection().toString();
+            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+            const linkUrl = linkElement ? linkElement.href : null;
+            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+
+            const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
+            let imageUrl = imageElement ? imageElement.src : null;
+
+            if (linkUrl || selectionText || imageUrl) {
+                const data = await loadUserConfigs(['imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport', 'popupInBackground']);
 
 
-            const currentMouseX = e.clientX;
-            const currentMouseY = e.clientY;
-            let direction = '';
+                const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
+                const popupInBackground = data.popupInBackground || false;
+                // Regular expression to match URLs including IP addresses
+                const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
-            // do nothing when drag out of current page
-            if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
-                document.removeEventListener('dragend', onDragend, true);
-                resetDraggingState();
-                return;
-            }
+                // Check if the selected text is a URL
+                const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
 
-            if (dragPx !== 0) {
-                if ((Math.abs(currentMouseX - initialMouseX) > dragPx) || (Math.abs(currentMouseY - initialMouseY) > dragPx)) {
+                const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+                const blurPx = parseFloat(data.blurPx || 3);
+                const blurTime = parseFloat(data.blurTime || 1);
+
+                // Ensure that URLs without a protocol are handled
+                const processedLinkUrl = isURL
+                    ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
+                        ? selectionText
+                        : 'http://' + selectionText)
+                    : null;
+
+                if (data.imgSearchEnable) {
+                    const imgSearchEngineMap = {
+                        "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
+                        "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
+                        "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
+                        "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
+                    };
+                    if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
+
+                        imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
+                    }
+                }
+
+                // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+                const finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
+                    ((searchEngine && selectionText.trim() !== '')
+                        ? searchEngine.replace('%s', encodeURIComponent(selectionText))
+                        : null);
+
+                if (!finalLinkUrl) return;
+                if (finalLinkUrl !== lastLink) return;
+
+                const currentMouseX = e.clientX;
+                const currentMouseY = e.clientY;
+                let direction = '';
+
+                // do nothing when drag out of current page
+                if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
+                    document.removeEventListener('dragend', onDragend, true);
+                    resetDraggingState();
+                    return;
+                }
+
+                if (dragPx !== 0) {
+                    if ((Math.abs(currentMouseX - initialMouseX) > dragPx) || (Math.abs(currentMouseY - initialMouseY) > dragPx)) {
+                        // identify drag directions
+                        if (Math.abs(currentMouseX - initialMouseX) > Math.abs(currentMouseY - initialMouseY)) {
+                            direction = (currentMouseX > initialMouseX) ? 'right' : 'left';
+                        } else {
+                            direction = (currentMouseY > initialMouseY) ? 'down' : 'up';
+                        }
+
+                        if (dragDirections.includes(direction)) {
+
+                            isDragging = true;
+
+                            if (linkIndicator) {
+                                linkIndicator.remove();
+                            }
+                            linkIndicator = null;
+
+                            if (searchTooltips) searchTooltips.remove();
+                            searchTooltips = null;
+                            if (blurEnabled && !popupInBackground) {
+                                addBlurOverlay(blurPx, blurTime);
+                            }
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+
+                            if (!popupInBackground) addClickMask();
+
+                            chrome.runtime.sendMessage({
+                                linkUrl: finalLinkUrl,
+                                lastClientX: e.screenX,
+                                lastClientY: e.screenY,
+                                width: window.screen.availWidth,
+                                height: window.screen.availHeight,
+                                top: window.screen.availTop,
+                                left: window.screen.availLeft,
+                                trigger: 'drag'
+                            }, () => {
+                                hasPopupTriggered = true;
+                                document.removeEventListener('dragend', onDragend, true);
+                                imageUrl = null;
+                                if (linkIndicator) linkIndicator.remove();
+                                linkIndicator = null;
+                                if (searchTooltips) searchTooltips.remove();
+                                searchTooltips = null;
+                                isDragging = false;
+
+                                if (window.getSelection().toString()) {
+                                    window.getSelection().removeAllRanges();
+                                }
+
+
+                            });
+                        } else {
+                            isDragging = false;
+                        }
+
+
+                    } else {
+                        isDragging = false;
+                    }
+
+                } else {
                     // identify drag directions
                     if (Math.abs(currentMouseX - initialMouseX) > Math.abs(currentMouseY - initialMouseY)) {
                         direction = (currentMouseX > initialMouseX) ? 'right' : 'left';
@@ -1178,22 +1289,23 @@ async function handleDragStart(e) {
 
                     if (dragDirections.includes(direction)) {
 
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
                         isDragging = true;
 
                         if (linkIndicator) {
                             linkIndicator.remove();
                         }
                         linkIndicator = null;
-
                         if (searchTooltips) searchTooltips.remove();
                         searchTooltips = null;
+
                         if (blurEnabled && !popupInBackground) {
                             addBlurOverlay(blurPx, blurTime);
                         }
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
 
                         if (!popupInBackground) addClickMask();
+
                         chrome.runtime.sendMessage({
                             linkUrl: finalLinkUrl,
                             lastClientX: e.screenX,
@@ -1222,74 +1334,11 @@ async function handleDragStart(e) {
                     } else {
                         isDragging = false;
                     }
-
-
-                } else {
-                    isDragging = false;
-                }
-
-
-
-
-            } else {
-                // identify drag directions
-                if (Math.abs(currentMouseX - initialMouseX) > Math.abs(currentMouseY - initialMouseY)) {
-                    direction = (currentMouseX > initialMouseX) ? 'right' : 'left';
-                } else {
-                    direction = (currentMouseY > initialMouseY) ? 'down' : 'up';
-                }
-
-                if (dragDirections.includes(direction)) {
-
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    isDragging = true;
-
-                    if (linkIndicator) {
-                        linkIndicator.remove();
-                    }
-                    linkIndicator = null;
-                    if (searchTooltips) searchTooltips.remove();
-                    searchTooltips = null;
-
-                    if (blurEnabled && !popupInBackground) {
-                        addBlurOverlay(blurPx, blurTime);
-                    }
-
-                    if (!popupInBackground) addClickMask();
-                    chrome.runtime.sendMessage({
-                        linkUrl: finalLinkUrl,
-                        lastClientX: e.screenX,
-                        lastClientY: e.screenY,
-                        width: window.screen.availWidth,
-                        height: window.screen.availHeight,
-                        top: window.screen.availTop,
-                        left: window.screen.availLeft,
-                        trigger: 'drag'
-                    }, () => {
-                        hasPopupTriggered = true;
-                        document.removeEventListener('dragend', onDragend, true);
-                        imageUrl = null;
-                        if (linkIndicator) linkIndicator.remove();
-                        linkIndicator = null;
-                        if (searchTooltips) searchTooltips.remove();
-                        searchTooltips = null;
-                        isDragging = false;
-
-                        if (window.getSelection().toString()) {
-                            window.getSelection().removeAllRanges();
-                        }
-
-
-                    });
-                } else {
-                    isDragging = false;
                 }
             }
-            // document.removeEventListener('dragend', onDragend, true);
-
         }
-        document.addEventListener('dragend', onDragend, true);
+        document.removeEventListener('dragend', onDragend, true);
+        document.addEventListener('dragend', onDragend, { once: true });
         document.addEventListener('dragover', handleDragover);
 
         function handleDragover(e) {
@@ -1299,10 +1348,7 @@ async function handleDragStart(e) {
                 document.removeEventListener('dragover', handleDragover);
             }
         }
-
-
     }
-
 }
 
 function isUrlDisabled(url, disabledUrls) {
