@@ -69,12 +69,12 @@ function init() {
             if (document.querySelector('.tab-link.active').id === 'dragSettingsTab') {
 
                 // Set up for drag search engine
-                setupSearchEngineOptions(input[name="searchEngine"]', 'imgSearchOption', 'imgSearchEnable');
+                setupSearchEngineOptions('input[name="searchEngine"]', 'imgSearchOption', 'imgSearchEnable');
 
             } else if (document.querySelector('.tab-link.active').id === 'hoverSettingsTab') {
 
                 // Set up for hover search engine
-                setupSearchEngineOptions(input[name="hoverSearchEngine"]', 'hoverImgSearchOption', 'hoverImgSearchEnable');
+                setupSearchEngineOptions('input[name="hoverSearchEngine"]', 'hoverImgSearchOption', 'hoverImgSearchEnable');
             } else if (document.querySelector('.tab-link.active').id === 'previewModeSettingsTab') {
 
                 setupSearchEngineOptions('input[name="clickModifiedKey"]', 'doubleClickToSwitchOption', 'doubleClickToSwitch');
