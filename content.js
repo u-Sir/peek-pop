@@ -421,6 +421,38 @@ async function handleKeyDown(e) {
         } catch (error) {
             console.error('Error loading user configs:', error);
         }
+    } else {
+        try {
+            const data = await loadUserConfigs(['clickModifiedKey', 'previewModeEnable']);
+
+            if (data.previewModeEnable && data.clickModifiedKey !== 'None') {
+                const clickModifiedKey = data.clickModifiedKey === 'Ctrl' ? 'Control' : data.clickModifiedKey;
+                if (e.key === clickModifiedKey) {
+                    previewMode = true;
+                    document.addEventListener('keyup', (e) => {
+                        if (e.key === clickModifiedKey) {
+                            previewMode = false;
+                        }
+
+                        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+
+                    }, { once: true })
+                } else {
+                    previewMode = false;
+                }
+            } else if (data.previewModeEnable && data.clickModifiedKey === 'None') {
+                previewMode = true;
+            } else {
+                previewMode = false;
+            }
+
+
+            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+
+        } catch (error) {
+            console.error('Error loading user configs:', error);
+        }
+
     }
 }
 
@@ -684,21 +716,21 @@ function handleHoldLink(e) {
 
 
 function handleDoubleClick(e) {
+    document.addEventListener('mousedown',() => {
+        isDoubleClick = false;
+    }, {once: true});
     isDoubleClick = true;
     // Prevent the single-click action from triggering
     clearTimeout(clickTimeout);
 
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
-    if (!linkUrl) return;
-    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
     e.preventDefault(); // Prevent the default double-click action
     e.stopPropagation(); // Stop the event from bubbling up
 
-    chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable'], (data) => {
-        if (!data.previewModeEnable) return;
+    chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable', 'clickModifiedKey'], (data) => {
+        if (!data.previewModeEnable || data.clickModifiedKey !== 'None') return;
         // Check if the double-clicked element is a link
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
         const imageUrl = imageElement ? imageElement.src : null;
@@ -720,6 +752,8 @@ function handleDoubleClick(e) {
             };
 
         } else if (linkUrl) {
+            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+            if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
             if (data.doubleClickAsClick) {
                 hasPopupTriggered = true;
                 isDoubleClick = true;
@@ -1362,6 +1396,9 @@ async function checkUrlAndToggleListeners() {
 
     } else {
         previewMode = data.previewMode;
+        if (clickModifiedKey !== 'None') {
+            previewMode = false;
+        }
     }
 
 
