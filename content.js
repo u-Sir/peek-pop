@@ -325,11 +325,22 @@ function isLinkInCollection(url) {
 
 // Function to add link indicator when hovering over a link
 function changeCursorOnHover(e) {
-    if (e.target.tagName === 'A' || e.target.closest('a')) {
+    const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
-        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-        const linkUrl = linkElement ? linkElement.href : null;
-        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    if (linkElement) {
+
+
+        const linkUrl = linkElement ?
+            (linkElement.getAttribute('data-url') ||
+                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            : null;
+
+        if (!linkUrl) return;
+        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+        if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+        if (linkElement && linkElement.getAttribute('role') === 'button' && linkElement.hasAttribute('aria-expanded')) return;
+
 
         if (!document.body.contains(e.target)) {
             return; // If the element is not in the DOM anymore, do nothing
@@ -454,38 +465,40 @@ async function handleKeyDown(e) {
 }
 
 async function handleKeyUp(e) {
-    
-        try {
-            const data = await loadUserConfigs(['doubleTapKeyToSendPageBack']);
-            const doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
-            const key = e.key === 'Control' ? 'Ctrl' : e.key;
-            if (doubleTapKeyToSendPageBack === 'None' || key !== doubleTapKeyToSendPageBack) return;
 
-            const currentTime = new Date().getTime();
-            const timeDifference = currentTime - lastKeyTime;
+    try {
+        const data = await loadUserConfigs(['doubleTapKeyToSendPageBack']);
+        const doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
+        const key = e.key === 'Control' ? 'Ctrl' : e.key;
+        if (doubleTapKeyToSendPageBack === 'None' || key !== doubleTapKeyToSendPageBack) return;
 
-            if (key === lastKey && timeDifference < 300) {
+        const currentTime = new Date().getTime();
+        const timeDifference = currentTime - lastKeyTime;
 
-                if (linkIndicator) {
-                    linkIndicator.remove();
-                }
-                linkIndicator = null;
+        if (key === lastKey && timeDifference < 300) {
 
-                if (searchTooltips) searchTooltips.remove();
-                searchTooltips = null;
-                chrome.runtime.sendMessage({ action: 'sendPageBack' });
-            } else {
-                lastKeyTime = currentTime;
-                lastKey = key;
+            if (linkIndicator) {
+                linkIndicator.remove();
             }
-        } catch (error) {
-        }
+            linkIndicator = null;
 
-    
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
+            chrome.runtime.sendMessage({ action: 'sendPageBack' });
+        } else {
+            lastKeyTime = currentTime;
+            lastKey = key;
+        }
+    } catch (error) {
+    }
+
+
 }
 
 
 function handleMouseDown(e) {
+    const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
+
     if (focusAt && Date.now() - focusAt < 50) {
         e.preventDefault();
         e.stopPropagation();
@@ -504,15 +517,23 @@ function handleMouseDown(e) {
         'holdToPreview',
         'holdToPreviewTimeout'
     ], (data) => {
+
         const modifiedKey = data.modifiedKey || 'None';
         const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
         const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
-        const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-        const linkUrl = linkElement ? linkElement.href : null;
-        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+        const linkElement = anchorElement ||
+            (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+        const linkUrl = linkElement ?
+            (linkElement.getAttribute('data-url') ||
+                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            : null;
+
+        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
         if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
         if (modifiedKey === 'None' || keyMap[modifiedKey]) {
+
             const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
             events.forEach(event => document.addEventListener(event, handleEvent, true));
 
@@ -545,14 +566,19 @@ function handleMouseDown(e) {
         }
 
         if (data.holdToPreview && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
-            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-            const linkUrl = linkElement ? linkElement.href : null;
+            const linkElement = anchorElement ||
+                (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+            const linkUrl = linkElement ?
+                (linkElement.getAttribute('data-url') ||
+                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                : null;
 
             // Check for left mouse button click
             if (e.button !== 0) return;
 
             // Check if the URL is valid and not a JavaScript link
-            if (!linkUrl || (linkUrl && linkUrl.trim().startsWith('javascript:'))) {
+            if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
                 isMouseDownOnLink = false;
                 clearTimeoutsAndProgressBars();
                 document.removeEventListener('mouseup', handleHoldLink, true);
@@ -639,11 +665,17 @@ function handleHoldLink(e) {
 
     if (e.button !== 0 || isDoubleClick) return;
     if (!firstDownOnLinkAt) return;
-    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
+    const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
     if (!linkElement) return; // Ensure linkElement and linkUrl are valid
 
-    const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    const linkUrl = linkElement ?
+        (linkElement.getAttribute('data-url') ||
+            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+        : null;
+
+    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
     isMouseDownOnLink = true;
@@ -710,15 +742,21 @@ function handleHoldLink(e) {
 
 
 function handleDoubleClick(e) {
-    document.addEventListener('mousedown',() => {
+    document.addEventListener('mousedown', () => {
         isDoubleClick = false;
-    }, {once: true});
+    }, { once: true });
     isDoubleClick = true;
     // Prevent the single-click action from triggering
     clearTimeout(clickTimeout);
 
-    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-    const linkUrl = linkElement ? linkElement.href : null;
+    const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+    const linkUrl = linkElement ?
+        (linkElement.getAttribute('data-url') ||
+            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+        : null;
+
 
     e.preventDefault(); // Prevent the default double-click action
     e.stopPropagation(); // Stop the event from bubbling up
@@ -746,7 +784,7 @@ function handleDoubleClick(e) {
             };
 
         } else if (linkUrl) {
-            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+            if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
             if (data.doubleClickAsClick) {
                 hasPopupTriggered = true;
@@ -794,12 +832,13 @@ function resetClickState() {
 function handleEvent(e) {
 
     if (e.type === 'dragstart') {
-        // isDragging = true;
+        const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
         chrome.storage.local.get(['modifiedKey', 'dragDirections'], (data) => {
             const modifiedKey = data.modifiedKey || 'None';
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             if (modifiedKey === 'None' || keyMap[modifiedKey]) {
-                handleDragStart(e);
+                
+                handleDragStart(e, anchorElement);
             } else {
                 isDragging = false;
             }
@@ -820,17 +859,22 @@ function handleEvent(e) {
 
         } else {
             document.addEventListener('dblclick', handleDoubleClick, true);
-            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-            const linkUrl = linkElement ? linkElement.href : null;
-            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-            if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+            const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+                (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
+            const linkUrl = linkElement ?
+                (linkElement.getAttribute('data-url') ||
+                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                : null;
+
+            if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+            if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
             if (previewMode && linkUrl && !isDoubleClick) {
                 e.preventDefault();
                 e.stopPropagation();
 
                 clickTimeout = setTimeout(() => {
-                    handlePreviewMode(e);
+                    handlePreviewMode(e, linkUrl);
 
                 }, 250);
             }
@@ -867,6 +911,17 @@ function handleEvent(e) {
 
         setTimeout(resetDraggingState, 0);
     } else if (e.type === 'mouseup' && e.button === 0) {
+
+        const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+            (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+        const linkUrl = linkElement ?
+            (linkElement.getAttribute('data-url') ||
+                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            : null;
+
+        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+        if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
         isDragging = false;
         handleMouseUpWithProgressBar(e);
 
@@ -885,13 +940,8 @@ function handleEvent(e) {
     chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 }
 
-function handlePreviewMode(e) {
+function handlePreviewMode(e, linkUrl) {
     if (!isMouseDown || hasPopupTriggered || isDoubleClick) return;
-
-    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-    const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-
 
     if (linkUrl) {
         e.preventDefault();
@@ -1082,75 +1132,82 @@ async function handleMouseUpWithProgressBar(e) {
 }
 
 
-async function handleDragStart(e) {
+async function handleDragStart(e, anchorElement) {
 
     if (searchTooltips) searchTooltips.remove();
-    searchTooltips = null;
-    if (!isMouseDown || hasPopupTriggered) return;
-    const selectionText = window.getSelection().toString();
-    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-    const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+    searchTooltips = null;    
 
-    const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
-    let imageUrl = imageElement ? imageElement.src : null;
+    const data = await loadUserConfigs(['dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
+    const dragStartEnable = data.dragStartEnable !== 'undefined' ? data.dragStartEnable : false;
 
-    if (linkUrl || selectionText || imageUrl) {
-        const data = await loadUserConfigs(['dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
-        const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
-        // Regular expression to match URLs including IP addresses
-        const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
+    if (!dragStartEnable) {
+        const viewportTop = e.screenY - e.clientY;
+        const viewportBottom = e.screenY - e.clientY + window.innerHeight;
+        const viewportLeft = e.screenX - e.clientX;
+        const viewportRight = e.screenX - e.clientX + window.innerWidth;
+        const dragPx = data.dragPx || 0;
+        const dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
 
-        // Check if the selected text is a URL
-        const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
-
-        const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-        const blurPx = parseFloat(data.blurPx || 3);
-        const blurTime = parseFloat(data.blurTime || 1);
-
-        // Ensure that URLs without a protocol are handled
-        const processedLinkUrl = isURL
-            ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
-                ? selectionText
-                : 'http://' + selectionText)
-            : null;
-
-        if (data.imgSearchEnable) {
-            const imgSearchEngineMap = {
-                "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
-                "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
-                "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
-                "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
-            };
-            if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
-
-                imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
-            }
+        if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
+            isDragging = false;
+            return;
         }
 
-        // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-        let finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
-            ((searchEngine && selectionText.trim() !== '')
-                ? searchEngine.replace('%s', encodeURIComponent(selectionText))
-                : null);
+        function onDragend(e) {
+            if (!isMouseDown || hasPopupTriggered) return;
 
-        if (!finalLinkUrl) return;
+            const selectionText = window.getSelection().toString();
+            const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+                (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
-        const dragStartEnable = data.dragStartEnable !== 'undefined' ? data.dragStartEnable : false;
-        if (!dragStartEnable) {
-            const viewportTop = e.screenY - e.clientY;
-            const viewportBottom = e.screenY - e.clientY + window.innerHeight;
-            const viewportLeft = e.screenX - e.clientX;
-            const viewportRight = e.screenX - e.clientX + window.innerWidth;
-            const dragPx = data.dragPx || 0;
-            const dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
+            const linkUrl = linkElement ?
+                (linkElement.getAttribute('data-url') ||
+                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                : null;
 
-            if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
-                isDragging = false;
-                return;
-            }
+            if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
 
-            function onDragend(e) {
+            const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
+            let imageUrl = imageElement ? imageElement.src : null;
+
+            if (linkUrl || selectionText || imageUrl) {
+                const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
+                // Regular expression to match URLs including IP addresses
+                const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
+
+                // Check if the selected text is a URL
+                const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
+
+                const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+                const blurPx = parseFloat(data.blurPx || 3);
+                const blurTime = parseFloat(data.blurTime || 1);
+
+                // Ensure that URLs without a protocol are handled
+                const processedLinkUrl = isURL
+                    ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
+                        ? selectionText
+                        : 'http://' + selectionText)
+                    : null;
+
+                if (data.imgSearchEnable) {
+                    const imgSearchEngineMap = {
+                        "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
+                        "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
+                        "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
+                        "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
+                    };
+                    if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
+
+                        imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
+                    }
+                }
+
+                // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+                let finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
+                    ((searchEngine && selectionText.trim() !== '')
+                        ? searchEngine.replace('%s', encodeURIComponent(selectionText))
+                        : null);
+                if (!finalLinkUrl) return;
 
 
                 const currentMouseX = e.clientX;
@@ -1286,20 +1343,74 @@ async function handleDragStart(e) {
                     }
                 }
                 // document.removeEventListener('dragend', onDragend, true);
-
             }
+        }
 
-            document.addEventListener('dragend', onDragend, true);
-            document.addEventListener('dragover', handleDragover);
+        document.addEventListener('dragend', onDragend, true);
+        document.addEventListener('dragover', handleDragover);
 
-            function handleDragover(e) {
-                // do nothing when drag out of current page
-                if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
-                    document.removeEventListener('dragend', onDragend, true);
-                    document.removeEventListener('dragover', handleDragover);
+        function handleDragover(e) {
+            // do nothing when drag out of current page
+            if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
+                document.removeEventListener('dragend', onDragend, true);
+                document.removeEventListener('dragover', handleDragover);
+            }
+        }
+    } else {
+        if (!isMouseDown || hasPopupTriggered) return;
+
+        const selectionText = window.getSelection().toString();
+        const linkElement = anchorElement ||
+            (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+        const linkUrl = linkElement ?
+            (linkElement.getAttribute('data-url') ||
+                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            : null;
+
+        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+        const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
+        let imageUrl = imageElement ? imageElement.src : null;
+
+        if (linkUrl || selectionText || imageUrl) {
+            const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
+            // Regular expression to match URLs including IP addresses
+            const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
+
+            // Check if the selected text is a URL
+            const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
+
+            const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+            const blurPx = parseFloat(data.blurPx || 3);
+            const blurTime = parseFloat(data.blurTime || 1);
+
+            // Ensure that URLs without a protocol are handled
+            const processedLinkUrl = isURL
+                ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
+                    ? selectionText
+                    : 'http://' + selectionText)
+                : null;
+
+            if (data.imgSearchEnable) {
+                const imgSearchEngineMap = {
+                    "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
+                    "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
+                    "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
+                    "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
+                };
+                if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
+
+                    imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
                 }
             }
-        } else {
+
+            // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+            let finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
+                ((searchEngine && selectionText.trim() !== '')
+                    ? searchEngine.replace('%s', encodeURIComponent(selectionText))
+                    : null);
+            if (!finalLinkUrl) return;
+
 
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -1344,9 +1455,10 @@ async function handleDragStart(e) {
 
             });
         }
-
-
     }
+
+
+
 
 }
 
@@ -1410,7 +1522,7 @@ async function checkUrlAndToggleListeners() {
         'holdToPreviewTimeout',
         'clickModifiedKey',
         'linkDisabledUrls',
-	'searchTooltipsEnable'
+        'searchTooltipsEnable'
     ]);
     const disabledUrls = data.disabledUrls || [];
     linkDisabledUrls = data.linkDisabledUrls || [];
@@ -1422,7 +1534,7 @@ async function checkUrlAndToggleListeners() {
     } else {
         addListeners();
     }
-    
+
     if (data.searchTooltipsEnable) {
         document.addEventListener('mouseup', handleEvent)
     }
@@ -1484,16 +1596,18 @@ function addLinkToCollection(e) {
     e.preventDefault();
     e.stopPropagation();
     chrome.storage.local.get('collection', async (data) => {
-        const linkElement = e.target.tagName === 'A' || e.target.closest('a')
-            ? (e.target.tagName === 'A' ? e.target : e.target.closest('a'))
-            : null;
-
+        const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+            (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
         if (!linkElement) return;
 
+        const linkUrl = linkElement ?
+            (linkElement.getAttribute('data-url') ||
+                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            : null;
 
-        const linkUrl = linkElement ? linkElement.href : null;
-        if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
         if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
         // Initialize or load the collection
         collection = (Array.isArray(data.collection) && data.collection.length > 0)
             ? data.collection
@@ -1658,13 +1772,27 @@ function createCandleProgressBar(x, y, duration) {
 
 // Handle mouseover event
 async function handleMouseOver(e) {
+
+    const path = e.composedPath();
+
+    // Check if any of the nodes in the path are part of a shadow root
+    const isInsideShadowRoot = path.some(node => node instanceof ShadowRoot);
+    if (isInsideShadowRoot) {
+            clearTimeoutsAndProgressBars();
+            e.target.addEventListener('mousemove', handleMouseOver)
+        e.target.addEventListener('mouseleave', ()=>{
+            clearTimeoutsAndProgressBars();
+            e.target.removeEventListener('mousemove', handleMouseOver)
+        },{once: true})
+    }
+    const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
+
     // Check if the document has focus
     if (!document.hasFocus()) {
         clearTimeoutsAndProgressBars();
         hoverElement = null;
         return; // Exit if the window is not focused
     }
-
     if (isDragging) {
         if (progressBar) {
             progressBar.remove();
@@ -1693,12 +1821,17 @@ async function handleMouseOver(e) {
         return;
     }
 
-    const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-    const linkUrl = linkElement ? linkElement.href : null;
-    if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
-    if (isUrlDisabled(linkUrl, linkDisabledUrls)) {
-        return;
-    }
+    const linkElement = anchorElement ||
+        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+    const linkUrl = linkElement ?
+        (linkElement.getAttribute('data-url') ||
+            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+        : null;
+
+    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
 
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
         changeCursorOnHover(e);
@@ -1712,9 +1845,15 @@ async function handleMouseOver(e) {
         if (!hoverTimeout || parseInt(hoverTimeout, 10) === 0) {
             return;
         } else {
-            const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
-            const linkUrl = linkElement ? linkElement.href : null;
-            if (linkUrl && linkUrl.trim().startsWith('javascript:')) return;
+            const linkElement = anchorElement ||
+                (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+            const linkUrl = linkElement ?
+                (linkElement.getAttribute('data-url') ||
+                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                : null;
+
+            if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
 
             const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
             const imageUrl = imageElement ? imageElement.src : null;
@@ -1740,6 +1879,17 @@ async function handleMouseOver(e) {
 
                 // Create and display the progress bar immediately
                 progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
+                if (anchorElement) {
+                    anchorElement.addEventListener('mouseleave', ()=>{
+                        clearTimeoutsAndProgressBars();
+                        e.target.addEventListener('mousemove', handleMouseOver)
+                    },{once: true})
+                    e.target.addEventListener('mouseleave', ()=>{
+                        clearTimeoutsAndProgressBars();
+                        e.target.removeEventListener('mousemove', handleMouseOver)
+                    },{once: true})
+                }
+
                 // Start checking for minimal mouse movement
                 hoverTimeoutId = setTimeout(() => {
                     mouseMoveCheckInterval = setInterval(() => {
