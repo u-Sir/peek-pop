@@ -1593,10 +1593,11 @@ async function checkUrlAndToggleListeners() {
 // Function to add a link to the collection
 function addLinkToCollection(e) {
     if (!e.ctrlKey) return;
+    const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
     e.preventDefault();
     e.stopPropagation();
     chrome.storage.local.get('collection', async (data) => {
-        const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+        const linkElement = anchorElement ||
             (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
         if (!linkElement) return;
 
