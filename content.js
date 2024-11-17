@@ -324,8 +324,8 @@ function isLinkInCollection(url) {
 }
 
 // Function to add link indicator when hovering over a link
-function changeCursorOnHover(e) {
-    const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+function changeCursorOnHover(e, anchorElement) {
+    const linkElement = anchorElement ||
         (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
     if (linkElement) {
@@ -357,6 +357,18 @@ function changeCursorOnHover(e) {
 
         const linkRect = e.target.getBoundingClientRect(); // Get link's bounding box
         linkIndicator = createCandleProgressBar(e.clientX - 20, e.clientY, 6000);
+        
+        if (anchorElement) {
+            anchorElement.addEventListener('mouseleave', () => {
+                clearTimeoutsAndProgressBars();
+                e.target.addEventListener('mousemove', handleMouseOver)
+            }, { once: true })
+            e.target.addEventListener('mouseleave', () => {
+                clearTimeoutsAndProgressBars();
+                e.target.removeEventListener('mousemove', handleMouseOver)
+            }, { once: true })
+        }
+        
         const checkCursorInside = (e) => {
             const x = e.clientX; // Get the cursor's X position
             const y = e.clientY; // Get the cursor's Y position
@@ -1835,7 +1847,7 @@ async function handleMouseOver(e) {
 
 
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
-        changeCursorOnHover(e);
+        changeCursorOnHover(e, anchorElement);
 
     }
 
