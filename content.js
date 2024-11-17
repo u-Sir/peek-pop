@@ -1379,15 +1379,6 @@ async function handleDragStart(e, anchorElement) {
         }
 
         document.addEventListener('dragend', onDragend, true);
-        document.addEventListener('dragover', handleDragover);
-
-        function handleDragover(e) {
-            // do nothing when drag out of current page
-            if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
-                document.removeEventListener('dragend', onDragend, true);
-                document.removeEventListener('dragover', handleDragover);
-            }
-        }
     } else {
         if (!isMouseDown || hasPopupTriggered) return;
 
