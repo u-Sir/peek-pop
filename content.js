@@ -28,6 +28,7 @@ let clickModifiedKey = 'None';
 let linkDisabledUrls;
 let theme;
 let blurOverlay;
+let holdTimeout;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -598,42 +599,56 @@ function handleMouseDown(e) {
                 document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                 return;
             } else {
-                isMouseDownOnLink = true
-                
-                document.addEventListener(['mouseup', 'click'], ()=>{
-                    if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt < (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
-                        isMouseDownOnLink = null;
-                        clearTimeoutsAndProgressBars();
+                isMouseDownOnLink = true;
+                document.addEventListener('mouseup', () => {
+                    if (isMouseDownOnLink) {
+                        isMouseDownOnLink = false; // Reset the flag
+                        clearTimeout(holdTimeout); // Clear the hold timeout to prevent handleHoldLink
+                        clearTimeoutsAndProgressBars(); // Cleanup progress bar
                     }
-                }, {once: true});
+                }, { once: true });
                 
                 document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+                
                 document.addEventListener('click', (e) => {
-                    if ((firstDownOnLinkAt && isMouseDownOnLink && (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)))) {
+                    if (
+                        firstDownOnLinkAt &&
+                        isMouseDownOnLink &&
+                        (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500))
+                    ) {
                         // Prevent default action on the link immediately
                         e.preventDefault();
                         e.stopPropagation();
                     }
                 }, true);
+                
                 // Show progress bar for preview
                 setTimeout(() => {
-                    if (!isMouseDownOnLink) return;
-                    previewProgressBar = createCandleProgressBar(e.clientX - 20, e.clientY - 50, (holdToPreviewTimeout ?? 1500) - 100);
+                    if (!isMouseDownOnLink) return; // Abort if mouse is not held down
+                    previewProgressBar = createCandleProgressBar(
+                        e.clientX - 20,
+                        e.clientY - 50,
+                        (holdToPreviewTimeout ?? 1500) - 100
+                    );
                 }, 100);
-
-                setTimeout(() => {
-                    clearTimeoutsAndProgressBars();
-                    if (isMouseDownOnLink) handleHoldLink(e, anchorElement);
-                }, (holdToPreviewTimeout ?? 1500));
-
+                
+                // Set a timeout for the hold-to-preview action
+                holdTimeout = setTimeout(() => {
+                    if (!isMouseDownOnLink) return; // Ensure the mouse is still down
+                    clearTimeoutsAndProgressBars(); // Cleanup any progress bar
+                    handleHoldLink(e, anchorElement); // Trigger the hold-to-preview action
+                }, holdToPreviewTimeout ?? 1500);
+                
+                // Check the initial mouse down time
                 if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
                     e.preventDefault();
-                    clearTimeoutsAndProgressBars();
+                    clearTimeout(holdTimeout); // Clear the timeout
+                    clearTimeoutsAndProgressBars(); // Cleanup
                     firstDownOnLinkAt = null;
-                    hasPopupTriggered = true;
+                    hasPopupTriggered = true; // Mark the popup as triggered
                 } else {
-                    firstDownOnLinkAt = Date.now();
+                    firstDownOnLinkAt = Date.now(); // Record the initial mouse down time
                 }
             }
         } else {
