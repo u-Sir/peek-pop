@@ -1157,7 +1157,7 @@ async function handleDragStart(e, anchorElement) {
     if (searchTooltips) searchTooltips.remove();
     searchTooltips = null;    
 
-    const data = await loadUserConfigs(['dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
+    const data = await loadUserConfigs(['modifiedKey', 'dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
     const dragStartEnable = data.dragStartEnable !== 'undefined' ? data.dragStartEnable : false;
 
     if (!dragStartEnable) {
@@ -1174,6 +1174,18 @@ async function handleDragStart(e, anchorElement) {
         }
 
         function onDragend(e) {
+            const modifiedKey = data.modifiedKey || 'None';
+            const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+            if (modifiedKey === 'None') {
+                if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+            } else {
+                // Ensure only the specified modifiedKey is pressed
+                const isOnlyModifiedKeyDown = keyMap[modifiedKey] &&
+                    Object.keys(keyMap).every(key => key === modifiedKey || !keyMap[key]);
+                if (!isOnlyModifiedKeyDown) {
+                    return;
+                }
+            }
             if (!isMouseDown || hasPopupTriggered) return;
 
             const selectionText = window.getSelection().toString();
