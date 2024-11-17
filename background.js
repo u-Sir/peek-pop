@@ -505,6 +505,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     });
                 };
 
+                if (request.action === 'getZoomFactor') {
+                    getZoomFactor()
+                        .then((zoom) => {
+                            sendResponse({ zoom });
+                        })
+                        .catch((error) => {
+                            sendResponse({ error: error.message || 'Error occurred while retrieving zoom factor.' });
+                        });
+            
+                    // Indicate asynchronous response
+                    return true;
+                }
+
 
                 return getZoomFactor().then(zoom => {
                     return Promise.all([
