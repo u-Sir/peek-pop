@@ -624,7 +624,7 @@ function handleMouseDown(e) {
 
                 setTimeout(() => {
                     clearTimeoutsAndProgressBars();
-                    if (isMouseDownOnLink) handleHoldLink(e);
+                    if (isMouseDownOnLink) handleHoldLink(e, anchorElement);
                 }, (holdToPreviewTimeout ?? 1500));
 
                 if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
@@ -681,11 +681,11 @@ function cancelHoldToPreviewOnDrag() {
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
 
-function handleHoldLink(e) {
+function handleHoldLink(e, anchorElement = null) {
 
     if (e.button !== 0 || isDoubleClick) return;
     if (!firstDownOnLinkAt) return;
-    const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+    const linkElement = anchorElement || e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
         (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
     if (!linkElement) return; // Ensure linkElement and linkUrl are valid
