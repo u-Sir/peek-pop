@@ -1787,7 +1787,10 @@ function createCandleProgressBar(x, y, duration) {
 async function handleMouseOver(e) {
 
     const path = e.composedPath();
-
+    const iframe = path.find((node) => node instanceof HTMLIFrameElement);
+    if (iframe) {
+        e.target.focus();
+    }
     // Check if any of the nodes in the path are part of a shadow root
     const isInsideShadowRoot = path.some(node => node instanceof ShadowRoot);
     if (isInsideShadowRoot) {
