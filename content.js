@@ -1108,7 +1108,7 @@ async function handleDragStart(e) {
     let imageUrl = imageElement ? imageElement.src : null;
 
     if (linkUrl || selectionText || imageUrl) {
-        const data = await loadUserConfigs(['imgSearchEnable', 'searchEngine', 'dragPx', 'dragDirections', 'imgSupport']);
+        const data = await loadUserConfigs(['modifiedKey', 'imgSearchEnable', 'searchEngine', 'dragPx', 'dragDirections', 'imgSupport']);
         const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
         // Regular expression to match URLs including IP addresses
         const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
@@ -1157,6 +1157,18 @@ async function handleDragStart(e) {
         }
         const lastLink = finalLinkUrl;
         async function onDragend(e) {
+            const modifiedKey = data.modifiedKey || 'None';
+            const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+            if (modifiedKey === 'None') {
+                if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+            } else {
+                // Ensure only the specified modifiedKey is pressed
+                const isOnlyModifiedKeyDown = keyMap[modifiedKey] &&
+                    Object.keys(keyMap).every(key => key === modifiedKey || !keyMap[key]);
+                if (!isOnlyModifiedKeyDown) {
+                    return;
+                }
+            }
 
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
