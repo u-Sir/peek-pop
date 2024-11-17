@@ -1155,12 +1155,13 @@ async function handleMouseUpWithProgressBar(e) {
 async function handleDragStart(e, anchorElement) {
 
     if (searchTooltips) searchTooltips.remove();
-    searchTooltips = null;    
+    searchTooltips = null;
 
     const data = await loadUserConfigs(['modifiedKey', 'dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
     const dragStartEnable = data.dragStartEnable !== 'undefined' ? data.dragStartEnable : false;
 
     if (!dragStartEnable) {
+
         const viewportTop = e.screenY - e.clientY;
         const viewportBottom = e.screenY - e.clientY + window.innerHeight;
         const viewportLeft = e.screenX - e.clientX;
@@ -1173,7 +1174,7 @@ async function handleDragStart(e, anchorElement) {
             return;
         }
 
-        function onDragend(e) {
+        function onDragend(e, endInfo = null) {
             const modifiedKey = data.modifiedKey || 'None';
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             if (modifiedKey === 'None') {
@@ -1186,10 +1187,18 @@ async function handleDragStart(e, anchorElement) {
                     return;
                 }
             }
-            if (!isMouseDown || hasPopupTriggered) return;
 
+            // Do nothing when dragging out of the current page
+            if (window.self === window.top) {
+                if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
+                    document.removeEventListener('dragend', onDragend, true);
+                    resetDraggingState();
+                    return;
+                }
+            }
+            if (!isMouseDown || hasPopupTriggered) return;
             const selectionText = window.getSelection().toString();
-            const linkElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+            const linkElement = (endInfo && endInfo.endElement) || e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
                 (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
             const linkUrl = linkElement ?
@@ -1242,16 +1251,9 @@ async function handleDragStart(e, anchorElement) {
                 if (!finalLinkUrl) return;
 
 
-                const currentMouseX = e.clientX;
-                const currentMouseY = e.clientY;
+                const currentMouseX = e.clientX || (endInfo && endInfo.endClientX);
+                const currentMouseY = e.clientY || (endInfo && endInfo.endClientY);
                 let direction = '';
-
-                // do nothing when drag out of current page
-                if (!(viewportLeft < e.screenX && e.screenX < viewportRight && viewportTop < e.screenY && e.screenY < viewportBottom)) {
-                    document.removeEventListener('dragend', onDragend, true);
-                    resetDraggingState();
-                    return;
-                }
 
                 if (dragPx !== 0) {
                     if ((Math.abs(currentMouseX - initialMouseX) > dragPx) || (Math.abs(currentMouseY - initialMouseY) > dragPx)) {
@@ -1273,13 +1275,18 @@ async function handleDragStart(e, anchorElement) {
 
                             if (searchTooltips) searchTooltips.remove();
                             searchTooltips = null;
-                            if (blurEnabled) {
-                                addBlurOverlay(blurPx, blurTime);
-                            }
                             e.preventDefault();
                             e.stopImmediatePropagation();
 
-                            addClickMask();
+                            if (window.self !== window.top) {
+                                // Inside the iframe content script
+                                window.parent.postMessage({ action: 'blurParent' }, '*');
+                            } else {
+                                if (blurEnabled) {
+                                    addBlurOverlay(blurPx, blurTime);
+                                }
+                                addClickMask();
+                            }
                             chrome.runtime.sendMessage({
                                 linkUrl: finalLinkUrl,
                                 lastClientX: e.screenX,
@@ -1309,15 +1316,9 @@ async function handleDragStart(e, anchorElement) {
                         } else {
                             isDragging = false;
                         }
-
-
                     } else {
                         isDragging = false;
                     }
-
-
-
-
                 } else {
                     // identify drag directions
                     if (Math.abs(currentMouseX - initialMouseX) > Math.abs(currentMouseY - initialMouseY)) {
@@ -1339,11 +1340,15 @@ async function handleDragStart(e, anchorElement) {
                         if (searchTooltips) searchTooltips.remove();
                         searchTooltips = null;
 
-                        if (blurEnabled) {
-                            addBlurOverlay(blurPx, blurTime);
+                        if (window.self !== window.top) {
+                            // Inside the iframe content script
+                            window.parent.postMessage({ action: 'blurParent' }, '*');
+                        } else {
+                            if (blurEnabled) {
+                                addBlurOverlay(blurPx, blurTime);
+                            }
+                            addClickMask();
                         }
-
-                        addClickMask();
                         chrome.runtime.sendMessage({
                             linkUrl: finalLinkUrl,
                             lastClientX: e.screenX,
@@ -1374,11 +1379,50 @@ async function handleDragStart(e, anchorElement) {
                         isDragging = false;
                     }
                 }
-                // document.removeEventListener('dragend', onDragend, true);
             }
         }
 
-        document.addEventListener('dragend', onDragend, true);
+        if (window.self !== window.top) {
+            window.addEventListener('dragend', (e) => {
+                const endElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
+                    (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+                const top = e.screenY - e.clientY;
+                const left = e.screenX - e.clientX;
+                const endX = e.screenX;
+                const endY = e.screenY;
+                const endInfo = {
+                    endElement, 
+                    endClientX: e.clientX, 
+                    endClientY: e.clientY
+                }
+                const modifiedKey = data.modifiedKey || 'None';
+                const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+                if (modifiedKey === 'None') {
+                    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+                } else {
+                    // Ensure only the specified modifiedKey is pressed
+                    const isOnlyModifiedKeyDown = keyMap[modifiedKey] &&
+                        Object.keys(keyMap).every(key => key === modifiedKey || !keyMap[key]);
+                    if (!isOnlyModifiedKeyDown) {
+                        return;
+                    }
+                }
+                window.addEventListener('message', (e) => {
+                    if (e.data && e.data.type === 'RESULT') {
+                        if (e.data.isOut) {
+                            // do nothing
+                        } else {
+                            onDragend(e, endInfo);
+                        }
+                    }
+
+                }, { once: true })
+                window.parent.postMessage({action: 'dragendCheck', top, left, endY, endX}, '*');
+            }, { once: true })
+
+        } else {
+            document.addEventListener('dragend', onDragend, { once: true });
+        }
     } else {
         if (!isMouseDown || hasPopupTriggered) return;
 
@@ -1446,11 +1490,15 @@ async function handleDragStart(e, anchorElement) {
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
 
-            if (blurEnabled) {
-                addBlurOverlay(blurPx, blurTime);
+            if (window.self !== window.top) {
+                // Inside the iframe content script
+                window.parent.postMessage({ action: 'blurParent' }, '*');
+            } else {
+                if (blurEnabled) {
+                    addBlurOverlay(blurPx, blurTime);
+                }
+                addClickMask();
             }
-
-            addClickMask();
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
                 lastClientX: e.screenX,
@@ -1474,15 +1522,9 @@ async function handleDragStart(e, anchorElement) {
                 if (window.getSelection().toString()) {
                     window.getSelection().removeAllRanges();
                 }
-
-
             });
         }
     }
-
-
-
-
 }
 
 function isUrlDisabled(url, disabledUrls) {
@@ -1576,6 +1618,83 @@ async function checkUrlAndToggleListeners() {
 
     } else {
         previewMode = data.previewMode;
+    }
+    
+    if (!(window.self !== window.top)) {
+        // Inside the parent page content script
+        window.addEventListener('message', function (e) {
+            if (e.data && e.data.action === 'blurParent') {
+                if (data.blurEnabled) {
+                    addBlurOverlay(data.blurPx, data.blurTime);
+                }
+                addClickMask();
+            } else if (e.data && e.data.action === 'removeParentBlur') {
+                removeBlurOverlay();
+                removeClickMask();
+            } else if (e.data.type === 'GET_SCREEN_COORDS') {
+
+                chrome.runtime.sendMessage({ action: 'getZoomFactor' }, (response) => {
+                    if (response.error) {
+                        console.error('Error:', response.error);
+                    } else {
+                        // Find the iframe that sent the request
+                        const iframes = document.getElementsByTagName('iframe');
+                        let iframeRect;
+                        for (let iframe of iframes) {
+                            if (iframe.contentWindow === e.source) {
+                                iframeRect = iframe.getBoundingClientRect();
+                                break;
+                            }
+                        }
+
+                        const zoomFactor = response.zoom; // zoom factor
+                        // Send the screen coordinates back to the iframe
+                        e.source.postMessage({
+                            type: 'SCREEN_COORDS',
+                            topOffset: iframeRect.top,
+                            leftOffset: iframeRect.left,
+                            innerHeight: window.innerHeight,
+                            innerWidth: window.innerWidth,
+                            zoomFactor: zoomFactor
+                        }, e.origin);
+                    }
+                });
+
+            } else if (e.data && e.data.action === 'dragendCheck') {
+                const { top, left, endY, endX, endEvent } = e.data;
+                chrome.runtime.sendMessage({ action: 'getZoomFactor' }, (response) => {
+
+                    if (response.error) {
+                        console.error('Error:', response.error);
+                    } else {
+                        // Find the iframe that sent the request
+                        const iframes = document.getElementsByTagName('iframe');
+                        let iframeRect;
+                        for (let iframe of iframes) {
+                            if (iframe.contentWindow === e.source) {
+                                iframeRect = iframe.getBoundingClientRect();
+                                break;
+                            }
+                        }
+
+                        const zoomFactor = response.zoom; // zoom factor
+                        const viewportLeft = (left - iframeRect.left) * zoomFactor;
+                        const viewportRight = viewportLeft + window.innerWidth * zoomFactor;
+                        const viewportTop = (top - iframeRect.top) * zoomFactor;
+                        const viewportBottom = viewportTop + window.innerHeight * zoomFactor;
+                        const isOut = (!(viewportLeft < endX && endX < viewportRight && viewportTop < endY && endY < viewportBottom));
+
+                        // Send the screen coordinates back to the iframe
+                        e.source.postMessage({
+                            type: 'RESULT',
+                            isOut,
+                            endEvent
+                        }, e.origin);
+                    }
+                });
+            }
+        });
+
     }
 
 
