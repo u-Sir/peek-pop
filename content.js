@@ -593,13 +593,20 @@ function handleMouseDown(e) {
             if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
                 isMouseDownOnLink = false;
                 clearTimeoutsAndProgressBars();
-                document.removeEventListener('mouseup', handleHoldLink, true);
+                
                 document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                 return;
             } else {
-                isMouseDownOnLink = true;
-                document.addEventListener('mouseup', handleHoldLink, true);
+                isMouseDownOnLink = true
+                
+                document.addEventListener(['mouseup', 'click'], ()=>{
+                    if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt < (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
+                        isMouseDownOnLink = null;
+                        clearTimeoutsAndProgressBars();
+                    }
+                }, {once: true});
+                
                 document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                 document.addEventListener('click', (e) => {
@@ -617,6 +624,7 @@ function handleMouseDown(e) {
 
                 setTimeout(() => {
                     clearTimeoutsAndProgressBars();
+                    if (isMouseDownOnLink) handleHoldLink(e);
                 }, (holdToPreviewTimeout ?? 1500));
 
                 if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
@@ -634,7 +642,7 @@ function handleMouseDown(e) {
                 previewProgressBar.remove();
                 previewProgressBar = null;
             }
-            document.removeEventListener('mouseup', handleHoldLink, true);
+            
             document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
@@ -659,7 +667,7 @@ function handleMouseDown(e) {
 function cancelHoldToPreviewOnMove() {
     isMouseDownOnLink = false;
     clearTimeoutsAndProgressBars();
-    document.removeEventListener('mouseup', handleHoldLink, true);
+    
     document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
@@ -668,7 +676,7 @@ function cancelHoldToPreviewOnMove() {
 function cancelHoldToPreviewOnDrag() {
     isMouseDownOnLink = false;
     clearTimeoutsAndProgressBars();
-    document.removeEventListener('mouseup', handleHoldLink, true);
+    
     document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
@@ -733,7 +741,7 @@ function handleHoldLink(e) {
                 }, () => {
                     isMouseDownOnLink = false;
                     clearTimeoutsAndProgressBars();
-                    document.removeEventListener('mouseup', handleHoldLink, true);
+                    
                     document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                     if (linkIndicator) linkIndicator.remove();
@@ -1584,14 +1592,6 @@ async function checkUrlAndToggleListeners() {
         // Add the event listener
         const events = ["click", "mouseup"];
         events.forEach(event => document.addEventListener(event, handleEvent, true));
-    }
-
-    if (data.holdToPreview) {
-        document.addEventListener(['mouseup'], handleHoldLink, true);
-        // document.addEventListener('mousedown', handleMouseDown);
-
-    } else {
-        document.removeEventListener(['mouseup'], handleHoldLink, true);
     }
 
     if (data.collectionEnable) {
