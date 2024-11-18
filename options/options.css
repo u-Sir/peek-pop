@@ -94,7 +94,6 @@ button:disabled {
 .option {
     padding: 0px;
     padding-bottom: 6px;
-    cursor: pointer;
 }
 
 .options-page {
@@ -114,22 +113,26 @@ input[type="radio"],
 input[type="checkbox"] {
     margin-left: 0px;
     margin-right: 8px;
+    cursor: pointer;
 }
 
 input[type="range"] {
     margin-left: -1px;
+    cursor: pointer;
 }
 
 /* For labels following a radio button */
 input[type="radio"]+label {
     vertical-align: 16%;
     margin-right: 8px;
+    cursor: pointer;
 }
 
 /* For labels following a checkbox */
 input[type="checkbox"]+label {
     vertical-align: 15%;
     margin-right: 8px;
+    cursor: pointer;
 }
 
 /* Align only the modifiedKey label */
