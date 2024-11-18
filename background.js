@@ -352,14 +352,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                                         chrome.browserAction.setIcon({
                                             path: {
-                                                "128": "action/non-inclickmode-dark.png"
+                                                "128": "action/non-inclickmode-dark.svg"
                                             }
                                         });
                                     } else {
 
                                         chrome.browserAction.setIcon({
                                             path: {
-                                                "128": "action/inclickmode-dark.png"
+                                                "128": "action/inclickmode-dark.svg"
                                             }
                                         });
                                     }
@@ -367,7 +367,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                                     chrome.browserAction.setIcon({
                                         path: {
-                                            "128": "action/icon-dark.png"
+                                            "128": "action/icon-dark.svg"
                                         }
                                     });
 
@@ -378,14 +378,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                                         chrome.browserAction.setIcon({
                                             path: {
-                                                "128": "action/non-inclickmode.png"
+                                                "128": "action/non-inclickmode.svg"
                                             }
                                         });
                                     } else {
 
                                         chrome.browserAction.setIcon({
                                             path: {
-                                                "128": "action/inclickmode.png"
+                                                "128": "action/inclickmode.svg"
                                             }
                                         });
                                     }
@@ -393,7 +393,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                                     chrome.browserAction.setIcon({
                                         path: {
-                                            "128": "action/icon.png"
+                                            "128": "action/icon.svg"
                                         }
                                     });
 
@@ -886,14 +886,14 @@ chrome.commands.onCommand.addListener((command) => {
 
                             chrome.browserAction.setIcon({
                                 path: {
-                                    "128": "action/inclickmode-dark.png"
+                                    "128": "action/inclickmode-dark.svg"
                                 }
                             });
 
                         } else {
                             chrome.browserAction.setIcon({
                                 path: {
-                                    "128": "action/icon-dark.png"
+                                    "128": "action/icon-dark.svg"
                                 }
                             });
                         }
@@ -903,14 +903,14 @@ chrome.commands.onCommand.addListener((command) => {
 
                             chrome.browserAction.setIcon({
                                 path: {
-                                    "128": "action/inclickmode.png"
+                                    "128": "action/inclickmode.svg"
                                 }
                             });
 
                         } else {
                             chrome.browserAction.setIcon({
                                 path: {
-                                    "128": "action/icon.png"
+                                    "128": "action/icon.svg"
                                 }
                             });
                         }
