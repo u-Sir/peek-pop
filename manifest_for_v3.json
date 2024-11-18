@@ -5,9 +5,9 @@
   "version": "0.0.27",
   "default_locale": "en",
   "icons": {
-    "48": "icon.png",
-    "96": "icon.png",
-    "128": "icon.png"
+    "48": "icon.svg",
+    "96": "icon.svg",
+    "128": "icon.svg"
   },
   "background": {
     "scripts": [
@@ -57,8 +57,8 @@
   },
   "action": {
     "default_icon": {
-      "16": "icon-16.png",
-      "32": "icon-32.png"
+      "16": "icon.svg",
+      "32": "icon.svg"
     },
     "default_popup": "action/action.html"
   },
