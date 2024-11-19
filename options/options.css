@@ -1,3 +1,11 @@
+.searchOptions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  margin-bottom: 10px; /* Vertical spacing between rows */
+}
+
 .options-page {
     width: 100%;
     margin: 0 auto;
