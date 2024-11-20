@@ -734,11 +734,10 @@ function handleDoubleClick(e) {
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
     const linkUrl = linkElement ? linkElement.href : null;
 
-    e.preventDefault(); // Prevent the default double-click action
-    e.stopPropagation(); // Stop the event from bubbling up
-
     chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable', 'clickModifiedKey'], (data) => {
         if (!data.previewModeEnable || data.clickModifiedKey !== 'None') return;
+        e.preventDefault(); // Prevent the default double-click action
+        e.stopPropagation(); // Stop the event from bubbling up
         // Check if the double-clicked element is a link
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
         const imageUrl = imageElement ? imageElement.src : null;
