@@ -124,7 +124,7 @@ function loadLinks() {
 
             if (index !== 1) { // Add the remove button only if index is not 1
                 const removeButton = document.createElement('button');
-                removeButton.textContent = '-';
+                removeButton.textContent = '❌';
                 removeButton.classList.add('remove-button'); // Add a class for styling
                 removeButton.addEventListener('click', function () {
                     handleRemoveLink(link.url);
