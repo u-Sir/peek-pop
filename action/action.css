@@ -17,7 +17,7 @@ a {
 }
 
 a:hover {
-    color: #ffa742;
+    color: #cdcdcd;
 }
 
 #empty {
@@ -38,21 +38,21 @@ a:hover {
 }
 
 .link-container a:hover {
-    color: #ffa742; /* Ensure the hover color is applied */
+    color: #cdcdcd; /* Ensure the hover color is applied */
 }
 
 .link-container .remove-button {
     margin-left: 10px; /* Space between link and button */
     padding: 5px 10px;
-    background-color: #cdcdcd; /* Customize the button color */
+    background-color: #ffffff; /* Customize the button color */
     color: #fff;
     border: none;
-    border-radius: 3px;
+    border-radius: 50%;
     cursor: pointer;
 }
 
 .link-container .remove-button:hover {
-    background-color: #ffa742; /* Darker color on hover */
+    background-color: #cdcdcd; /* Darker color on hover */
 }
 
 /* Dark mode */
@@ -67,7 +67,7 @@ a:hover {
     }
 
     a:hover {
-        color: #ffa742;
+        color: #cdcdcd;
     }
 
     .link-container a {
@@ -75,15 +75,15 @@ a:hover {
     }
 
     .link-container a:hover {
-        color: #ffa742; /* Light hover color */
+        color: #cdcdcd; /* Light hover color */
     }
 
     .link-container .remove-button {
-        background-color: #444444; /* Dark button color */
+        background-color: #1e1e1e; /* Dark button color */
         color: #ffffff;
     }
 
     .link-container .remove-button:hover {
-        background-color: #ffa742; /* Darker hover color */
+        background-color: #6c6c6c; /* Darker hover color */
     }
 }
