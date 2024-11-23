@@ -28,4 +28,5 @@ This plugin allows you to preview links, images or search selected text on popup
   - Supports background pop-up. (Chromium only)
   - Supports selecting popup window type.
 - Blacklist function: Supports blacklist settings in regular expressions, wildcard, and plain text forms.
+- Supports preview in container(Firefox only) or incognito mode
 - Supports export and import of configurations.
