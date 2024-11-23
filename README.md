@@ -13,37 +13,6 @@
 </div>
 
 This plugin allows you to preview links, images or search selected text on popup window, and provides ***secure, unrestricted, modification-free cross-origin access***.
-# Next coming up features demo
-## remember size and position for each domain
-
-
-https://github.com/user-attachments/assets/306b8c39-57e8-4beb-957c-4164e9252175
-
-
-
-
-## click to preview, double click => single click on link
-https://github.com/user-attachments/assets/0abccbb4-5af9-4210-95c2-9470a6c97502
-
-
-## collect to popup later
-
-https://github.com/user-attachments/assets/89e06a28-f59f-473d-9b3f-feb46e881078
-
-
-
-# Screenshots
-
-![image](https://github.com/user-attachments/assets/6a951f0b-ca4a-4ee0-aea6-2ab50fd6ab6a)
-
-------
-
-![image](https://github.com/user-attachments/assets/5920b14d-5603-4f10-ad59-6791041201f6)
-
-## Options page
-![chromium-options-1](https://github.com/user-attachments/assets/bc14aa83-f71d-43b4-9898-9cfd2156688b)
-![chromium-options-2](https://github.com/user-attachments/assets/ee205bb4-2109-4274-bc66-c6472388e600)
-
 
 # Features:
 - Security and unrestricted: Cross-origin access without any modification.
@@ -60,9 +29,3 @@ https://github.com/user-attachments/assets/89e06a28-f59f-473d-9b3f-feb46e881078
   - Supports selecting popup window type.
 - Blacklist function: Supports blacklist settings in regular expressions, wildcard, and plain text forms.
 - Supports export and import of configurations.
-
-# Privacy Statement:
-This extension does not collect any personal information.
-
-# Others:
-This extension is developed based on the open-source project by emvaized https://github.com/emvaized/open-in-popup-window-extension/tree/main.
