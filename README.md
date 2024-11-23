@@ -20,7 +20,7 @@ This plugin allows you to preview links, images or search selected text on popup
 - Multiple trigger methods: Supports drag (default), hover, click, floating bar, and allows adding pre-key combinations.
 - Flexible popup operations:
   - Close: You can exit by pressing the `Esc` key or by clicking the original window to automatically close the popup.
-  - Back: Double-click a specified key to go back, or select from the right-click menu.
+  - Send back: Double-click a specified key to send page back, or select from the right-click menu.
   - Shortcut key support: Supports all browser shortcut keys like forward, backward, reading mode, etc. (some shortcuts require the window type to be set to "normal").
 - Free popup display:
   - Customizable background blur effect.
