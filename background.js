@@ -559,7 +559,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 if (tabs.length > 0) {
                                     let currentTab = tabs[0];
                                     if (sender.tab) currentTab = sender.tab;
-                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend).then(() => {
+                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY, request.top, request.left, request.width, request.height).then(() => {
                                         // sendResponse({ status: 'link handled' });
                                     });
                                     sendResponse({ status: 'link handled' });
@@ -579,7 +579,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     let currentTab = tabs[0];
                                     if (sender.tab) currentTab = sender.tab;
 
-                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend).then(() => {
+                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY, request.top, request.left, request.width, request.height).then(() => {
                                         // sendResponse({ status: 'group handled' });
                                     });
 
@@ -604,7 +604,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Handle link opening in a popup
-function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType) {
+function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight) {
     if (!isValidUrl(linkUrl)) {
         console.error('Invalid URL:', linkUrl);
         return Promise.reject(new Error('Invalid URL'));
@@ -612,9 +612,7 @@ function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSi
 
     return loadUserConfigs().then(userConfigs => {
         const {
-            lastClientX, lastClientY,
-            popupHeight, popupWidth, tryOpenAtMousePosition,
-            lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight
+            popupHeight, popupWidth, tryOpenAtMousePosition
         } = userConfigs;
 
         const defaultHeight = parseInt(popupHeight, 10) || 800;
