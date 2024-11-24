@@ -57,10 +57,10 @@
         "message": "None"
     },
     "blurEffectSettings": {
-        "message": "Blur Effect Settings"
+        "message": "Blur Effect"
     },
     "popupSettings": {
-        "message": "Popup Window Settings"
+        "message": "Popup Window"
     },
     "blacklist": {
         "message": "Blacklist"
@@ -78,7 +78,7 @@
         "message": "Press Esc to close the current popup page (overrides page's default Esc behavior)"
     },
     "dragSettings": {
-        "message": "Drag Settings"
+        "message": "Drag"
     },
     "dragPx": {
         "message": "At least move px (do not check if 0): "
@@ -111,7 +111,7 @@
         "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
     },
     "hoverSettings": {
-        "message": "Hover settings"
+        "message": "Hover"
     },
     "hoverImgSupport": {
         "message": "Image support"
@@ -120,13 +120,13 @@
         "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
     },
     "searchSettings": {
-        "message": "Search settings"
+        "message": "Search"
     },
     "triggerAfterDragRelease": {
         "message": "Trigger after drag is released. (no directions check if uncheck)"
     },  
     "generalSettingsTab": {
-        "message": "General settings"
+        "message": "General"
     },
     "exportImportSettings": {
         "message": "Configurations"
