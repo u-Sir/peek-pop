@@ -57,10 +57,10 @@
         "message": "无"
     },
     "blurEffectSettings": {
-        "message": "模糊效果"
+        "message": "背景模糊"
     },
     "popupSettings": {
-        "message": "弹窗设置"
+        "message": "弹窗"
     },
     "blacklist": {
         "message": "黑名单"
@@ -78,7 +78,7 @@
         "message": "按下 Esc 关闭当前弹窗页面(覆盖页面 Esc 原有行为)"
     },
     "dragSettings": {
-        "message": "拖拽设置"
+        "message": "拖拽"
     },
     "dragPx": {
         "message": "至少移动 px （为 0 时不作检查）："
@@ -111,7 +111,7 @@
         "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
     },
     "hoverSettings": {
-        "message": "悬停设置"
+        "message": "悬停"
     },
     "hoverImgSupport": {
         "message": "预览图片"
@@ -120,7 +120,7 @@
         "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
     },
     "searchSettings": {
-        "message": "搜索设置"
+        "message": "搜索"
     },
     "triggerAfterDragRelease": {
         "message": "拖拽释放后才触发(关闭时不支持方向检测)"
