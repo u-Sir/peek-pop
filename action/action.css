@@ -43,7 +43,6 @@ a:hover {
 
 .link-container .remove-button {
     margin-left: 10px; /* Space between link and button */
-    padding: 5px 10px;
     background-color: #ffffff; /* Customize the button color */
     color: #fff;
     border: none;
@@ -52,7 +51,7 @@ a:hover {
 }
 
 .link-container .remove-button:hover {
-    background-color: #cdcdcd; /* Darker color on hover */
+    background-color: #f2f2f2; /* Darker color on hover */
 }
 
 /* Dark mode */
