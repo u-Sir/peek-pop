@@ -6,7 +6,7 @@
 <div align="center">
 
 [![](https://img.shields.io/github/v/release/u-Sir/peek-pop?label=Release&logo=github&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases)](https://github.com/u-Sir/peek-pop/releases/latest)
-[![](https://img.shields.io/amo/v/drag-to-preview.svg?label=Firefox&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/drag-to-preview)
+[![](https://img.shields.io/amo/v/drag-to-preview.svg?label=Firefox&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/peek_pop)
 [![](https://img.shields.io/badge/dynamic/json?label=Microsoft%20Edge&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fecpgdeolbpelhdjcplojlpdmfppjljop)](https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop)
 [![](https://img.shields.io/chrome-web-store/v/fjllepdpgikphekgbinhpdkalliiejdh.svg?label=Chrome%20Web%20Store&logo=googlechrome)](https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh)
 
