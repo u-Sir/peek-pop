@@ -3,8 +3,10 @@ body {
     margin: 0;
     padding: 10px;
     min-width: 500px;
-    background-color: #ffffff; /* Light background */
-    color: #000000; /* Dark text */
+    background-color: #ffffff;
+    /* Light background */
+    color: #000000;
+    /* Dark text */
 }
 
 a {
@@ -21,7 +23,8 @@ a:hover {
 }
 
 #empty {
-    display: none; /* Hide by default */
+    display: none;
+    /* Hide by default */
 }
 
 .link-container {
@@ -29,36 +32,88 @@ a:hover {
     align-items: center;
     margin-bottom: 10px;
     /* Adds some space between each link */
+    justify-content: space-between; /* Evenly distribute space between the links */
+    width: 100%;
 }
 
 .link-container a {
     flex-grow: 1;
     text-decoration: none;
-    color: #000; /* Customize the link color */
+    color: #000;
+    /* Customize the link color */
 }
 
 .link-container a:hover {
-    color: #cdcdcd; /* Ensure the hover color is applied */
+    color: #cdcdcd;
+    /* Ensure the hover color is applied */
+}
+
+.link-container .left-link {
+    text-align: left; /* Align the first link to the left */
+    flex: 1; /* Allow it to take available space */
+}
+
+.link-container .center-link {
+    text-align: center; /* Center the middle link */
+    flex: 1; /* Allow it to take available space */
+}
+
+.link-container .right-link {
+    text-align: right; /* Align the last link to the right */
+    flex: 1; /* Allow it to take available space */
 }
 
 .link-container .remove-button {
-    margin-left: 10px; /* Space between link and button */
-    background-color: #ffffff; /* Customize the button color */
+    position: relative;
+    width: 12px;
+    /* Set the size of the button */
+    height: 12px;
+    margin-left: 10px;
+    /* Space between link and button */
+    background-color: #ffffff;
+    /* Customize the button color */
     color: #fff;
     border: none;
     border-radius: 50%;
     cursor: pointer;
 }
 
-.link-container .remove-button:hover {
-    background-color: #f2f2f2; /* Darker color on hover */
+.link-container .remove-button::before,
+.link-container .remove-button::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 12px;
+    background-color: black;
+    /* Color of the X icon */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
+
+.link-container .remove-button::before {
+    transform: translateX(-50%) rotate(45deg);
+    /* Rotate the first line to create the X */
+}
+
+.link-container .remove-button::after {
+    transform: translateX(-50%) rotate(-45deg);
+    /* Rotate the second line to create the X */
+}
+
+.link-container .remove-button:hover {
+    background-color: #e2e2e2;
+    /* Darker color on hover */
+}
+
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
     body {
-        background-color: #1e1e1e; /* Dark background */
-        color: #ffffff; /* Light text */
+        background-color: #1e1e1e;
+        /* Dark background */
+        color: #ffffff;
+        /* Light text */
     }
 
     a {
@@ -70,19 +125,30 @@ a:hover {
     }
 
     .link-container a {
-        color: #ffffff; /* Light link color */
+        color: #ffffff;
+        /* Light link color */
     }
 
     .link-container a:hover {
-        color: #cdcdcd; /* Light hover color */
+        color: #cdcdcd;
+        /* Light hover color */
     }
 
     .link-container .remove-button {
-        background-color: #1e1e1e; /* Dark button color */
+        background-color: #1e1e1e;
+        /* Dark button color */
         color: #ffffff;
     }
 
     .link-container .remove-button:hover {
-        background-color: #6c6c6c; /* Darker hover color */
+        background-color: #6c6c6c;
+        /* Darker hover color */
+    }
+
+
+    .link-container .remove-button::before,
+    .link-container .remove-button::after {
+        background-color: #ffffff;
+        /* Color of the X icon */
     }
 }

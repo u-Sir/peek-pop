@@ -24,7 +24,7 @@
         "message": "在主窗口中打开页面"
     },
     "disabledUrls": {
-        "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "sendPageBack": {
         "message": "发送当前页面到原窗口"
@@ -48,7 +48,7 @@
         "message": "搜索引擎"
     },
     "custom": {
-        "message": "自定义(选中文本：%s)"
+        "message": "自定义（选中文本：%s）"
     },
     "searchDisable": {
         "message": "禁用"
@@ -75,7 +75,7 @@
         "message": "弹出窗口类型："
     },
     "closedByEsc": {
-        "message": "按下 Esc 关闭当前弹窗页面(覆盖页面 Esc 原有行为)"
+        "message": "Esc 关闭当前弹窗页面（覆盖页面 Esc 原有行为）"
     },
     "dragSettings": {
         "message": "拖拽"
@@ -117,14 +117,11 @@
         "message": "预览图片"
     },  
     "hoverDisabledUrls": {
-        "message": "访问以下 URL 时自动禁用，（每行一条规则，支持正则表达式、通配符、纯文本）"
+        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "searchSettings": {
         "message": "搜索"
-    },
-    "triggerAfterDragRelease": {
-        "message": "拖拽释放后才触发(关闭时不支持方向检测)"
-    },  
+    }, 
     "generalSettingsTab": {
         "message": "通用"
     },
@@ -183,13 +180,13 @@
         "message": "这什么也没有"
     },
     "openAll": {
-        "message": "打开全部 ↗️"
+        "message": "打开全部"
     },
     "clearAll": {
         "message": "清除全部"
     },
     "options": {
-        "message": "➡️ 设置页面"
+        "message": "设置页面"
     },
     "popAction": {
         "message": "弹出插件图标的页面"
@@ -211,6 +208,19 @@
     },  
     "linkDisabledUrls": {
         "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
+    },
+    "copyButtonEnable": {
+        "message": "在 'popup' 类型窗口中显示“复制当前页面链接”按钮"
+    },  
+    "searchTooltipsEngines": {
+        "message": "搜索条内的搜索引擎，每行一个，格式：显示名称=>带有%s的搜索链接"
+    },  
+    "dropInEmptyOnly": {
+        "message": "仅拖拽到空白处时才响应"
+    },
+    "sendBackButtonEnable": {
+        "message": "在 'popup' 类型窗口中显示“发送当前页面到原窗口”按钮"
     }
+    
 }
 

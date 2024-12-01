@@ -16,19 +16,25 @@
         </ul>
 
         <div id="general_settings" class="tab-content active">
+
             <h4 id="searchSettings"></h4>
-            <div class='option'>
-                <label><input type="checkbox" id="urlCheck"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="urlCheck"></label>
+            </div>
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="searchTooltipsEnable"></label>
             </div>
 
             <div class='option'>
-                <label><input type="checkbox" id="searchTooltipsEnable"></input></label>
+                <label for="searchTooltipsEngines"></label>
+                <textarea id="searchTooltipsEngines" rows="5" cols="1" wrap="off"></textarea>
             </div>
 
             <h4 id="blurEffectSettings"></h4>
             <p>
-            <div class='option'>
-                <label><input type="checkbox" id="blurEnabled"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="blurEnabled"></label>
             </div>
 
 
@@ -52,75 +58,82 @@
             <div class="keySelection">
                 <label for="doubleTapKeyToSendPageBack" class="align-label"></label>
                 <br>
-
-                <input type="radio" id="ctrlKey" name="doubleTapKeyToSendPageBack" value="Ctrl" />
-                <label for="ctrlKey">Ctrl</label>
-
-                <input type="radio" id="altKey" name="doubleTapKeyToSendPageBack" value="Alt" />
-                <label for="altKey">Alt/Option</label>
-
-                <input type="radio" id="shiftKey" name="doubleTapKeyToSendPageBack" value="Shift" />
-                <label for="shiftKey">Shift</label>
-
-                <input type="radio" id="metaKey" name="doubleTapKeyToSendPageBack" value="Meta" />
-                <label for="metaKey">Command</label>
-
-                <input type="radio" id="noneKey" name="doubleTapKeyToSendPageBack" value="None" />
-                <label for="noneKey">None</label>
+                    <input type="radio" id="ctrlKey" name="doubleTapKeyToSendPageBack" value="Ctrl" />
+                    <label for="ctrlKey">Ctrl</label>
+                
+                    <input type="radio" id="altKey" name="doubleTapKeyToSendPageBack" value="Alt" />
+                    <label for="altKey">Alt/Option</label>
+                
+                    <input type="radio" id="shiftKey" name="doubleTapKeyToSendPageBack" value="Shift" />
+                    <label for="shiftKey">Shift</label>
+                
+                    <input type="radio" id="metaKey" name="doubleTapKeyToSendPageBack" value="Meta" />
+                    <label for="metaKey">Command</label>
+                
+                    <input type="radio" id="noneKey" name="doubleTapKeyToSendPageBack" value="None" />
+                    <label for="noneKey">None</label>
                 <br>
 
             </div>
             <br>
 
-            <div class='option'>
-                <label><input type="checkbox" id="enableContainerIdentify"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="enableContainerIdentify"></label>
             </div>
 
-            <div class='option'>
-                <label><input type="checkbox" id="closedByEsc"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="closedByEsc"></label>
             </div>
 
-            <div class='option'>
-                <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></label>
+            </div>
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="copyButtonEnable"></label>
+            </div>
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="sendBackButtonEnable"></label>
             </div>
 
             <h5 id="note"></h5>
 
-            <div class='option'>
-                <label><input type="checkbox" id="rememberPopupSizeAndPosition"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="rememberPopupSizeAndPosition"></label>
+            </div>
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="rememberPopupSizeAndPositionForDomain"></label>
+            </div>
+
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="tryOpenAtMousePosition"></label>
             </div>
 
             <div class='option'>
-                <label><input type="checkbox" id="rememberPopupSizeAndPositionForDomain"></input></label>
-            </div>
-
-
-            <div class='option'>
-                <label><input type="checkbox" id="tryOpenAtMousePosition"></input></label>
+                <label><input type="number" max="10000" min="100" step="50" id="popupHeight"> </label>
             </div>
 
             <div class='option'>
-                <label><input type="number" max="10000" min="100" step="50" id="popupHeight"></input> </label>
-            </div>
-
-            <div class='option'>
-                <label><input type="number" max="10000" min="100" step="50" id="popupWidth"></input> </label>
+                <label><input type="number" max="10000" min="100" step="50" id="popupWidth"> </label>
             </div>
             </p>
 
             <h4 id="linkSettings"></h4>
-            <div class='option'>
-                <label><input type="checkbox" id="linkHint"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="linkHint"></label>
             </div>
 
-            <div class='option'>
-                <label><input type="checkbox" id="collectionEnable"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="collectionEnable"></label>
             </div>
 
             <p>
             <div class='option'>
                 <label for="linkDisabledUrls"></label>
-                <textarea id="linkDisabledUrls" rows="10" cols="50"></textarea>
+                <textarea id="linkDisabledUrls" rows="5" cols="1"></textarea>
             </div>
             </p>
 
@@ -143,20 +156,20 @@
                 <label for="modifiedKey" class="align-label"></label>
                 <br>
 
-                <input type="radio" id="dragCtrlKey" name="modifiedKey" value="Ctrl" />
-                <label for="dragCtrlKey">Ctrl</label>
-
-                <input type="radio" id="dragAltKey" name="modifiedKey" value="Alt" />
-                <label for="dragAltKey">Alt/Option</label>
-
-                <input type="radio" id="dragShiftKey" name="modifiedKey" value="Shift" />
-                <label for="dragShiftKey">Shift</label>
-
-                <input type="radio" id="dragMetaKey" name="modifiedKey" value="Meta" />
-                <label for="dragMetaKey">Windows/Command</label>
-
-                <input type="radio" id="dragNoneKey" name="modifiedKey" value="None" />
-                <label for="dragNoneKey">None</label>
+                    <input type="radio" id="dragCtrlKey" name="modifiedKey" value="Ctrl" />
+                    <label for="dragCtrlKey">Ctrl</label>
+                
+                    <input type="radio" id="dragAltKey" name="modifiedKey" value="Alt" />
+                    <label for="dragAltKey">Alt/Option</label>
+                
+                    <input type="radio" id="dragShiftKey" name="modifiedKey" value="Shift" />
+                    <label for="dragShiftKey">Shift</label>
+                
+                    <input type="radio" id="dragMetaKey" name="modifiedKey" value="Meta" />
+                    <label for="dragMetaKey">Windows/Command</label>
+                
+                    <input type="radio" id="dragNoneKey" name="modifiedKey" value="None" />
+                    <label for="dragNoneKey">None</label>
                 <br>
                 <br>
             </div>
@@ -186,12 +199,16 @@
                 </div>
             </div>
 
-            <div class='option'>
-                <label><input type="checkbox" id="imgSupport"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="imgSupport"></label>
             </div>
 
-            <div class='option'>
-                <label><input type="checkbox" id="dragStartEnable"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="dropInEmptyOnly"></label>
+            </div>
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="dragStartEnable"></label>
             </div>
 
             </p>
@@ -234,13 +251,13 @@
                     <label for="searchDisable">None</label>
                 </span>
                 <br>
-                <input type="radio" id="custom" name="searchEngine" value="custom" />
-                <label for="custom">Custom</label>
+                    <input type="radio" id="custom" name="searchEngine" value="custom" />
+                    <label for="custom">Custom</label>
                 <input type="text" id="customSearchEngine" style="display:none;" placeholder="https://example.com/%s" />
 
 
             <div class='option' id="imgSearchOption">
-                <label><input type="checkbox" id="imgSearchEnable"></input></label>
+                <label><input type="checkbox" id="imgSearchEnable"></label>
             </div>
             </p>
 
@@ -249,11 +266,11 @@
             <p>
             <div class="window-type">
                 <label for="windowType" class="align-label-1">Popup window type</label>
-                <input type="radio" id="normal" name="windowType" value="normal" />
-                <label for="normal">Normal</label>
-
-                <input type="radio" id="popup" name="windowType" value="popup" />
-                <label for="popup">Popup</label>
+                    <input type="radio" id="normal" name="windowType" value="normal" />
+                    <label for="normal">Normal</label>
+                
+                    <input type="radio" id="popup" name="windowType" value="popup" />
+                    <label for="popup">Popup</label>
             </div>
             </p>
 
@@ -261,7 +278,7 @@
             <p>
             <div class='option'>
                 <label for="disabledUrls"></label>
-                <textarea id="disabledUrls" rows="10" cols="50"></textarea>
+                <textarea id="disabledUrls" rows="5" cols="1"></textarea>
             </div>
             </p>
 
@@ -285,28 +302,28 @@
                 <label for="hoverModifiedKey" class="align-label"></label>
                 <br>
 
-                <input type="radio" id="hoverCtrlKey" name="hoverModifiedKey" value="Ctrl" />
-                <label for="hoverCtrlKey">Ctrl</label>
-
-                <input type="radio" id="hoverAltKey" name="hoverModifiedKey" value="Alt" />
-                <label for="hoverAltKey">Alt/Option</label>
-
-                <input type="radio" id="hoverShiftKey" name="hoverModifiedKey" value="Shift" />
-                <label for="hoverShiftKey">Shift</label>
-
-                <input type="radio" id="hoverMetaKey" name="hoverModifiedKey" value="Meta" />
-                <label for="hoverMetaKey">Windows/Command</label>
-
-                <input type="radio" id="hoverNoneKey" name="hoverModifiedKey" value="None" />
-                <label for="hoverNoneKey">None</label>
+                    <input type="radio" id="hoverCtrlKey" name="hoverModifiedKey" value="Ctrl" />
+                    <label for="hoverCtrlKey">Ctrl</label>
+        
+                    <input type="radio" id="hoverAltKey" name="hoverModifiedKey" value="Alt" />
+                    <label for="hoverAltKey">Alt/Option</label>
+            
+                    <input type="radio" id="hoverShiftKey" name="hoverModifiedKey" value="Shift" />
+                    <label for="hoverShiftKey">Shift</label>
+           
+                    <input type="radio" id="hoverMetaKey" name="hoverModifiedKey" value="Meta" />
+                    <label for="hoverMetaKey">Windows/Command</label>
+                
+                    <input type="radio" id="hoverNoneKey" name="hoverModifiedKey" value="None" />
+                    <label for="hoverNoneKey">None</label>
                 <br>
 
             </div>
 
             <br>
 
-            <div class='option'>
-                <label><input type="checkbox" id="hoverImgSupport"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="hoverImgSupport"></label>
             </div>
 
 
@@ -354,15 +371,15 @@
                     <label for="hoverSearchDisable">None</label>
                 </span>
                 <br>
-                <input type="radio" id="hoverCustom" name="hoverSearchEngine" value="custom" />
-                <label for="hoverCustom">Custom</label>
+                    <input type="radio" id="hoverCustom" name="hoverSearchEngine" value="custom" />
+                    <label for="hoverCustom">Custom</label>
                 <input type="text" id="hoverCustomSearchEngine" style="display:none;"
                     placeholder="https://example.com/%s" />
 
 
 
             <div class='option' id="hoverImgSearchOption">
-                <label><input type="checkbox" id="hoverImgSearchEnable"></input></label>
+                <label><input type="checkbox" id="hoverImgSearchEnable"></label>
             </div>
             </p>
 
@@ -370,11 +387,11 @@
             <p>
             <div class="window-type">
                 <label for="hoverWindowType" class="align-label-1"></label>
-                <input type="radio" id="hoverNormal" name="hoverWindowType" value="normal" />
-                <label for="hoverNormal">Normal</label>
+                    <input type="radio" id="hoverNormal" name="hoverWindowType" value="normal" />
+                    <label for="hoverNormal">Normal</label>
 
-                <input type="radio" id="hoverPopup" name="hoverWindowType" value="popup" />
-                <label for="hoverPopup">Popup</label>
+                    <input type="radio" id="hoverPopup" name="hoverWindowType" value="popup" />
+                    <label for="hoverPopup">Popup</label>
             </div>
 
             </p>
@@ -383,7 +400,7 @@
             <p>
             <div class='option'>
                 <label for="hoverDisabledUrls"></label>
-                <textarea id="hoverDisabledUrls" rows="10" cols="50"></textarea>
+                <textarea id="hoverDisabledUrls" rows="5" cols="1"></textarea>
             </div>
             </p>
 
@@ -394,41 +411,41 @@
         <div id="previewMode_settings" class="tab-content">
             <h4 id="previewModeSettings"></h4>
 
-            <div class='option'>
-                <label><input type="checkbox" id="previewModeEnable"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="previewModeEnable"></label>
             </div>
 
             <div class='option' id="doubleClickToSwitchOption">
-                <label><input type="checkbox" id="doubleClickToSwitch"></input></label>
+                <label><input type="checkbox" id="doubleClickToSwitch"></label>
             </div>
             <div class='option' id="doubleClickAsClickOption">
-                <label><input type="checkbox" id="doubleClickAsClick"></input></label>
+                <label><input type="checkbox" id="doubleClickAsClick"></label>
             </div>
 
             <br>
             <div class="keySelection">
                 <label for="clickModifiedKey" class="align-label"></label>
                 <br>
-                <input type="radio" id="clickCtrlKey" name="clickModifiedKey" value="Ctrl" />
-                <label for="clickCtrlKey">Ctrl</label>
+                    <input type="radio" id="clickCtrlKey" name="clickModifiedKey" value="Ctrl" />
+                    <label for="clickCtrlKey">Ctrl</label>
 
-                <input type="radio" id="clickAltKey" name="clickModifiedKey" value="Alt" />
-                <label for="clickAltKey">Alt/Option</label>
+                    <input type="radio" id="clickAltKey" name="clickModifiedKey" value="Alt" />
+                    <label for="clickAltKey">Alt/Option</label>
 
-                <input type="radio" id="clickShiftKey" name="clickModifiedKey" value="Shift" />
-                <label for="clickShiftKey">Shift</label>
+                    <input type="radio" id="clickShiftKey" name="clickModifiedKey" value="Shift" />
+                    <label for="clickShiftKey">Shift</label>
 
-                <input type="radio" id="clickMetaKey" name="clickModifiedKey" value="Meta" />
-                <label for="clickMetaKey">Windows/Command</label>
+                    <input type="radio" id="clickMetaKey" name="clickModifiedKey" value="Meta" />
+                    <label for="clickMetaKey">Windows/Command</label>
 
-                <input type="radio" id="clickNoneKey" name="clickModifiedKey" value="None" />
-                <label for="clickNoneKey">None</label>
+                    <input type="radio" id="clickNoneKey" name="clickModifiedKey" value="None" />
+                    <label for="clickNoneKey">None</label>
                 <br>
             </div>
 
             <h4 id="holdToPreviewSettings"></h4>
-            <div class='option'>
-                <label><input type="checkbox" id="holdToPreview"></input></label>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="holdToPreview"></label>
             </div>
 
             <div class='option'>
@@ -443,11 +460,11 @@
             <p>
             <div class="window-type">
                 <label for="previewModeWindowType" class="align-label-1"></label>
-                <input type="radio" id="previewModeNormal" name="previewModeWindowType" value="normal" />
-                <label for="previewModeNormal">Normal</label>
+                    <input type="radio" id="previewModeNormal" name="previewModeWindowType" value="normal" />
+                    <label for="previewModeNormal">Normal</label>
 
-                <input type="radio" id="previewModePopup" name="previewModeWindowType" value="popup" />
-                <label for="previewModePopup">Popup</label>
+                    <input type="radio" id="previewModePopup" name="previewModeWindowType" value="popup" />
+                    <label for="previewModePopup">Popup</label>
             </div>
             </p>
 
@@ -455,7 +472,7 @@
             <p>
             <div class='option'>
                 <label for="previewModeDisabledUrls"></label>
-                <textarea id="previewModeDisabledUrls" rows="10" cols="50"></textarea>
+                <textarea id="previewModeDisabledUrls" rows="5" cols="1"></textarea>
             </div>
             </p>
 

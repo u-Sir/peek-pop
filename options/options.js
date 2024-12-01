@@ -44,7 +44,18 @@ const configs = {
     'clickModifiedKey': 'None',
     'linkDisabledUrls': [],
     'enableContainerIdentify': true,
-    'dragStartEnable': false
+    'dragStartEnable': false,
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+    'searchTooltipsEngines':  `Google=>https://www.google.com/search?q=%s
+Bing=>https://www.bing.com/search?q=%s
+Baidu=>https://www.baidu.com/s?wd=%s
+Yandex=>https://yandex.com/search/?text=%s
+DuckduckGo=>https://duckduckgo.com/?q=%s
+Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+    'copyButtonEnable': false,
+    'dropInEmptyOnly': false,
+    'sendBackButtonEnable': false
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -313,6 +324,8 @@ function setupPage(userConfigs) {
         }
     });
 
+    initializeTextareaForSearchTooltips('searchTooltipsEngines', userConfigs);
+
     // Initialize textarea and sliders
     initializeTextarea('disabledUrls', userConfigs);
     initializeTextarea('linkDisabledUrls', userConfigs);
@@ -413,6 +426,21 @@ function initializeTextarea(textareaId, userConfigs) {
         });
     }
 }
+
+function initializeTextareaForSearchTooltips(textareaId, userConfigs) {
+    const textarea = document.getElementById(textareaId);
+    if (textarea) {
+        // Initialize with userConfigs or fallback to default configs
+        textarea.value = userConfigs[textareaId] ?? configs[textareaId];
+        
+        // Save changes on input
+        textarea.addEventListener('input', () => {
+            configs[textareaId] = textarea.value.trim(); // Store as a multiline string
+            saveAllSettings();
+        });
+    }
+}
+
 
 function initializeSlider(id, defaultValue) {
     const input = document.getElementById(id);
@@ -707,7 +735,6 @@ async function importSettings(file) {
         const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(jsonContent));
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        console.log(importData)
         if (hashHex !== importData.hash) {
             console.error('Hash mismatch! Import aborted.');
             return;

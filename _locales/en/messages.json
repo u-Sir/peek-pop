@@ -19,10 +19,10 @@
     },
     "tryOpenAtMousePosition": {
         "message": "Try to open at mouse position (disabled — open at screen center)"
-    },  
+    },
     "disabledUrls": {
         "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
-    },  
+    },
     "openPageInMainWindow": {
         "message": "Open page in main window"
     },
@@ -115,16 +115,13 @@
     },
     "hoverImgSupport": {
         "message": "Image support"
-    },  
+    },
     "hoverDisabledUrls": {
         "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
     },
     "searchSettings": {
         "message": "Search"
     },
-    "triggerAfterDragRelease": {
-        "message": "Trigger after drag is released. (no directions check if uncheck)"
-    },  
     "generalSettingsTab": {
         "message": "General"
     },
@@ -133,7 +130,7 @@
     },
     "importButton": {
         "message": "Import"
-    },  
+    },
     "exportButton": {
         "message": "Export"
     },
@@ -145,19 +142,19 @@
     },
     "previewModeDisabledUrls": {
         "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
-    }, 
+    },
     "previewModeEnable": {
         "message": "Clicking on the link to preview (disable - ignore below options)"
-    }, 
+    },
     "imgSearchEnable": {
         "message": "Replace Preview with Image Search."
-    }, 
+    },
     "hoverImgSearchEnable": {
         "message": "Replace Preview with Image Search."
-    }, 
+    },
     "doubleClickToSwitch": {
         "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar."
-    }, 
+    },
     "doubleClickAsClick": {
         "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links."
     },
@@ -183,13 +180,13 @@
         "message": "Nothing here."
     },
     "openAll": {
-        "message": "Open all ↗️"
+        "message": "Open all"
     },
     "clearAll": {
         "message": "Clear all"
     },
     "options": {
-        "message": "➡️ Options page"
+        "message": "Options page"
     },
     "popAction": {
         "message": "Open add-on icon popup"
@@ -208,8 +205,20 @@
     },
     "holdToPreviewSettings": {
         "message": "Hold"
-    },  
+    },
     "linkDisabledUrls": {
         "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
+    },
+    "copyButtonEnable": {
+        "message": "Displays a button to copy the current page URL in a window of type 'popup'."
+    },
+    "searchTooltipsEngines": {
+        "message": "Search engines used for tooltip-based searches."
+    },
+    "dropInEmptyOnly": {
+        "message": "Only respose when drop in empty area."
+    },
+    "sendBackButtonEnable": {
+        "message": "Displays a button to send the current page URL back to the origin window in a window of type 'popup'."
     }
 }

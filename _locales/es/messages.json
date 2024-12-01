@@ -57,10 +57,10 @@
         "message": "Ninguno"
     },
     "blurEffectSettings": {
-        "message": "Configuración del efecto de desenfoque"
+        "message": "Efecto de desenfoque"
     },
     "popupSettings": {
-        "message": "Configuración de ventana emergente"
+        "message": "Ventana emergente"
     },
     "blacklist": {
         "message": "Lista negra"
@@ -78,7 +78,7 @@
         "message": "Presiona Esc para cerrar la ventana emergente actual (anula el comportamiento predeterminado de Esc en la página)"
     },
     "dragSettings": {
-        "message": "Configuración de Arrastre"
+        "message": "Arrastrar"
     },
     "dragPx": {
         "message": "Mover al menos px (no comprobar si es 0): "
@@ -111,7 +111,7 @@
         "message": "Doble toque en una tecla específica para enviar la página a la ventana original (Por favor, verifica si funciona correctamente.)"
     },
     "hoverSettings": {
-        "message": "Configuración de hover"
+        "message": "Desplegar"
     },
     "hoverImgSupport": {
         "message": "Soporte de imagen"
@@ -120,13 +120,10 @@
         "message": "Desactivar extensión en estas URL (mediante texto plano, regex, comodines, una por línea)"
     },
     "searchSettings": {
-        "message": "Configuración de búsqueda"
-    },
-    "triggerAfterDragRelease": {
-        "message": "Activar después de soltar arrastre. (sin direcciones, verifica si no está marcado)"
+        "message": "Buscar"
     },
     "generalSettingsTab": {
-        "message": "Configuración general"
+        "message": "General"
     },
     "exportImportSettings": {
         "message": "Configuraciones"
@@ -141,7 +138,7 @@
         "message": "El arrastre se activa inmediatamente sin esperar la liberación. (No se admite la detección de dirección)"
     },
     "previewModeSettings": {
-        "message": "Clic"
+        "message": "Hacer clic"
     },
     "previewModeDisabledUrls": {
         "message": "Deshabilitar en estas URL mediante texto plano, regex, comodines, uno por línea."
@@ -183,13 +180,13 @@
         "message": "No hay nada aquí."
     },
     "openAll": {
-        "message": "Abrir todos los enlaces ↗️"
+        "message": "Abrir todos los enlaces"
     },
     "clearAll": {
         "message": "Eliminar todos los enlaces"
     },
     "options": {
-        "message": "➡️ Página de opciones"
+        "message": "Página de opciones"
     },
     "popAction": {
         "message": "Abrir el icono emergente del complemento"
@@ -211,5 +208,17 @@
     },
     "linkDisabledUrls": {
         "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano."
+    },
+    "copyButtonEnable": {
+        "message": "Muestra un botón para copiar la URL de la página actual en una ventana de tipo 'popup'."
+    },
+    "searchTooltipsEngines": {
+        "message": "Motores de búsqueda utilizados para búsquedas basadas en tooltips."
+    },
+    "dropInEmptyOnly": {
+        "message": "Solo responde cuando se suelta en un área vacía."
+    },
+    "sendBackButtonEnable": {
+        "message": "Muestra un botón para enviar la URL de la página actual de vuelta a la ventana original en una ventana de tipo 'popup'."
     }
 }

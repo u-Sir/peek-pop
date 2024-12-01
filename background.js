@@ -43,7 +43,18 @@ const configs = {
     'clickModifiedKey': 'None',
     'linkDisabledUrls': [],
     'enableContainerIdentify': true,
-    'dragStartEnable': false
+    'dragStartEnable': false,
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+    'searchTooltipsEngines':  `Google=>https://www.google.com/search?q=%s
+Bing=>https://www.bing.com/search?q=%s
+Baidu=>https://www.baidu.com/s?wd=%s
+Yandex=>https://yandex.com/search/?text=%s
+DuckduckGo=>https://duckduckgo.com/?q=%s
+Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+    'copyButtonEnable': false,
+    'dropInEmptyOnly': false,
+    'sendBackButtonEnable': false
 };
 
 // Load user configurations from storage
@@ -407,6 +418,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     sendResponse({ status: 'Icon update handled' });
                 }
 
+                if (request.action === 'getWindowType') {
+                    chrome.windows.getCurrent({ populate: true }, (window) => {
+                        sendResponse({ status: 'Window type sent', windowType: window.type});
+
+                    });
+                }
+
 
 
 
@@ -518,7 +536,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     return true;
                 }
 
-
                 return getZoomFactor().then(zoom => {
                     return Promise.all([
                         saveConfig('lastClientX', request.lastClientX * zoom),
@@ -559,7 +576,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 if (tabs.length > 0) {
                                     let currentTab = tabs[0];
                                     if (sender.tab) currentTab = sender.tab;
-                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY, request.top, request.left, request.width, request.height).then(() => {
+                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY,
+                                        request.top, request.left, request.width, request.height).then(() => {
                                         // sendResponse({ status: 'link handled' });
                                     });
                                     sendResponse({ status: 'link handled' });
@@ -579,7 +597,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     let currentTab = tabs[0];
                                     if (sender.tab) currentTab = sender.tab;
 
-                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY, request.top, request.left, request.width, request.height).then(() => {
+                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY,
+                                        request.top, request.left, request.width, request.height).then(() => {
                                         // sendResponse({ status: 'group handled' });
                                     });
 
@@ -604,7 +623,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Handle link opening in a popup
-function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight) {
+function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType, lastClientX, lastClientY,
+    lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight) {
     if (!isValidUrl(linkUrl)) {
         console.error('Invalid URL:', linkUrl);
         return Promise.reject(new Error('Invalid URL'));
@@ -646,6 +666,7 @@ function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSi
 
 // Function to create a popup window
 function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+    
     chrome.storage.local.get(['enableContainerIdentify', 'rememberPopupSizeAndPositionForDomain'], (result) => {
         const enableContainerIdentify = result.enableContainerIdentify !== undefined ? result.enableContainerIdentify : true;
         let savedPositionAndSize;
@@ -664,6 +685,17 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
         } else {
             savedPositionAndSize = false;
         }
+        const tmp = {
+            url: linkUrl,
+            type: windowType,
+            top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
+            left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
+            width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
+            height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
+            focused: true,
+            incognito: tab && tab.incognito !== undefined ? tab.incognito : false,
+            ...(enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default' ? { cookieStoreId: tab.cookieStoreId } : {})
+        };
         chrome.windows.create({
             url: linkUrl,
             type: windowType,
@@ -690,6 +722,7 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
 
 // Function to handle default popup creation
 function defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+    
     let dx, dy;
 
     if (tryOpenAtMousePosition) {

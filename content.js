@@ -29,6 +29,12 @@ let linkDisabledUrls;
 let theme;
 let blurOverlay;
 let holdTimeout;
+let lastLeaveTimestamp;
+let lastLeaveRelatedTarget;
+let copyButtonPosition;
+let sendBackButtonPosition;
+let searchTooltipsEngines;
+let dropInEmptyOnly;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -71,7 +77,18 @@ const configs = {
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
     'clickModifiedKey': 'None',
-    'linkDisabledUrls': []
+    'linkDisabledUrls': [],
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+    'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
+Bing=>https://www.bing.com/search?q=%s
+Baidu=>https://www.baidu.com/s?wd=%s
+Yandex=>https://yandex.com/search/?text=%s
+DuckduckGo=>https://duckduckgo.com/?q=%s
+Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+    'copyButtonEnable': false,
+    'dropInEmptyOnly': false,
+    'sendBackButtonEnable': false
 };
 
 async function loadUserConfigs(keys = Object.keys(configs)) {
@@ -99,7 +116,7 @@ function addListeners() {
 function removeListeners() {
     const events = ["click", "dragstart", "dragover", "drop"];
 
-    events.forEach(event => document.removeEventListener(event, handleEvent, true));
+    events.forEach(event => window.removeEventListener(event, handleEvent, true));
     document.removeEventListener('mousedown', handleMouseDown);
     document.removeEventListener('scroll', handleContextMenu);
     document.removeEventListener('contextmenu', handleContextMenu);
@@ -136,7 +153,8 @@ function createTooltip(x, y, actions, timeout = 2000) {
         button.style.padding = '4px 5px'; // Adjust size by changing padding
         button.style.borderRadius = '5px'; // Adjust corner roundness
         button.style.cursor = 'pointer';
-        button.style.fontSize = '10px'; // Adjust button text size
+        button.style.fontSize = '12px'; // Adjust button text size
+        button.style.width = 'auto'
 
         button.addEventListener('click', () => {
             action.handler(); // Trigger the corresponding action
@@ -234,37 +252,29 @@ function addSearchTooltipsOnHover(e) {
                     : 'http://' + selectionText)
                 : null
 
+            // Split the input text into lines
+            const lines = searchTooltipsEngines.trim().split('\n');
+
+            // Map each line to the desired format
+            const searchEngines = lines.map(line => {
+                // Split each line into label and URL template
+                const [label, urlTemplate] = line.split('=>');
+
+                // Ensure that both label and URL are present
+                if (!label || !urlTemplate) return null;
+
+                return {
+                    label: label.trim(),
+                    handler: () => triggerLinkPopup(e, urlTemplate.replace('%s', encodeURIComponent(selectionText)))
+                };
+            }).filter(item => item !== null); // Filter out any null values in case of formatting issues
+
             const actions = isURL
                 ? [{
                     label: '↗️',
                     handler: () => triggerLinkPopup(e, link)
                 }]
-                : [
-                    {
-                        label: 'Google',
-                        handler: () => triggerLinkPopup(e, `https://www.google.com/search?q=${encodeURIComponent(selectionText)}`)
-                    },
-                    {
-                        label: 'Bing',
-                        handler: () => triggerLinkPopup(e, `https://www.bing.com/search?q=${encodeURIComponent(selectionText)}`)
-                    },
-                    {
-                        label: 'Baidu',
-                        handler: () => triggerLinkPopup(e, `https://www.baidu.com/s?wd=${encodeURIComponent(selectionText)}`)
-                    },
-                    {
-                        label: 'Yandex',
-                        handler: () => triggerLinkPopup(e, `https://yandex.com/search/?text=${encodeURIComponent(selectionText)}`)
-                    },
-                    {
-                        label: 'DuckduckGo',
-                        handler: () => triggerLinkPopup(e, `https://duckduckgo.com/?q=${encodeURIComponent(selectionText)}`)
-                    },
-                    {
-                        label: 'Wikipedia',
-                        handler: () => triggerLinkPopup(e, `https://wikipedia.org/w/index.php?title=Special:Search&search=${encodeURIComponent(selectionText)}`)
-                    },
-                ];
+                : searchEngines;
 
             const range = selection.getRangeAt(0).cloneRange();
             const textRect = range.getBoundingClientRect(); // Get the bounding box of the selected text
@@ -328,7 +338,6 @@ function isLinkInCollection(url) {
 function changeCursorOnHover(e, anchorElement) {
     const linkElement = anchorElement ||
         (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
-
     if (linkElement) {
 
 
@@ -358,7 +367,6 @@ function changeCursorOnHover(e, anchorElement) {
 
         const linkRect = e.target.getBoundingClientRect(); // Get link's bounding box
         linkIndicator = createCandleProgressBar(e.clientX - 20, e.clientY, 6000);
-        
         if (anchorElement) {
             anchorElement.addEventListener('mouseleave', () => {
                 clearTimeoutsAndProgressBars();
@@ -369,7 +377,6 @@ function changeCursorOnHover(e, anchorElement) {
                 e.target.removeEventListener('mousemove', handleMouseOver)
             }, { once: true })
         }
-        
         const checkCursorInside = (e) => {
             const x = e.clientX; // Get the cursor's X position
             const y = e.clientY; // Get the cursor's Y position
@@ -558,6 +565,7 @@ function handleMouseDown(e) {
 
         if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
             if (clickModifiedKey === 'None' || keyMap[clickModifiedKey]) {
+
                 previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
 
                 // Add the event listener
@@ -594,7 +602,7 @@ function handleMouseDown(e) {
             if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
                 isMouseDownOnLink = false;
                 clearTimeoutsAndProgressBars();
-                
+                // document.removeEventListener('mouseup', handleHoldLink, true);
                 document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                 return;
@@ -607,10 +615,10 @@ function handleMouseDown(e) {
                         clearTimeoutsAndProgressBars(); // Cleanup progress bar
                     }
                 }, { once: true });
-                
+
                 document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-                
+
                 document.addEventListener('click', (e) => {
                     if (
                         firstDownOnLinkAt &&
@@ -622,7 +630,7 @@ function handleMouseDown(e) {
                         e.stopPropagation();
                     }
                 }, true);
-                
+
                 // Show progress bar for preview
                 setTimeout(() => {
                     if (!isMouseDownOnLink) return; // Abort if mouse is not held down
@@ -632,14 +640,14 @@ function handleMouseDown(e) {
                         (holdToPreviewTimeout ?? 1500) - 100
                     );
                 }, 100);
-                
+
                 // Set a timeout for the hold-to-preview action
                 holdTimeout = setTimeout(() => {
                     if (!isMouseDownOnLink) return; // Ensure the mouse is still down
                     clearTimeoutsAndProgressBars(); // Cleanup any progress bar
                     handleHoldLink(e, anchorElement); // Trigger the hold-to-preview action
                 }, holdToPreviewTimeout ?? 1500);
-                
+
                 // Check the initial mouse down time
                 if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
                     e.preventDefault();
@@ -657,7 +665,7 @@ function handleMouseDown(e) {
                 previewProgressBar.remove();
                 previewProgressBar = null;
             }
-            
+            // document.removeEventListener('mouseup', handleHoldLink, true);
             document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
@@ -682,7 +690,7 @@ function handleMouseDown(e) {
 function cancelHoldToPreviewOnMove() {
     isMouseDownOnLink = false;
     clearTimeoutsAndProgressBars();
-    
+    // document.removeEventListener('mouseup', handleHoldLink, true);
     document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
@@ -691,18 +699,16 @@ function cancelHoldToPreviewOnMove() {
 function cancelHoldToPreviewOnDrag() {
     isMouseDownOnLink = false;
     clearTimeoutsAndProgressBars();
-    
+    // document.removeEventListener('mouseup', handleHoldLink, true);
     document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
 
 function handleHoldLink(e, anchorElement = null) {
-
     if (e.button !== 0 || isDoubleClick) return;
     if (!firstDownOnLinkAt) return;
     const linkElement = anchorElement || e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
         (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
-
     if (!linkElement) return; // Ensure linkElement and linkUrl are valid
 
     const linkUrl = linkElement ?
@@ -739,10 +745,16 @@ function handleHoldLink(e, anchorElement = null) {
 
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
-                if (blurEnabled) {
-                    addBlurOverlay(blurPx, blurTime);
+
+                if (window.self !== window.top) {
+                    // Inside the iframe content script
+                    window.parent.postMessage({ action: 'blurParent' }, '*');
+                } else {
+                    if (blurEnabled) {
+                        addBlurOverlay(blurPx, blurTime);
+                    }
+                    addClickMask();
                 }
-                addClickMask();
 
                 chrome.runtime.sendMessage({
                     linkUrl: finalLinkUrl,
@@ -756,7 +768,7 @@ function handleHoldLink(e, anchorElement = null) {
                 }, () => {
                     isMouseDownOnLink = false;
                     clearTimeoutsAndProgressBars();
-                    
+                    document.removeEventListener('mouseup', handleHoldLink, true);
                     document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                     if (linkIndicator) linkIndicator.remove();
@@ -792,16 +804,16 @@ function handleDoubleClick(e) {
             (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
         : null;
 
-
     chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable', 'clickModifiedKey'], (data) => {
         if (!data.previewModeEnable || data.clickModifiedKey !== 'None') return;
 
-        e.preventDefault(); // Prevent the default double-click action
-        e.stopPropagation(); // Stop the event from bubbling up
+
         // Check if the double-clicked element is a link
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
         const imageUrl = imageElement ? imageElement.src : null;
         if (data.doubleClickToSwitch && !imageUrl && !linkUrl) {
+            e.preventDefault(); // Prevent the default double-click action
+            e.stopPropagation(); // Stop the event from bubbling up
             hasPopupTriggered = true;
             isDoubleClick = true;
 
@@ -822,13 +834,19 @@ function handleDoubleClick(e) {
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
             if (data.doubleClickAsClick) {
+                e.preventDefault(); // Prevent the default double-click action
+                e.stopPropagation(); // Stop the event from bubbling up
                 hasPopupTriggered = true;
                 isDoubleClick = true;
                 if (e.target.shadowRoot) {
                     linkElement.click();
                 } else {
                     try {
-                        e.target.click(); // Attempt to call click on e.target
+                        const clickEvent = new MouseEvent('click', {
+                            bubbles: true, // Make sure the event bubbles
+                            cancelable: true // Make the event cancelable
+                        });
+                        e.target.dispatchEvent(clickEvent);
                     } catch (error) {
                         e.target.closest('a').click();
                     }
@@ -865,15 +883,15 @@ function resetClickState() {
 }
 
 function handleEvent(e) {
-
     if (e.type === 'dragstart') {
         const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
         chrome.storage.local.get(['modifiedKey', 'dragDirections'], (data) => {
             const modifiedKey = data.modifiedKey || 'None';
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             if (modifiedKey === 'None' || keyMap[modifiedKey]) {
-                
+
                 handleDragStart(e, anchorElement);
+
             } else {
                 isDragging = false;
             }
@@ -882,7 +900,6 @@ function handleEvent(e) {
         preventEvent(e);
 
     } else if (e.type === 'click') {
-
         if (isDragging) {
             preventEvent(e);
 
@@ -958,9 +975,11 @@ function handleEvent(e) {
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
         if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
         isDragging = false;
+
         handleMouseUpWithProgressBar(e);
 
         addSearchTooltipsOnHover(e);
+
 
     }
 
@@ -1001,10 +1020,15 @@ function handlePreviewMode(e, linkUrl) {
 
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
-            if (blurEnabled) {
-                addBlurOverlay(blurPx, blurTime);
+            if (window.self !== window.top) {
+                // Inside the iframe content script
+                window.parent.postMessage({ action: 'blurParent' }, '*');
+            } else {
+                if (blurEnabled) {
+                    addBlurOverlay(blurPx, blurTime);
+                }
+                addClickMask();
             }
-            addClickMask();
 
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
@@ -1046,6 +1070,7 @@ async function preventEvent(e) {
 }
 
 async function handleMouseUpWithProgressBar(e) {
+
     if (isDragging) {
         clearTimeoutsAndProgressBars();
         return;
@@ -1103,7 +1128,6 @@ async function handleMouseUpWithProgressBar(e) {
 
             // Create and display the progress bar immediately
             progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
-
             const onMouseMove = (moveEvent) => {
 
                 if (isDragging) {
@@ -1172,7 +1196,7 @@ async function handleDragStart(e, anchorElement) {
     if (searchTooltips) searchTooltips.remove();
     searchTooltips = null;
 
-    const data = await loadUserConfigs(['modifiedKey', 'dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
+    const data = await loadUserConfigs(['dropInEmptyOnly', 'modifiedKey', 'dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
     const dragStartEnable = data.dragStartEnable !== 'undefined' ? data.dragStartEnable : false;
 
     if (!dragStartEnable) {
@@ -1184,12 +1208,18 @@ async function handleDragStart(e, anchorElement) {
         const dragPx = data.dragPx || 0;
         const dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
 
+
+        function updateLastLeaveTimestamp(e) {
+            lastLeaveTimestamp = e.timeStamp
+            lastLeaveRelatedTarget = e.relatedTarget
+        }
+
         if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
             isDragging = false;
             return;
         }
-
         function onDragend(e, endInfo = null) {
+            if (dropInEmptyOnly && (endInfo ? endInfo.dropEffect : e.dataTransfer.dropEffect) !== 'none') return;
             const modifiedKey = data.modifiedKey || 'None';
             const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
             if (modifiedKey === 'None') {
@@ -1210,6 +1240,13 @@ async function handleDragStart(e, anchorElement) {
                     resetDraggingState();
                     return;
                 }
+                if (lastLeaveRelatedTarget === null && e.timeStamp - lastLeaveTimestamp > 600) {
+                    console.log(lastLeaveRelatedTarget)
+                    lastLeaveTimestamp = undefined;
+                    lastLeaveRelatedTarget = undefined;
+                    return;
+                }
+                document.removeEventListener('dragleave', updateLastLeaveTimestamp)
             }
             if (!isMouseDown || hasPopupTriggered) return;
             const selectionText = window.getSelection().toString();
@@ -1394,10 +1431,14 @@ async function handleDragStart(e, anchorElement) {
                         isDragging = false;
                     }
                 }
+
+
             }
         }
 
         if (window.self !== window.top) {
+            window.parent.postMessage({ action: 'dragleaveUpdate' }, '*');
+
             window.addEventListener('dragend', (e) => {
                 const endElement = e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
                     (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
@@ -1405,10 +1446,12 @@ async function handleDragStart(e, anchorElement) {
                 const left = e.screenX - e.clientX;
                 const endX = e.screenX;
                 const endY = e.screenY;
+                const endTimestamp = e.timeStamp;
                 const endInfo = {
-                    endElement, 
-                    endClientX: e.clientX, 
-                    endClientY: e.clientY
+                    endElement,
+                    endClientX: e.clientX,
+                    endClientY: e.clientY,
+                    dropEffect: e.dataTransfer.dropEffect
                 }
                 const modifiedKey = data.modifiedKey || 'None';
                 const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
@@ -1432,11 +1475,12 @@ async function handleDragStart(e, anchorElement) {
                     }
 
                 }, { once: true })
-                window.parent.postMessage({action: 'dragendCheck', top, left, endY, endX}, '*');
-            }, { once: true })
+                window.parent.postMessage({ action: 'dragendCheck', top, left, endY, endX, endTimestamp }, '*');
+            }, { capture: true, once: true })
 
         } else {
-            document.addEventListener('dragend', onDragend, { once: true });
+            document.addEventListener('dragleave', updateLastLeaveTimestamp)
+            document.addEventListener('dragend', onDragend, { capture: true, once: true });
         }
     } else {
         if (!isMouseDown || hasPopupTriggered) return;
@@ -1496,6 +1540,9 @@ async function handleDragStart(e, anchorElement) {
 
             e.preventDefault();
             e.stopImmediatePropagation();
+
+            document.addEventListener('dragover', blockOver);
+
             isDragging = true;
 
             if (linkIndicator) {
@@ -1514,7 +1561,7 @@ async function handleDragStart(e, anchorElement) {
                 }
                 addClickMask();
             }
-            chrome.runtime.sendMessage({
+            const message = {
                 linkUrl: finalLinkUrl,
                 lastClientX: e.screenX,
                 lastClientY: e.screenY,
@@ -1523,9 +1570,11 @@ async function handleDragStart(e, anchorElement) {
                 top: window.screen.availTop,
                 left: window.screen.availLeft,
                 trigger: 'drag'
-            }, () => {
+            };
+            chrome.runtime.sendMessage(message, () => {
                 hasPopupTriggered = true;
                 document.removeEventListener('dragend', onDragend, true);
+
                 finalLinkUrl = null;
                 imageUrl = null;
                 if (linkIndicator) linkIndicator.remove();
@@ -1541,7 +1590,14 @@ async function handleDragStart(e, anchorElement) {
         }
     }
 }
-
+function blockOver(e) {
+    // Make sure dataTransfer is not null before using it
+    if (e.dataTransfer) {
+        // Prevent the default action (allow drop) but disable the drop effect
+        e.preventDefault();  // This is needed to allow the drop target to be activated
+        e.dataTransfer.dropEffect = 'none';  // Disable the drop effect
+    }
+}
 function isUrlDisabled(url, disabledUrls) {
     return disabledUrls.some(disabledUrl => {
         // Check if the pattern is a regex
@@ -1602,13 +1658,25 @@ async function checkUrlAndToggleListeners() {
         'holdToPreviewTimeout',
         'clickModifiedKey',
         'linkDisabledUrls',
-        'searchTooltipsEnable'
+        'searchTooltipsEnable',
+        'blurEnabled',
+        'blurPx',
+        'blurTime',
+        'copyButtonPosition',
+        'searchTooltipsEngines',
+        'copyButtonEnable',
+        'dropInEmptyOnly',
+        'sendBackButtonPosition',
+        'sendBackButtonEnable',
     ]);
     const disabledUrls = data.disabledUrls || [];
     linkDisabledUrls = data.linkDisabledUrls || [];
     holdToPreviewTimeout = data.holdToPreviewTimeout || 1500;
     const currentUrl = window.location.href;
-
+    copyButtonPosition = data.copyButtonPosition;
+    sendBackButtonPosition = data.sendBackButtonPosition;
+    searchTooltipsEngines = data.searchTooltipsEngines || configs.searchTooltipsEngines;
+    dropInEmptyOnly = data.dropInEmptyOnly;
     if (isUrlDisabled(currentUrl, disabledUrls)) {
         removeListeners();
     } else {
@@ -1634,8 +1702,209 @@ async function checkUrlAndToggleListeners() {
     } else {
         previewMode = data.previewMode;
     }
-    
+
     if (!(window.self !== window.top)) {
+
+        if (data.copyButtonEnable || data.sendBackButtonEnable) {
+            chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
+                if (response.error) {
+                    console.error('Error:', response.error);
+                    return;
+                }
+
+                if (response.windowType === 'popup') {
+                    const css = `
+                        /* Common styles for both buttons */
+                        #dynamicButton {
+                          background-color: #f2f7fa;
+                          width: 100px;
+                          height: 30px;
+                          border: none;
+                          border-radius: 10px;
+                          font-weight: 600;
+                          cursor: pointer;
+                          overflow: hidden;
+                          transition-duration: 700ms;
+                        }
+        
+                        #dynamicButton span:first-child {
+                          color: #0e418f;
+                          position: absolute;
+                          transform: translate(-50%, -50%);
+                        }
+        
+                        #dynamicButton span:last-child {
+                          position: absolute;
+                          color: #b5ccf3;
+                          opacity: 0;
+                          transform: translateY(100%) translateX(-50%);
+                          height: 14px;
+                          line-height: 13px;
+                        }
+        
+                        #dynamicButton:focus {
+                          background-color: #0e418f;
+                          width: 120px;
+                          height: 40px;
+                          transition-delay: 100ms;
+                          transition-duration: 500ms;
+                        }
+        
+                        #dynamicButton:focus span:first-child {
+                          color: #b5ccf3;
+                          transform: translateX(-50%) translateY(-150%);
+                          opacity: 0;
+                          transition-duration: 500ms;
+                        }
+        
+                        #dynamicButton:focus span:last-child {
+                          transform: translateX(-50%) translateY(-50%);
+                          opacity: 1;
+                          transition-delay: 300ms;
+                          transition-duration: 500ms;
+                        }
+                    `;
+
+                    function createButton(id, positionKey, clickHandler) {
+                        // Remove existing button if present
+                        const existingHost = document.getElementById(id);
+                        if (existingHost) existingHost.remove();
+
+                        // Create button
+                        const button = document.createElement("button");
+                        button.id = "dynamicButton";
+                        button.draggable = true;
+
+                        if (positionKey === "copyButtonPosition") {
+                            button.innerHTML = `
+                            <span>
+                      <svg width="20px" height="20px" viewBox="0 0 48.00 48.00" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.384"></g><g id="SVGRepo_iconCarrier"> <g id="Base/copy-link"> <path d="M0 0H48V48H0V0Z" fill="white" fill-opacity="0.01"></path> <g id="ç¼–ç»„ 2"> <g id="ç¼–ç»„"> <rect id="çŸ©å½¢" width="48" height="48" fill="white" fill-opacity="0.01"></rect> <path id="å½¢çŠ¶" d="M12 9.92704V7C12 5.34315 13.3431 4 15 4H41C42.6569 4 44 5.34315 44 7V33C44 34.6569 42.6569 36 41 36H38.0174" stroke="#000000" stroke-width="4"></path> <rect id="Rectangle Copy" x="4" y="10" width="34" height="34" rx="3" fill="#2F88FF" stroke="#000000" stroke-width="4" stroke-linejoin="round"></rect> </g> <g id="ç¼–ç»„_2"> <g id="Group"> <path id="Oval" d="M18.4396 23.1098L23.7321 17.6003C25.1838 16.1486 27.5693 16.1806 29.0604 17.6717C30.5515 19.1628 30.5835 21.5483 29.1319 23L27.2218 25.0228" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path> <path id="Oval Copy 2" d="M13.4661 28.7469C12.9558 29.2573 11.9006 30.2762 11.9006 30.2762C10.4489 31.7279 10.4095 34.3152 11.9006 35.8063C13.3917 37.2974 15.7772 37.3294 17.2289 35.8777L22.3931 31.1894" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path> <path id="Oval Copy" d="M18.6631 28.3283C17.9705 27.6357 17.5927 26.7501 17.5321 25.8547C17.4624 24.8225 17.8143 23.7774 18.5916 23" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path> <path id="Oval Copy 3" d="M22.3218 25.8611C23.8129 27.3522 23.8449 29.7377 22.3932 31.1894" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g> </g> </g> </g></svg>
+                    </span>
+                    <span>
+                      <svg height="18" width="18" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 431 359" enable-background="new 0 0 431 359" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <polygon fill="#29CB41" points="168.5,359 0,159.8 91.6,82.3 173.7,179.3 344,0 431,82.7 "></polygon> </g></svg>
+                    </span>`;
+                        }
+                        else if (positionKey === "sendBackButtonPosition") {
+                            button.innerHTML = `
+                           <span>
+        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M18.3137 0.918778C18.6347 1.36819 18.5307 1.99274 18.0812 2.31375L16.4248 3.49692L17.2572 3.67529C20.0236 4.26809 22 6.71287 22 9.5421V10C22 10.5523 21.5523 11 21 11C20.4477 11 20 10.5523 20 10V9.5421C20 7.65595 18.6824 6.02609 16.8381 5.63089L15.9784 5.44667L16.8682 7.00388C17.1423 7.48339 16.9757 8.09425 16.4961 8.36826C16.0166 8.64227 15.4058 8.47567 15.1318 7.99616L13.1318 4.49616C12.8771 4.05058 13.0012 3.48458 13.4188 3.18629L16.9188 0.686284C17.3682 0.365274 17.9927 0.469365 18.3137 0.918778ZM6 12C6 10.8954 6.89543 10 8 10H16C17.1046 10 18 10.8954 18 12V20C18 21.1046 17.1046 22 16 22H8C6.89543 22 6 21.1046 6 20V12ZM16 20V12H8V20H16ZM4 6.00002C2.89543 6.00002 2 6.89545 2 8.00002V16C2 16.5523 2.44772 17 3 17C3.55228 17 4 16.5523 4 16V8.00002H12C12.5523 8.00002 13 7.5523 13 7.00002C13 6.44773 12.5523 6.00002 12 6.00002H4Z" fill="#000000"></path> </g></svg>            </span>
+                    <span>
+        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M18.3137 0.918778C18.6347 1.36819 18.5307 1.99274 18.0812 2.31375L16.4248 3.49692L17.2572 3.67529C20.0236 4.26809 22 6.71287 22 9.5421V10C22 10.5523 21.5523 11 21 11C20.4477 11 20 10.5523 20 10V9.5421C20 7.65595 18.6824 6.02609 16.8381 5.63089L15.9784 5.44667L16.8682 7.00388C17.1423 7.48339 16.9757 8.09425 16.4961 8.36826C16.0166 8.64227 15.4058 8.47567 15.1318 7.99616L13.1318 4.49616C12.8771 4.05058 13.0012 3.48458 13.4188 3.18629L16.9188 0.686284C17.3682 0.365274 17.9927 0.469365 18.3137 0.918778ZM6 12C6 10.8954 6.89543 10 8 10H16C17.1046 10 18 10.8954 18 12V20C18 21.1046 17.1046 22 16 22H8C6.89543 22 6 21.1046 6 20V12ZM16 20V12H8V20H16ZM4 6.00002C2.89543 6.00002 2 6.89545 2 8.00002V16C2 16.5523 2.44772 17 3 17C3.55228 17 4 16.5523 4 16V8.00002H12C12.5523 8.00002 13 7.5523 13 7.00002C13 6.44773 12.5523 6.00002 12 6.00002H4Z" fill="#000000"></path> </g></svg>            </span>
+                                `;
+                        }
+                        // Create shadow root
+                        const shadowHost = document.createElement("div");
+                        shadowHost.id = id;
+                        document.body.appendChild(shadowHost);
+
+                        const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+                        shadowRoot.appendChild(button);
+
+                        // Apply styles
+                        const style = document.createElement("style");
+                        style.textContent = css;
+                        shadowRoot.appendChild(style);
+
+                        // Load position from storage or set default
+                        button.style.position = "fixed";
+                        button.style.zIndex = "2147483647";
+
+                        const isValidPercentage = (value) => typeof value === "number" && value >= 0 && value <= 100;
+
+                        chrome.storage.local.get(positionKey, (result) => {
+                            const { leftPercent = 10, topPercent = 10 } = result[positionKey] || {};
+
+                            // Validate percentages before applying
+                            const validatedLeft = isValidPercentage(leftPercent) ? leftPercent : 10; // Default to 10% if invalid
+                            const validatedTop = isValidPercentage(topPercent) ? topPercent : 10;   // Default to 10% if invalid
+
+                            button.style.left = `${validatedLeft}%`;
+                            button.style.top = `${validatedTop}%`;
+                        });
+
+
+                        // Add draggable and click functionality
+                        makeButtonDraggable(button, positionKey);
+                        button.addEventListener("click", clickHandler);
+
+                        return button;
+                    }
+
+                    function makeButtonDraggable(button, positionKey) {
+                        let offsetX, offsetY;
+
+                        button.addEventListener("dragstart", (e) => {
+                            button.blur();
+                            const rect = button.getBoundingClientRect();
+                            offsetX = e.clientX - rect.left;
+                            offsetY = e.clientY - rect.top;
+                        });
+
+                        button.addEventListener("dragend", (e) => {
+                            const left = e.clientX - offsetX;
+                            const top = e.clientY - offsetY;
+                            const leftPercent = (left / window.innerWidth) * 100;
+                            const topPercent = (top / window.innerHeight) * 100;
+
+                            button.style.left = `${leftPercent}%`;
+                            button.style.top = `${topPercent}%`;
+
+                            chrome.storage.local.set({ [positionKey]: { leftPercent, topPercent } });
+                        });
+                    }
+
+                    // Initialize buttons
+                    if (!document.hasFocus()) return;
+                    if (data.copyButtonEnable) {
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                createButton("copyButtonHost", "copyButtonPosition", () => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    // Blur the button after 1.2 seconds
+                                    setTimeout(() => {
+                                        const shadowRoot = document.getElementById("copyButtonHost").shadowRoot;
+                                        const button = shadowRoot.querySelector("button");
+                                        if (button) {
+                                            button.blur();
+                                        }
+                                    }, 1200);
+                                });
+                            })
+                        } else {
+                            createButton("copyButtonHost", "copyButtonPosition", () => {
+                                navigator.clipboard.writeText(window.location.href);
+                                // Blur the button after 1.2 seconds
+                                setTimeout(() => {
+                                    const shadowRoot = document.getElementById("copyButtonHost").shadowRoot;
+                                    const button = shadowRoot.querySelector("button");
+                                    if (button) {
+                                        button.blur();
+                                    }
+                                }, 1200);
+                            });
+
+                        }
+                    }
+
+                    if (data.sendBackButtonEnable) {
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                createButton("sendBackButtonHost", "sendBackButtonPosition", () => {
+                                    chrome.runtime.sendMessage({ action: "sendPageBack" });
+                                });
+                            })
+                        } else {
+                            createButton("sendBackButtonHost", "sendBackButtonPosition", () => {
+                                chrome.runtime.sendMessage({ action: "sendPageBack" });
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+
+
         // Inside the parent page content script
         window.addEventListener('message', function (e) {
             if (e.data && e.data.action === 'blurParent') {
@@ -1675,43 +1944,64 @@ async function checkUrlAndToggleListeners() {
                     }
                 });
 
-            } else if (e.data && e.data.action === 'dragendCheck') {
-                const { top, left, endY, endX, endEvent } = e.data;
-                chrome.runtime.sendMessage({ action: 'getZoomFactor' }, (response) => {
+            } else if (e.data) {
 
-                    if (response.error) {
-                        console.error('Error:', response.error);
-                    } else {
-                        // Find the iframe that sent the request
-                        const iframes = document.getElementsByTagName('iframe');
-                        let iframeRect;
-                        for (let iframe of iframes) {
-                            if (iframe.contentWindow === e.source) {
-                                iframeRect = iframe.getBoundingClientRect();
-                                break;
+                function dragleaveUpdate(e) {
+                    lastLeaveTimestamp = e.timeStamp;
+                }
+                if (e.data.action === 'dragendCheck') {
+                    const { top, left, endY, endX, endEvent, endTimestamp } = e.data;
+                    chrome.runtime.sendMessage({ action: 'getZoomFactor' }, (response) => {
+
+                        if (response.error) {
+                            console.error('Error:', response.error);
+                        } else {
+                            // Find the iframe that sent the request
+                            const iframes = document.getElementsByTagName('iframe');
+                            let iframeRect;
+                            for (let iframe of iframes) {
+                                if (iframe.contentWindow === e.source) {
+                                    iframeRect = iframe.getBoundingClientRect();
+                                    break;
+                                }
                             }
+
+                            const zoomFactor = response.zoom; // zoom factor
+                            const viewportLeft = (left - iframeRect.left) * zoomFactor;
+                            const viewportRight = viewportLeft + window.innerWidth * zoomFactor;
+                            const viewportTop = (top - iframeRect.top) * zoomFactor;
+                            const viewportBottom = viewportTop + window.innerHeight * zoomFactor;
+                            const isOut = (!(viewportLeft < endX && endX < viewportRight && viewportTop < endY && endY < viewportBottom) || endTimestamp - lastLeaveTimestamp > 600);
+                            document.removeEventListener('dragleave', dragleaveUpdate)
+
+                            // Send the screen coordinates back to the iframe
+                            e.source.postMessage({
+                                type: 'RESULT',
+                                isOut,
+                                endEvent
+                            }, e.origin);
                         }
+                    });
+                } else if (e.data.action === 'dragleaveUpdate') {
+                    lastLeaveTimestamp = undefined;
 
-                        const zoomFactor = response.zoom; // zoom factor
-                        const viewportLeft = (left - iframeRect.left) * zoomFactor;
-                        const viewportRight = viewportLeft + window.innerWidth * zoomFactor;
-                        const viewportTop = (top - iframeRect.top) * zoomFactor;
-                        const viewportBottom = viewportTop + window.innerHeight * zoomFactor;
-                        const isOut = (!(viewportLeft < endX && endX < viewportRight && viewportTop < endY && endY < viewportBottom));
-
-                        // Send the screen coordinates back to the iframe
-                        e.source.postMessage({
-                            type: 'RESULT',
-                            isOut,
-                            endEvent
-                        }, e.origin);
-                    }
-                });
+                    document.addEventListener('dragleave', dragleaveUpdate)
+                } else if (e.data.action === 'getHref') {
+                    chrome.runtime.sendMessage({ action: 'sendHref' }, (response) => {
+                        if (response.error) {
+                            console.error('Error:', response.error);
+                        } else {
+                            // Send the screen coordinates back to the iframe
+                            e.source.postMessage({
+                                href: window.location.href
+                            }, e.origin);
+                        }
+                    });
+                }
             }
         });
 
     }
-
 
     // In popup.js or content.js
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -1728,15 +2018,10 @@ async function checkUrlAndToggleListeners() {
 
         // Add the event listener
         const events = ["click", "mouseup"];
-        events.forEach(event => document.addEventListener(event, handleEvent, true));
+        events.forEach(event => window.addEventListener(event, handleEvent, true));
     }
 
-    if (data.collectionEnable) {
-        document.addEventListener(['contextmenu'], addLinkToCollection, true);
-
-    } else {
-        document.removeEventListener(['contextmenu'], addLinkToCollection, true);
-    }
+    document.addEventListener(['contextmenu'], addLinkToCollection, true);
 }
 
 // Function to add a link to the collection
@@ -1745,10 +2030,12 @@ function addLinkToCollection(e) {
     const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
     e.preventDefault();
     e.stopPropagation();
-    chrome.storage.local.get('collection', async (data) => {
+    chrome.storage.local.get(['collection', 'collectionEnable'], async (data) => {
         const linkElement = anchorElement ||
             (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
-        if (!linkElement) return;
+
+        if (!data.collectionEnable) return;
+
 
         const linkUrl = linkElement ?
             (linkElement.getAttribute('data-url') ||
@@ -1820,7 +2107,13 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.collectionEnable ||
         changes.holdToPreview ||
         changes.clickModifiedKey ||
-        changes.linkDisabledUrls
+        changes.linkDisabledUrls ||
+        changes.copyButtonPosition ||
+        changes.searchTooltipsEngines ||
+        changes.copyButtonEnable ||
+        changes.dropInEmptyOnly ||
+        changes.sendBackButtonPosition ||
+        changes.sendBackButtonEnable
     )) {
         await checkUrlAndToggleListeners();
     }
@@ -1845,7 +2138,9 @@ chrome.storage.local.get('lastUrl', (data) => {
     }
 });
 
+
 window.addEventListener('focus', async () => {
+
     focusAt = Date.now();
     isDoubleClick = false;
     firstDownOnLinkAt = null;
@@ -1858,11 +2153,16 @@ window.addEventListener('focus', async () => {
     removeBlurOverlay();
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
+    document.removeEventListener('dragover', blockOver);
+
     clearTimeoutsAndProgressBars();
     hoverElement = null;
 
     hoverInitialMouseX = null;
     hoverInitialMouseY = null;
+    if (window.self !== window.top) {
+        window.parent.postMessage({ action: 'removeParentBlur' }, '*');
+    }
     try {
 
 
@@ -1925,18 +2225,19 @@ async function handleMouseOver(e) {
 
     const path = e.composedPath();
     const iframe = path.find((node) => node instanceof HTMLIFrameElement);
+
     if (iframe) {
         e.target.focus();
     }
     // Check if any of the nodes in the path are part of a shadow root
     const isInsideShadowRoot = path.some(node => node instanceof ShadowRoot);
     if (isInsideShadowRoot) {
-            clearTimeoutsAndProgressBars();
-            e.target.addEventListener('mousemove', handleMouseOver)
-        e.target.addEventListener('mouseleave', ()=>{
+        clearTimeoutsAndProgressBars();
+        e.target.addEventListener('mousemove', handleMouseOver)
+        e.target.addEventListener('mouseleave', () => {
             clearTimeoutsAndProgressBars();
             e.target.removeEventListener('mousemove', handleMouseOver)
-        },{once: true})
+        }, { once: true })
     }
     const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
 
@@ -1987,6 +2288,7 @@ async function handleMouseOver(e) {
 
 
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
+        // console.log(window.self, window.top)
         changeCursorOnHover(e, anchorElement);
 
     }
@@ -2033,14 +2335,14 @@ async function handleMouseOver(e) {
                 // Create and display the progress bar immediately
                 progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
                 if (anchorElement) {
-                    anchorElement.addEventListener('mouseleave', ()=>{
+                    anchorElement.addEventListener('mouseleave', () => {
                         clearTimeoutsAndProgressBars();
                         e.target.addEventListener('mousemove', handleMouseOver)
-                    },{once: true})
-                    e.target.addEventListener('mouseleave', ()=>{
+                    }, { once: true })
+                    e.target.addEventListener('mouseleave', () => {
                         clearTimeoutsAndProgressBars();
                         e.target.removeEventListener('mousemove', handleMouseOver)
-                    },{once: true})
+                    }, { once: true })
                 }
 
                 // Start checking for minimal mouse movement
@@ -2169,10 +2471,15 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
 
-            if (blurEnabled) {
-                addBlurOverlay(blurPx, blurTime);
+            if (window.self !== window.top) {
+                // Inside the iframe content script
+                window.parent.postMessage({ action: 'blurParent' }, '*');
+            } else {
+                if (blurEnabled) {
+                    addBlurOverlay(blurPx, blurTime);
+                }
+                addClickMask();
             }
-            addClickMask();
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
                 lastClientX: e.screenX,
@@ -2212,11 +2519,16 @@ function triggerLinkPopup(e, link) {
         if (searchTooltips) searchTooltips.remove();
         searchTooltips = null;
 
-        if (data.blurEnabled) {
-            addBlurOverlay(data.blurPx, data.blurTime);
-        }
 
-        addClickMask();
+        if (window.self !== window.top) {
+            // Inside the iframe content script
+            window.parent.postMessage({ action: 'blurParent' }, '*');
+        } else {
+            if (data.blurEnabled) {
+                addBlurOverlay(data.blurPx, data.blurTime);
+            }
+            addClickMask();
+        }
         chrome.runtime.sendMessage({
             linkUrl: link,
             lastClientX: e.screenX,
