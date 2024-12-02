@@ -1,12 +1,9 @@
 {
-    "openInPopupWindow": {
-        "message": "Abrir enlace en ventana emergente"
-    },
     "extensionName": {
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Previsualiza enlaces, imágenes o busca texto seleccionado en una ventana emergente."
+        "message": "Previsualizar enlaces o imágenes en la ventana emergente, buscar texto o imágenes seleccionadas."
     },
     "popupHeight": {
         "message": "Altura emergente (px)"
@@ -21,7 +18,7 @@
         "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
     },
     "disabledUrls": {
-        "message": "Desactivar extensión en estas URL (mediante texto plano, regex, comodines, una por línea)"
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
     "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"
@@ -30,7 +27,7 @@
         "message": "Enviar página de vuelta a la ventana original"
     },
     "blurEnabled": {
-        "message": "Aplicar efecto de desenfoque en la ventana original al abrir el popup"
+        "message": "Habilitar desenfoque de fondo"
     },
     "enableContainerIdentify": {
         "message": "Mantener abierto en el mismo contenedor que la página original"
@@ -117,7 +114,7 @@
         "message": "Soporte de imagen"
     },
     "hoverDisabledUrls": {
-        "message": "Desactivar extensión en estas URL (mediante texto plano, regex, comodines, una por línea)"
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
     "searchSettings": {
         "message": "Buscar"
@@ -135,13 +132,13 @@
         "message": "Exportar"
     },
     "dragStartEnable": {
-        "message": "El arrastre se activa inmediatamente sin esperar la liberación. (No se admite la detección de dirección)"
+        "message": "El arrastre se activa inmediatamente, sin esperar a soltar. (Sin detección de dirección)"
     },
     "previewModeSettings": {
         "message": "Hacer clic"
     },
     "previewModeDisabledUrls": {
-        "message": "Deshabilitar en estas URL mediante texto plano, regex, comodines, uno por línea."
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
     "previewModeEnable": {
         "message": "Hacer clic en el enlace para previsualizar (deshabilitar - ignorar las opciones a continuación)"
@@ -171,7 +168,7 @@
         "message": "Tooltips para el texto seleccionado."
     },
     "collectionEnable": {
-        "message": "Mantén presionado Ctrl y haz clic derecho para añadir el enlace a tu colección. Pulsa Ctrl/Command + U o haz clic en el icono del complemento para ver tu colección."
+        "message": "Ctrl + clic derecho para agregar el enlace a la lista de colecciones. La lista se puede ver mediante Ctrl/Command + U (por defecto) o haciendo clic en el ícono de la extensión."
     },
     "linkSettings": {
         "message": "Enlace"
@@ -187,9 +184,6 @@
     },
     "options": {
         "message": "Página de opciones"
-    },
-    "popAction": {
-        "message": "Abrir el icono emergente del complemento"
     },
     "clickModeToggle": {
         "message": "Alternar modo de clic"
@@ -213,7 +207,7 @@
         "message": "Muestra un botón para copiar la URL de la página actual en una ventana de tipo 'popup'."
     },
     "searchTooltipsEngines": {
-        "message": "Motores de búsqueda utilizados para búsquedas basadas en tooltips."
+        "message": "Motores de búsqueda en la barra de búsqueda, uno por línea, formato: Nombre a mostrar=>Enlace de búsqueda con %s"
     },
     "dropInEmptyOnly": {
         "message": "Solo responde cuando se suelta en un área vacía."

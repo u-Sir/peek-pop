@@ -1,12 +1,9 @@
 {
-    "openInPopupWindow": {
-        "message": "Open link in popup window"
-    },
     "extensionName": {
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Preview links, images, or search selected text in a popup window."
+        "message": "Preview links or images in the popup window, search selected text or images."
     },
     "popupHeight": {
         "message": "Popup height (px)"
@@ -21,7 +18,7 @@
         "message": "Try to open at mouse position (disabled — open at screen center)"
     },
     "disabledUrls": {
-        "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
     },
     "openPageInMainWindow": {
         "message": "Open page in main window"
@@ -30,7 +27,7 @@
         "message": "Send Page Back to Original Window"
     },
     "blurEnabled": {
-        "message": "Set blur effect on Original Window when popup"
+        "message": "Enable background blur"
     },
     "enableContainerIdentify": {
         "message": "Keep open in the same container as original page"
@@ -117,7 +114,7 @@
         "message": "Image support"
     },
     "hoverDisabledUrls": {
-        "message": "Disable on these URLs (via plain text, regex, wildcarks, one per line)"
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
     },
     "searchSettings": {
         "message": "Search"
@@ -135,13 +132,13 @@
         "message": "Export"
     },
     "dragStartEnable": {
-        "message": "Drag triggers immediately without waiting for release. (Direction detection is not supported)"
+        "message": "Dragging triggers immediately, without waiting for release. (No direction detection)"
     },
     "previewModeSettings": {
         "message": "Click"
     },
     "previewModeDisabledUrls": {
-        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
     },
     "previewModeEnable": {
         "message": "Clicking on the link to preview (disable - ignore below options)"
@@ -171,7 +168,7 @@
         "message": "Tooltips for selected text."
     },
     "collectionEnable": {
-        "message": "Hold Ctrl and Right Click to add the link to your collection. Press Ctrl/Command + U or click the add-on icon to view your collection."
+        "message": "Ctrl + Right-click to add the link to the collection list. The list can be viewed via Ctrl/Command + U (default) or by clicking the extension icon."
     },
     "linkSettings": {
         "message": "Link"
@@ -187,9 +184,6 @@
     },
     "options": {
         "message": "Options page"
-    },
-    "popAction": {
-        "message": "Open add-on icon popup"
     },
     "clickModeToggle": {
         "message": "Toggle click mode"
@@ -213,7 +207,7 @@
         "message": "Displays a button to copy the current page URL in a window of type 'popup'."
     },
     "searchTooltipsEngines": {
-        "message": "Search engines used for tooltip-based searches."
+        "message": "Search engines in the search bar, one per line, format: Display Name=>Search link with %s"
     },
     "dropInEmptyOnly": {
         "message": "Only respose when drop in empty area."

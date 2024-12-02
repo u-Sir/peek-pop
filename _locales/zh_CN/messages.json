@@ -1,12 +1,9 @@
 {
-    "openInPopupWindow": {
-        "message": "在弹出窗口中打开链接"
-    },
     "extensionName": {
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "在弹出窗口中打开拖拽的链接、搜索拖拽的文本"
+        "message": "在弹出窗口中预览链接或图片、搜索选中的文本或图片"
     },
     "popupHeight": {
         "message": "窗口高度 (px)"
@@ -24,13 +21,13 @@
         "message": "在主窗口中打开页面"
     },
     "disabledUrls": {
-        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
+        "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "sendPageBack": {
         "message": "发送当前页面到原窗口"
     },
     "blurEnabled": {
-        "message": "弹窗时背景模糊"
+        "message": "启用背景模糊"
     },
     "enableContainerIdentify": {
         "message": "确保弹窗跟原页面处于同一容器内"
@@ -117,7 +114,7 @@
         "message": "预览图片"
     },  
     "hoverDisabledUrls": {
-        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
+        "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "searchSettings": {
         "message": "搜索"
@@ -135,13 +132,13 @@
         "message": "导出"
     },
     "dragStartEnable": {
-        "message": "拖拽立即触发，不等待释放。（不支持方向检测）"
+        "message": "拖拽立即触发，不等待释放。（无方向检测）"
     },
     "previewModeSettings": {
         "message": "点击"
     },
     "previewModeDisabledUrls": {
-        "message": "访问以下 URL 时自动禁用，每行一条规则，支持正则表达式、通配符、纯文本"
+        "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
     }, 
     "previewModeEnable": {
         "message": "点击链接预览（取消勾选时，下方的设置不会生效）"
@@ -171,7 +168,7 @@
         "message": "选中文本时显示搜索条"
     },
     "collectionEnable": {
-        "message": "Ctrl + 右击将链接添加到收集列表，列表可通过 Ctrl/Command + U 或者点击插件图标查看"
+        "message": "Ctrl + 右击将链接添加到收集列表，列表可通过 Ctrl/Command + U（默认） 或者点击插件图标查看"
     },
     "linkSettings": {
         "message": "链接"
@@ -187,9 +184,6 @@
     },
     "options": {
         "message": "设置页面"
-    },
-    "popAction": {
-        "message": "弹出插件图标的页面"
     },
     "clickModeToggle": {
         "message": "切换点击链接预览模式"
