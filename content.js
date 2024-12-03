@@ -869,10 +869,9 @@ function handleDoubleClick(e) {
         }
 
         chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
-        // Reset click states after double-click
-        // resetClickState();
-
-        isDoubleClick = false;
+        setTimeout(() => {
+            isDoubleClick = false;
+        }, 250);
     });
 }
 function resetClickState() {
