@@ -178,7 +178,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     });
                                 }
 
-                                if (userConfigs.rememberPopupSizeAndPosition) {
+                                if (userConfigs.rememberPopupSizeAndPosition || userConfigs.rememberPopupSizeAndPositionForDomain) {
+
+                                    if (!popupWindowsInfo['savedPositionAndSize']) {
+                                        popupWindowsInfo['savedPositionAndSize'] = {};
+                                    }
+
+
+                                    if (popupWindowsInfo.savedPositionAndSize) {
+                                        popupWindowsInfo.savedPositionAndSize.left = currentWindow.left;
+                                        popupWindowsInfo.savedPositionAndSize.top = currentWindow.top;
+                                        popupWindowsInfo.savedPositionAndSize.width = currentWindow.width;
+                                        popupWindowsInfo.savedPositionAndSize.height = currentWindow.height;
+
+                                    } else {
+                                        popupWindowsInfo.savedPositionAndSize = {
+                                            top: currentWindow.top,
+                                            left: currentWindow.left,
+                                            width: currentWindow.width,
+                                            height: currentWindow.height
+                                        };
+                                    }
+
                                     for (const originWindowId in popupWindowsInfo) {
                                         if (originWindowId === 'savedPositionAndSize') {
                                             continue; // Skip the savedPositionAndSize key
@@ -206,25 +227,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                             // Handle domain-specific saving
                                             if (userConfigs.rememberPopupSizeAndPositionForDomain && sender && sender.tab && sender.tab.url) {
                                                 try {
-                                                    if (!popupWindowsInfo['savedPositionAndSize']) {
-                                                        popupWindowsInfo['savedPositionAndSize'] = {};
-                                                    }
-
-
-                                                    if (popupWindowsInfo.savedPositionAndSize) {
-                                                        popupWindowsInfo.savedPositionAndSize.left = currentWindow.left;
-                                                        popupWindowsInfo.savedPositionAndSize.top = currentWindow.top;
-                                                        popupWindowsInfo.savedPositionAndSize.width = currentWindow.width;
-                                                        popupWindowsInfo.savedPositionAndSize.height = currentWindow.height;
-
-                                                    } else {
-                                                        popupWindowsInfo.savedPositionAndSize = {
-                                                            top: currentWindow.top,
-                                                            left: currentWindow.left,
-                                                            width: currentWindow.width,
-                                                            height: currentWindow.height
-                                                        };
-                                                    }
 
                                                     // Ensure domain-specific object exists
                                                     if (!popupWindowsInfo['savedPositionAndSize'][domain]) {
@@ -547,7 +549,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     ]);
                 }).then(() => {
                     return loadUserConfigs().then(userConfigs => {
-                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType } = userConfigs;
+                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
                         let typeToSend;
                         let urls;
 
@@ -576,8 +578,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 if (tabs.length > 0) {
                                     let currentTab = tabs[0];
                                     if (sender.tab) currentTab = sender.tab;
-                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY,
-                                        request.top, request.left, request.width, request.height).then(() => {
+                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
+                                        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
                                         // sendResponse({ status: 'link handled' });
                                     });
                                     sendResponse({ status: 'link handled' });
@@ -597,8 +599,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     let currentTab = tabs[0];
                                     if (sender.tab) currentTab = sender.tab;
 
-                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY,
-                                        request.top, request.left, request.width, request.height).then(() => {
+                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
+                                        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
                                         // sendResponse({ status: 'group handled' });
                                     });
 
