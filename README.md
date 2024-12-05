@@ -12,5 +12,5 @@
 
 </div>
 
-This plugin allows you to preview links, images or search selected text on popup window, and provides ***secure, unrestricted, modification-free cross-origin access***.
+An Open-Source Add-On for Link Previews, Image Search, and Collecting Links for Later.
 
