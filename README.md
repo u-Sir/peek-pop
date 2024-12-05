@@ -12,5 +12,4 @@
 
 </div>
 
-An Open-Source Add-On for Link Previews, Image Search, and Collecting Links for Later. You can get source code from releases or branch.
-
+An open-source add-on for previewing, searching, and saving content to read later in a popup window. Source code available in releases or branches.
