@@ -12,4 +12,4 @@
 
 </div>
 
-An open-source add-on for previewing, searching, and saving content to read later in a popup window. Source code available in releases or branches.
+An open-source add-on for previewing, searching, and collecting links to read later in a popup window. Source code available in releases or branches.
