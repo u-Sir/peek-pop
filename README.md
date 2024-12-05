@@ -14,19 +14,3 @@
 
 This plugin allows you to preview links, images or search selected text on popup window, and provides ***secure, unrestricted, modification-free cross-origin access***.
 
-# Features:
-- Security and unrestricted: Cross-origin access without any modification.
-- No repetitive login: No need to log in again when previewing websites.
-- Multiple trigger methods: Supports drag (default), hover, click, floating bar, and allows adding pre-key combinations.
-- Flexible popup operations:
-  - Close: You can exit by pressing the `Esc` key or by clicking the original window to automatically close the popup.
-  - Send back: Double-click a specified key to send page back, or select from the right-click menu.
-  - Shortcut key support: Supports all browser shortcut keys like forward, backward, reading mode, etc. (some shortcuts require the window type to be set to "normal").
-- Free popup display:
-  - Customizable background blur effect.
-  - Popup size and position can be customized and automatically saved, supporting separate records by domain and multi-screen display.
-  - Supports background pop-up. (Chromium only)
-  - Supports selecting popup window type.
-- Blacklist function: Supports blacklist settings in regular expressions, wildcard, and plain text forms.
-- Supports preview in container(Firefox only) or incognito mode.
-- Supports export and import of configurations.
