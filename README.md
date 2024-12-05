@@ -12,5 +12,5 @@
 
 </div>
 
-An Open-Source Add-On for Link Previews, Image Search, and Collecting Links for Later.
+An Open-Source Add-On for Link Previews, Image Search, and Collecting Links for Later. You can get source code from releases or branch.
 
