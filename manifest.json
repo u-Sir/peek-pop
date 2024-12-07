@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "default_locale": "en",
   "icons": {
     "48": "icon.svg",
@@ -32,8 +32,7 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Ctrl+U",
-        "mac": "Ctrl+U"
+        "default": "Ctrl+U"
       },
       "description": "__MSG_popAction__"
     },
