@@ -63,7 +63,7 @@
         "message": "Blacklist"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "Persist popup size and position(just click/scroll on popup window to save), ignoring below settings"
+        "message": "Remember the last popup window size and position."
     },
     "normal": {
         "message": "Normal"
