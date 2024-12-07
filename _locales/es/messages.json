@@ -1,4 +1,7 @@
 {
+    "popAction": {
+        "message": "Abrir el icono emergente del complemento"
+    },
     "extensionName": {
         "message": "Peek Pop"
     },
@@ -63,7 +66,7 @@
         "message": "Lista negra"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "Recordar el último tamaño y posición de la ventana emergente."
+        "message": "Recuerda el tamaño y la posición de la última ventana emergente. Es necesario desplazarse o hacer clic en la página."
     },
     "normal": {
         "message": "normal"
@@ -156,7 +159,7 @@
         "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces."
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "Popup dinámico: recuerda el último tamaño y posición de la ventana emergente para cada dominio."
+        "message": "Ventanas emergentes dinámicas: recuerda el último tamaño y posición de la ventana para cada dominio. Es necesario desplazarse o hacer clic en la página."
     },
     "note": {
         "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón."

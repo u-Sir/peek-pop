@@ -1,4 +1,7 @@
 {
+    "popAction": {
+        "message": "弹出插件图标的页面"
+    },
     "extensionName": {
         "message": "Peek Pop"
     },
@@ -63,7 +66,7 @@
         "message": "黑名单"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "记住最后弹出窗口的大小、位置"
+        "message": "记住最后弹出窗口的大小、位置。需要滑动或点击页面。"
     },
     "normal": {
         "message": "普通"
@@ -156,7 +159,7 @@
         "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "动态弹窗：记住每个域名最后的窗口大小和位置"
+        "message": "动态弹窗：记住每个域名最后的窗口大小和位置，需要滑动或点击页面。"
     },
     "note": {
         "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"

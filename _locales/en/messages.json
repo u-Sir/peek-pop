@@ -1,4 +1,7 @@
 {
+    "popAction": {
+        "message": "Open add-on icon popup"
+    },
     "extensionName": {
         "message": "Peek Pop"
     },
@@ -63,7 +66,7 @@
         "message": "Blacklist"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "Remember the last popup window size and position."
+        "message": "Remember the last popup window's size and position. Scrolling or clicking the page is required."
     },
     "normal": {
         "message": "Normal"
@@ -156,7 +159,7 @@
         "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links."
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "Dynamic Popup: remember the last popup window size and position for each domain."
+        "message": "Dynamic popups: Remember the last window size and position for each domain. Scrolling or clicking the page is required."
     },
     "note": {
         "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse."

@@ -1,4 +1,4 @@
-0.0.33
+0.0.34
 - Rebranded to "Peek Pop" with new logo.
 - New feature: collection.
 - New feature: show search tooltips for selected text.
