@@ -687,17 +687,6 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
         } else {
             savedPositionAndSize = false;
         }
-        const tmp = {
-            url: linkUrl,
-            type: windowType,
-            top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
-            left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
-            width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
-            height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
-            focused: true,
-            incognito: tab && tab.incognito !== undefined ? tab.incognito : false,
-            ...(enableContainerIdentify && tab.cookieStoreId && tab.cookieStoreId !== 'firefox-default' ? { cookieStoreId: tab.cookieStoreId } : {})
-        };
         chrome.windows.create({
             url: linkUrl,
             type: windowType,
