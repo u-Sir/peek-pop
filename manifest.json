@@ -33,14 +33,13 @@
     "_execute_browser_action": {
       "suggested_key": {
         "default": "Ctrl+U",
-        "mac": "Command+U"
+        "mac": "Ctrl+U"
       },
       "description": "__MSG_popAction__"
     },
     "clickModeToggle": {
       "suggested_key": {
-        "default": "Alt+U",
-        "mac": "Alt+U"
+        "default": "Alt+U"
       },
       "description": "__MSG_clickModeToggle__"
     }
