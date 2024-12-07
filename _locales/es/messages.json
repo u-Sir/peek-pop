@@ -63,7 +63,7 @@
         "message": "Lista negra"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "Conservar tamaño y posición de la ventana emergente (solo haz clic/desplázate en la ventana emergente para guardar), ignorando los ajustes a continuación"
+        "message": "Recordar el último tamaño y posición de la ventana emergente."
     },
     "normal": {
         "message": "normal"
