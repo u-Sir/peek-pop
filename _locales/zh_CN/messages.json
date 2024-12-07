@@ -165,7 +165,7 @@
         "message": "链接提示"
     },
     "searchTooltipsEnable": {
-        "message": "选中文本时显示搜索条"
+        "message": "启用划词搜索条"
     },
     "collectionEnable": {
         "message": "Ctrl + 右击将链接添加到收集列表，列表可通过 Ctrl/Command + U（默认） 或者点击插件图标查看"
