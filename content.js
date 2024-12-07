@@ -1281,7 +1281,7 @@ async function handleDragStart(e, anchorElement) {
                         : 'http://' + selectionText)
                     : null;
 
-                if (data.imgSearchEnable) {
+                if (data.imgSearchEnable && imageUrl) {
                     const imgSearchEngineMap = {
                         "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
                         "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
@@ -1516,7 +1516,7 @@ async function handleDragStart(e, anchorElement) {
                     : 'http://' + selectionText)
                 : null;
 
-            if (data.imgSearchEnable) {
+            if (data.imgSearchEnable && imageUrl) {
                 const imgSearchEngineMap = {
                     "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
                     "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
@@ -2446,7 +2446,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
                 : null;
 
             let imageUrl = configData.hoverImgSupport ? imageElement?.src : null;
-            if (configData.hoverImgSearchEnable) {
+            if (configData.hoverImgSearchEnable && imageUrl) {
                 const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
                 if (imgSearchEngineMap.hasOwnProperty(configData.hoverSearchEngine)) {
                     imageUrl = imgSearchEngineMap[configData.hoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
