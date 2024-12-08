@@ -1219,16 +1219,18 @@ async function handleDragStart(e, anchorElement) {
         }
         function onDragend(e, endInfo = null) {
             if (dropInEmptyOnly && (endInfo ? endInfo.dropEffect : e.dataTransfer.dropEffect) !== 'none') return;
-            const modifiedKey = data.modifiedKey || 'None';
-            const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
-            if (modifiedKey === 'None') {
-                if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-            } else {
-                // Ensure only the specified modifiedKey is pressed
-                const isOnlyModifiedKeyDown = keyMap[modifiedKey] &&
-                    Object.keys(keyMap).every(key => key === modifiedKey || !keyMap[key]);
-                if (!isOnlyModifiedKeyDown) {
-                    return;
+            if (!endInfo) {
+                const modifiedKey = data.modifiedKey || 'None';
+                const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+                if (modifiedKey === 'None') {
+                    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+                } else {
+                    // Ensure only the specified modifiedKey is pressed
+                    const isOnlyModifiedKeyDown = keyMap[modifiedKey] &&
+                        Object.keys(keyMap).every(key => key === modifiedKey || !keyMap[key]);
+                    if (!isOnlyModifiedKeyDown) {
+                        return;
+                    }
                 }
             }
 
