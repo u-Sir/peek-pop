@@ -1,60 +1,66 @@
 {
-    "openInPopupWindow": {
-        "message": "Abrir enlace en ventana emergente"
+    "popupInBackground": {
+        "message": "Ventana emergente en segundo plano"
+    },
+    "hoverPopupInBackground": {
+        "message": "Ventana emergente en segundo plano"
+    },
+    "previewModePopupInBackground": {
+        "message": "Ventana emergente en segundo plano"
+    },
+    "popAction": {
+        "message": "Abrir el icono emergente del complemento"
     },
     "extensionName": {
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Previsualiza enlaces, imágenes o busca texto seleccionado en una ventana emergente."
+        "message": "Un complemento de código abierto para previsualizar, buscar y recopilar enlaces para leer más tarde en una ventana emergente."
     },
     "popupHeight": {
-        "message": "Altura de la ventana emergente (px)"
+        "message": "Altura emergente (px)"
     },
     "popupWidth": {
         "message": "Ancho de la ventana emergente (px)"
     },
     "closeWhenFocusedInitialWindow": {
-        "message": "Cerrar ventana emergente cuando se enfoque la ventana de origen"
+        "message": "Cerrar ventana emergente cuando la ventana de origen está enfocada"
     },
     "tryOpenAtMousePosition": {
-        "message": "Abrir ventana emergente en la posición del ratón (deshabilitado — ventana emergente en el centro de la pantalla)"
+        "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
     },
     "disabledUrls": {
-        "message": "Deshabilitar en estas URL mediante texto plano, regex, comodines, uno por línea."
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
-    "openPageInMainWindow": {
+    "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"
     },
     "sendPageBack": {
         "message": "Enviar página de vuelta a la ventana original"
     },
     "blurEnabled": {
-        "message": "Habilitar efecto de desenfoque"
-    },
-    "enableContainerIdentify": {
-        "message": "Mantener abierta en el mismo contenedor que la página original"
+        "message": "Habilitar desenfoque de fondo"
     },
     "blurPx": {
         "message": "Intensidad del efecto de desenfoque: "
     },
     "blurTime": {
-        "message": "Desenfocar en segundos específicos: "
+        "message": "Desenfoque en segundos específicos (s): "
     },
     "modifiedKey": {
-        "message": "Responder cuando se presiona la tecla seleccionada (Verifique que funcione como se espera)."
+        "message": "Respuesta cuando se presiona la tecla seleccionada (Por favor, prueba para asegurarte de que cumple con las expectativas.)"
     },
     "searchEngineSelection": {
         "message": "Proveedor de búsqueda"
     },
     "custom": {
-        "message": "Personalizado (usar %s como texto seleccionado)"
+        "message": "URL de búsqueda personalizada (usa %s como texto seleccionado)"
     },
     "searchDisable": {
-        "message": "Deshabilitar"
+        "message": "Desactivar búsqueda en ventana emergente"
     },
     "noneKey": {
-        "message": "Ninguna"
+        "message": "Ninguno"
     },
     "blurEffectSettings": {
         "message": "Efecto de desenfoque"
@@ -69,13 +75,13 @@
         "message": "Recordar el último tamaño y posición de la ventana emergente."
     },
     "normal": {
-        "message": "Normal"
+        "message": "normal"
     },
     "windowType": {
         "message": "Tipo de ventana emergente:"
     },
     "closedByEsc": {
-        "message": "Esc para cerrar la página actual (sobrescribe el comportamiento predeterminado de Esc en la página)"
+        "message": "Presiona Esc para cerrar la ventana emergente actual (anula el comportamiento predeterminado de Esc en la página)"
     },
     "dragSettings": {
         "message": "Arrastrar"
@@ -84,7 +90,7 @@
         "message": "Mover al menos px (no comprobar si es 0): "
     },
     "dragDirections": {
-        "message": "Responder en direcciones específicas:"
+        "message": "Responder en direcciones especificadas:"
     },
     "dragUp": {
         "message": "Arriba"
@@ -102,34 +108,25 @@
         "message": "Soporte de imagen"
     },
     "hoverTimeout": {
-        "message": "pasar el ratón (ms) para previsualizar ( 0 para deshabilitar )"
+        "message": "hover to preview"
     },
     "urlCheck": {
-        "message": "Abrir el texto de URL seleccionado directamente"
-    },
-    "popupInBackground": {
-        "message": "Ventana emergente en segundo plano"
+        "message": "Abrir directamente si lo seleccionado es una URL"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "Tocar dos veces una tecla específica para enviar la página de vuelta (Verifique que funcione como se espera)."
+        "message": "Doble toque en una tecla específica para enviar la página a la ventana original (Por favor, verifica si funciona correctamente.)"
     },
     "hoverSettings": {
-        "message": "Pasar el ratón"
-    },
-    "hoverPopupInBackground": {
-        "message": "Ventana emergente en segundo plano"
+        "message": "Desplegar"
     },
     "hoverImgSupport": {
         "message": "Soporte de imagen"
     },
     "hoverDisabledUrls": {
-        "message": "Deshabilitar en estas URL mediante texto plano, regex, comodines, uno por línea."
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
     "searchSettings": {
-        "message": "Búsqueda"
-    },
-    "triggerAfterDragRelease": {
-        "message": "Activar después de soltar el arrastre, sin comprobar direcciones."
+        "message": "Buscar"
     },
     "generalSettingsTab": {
         "message": "General"
@@ -144,13 +141,10 @@
         "message": "Exportar"
     },
     "previewModeSettings": {
-        "message": "Clic"
-    },
-    "previewModePopupInBackground": {
-        "message": "Ventana emergente en segundo plano"
+        "message": "Hacer clic"
     },
     "previewModeDisabledUrls": {
-        "message": "Deshabilitar en estas URL mediante texto plano, regex, comodines, uno por línea."
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
     "previewModeEnable": {
         "message": "Hacer clic en el enlace para previsualizar (deshabilitar - ignorar las opciones a continuación)"
@@ -180,7 +174,7 @@
         "message": "Tooltips para el texto seleccionado."
     },
     "collectionEnable": {
-        "message": "Mantén presionado Ctrl y haz clic derecho para añadir el enlace a tu colección. Pulsa Ctrl/Command + U o haz clic en el icono del complemento para ver tu colección."
+        "message": "Ctrl + clic derecho para agregar el enlace a la lista de colecciones. La lista se puede ver mediante Alt + U (por defecto) o haciendo clic en el ícono de la extensión."
     },
     "linkSettings": {
         "message": "Enlace"
@@ -189,16 +183,13 @@
         "message": "No hay nada aquí."
     },
     "openAll": {
-        "message": "Abrir todos los enlaces ↗️"
+        "message": "Abrir todos los enlaces"
     },
     "clearAll": {
         "message": "Eliminar todos los enlaces"
     },
     "options": {
-        "message": "➡️ Página de opciones"
-    },
-    "popAction": {
-        "message": "Abrir el icono emergente del complemento"
+        "message": "Página de opciones"
     },
     "clickModeToggle": {
         "message": "Alternar modo de clic"
@@ -217,5 +208,17 @@
     },
     "linkDisabledUrls": {
         "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano."
+    },
+    "copyButtonEnable": {
+        "message": "Muestra un botón para copiar la URL de la página actual en una ventana de tipo 'popup'."
+    },
+    "searchTooltipsEngines": {
+        "message": "Motores de búsqueda en la barra de búsqueda, uno por línea, formato: Nombre a mostrar=>Enlace de búsqueda con %s"
+    },
+    "dropInEmptyOnly": {
+        "message": "Solo responde cuando se suelta en un área vacía."
+    },
+    "sendBackButtonEnable": {
+        "message": "Muestra un botón para enviar la URL de la página actual de vuelta a la ventana original en una ventana de tipo 'popup'."
     }
 }

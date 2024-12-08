@@ -52,13 +52,12 @@ function openAllAndClearCollection(e) {
 
                     // Store the updated collection back in Chrome storage
                     chrome.storage.local.set({ collection: updatedCollection }, () => {
-                        console.log('Collection updated:', updatedCollection);
                         loadLinks();
                         window.close();
                     });
                 });
             } else {
-                console.log('No links to open or insufficient items in the collection.');
+                // console.log('No links to open or insufficient items in the collection.');
             }
         });
     });
@@ -85,7 +84,6 @@ function handleRemoveLink(linkUrl, callback) {
 
         // Store the updated collection back in Chrome storage
         chrome.storage.local.set({ collection: collection }, () => {
-            console.log('Link removed:', collection);
 
             // Check if there are no links left after removal
             if (collection.length === 1 && (!collection[0].links || collection[0].links.length === 0)) {
@@ -108,7 +106,6 @@ function loadLinks() {
         const linksContainer = document.getElementById('links');
         const emptyMessage = document.getElementById('empty');
         const data = result; // Store the retrieved settings
-        console.log(data);
         linksContainer.innerHTML = ''; // Clear previous links
 
         let hasLinks = false;
@@ -124,7 +121,6 @@ function loadLinks() {
 
             if (index !== 1) { // Add the remove button only if index is not 1
                 const removeButton = document.createElement('button');
-                removeButton.textContent = '❌';
                 removeButton.classList.add('remove-button'); // Add a class for styling
                 removeButton.addEventListener('click', function () {
                     handleRemoveLink(link.url);
@@ -144,12 +140,14 @@ function loadLinks() {
                     openAllAndClearCollection(e);
                 });
                 a.textContent = chrome.i18n.getMessage('openAll');
+                a.classList.add('left-link'); // Add a specific class for styling
                 linkContainer.appendChild(a);
 
                 // Create "Clear all" link
                 const clearLink = document.createElement('a');
                 clearLink.href = '#'; // Use a placeholder href for the link
                 clearLink.textContent = chrome.i18n.getMessage('clearAll');
+                clearLink.classList.add('center-link'); // Add a specific class for styling
                 clearLink.addEventListener('click', function (e) {
                     e.preventDefault();
                     // Remove all items except the first one
@@ -157,7 +155,6 @@ function loadLinks() {
                         const collection = result.collection || [];
                         const updatedCollection = [collection[0]]; // Keep only the first item
                         chrome.storage.local.set({ collection: updatedCollection }, () => {
-                            console.log('Collection cleared except the first item:', updatedCollection);
                             loadLinks(); // Reload the links after clearing
                         });
                     });
@@ -169,6 +166,7 @@ function loadLinks() {
                 optionsLink.href = '../options/options.html';
                 optionsLink.textContent = chrome.i18n.getMessage('options');
                 optionsLink.style.marginLeft = '10px'; // Add some space between the links
+                optionsLink.classList.add('right-link'); // Add a specific class for styling
                 linkContainer.appendChild(optionsLink); // Append the options link to the link container
             } else if (index > 1) {
                 // Attach the standard click handler to other items

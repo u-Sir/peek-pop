@@ -45,7 +45,18 @@ const configs = {
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
     'clickModifiedKey': 'None',
-    'linkDisabledUrls': []
+    'linkDisabledUrls': [],
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+    'searchTooltipsEngines':  `Google=>https://www.google.com/search?q=%s
+Bing=>https://www.bing.com/search?q=%s
+Baidu=>https://www.baidu.com/s?wd=%s
+Yandex=>https://yandex.com/search/?text=%s
+DuckduckGo=>https://duckduckgo.com/?q=%s
+Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+    'copyButtonEnable': false,
+    'dropInEmptyOnly': false,
+    'sendBackButtonEnable': false
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -288,6 +299,8 @@ function setupPage(userConfigs) {
         }
     });
 
+    initializeTextareaForSearchTooltips('searchTooltipsEngines', userConfigs);
+
     // Initialize textarea and sliders
     initializeTextarea('disabledUrls', userConfigs);
     initializeTextarea('linkDisabledUrls', userConfigs);
@@ -384,6 +397,20 @@ function initializeTextarea(textareaId, userConfigs) {
         textarea.value = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
         textarea.addEventListener('input', () => {
             configs[textareaId] = textarea.value.split('\n').filter(line => line.trim());
+            saveAllSettings();
+        });
+    }
+}
+
+function initializeTextareaForSearchTooltips(textareaId, userConfigs) {
+    const textarea = document.getElementById(textareaId);
+    if (textarea) {
+        // Initialize with userConfigs or fallback to default configs
+        textarea.value = userConfigs[textareaId] ?? configs[textareaId];
+        
+        // Save changes on input
+        textarea.addEventListener('input', () => {
+            configs[textareaId] = textarea.value.trim(); // Store as a multiline string
             saveAllSettings();
         });
     }

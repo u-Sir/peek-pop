@@ -44,7 +44,18 @@ const configs = {
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
     'clickModifiedKey': 'None',
-    'linkDisabledUrls': []
+    'linkDisabledUrls': [],
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+    'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
+Bing=>https://www.bing.com/search?q=%s
+Baidu=>https://www.baidu.com/s?wd=%s
+Yandex=>https://yandex.com/search/?text=%s
+DuckduckGo=>https://duckduckgo.com/?q=%s
+Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+    'copyButtonEnable': false,
+    'dropInEmptyOnly': false,
+    'sendBackButtonEnable': false
 };
 
 // Load user configurations from storage
@@ -168,7 +179,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     });
                                 }
 
-                                if (userConfigs.rememberPopupSizeAndPosition) {
+                                if (userConfigs.rememberPopupSizeAndPosition || userConfigs.rememberPopupSizeAndPositionForDomain) {
+
+                                    if (!popupWindowsInfo['savedPositionAndSize']) {
+                                        popupWindowsInfo['savedPositionAndSize'] = {};
+                                    }
+
+
+                                    if (popupWindowsInfo.savedPositionAndSize) {
+                                        popupWindowsInfo.savedPositionAndSize.left = currentWindow.left;
+                                        popupWindowsInfo.savedPositionAndSize.top = currentWindow.top;
+                                        popupWindowsInfo.savedPositionAndSize.width = currentWindow.width;
+                                        popupWindowsInfo.savedPositionAndSize.height = currentWindow.height;
+
+                                    } else {
+                                        popupWindowsInfo.savedPositionAndSize = {
+                                            top: currentWindow.top,
+                                            left: currentWindow.left,
+                                            width: currentWindow.width,
+                                            height: currentWindow.height
+                                        };
+                                    }
+
                                     for (const originWindowId in popupWindowsInfo) {
                                         if (originWindowId === 'savedPositionAndSize') {
                                             continue; // Skip the savedPositionAndSize key
@@ -255,7 +287,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         // console.log("Context menu 'sendPageBack' removed successfully.");
                                     }
                                 });
-                                
+
                                 result.contextItemCreated = false;
                                 chrome.storage.local.set({ contextItemCreated: false });
                             }
@@ -267,50 +299,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }
 
                 if (request.action === 'windowRegainedFocus') {
-                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated', 'popupInBackground', 'hoverPopupInBackground', 'previewModePopupInBackground'], (result) => {
+                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
                         const popupWindowsInfo = result.popupWindowsInfo || {};
                         const isCurrentWindowOriginal = popupWindowsInfo.hasOwnProperty(currentWindow.id);
-                
+
                         if (isCurrentWindowOriginal) {
                             let popupsToRemove = new Set();
-                            const checkFocus = result.popupInBackground || result.hoverPopupInBackground || result.previewModePopupInBackground;
-                
+
                             // Recursive function to find all nested sub-popups
                             const addNestedPopups = (popupId) => {
                                 const subPopups = popupWindowsInfo[popupId];
-                
+
                                 if (subPopups) {
                                     Object.keys(subPopups).forEach(subPopupId => {
-                                        if (checkFocus) {
-                                            // Only add popups with focused: true if checkFocus is true
-                                            if (subPopups[subPopupId].focused === true) {
-                                                popupsToRemove.add(subPopupId);
-                                                addNestedPopups(subPopupId); // Recurse into further nested sub-popups
-                                            }
-                                        } else {
-                                            // Add all popups without checking focus if checkFocus is false
-                                            popupsToRemove.add(subPopupId);
-                                            addNestedPopups(subPopupId); // Recurse into further nested sub-popups
-                                        }
+                                        // Add all popups without checking focus if checkFocus is false
+                                        popupsToRemove.add(subPopupId);
+                                        addNestedPopups(subPopupId); // Recurse into further nested sub-popups
                                     });
                                 }
                             };
-                
+
                             // Step 1: Add popups directly under the current window
                             Object.keys(popupWindowsInfo[currentWindow.id] || {}).forEach(popupId => {
-                                if (checkFocus) {
-                                    // If we need to check focus, only add focused popups
-                                    if (popupWindowsInfo[currentWindow.id][popupId].focused === true) {
-                                        popupsToRemove.add(popupId);
-                                        addNestedPopups(popupId);
-                                    }
-                                } else {
-                                    // If no focus check needed, add all popups
-                                    popupsToRemove.add(popupId);
-                                    addNestedPopups(popupId);
-                                }
+                                // If no focus check needed, add all popups
+                                popupsToRemove.add(popupId);
+                                addNestedPopups(popupId);
                             });
-                                
+
                             chrome.windows.getAll({ populate: true }, windows => {
                                 windows.forEach(window => {
                                     if (popupsToRemove.has(window.id.toString())) {
@@ -323,7 +338,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         });
                                     }
                                 });
-                
+
                                 // Remove context menu item if necessary
                                 if (result.contextItemCreated) {
                                     chrome.contextMenus.remove('sendPageBack', () => {
@@ -333,7 +348,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                             // Context menu 'sendPageBack' removed successfully
                                         }
                                     });
-                
+
                                     result.contextItemCreated = false;
                                     chrome.storage.local.set({ contextItemCreated: false });
                                 }
@@ -407,6 +422,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     sendResponse({ status: 'Icon update handled' });
                 }
 
+                if (request.action === 'getWindowType') {
+                    chrome.windows.getCurrent({ populate: true }, (window) => {
+                        sendResponse({ status: 'Window type sent', windowType: window.type});
+
+                    });
+                }
+
+
                 if (request.action === 'sendPageBack') {
                     loadUserConfigs().then(userConfigs => {
                         const { popupWindowsInfo } = userConfigs;
@@ -474,7 +497,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     saveConfig('lastScreenHeight', request.height)
                 ]).then(() => {
                     return loadUserConfigs().then(userConfigs => {
-                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType } = userConfigs;
+                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
                         let typeToSend;
                         let urls;
 
@@ -496,12 +519,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         if (isUrlDisabled(currentUrl, disabledUrls)) {
                             sendResponse({ status: 'url disabled' });
                         } else if (request.linkUrl) {
-                            handleLinkInPopup(request.trigger, request.linkUrl, sender.tab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY, request.top, request.left, request.width, request.height).then(() => {
-                                sendResponse({ status: 'link handled' });
+                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                                if (chrome.runtime.lastError) {
+                                    //
+                                }
+                                if (tabs.length > 0) {
+                                    let currentTab = tabs[0];
+                                    if (sender.tab) currentTab = sender.tab;
+                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
+                                        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
+                                        // sendResponse({ status: 'link handled' });
+                                    });
+                                    sendResponse({ status: 'link handled' });
+
+                                } else {
+                                    //
+                                }
                             });
                         } else if (request.action === 'group') {
-                            handleLinkInPopup(request.trigger, urls, sender.tab, currentWindow, rememberPopupSizeAndPosition, typeToSend, request.lastClientX, request.lastClientY, request.top, request.left, request.width, request.height).then(() => {
-                                sendResponse({ status: 'group handled' });
+                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                                if (chrome.runtime.lastError) {
+                                    //
+                                }
+                                if (tabs.length > 0) {
+                                    let currentTab = tabs[0];
+                                    if (sender.tab) currentTab = sender.tab;
+
+                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
+                                        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
+                                        // sendResponse({ status: 'group handled' });
+                                    });
+
+                                    sendResponse({ status: 'message processed' });
+                                } else {
+                                    //
+                                }
                             });
                         } else {
                             sendResponse({ status: 'message processed' });
@@ -540,7 +592,7 @@ function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSi
                 chrome.storage.local.get(['popupWindowsInfo'], result => {
                     const popupWindowsInfo = result.popupWindowsInfo;
                     const savedPositionAndSize = popupWindowsInfo.savedPositionAndSize || {};
-
+                    console.log(savedPositionAndSize)
                     if (Object.keys(savedPositionAndSize).length > 0) {
                         ({ left: dx, top: dy, width, height } = savedPositionAndSize);
 

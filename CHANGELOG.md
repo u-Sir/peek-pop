@@ -1,5 +1,5 @@
-0.0.27
-- Change name to "Peek Pop"
+0.0.36
+- Rebranded to "Peek Pop" with new logo.
 - New feature: collection.
 - New feature: show search tooltips for selected text.
 - New trigger: clicking on the link to preview.

@@ -1,12 +1,21 @@
 {
-    "openInPopupWindow": {
-        "message": "Open link in popup window"
+    "popupInBackground": {
+        "message": "Popup in background"
+    },
+    "hoverPopupInBackground": {
+        "message": "Popup in background"
+    },
+    "previewModePopupInBackground": {
+        "message": "Popup in background"
+    },
+    "popAction": {
+        "message": "Open add-on icon popup"
     },
     "extensionName": {
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Preview links, images, or search selected text in a popup window."
+        "message": "An open-source add-on for previewing, searching, and collecting links to read later in a popup window."
     },
     "popupHeight": {
         "message": "Popup height (px)"
@@ -18,11 +27,11 @@
         "message": "Close popup when origin window is focused"
     },
     "tryOpenAtMousePosition": {
-        "message": "Popup at mouse position (disabled — popup at screen center)"
-    },  
+        "message": "Try to open at mouse position (disabled — open at screen center)"
+    },
     "disabledUrls": {
-        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
-    },  
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
+    },
     "openPageInMainWindow": {
         "message": "Open page in main window"
     },
@@ -30,19 +39,16 @@
         "message": "Send Page Back to Original Window"
     },
     "blurEnabled": {
-        "message": "Enable blur effect"
-    },
-    "enableContainerIdentify": {
-        "message": "Keep open in the same container as original page"
+        "message": "Enable background blur"
     },
     "blurPx": {
-        "message": "Blur effect idensity: "
+        "message": "Blur effect strengh: "
     },
     "blurTime": {
-        "message": "Blur in specific seconds: "
+        "message": "Blur in specific seconds (s): "
     },
     "modifiedKey": {
-        "message": "Response when selected key is pressing (Please check if it works as expected.)"
+        "message": "Response when selected key is pressing (Please test to ensure it meets expectations.)"
     },
     "searchEngineSelection": {
         "message": "Search provider"
@@ -75,7 +81,7 @@
         "message": "Popup window type:"
     },
     "closedByEsc": {
-        "message": "Esc to close current page (overrides page's default Esc behavior)"
+        "message": "Press Esc to close the current popup page (overrides page's default Esc behavior)"
     },
     "dragSettings": {
         "message": "Drag"
@@ -102,35 +108,26 @@
         "message": "Image support"
     },
     "hoverTimeout": {
-        "message": "hover (ms) to preview ( 0 to disabled ):"
+        "message": "hover (ms) to preview ( 0 to disabled )"
     },
     "urlCheck": {
-        "message": "Open selected url text directly "
-    },
-    "popupInBackground": {
-        "message": "Popup in background"
+        "message": "Open directly if selected is url"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "Double tap specific key to send page back (Please check if it works as expected.)"
+        "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
     },
     "hoverSettings": {
         "message": "Hover"
     },
-    "hoverPopupInBackground": {
-        "message": "Popup in background"
-    },
     "hoverImgSupport": {
         "message": "Image support"
-    },  
+    },
     "hoverDisabledUrls": {
-        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
     },
     "searchSettings": {
         "message": "Search"
     },
-    "triggerAfterDragRelease": {
-        "message": "Trigger after drag is released, no directions check."
-    },  
     "generalSettingsTab": {
         "message": "General"
     },
@@ -139,31 +136,28 @@
     },
     "importButton": {
         "message": "Import"
-    },  
+    },
     "exportButton": {
         "message": "Export"
     },
     "previewModeSettings": {
         "message": "Click"
     },
-    "previewModePopupInBackground": {
-        "message": "Popup in background"
-    }, 
     "previewModeDisabledUrls": {
-        "message": "Disable on these URLs via plain text, regex, wildcarks, one per line."
-    }, 
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
+    },
     "previewModeEnable": {
         "message": "Clicking on the link to preview (disable - ignore below options)"
-    }, 
+    },
     "imgSearchEnable": {
         "message": "Replace Preview with Image Search."
-    }, 
+    },
     "hoverImgSearchEnable": {
         "message": "Replace Preview with Image Search."
-    }, 
+    },
     "doubleClickToSwitch": {
         "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar."
-    }, 
+    },
     "doubleClickAsClick": {
         "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links."
     },
@@ -180,7 +174,7 @@
         "message": "Tooltips for selected text."
     },
     "collectionEnable": {
-        "message": "Hold Ctrl and Right Click to add the link to your collection. Press Ctrl/Command + U or click the add-on icon to view your collection."
+        "message": "Ctrl + Right-click to add the link to the collection list. The list can be viewed via Alt + U (default) or by clicking the extension icon."
     },
     "linkSettings": {
         "message": "Link"
@@ -189,16 +183,13 @@
         "message": "Nothing here."
     },
     "openAll": {
-        "message": "Open all ↗️"
+        "message": "Open all"
     },
     "clearAll": {
         "message": "Clear all"
     },
     "options": {
-        "message": "➡️ Options page"
-    },
-    "popAction": {
-        "message": "Open add-on icon popup"
+        "message": "Options page"
     },
     "clickModeToggle": {
         "message": "Toggle click mode"
@@ -214,8 +205,20 @@
     },
     "holdToPreviewSettings": {
         "message": "Hold"
-    },  
+    },
     "linkDisabledUrls": {
         "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
+    },
+    "copyButtonEnable": {
+        "message": "Displays a button to copy the current page URL in a window of type 'popup'."
+    },
+    "searchTooltipsEngines": {
+        "message": "Search engines in the search bar, one per line, format: Display Name=>Search link with %s"
+    },
+    "dropInEmptyOnly": {
+        "message": "Only respose when drop in empty area."
+    },
+    "sendBackButtonEnable": {
+        "message": "Displays a button to send the current page URL back to the origin window in a window of type 'popup'."
     }
-} 
+}

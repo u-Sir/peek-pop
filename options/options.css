@@ -5,8 +5,8 @@
     white-space: nowrap;
     margin-bottom: 10px; /* Vertical spacing between rows */
   }
-
-.options-page {
+  
+  .options-page {
     width: 100%;
     margin: 0 auto;
 }
@@ -104,6 +104,11 @@ button:disabled {
     padding-bottom: 6px;
 }
 
+.option-label :hover{
+    cursor: pointer;
+}
+
+
 .options-page {
     max-width: 700px;
 }
@@ -126,7 +131,6 @@ input[type="checkbox"] {
 
 input[type="range"] {
     margin-left: -1px;
-    cursor: pointer;
 }
 
 /* For labels following a radio button */
@@ -180,6 +184,15 @@ textarea {
     font-size: 14px;
     resize: vertical;
     /* Allow vertical resize */
+}
+
+
+#option :hover,
+#doubleClickToSwitchOption :hover,
+#doubleClickAsClickOption :hover,
+#hoverImgSearchOption :hover,
+#imgSearchOption :hover {
+    cursor: pointer;
 }
 
 /* Dark Mode */
