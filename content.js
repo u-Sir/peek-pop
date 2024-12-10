@@ -2170,6 +2170,7 @@ new MutationObserver(() => {
     const url = location.href;
     if (url !== lastUrl) {
         lastUrl = url;
+        firstDownOnLinkAt = undefined;
         chrome.storage.local.set({ lastUrl: url });
         checkUrlAndToggleListeners();
     }
