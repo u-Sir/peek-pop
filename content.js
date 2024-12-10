@@ -610,6 +610,7 @@ function handleMouseDown(e) {
                 isMouseDownOnLink = true;
                 document.addEventListener('mouseup', () => {
                     if (isMouseDownOnLink) {
+                        firstDownOnLinkAt = undefined;
                         isMouseDownOnLink = false; // Reset the flag
                         clearTimeout(holdTimeout); // Clear the hold timeout to prevent handleHoldLink
                         clearTimeoutsAndProgressBars(); // Cleanup progress bar
