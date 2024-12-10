@@ -422,6 +422,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     sendResponse({ status: 'Icon update handled' });
                 }
 
+                if (request.action === 'updateBadge') {
+
+                    chrome.storage.local.get(['collection'], userConfigs => {
+
+                        // Filter links in the collection to exclude those with specific labels
+                        const validLinks = userConfigs.collection
+                            .flatMap(item => item.links || []) // Flatten links from all items
+                            .filter(link => link.label !== '+' && link.label !== '↗️'); // Exclude specific labels
+
+                        // Update the toolbar badge with the count of valid links
+                        const linkCount = validLinks.length;
+                        const action = chrome.action || chrome.browserAction;
+                        if (linkCount !== 0) {
+                            action.setBadgeText({ text: linkCount.toString() });
+                            action.setBadgeBackgroundColor({ color: '#666666' });
+                        } else {
+                            action.setBadgeText({ text: '' });
+                        }
+                        sendResponse({ status: 'Badge updated' });
+                    })
+                }
+
+
                 if (request.action === 'getWindowType') {
                     chrome.windows.getCurrent({ populate: true }, (window) => {
                         sendResponse({ status: 'Window type sent', windowType: window.type});

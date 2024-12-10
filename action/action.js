@@ -55,6 +55,8 @@ function openAllAndClearCollection(e) {
                         loadLinks();
                         window.close();
                     });
+
+                    chrome.runtime.sendMessage({ action: 'updateBadge' });
                 });
             } else {
                 // console.log('No links to open or insufficient items in the collection.');
@@ -92,6 +94,8 @@ function handleRemoveLink(linkUrl, callback) {
             } else {
                 loadLinks(); // Reload the links after removing
             }
+
+            chrome.runtime.sendMessage({ action: 'updateBadge' });
 
             if (callback) callback(); // Invoke the callback if provided
         });
@@ -156,6 +160,8 @@ function loadLinks() {
                         const updatedCollection = [collection[0]]; // Keep only the first item
                         chrome.storage.local.set({ collection: updatedCollection }, () => {
                             loadLinks(); // Reload the links after clearing
+
+                            chrome.runtime.sendMessage({ action: 'updateBadge' });
                         });
                     });
                 });

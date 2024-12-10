@@ -1962,17 +1962,56 @@ function addLinkToCollection(e) {
 
         // Check if the link is already in the collection before adding
         if (!isLinkInCollection(linkUrl)) {
-            const newItem = {
-                label: linkElement.title || linkElement.textContent || linkUrl, // Use the link's title as label, or the URL if title is unavailable
-                url: linkUrl
+            const fetchFinalTitle = (url, timeout = 5000) => {
+                return new Promise((resolve) => {
+                    const timeoutId = setTimeout(() => {
+                        resolve({ title: url, finalUrl: url }); // Fallback to URL on timeout
+                    }, timeout);
+
+                    // Use fetch to get the page content
+                    fetch(url, { redirect: 'follow' })
+                        .then((response) => {
+                            clearTimeout(timeoutId);
+
+                            // Directly use the URL if response isn't OK
+                            if (!response.ok) {
+                                console.warn(`HTTP status not OK: ${response.status}`);
+                                resolve({ title: url, finalUrl: url });
+                                return;
+                            }
+
+                            const finalUrl = response.url; // Final URL after redirection
+                            return response.text().then((html) => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const title = doc.querySelector('title')?.innerText || finalUrl || url;
+                                resolve({ title, finalUrl });
+                            });
+                        })
+                        .catch((error) => {
+                            clearTimeout(timeoutId);
+                            resolve({ title: url, finalUrl: url }); // Fallback to URL on error
+                        });
+                });
             };
+            // Example usage
+            fetchFinalTitle(linkUrl, 2000).then(({ title, finalUrl }) => {
 
-            // Add the new link to the collection
-            collection[1].links.push(newItem);
-            collection.push(newItem); // Add the link as a new entry to the main collection
+                const newItem = {
+                    label: title,
+                    url: finalUrl,
+                };
 
-            // Store the updated collection back in Chrome storage
-            chrome.storage.local.set({ collection: collection });
+                // Example of adding the item to the collection
+                collection[1].links.push(newItem);
+                collection.push(newItem);
+
+                // Save to Chrome storage
+                chrome.storage.local.set({ collection }, () => {
+                    chrome.runtime.sendMessage({ action: 'updateBadge' });
+                });
+
+            });
         } else {
             // console.log('Link already exists in the collection.');
         }
@@ -2020,6 +2059,7 @@ new MutationObserver(() => {
     const url = location.href;
     if (url !== lastUrl) {
         lastUrl = url;
+        firstDownOnLinkAt = undefined;
         chrome.storage.local.set({ lastUrl: url });
         checkUrlAndToggleListeners();
     }
