@@ -46,7 +46,7 @@ const configs = {
     'dragStartEnable': false,
     'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
     'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
-    'searchTooltipsEngines':  `Google=>https://www.google.com/search?q=%s
+    'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
 Baidu=>https://www.baidu.com/s?wd=%s
 Yandex=>https://yandex.com/search/?text=%s
@@ -420,9 +420,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     sendResponse({ status: 'Icon update handled' });
                 }
 
+                if (request.action === 'updateBadge') {
+
+                    chrome.storage.local.get(['collection'], userConfigs => {
+
+                        // Filter links in the collection to exclude those with specific labels
+                        const validLinks = userConfigs.collection
+                            .flatMap(item => item.links || []) // Flatten links from all items
+                            .filter(link => link.label !== '+' && link.label !== '↗️'); // Exclude specific labels
+
+                        // Update the toolbar badge with the count of valid links
+                        const linkCount = validLinks.length;
+                        const action = chrome.action || chrome.browserAction;
+                        if (linkCount !== 0) {
+                            action.setBadgeText({ text: linkCount.toString() });
+                            action.setBadgeBackgroundColor({ color: '#666666' });
+                        } else {
+                            action.setBadgeText({ text: '' });
+                        }
+                        sendResponse({ status: 'Badge updated' });
+                    })
+                }
+
                 if (request.action === 'getWindowType') {
                     chrome.windows.getCurrent({ populate: true }, (window) => {
-                        sendResponse({ status: 'Window type sent', windowType: window.type});
+                        sendResponse({ status: 'Window type sent', windowType: window.type });
 
                     });
                 }
@@ -533,7 +555,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         .catch((error) => {
                             sendResponse({ error: error.message || 'Error occurred while retrieving zoom factor.' });
                         });
-            
+
                     // Indicate asynchronous response
                     return true;
                 }
@@ -580,8 +602,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     if (sender.tab) currentTab = sender.tab;
                                     handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
                                         lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
-                                        // sendResponse({ status: 'link handled' });
-                                    });
+                                            // sendResponse({ status: 'link handled' });
+                                        });
                                     sendResponse({ status: 'link handled' });
 
                                 } else {
@@ -601,8 +623,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                                     handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
                                         lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
-                                        // sendResponse({ status: 'group handled' });
-                                    });
+                                            // sendResponse({ status: 'group handled' });
+                                        });
 
                                     sendResponse({ status: 'message processed' });
                                 } else {
@@ -668,7 +690,7 @@ function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSi
 
 // Function to create a popup window
 function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
-    
+
     chrome.storage.local.get(['enableContainerIdentify', 'rememberPopupSizeAndPositionForDomain'], (result) => {
         const enableContainerIdentify = result.enableContainerIdentify !== undefined ? result.enableContainerIdentify : true;
         let savedPositionAndSize;
@@ -713,7 +735,7 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
 
 // Function to handle default popup creation
 function defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
-    
+
     let dx, dy;
 
     if (tryOpenAtMousePosition) {

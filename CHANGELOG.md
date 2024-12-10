@@ -1,3 +1,8 @@
+0.0.37
+- Fixed an issue where "Hold to Preview" did not work in certain cases.
+- Improved title fetching for collections.
+- Display the number of collections on the toolbar icon.
+
 0.0.36
 - Rebranded to "Peek Pop" with new logo.
 - New feature: collection.
