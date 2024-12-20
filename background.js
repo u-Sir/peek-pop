@@ -561,14 +561,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }
 
                 return getZoomFactor().then(zoom => {
-                    return Promise.all([
-                        saveConfig('lastClientX', request.lastClientX * zoom),
-                        saveConfig('lastClientY', request.lastClientY * zoom),
-                        saveConfig('lastScreenTop', request.top * zoom),
-                        saveConfig('lastScreenLeft', request.left * zoom),
-                        saveConfig('lastScreenWidth', request.width * zoom),
-                        saveConfig('lastScreenHeight', request.height * zoom)
-                    ]);
+                    const saveConfigPromises = [];
+
+                    // Check and save only if the properties exist
+                    if (request.lastClientX !== undefined && request.lastClientY !== undefined) {
+                        saveConfigPromises.push(
+                            saveConfig('lastClientX', request.lastClientX * zoom),
+                            saveConfig('lastClientY', request.lastClientY * zoom)
+                        );
+                    }
+                    if (request.top !== undefined) {
+                        saveConfigPromises.push(saveConfig('lastScreenTop', request.top * zoom));
+                    }
+                    if (request.left !== undefined) {
+                        saveConfigPromises.push(saveConfig('lastScreenLeft', request.left * zoom));
+                    }
+                    if (request.width !== undefined) {
+                        saveConfigPromises.push(saveConfig('lastScreenWidth', request.width * zoom));
+                    }
+                    if (request.height !== undefined) {
+                        saveConfigPromises.push(saveConfig('lastScreenHeight', request.height * zoom));
+                    }
+
+                    return Promise.all(saveConfigPromises);
                 }).then(() => {
                     return loadUserConfigs().then(userConfigs => {
                         const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
