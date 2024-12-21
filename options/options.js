@@ -161,9 +161,12 @@ function init() {
             linkHintCheckbox.checked = false;
             linkHintCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('linkHint', false);
+            
+            addGreenDot("hover_settings")
         } else {
             linkHintCheckbox.disabled = false;  // reset the checkbox
 
+            removeGreenDot("hover_settings")
         }
     });
 
@@ -180,6 +183,8 @@ function init() {
 
             doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
             doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
+            
+            addGreenDot("previewMode_settings")
         } else {
             holdToPreviewCheckbox.disabled = false;  // reset the checkbox
             
@@ -190,8 +195,33 @@ function init() {
             doubleClickAsClickCheckbox.checked = false;
             doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('doubleClickAsClick', false);
+            
+            removeGreenDot("previewMode_settings")
         }
     });
+
+    document.getElementById('holdToPreview').addEventListener('change', function () {
+        if (this.checked) {
+            addGreenDot("previewMode_settings")
+        } else {
+            removeGreenDot("previewMode_settings")
+        }
+    });
+
+    document.querySelectorAll('input[name="dragDirections"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            if (isAnyDirectionChecked()) {
+                addGreenDot("drag_settings");
+            } else {
+                removeGreenDot("drag_settings");
+            }
+        });
+    });
+}
+
+// Function to check if any checkbox is checked
+function isAnyDirectionChecked() {
+    return Array.from(document.querySelectorAll('input[name="dragDirections"]')).some(checkbox => checkbox.checked);
 }
 
 // Function to set up the visibility toggle for image search options
@@ -351,6 +381,97 @@ function setupPage(userConfigs) {
         doubleClickAsClickCheckbox.checked = false;
         doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
         saveConfig('doubleClickAsClick', false);
+    }
+    
+    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0") { 
+        addGreenDot("hover_settings"); 
+    } else {
+        removeGreenDot("hover_settings");
+    }
+
+    if (userConfigs.previewModeEnable || userConfigs.holdToPreview) { 
+        addGreenDot("previewMode_settings"); 
+    } else {
+        removeGreenDot("previewMode_settings");
+    }
+
+    if (userConfigs.dragDirections === undefined || userConfigs.dragDirections.length !== 0) { 
+        addGreenDot("drag_settings"); 
+    } else {
+        removeGreenDot("drag_settings");
+    }
+}
+
+// Function to add the CSS for the green dot dynamically
+function addGreenDotStyles() {
+    const styleId = "green-dot-styles";
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement("style");
+        style.id = styleId;
+        style.textContent = `
+            .green-dot {
+                display: inline-block;
+                width: 5px;
+                height: 5px;
+                background: #71E346;
+                border: none;
+                border-radius: 50%;
+                margin-right: 5%;
+                margin-bottom: 0.15em;
+                opacity: 0;
+                transform: scale(0.5);
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                box-shadow:
+                    0 0 5px 2px rgba(113, 227, 70, 0.9),
+                    0 0 3px 1px rgba(113, 227, 70, 0.9);
+            }
+            .green-dot.visible {
+                opacity: 1;
+                transform: scale(1);
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+
+function addGreenDot(dataTab) {
+    addGreenDotStyles(); // Ensure styles are added
+
+    const tabElement = document.querySelector(`.tab-link[data-tab="${dataTab}"]`);
+    if (tabElement) {
+        // Check if the green dot already exists
+        const existingDot = tabElement.querySelector(".green-dot");
+        if (!existingDot) {
+            // Create the green dot element
+            const greenDot = document.createElement("span");
+            greenDot.classList.add("green-dot");
+
+            // Insert the green dot as the first child (before the text)
+            tabElement.insertBefore(greenDot, tabElement.firstChild);
+
+            // Trigger the animation by adding the visible class
+            requestAnimationFrame(() => {
+                greenDot.classList.add("visible");
+            });
+        }
+    }
+}
+
+
+function removeGreenDot(dataTab) {
+    const tabElement = document.querySelector(`.tab-link[data-tab="${dataTab}"]`);
+    if (tabElement) {
+        const existingDot = tabElement.querySelector(".green-dot");
+        if (existingDot) {
+            // Remove the visible class to start the fade-out animation
+            existingDot.classList.remove("visible");
+
+            // Wait for the transition to complete before removing the element
+            setTimeout(() => {
+                existingDot.remove();
+            }, 300); // Match the transition duration
+        }
     }
 }
 
