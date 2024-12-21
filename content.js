@@ -1448,6 +1448,7 @@ async function handleDragStart(e, anchorElement) {
 
         } else {
             isDragging = false;
+        }
     }
 
     document.addEventListener('dragleave', updateLastLeaveTimestamp)
