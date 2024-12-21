@@ -383,7 +383,7 @@ function setupPage(userConfigs) {
         saveConfig('doubleClickAsClick', false);
     }
     
-    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0") { 
+    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) { 
         addGreenDot("hover_settings"); 
     } else {
         removeGreenDot("hover_settings");
