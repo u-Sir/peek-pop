@@ -1,4 +1,4 @@
-0.0.38
+0.0.39
 - Added indicator for trigger.
 - Added contact icon.
 
