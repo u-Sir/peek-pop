@@ -884,6 +884,7 @@ function resetClickState() {
 
 function handleEvent(e) {
     if (e.type === 'dragstart') {
+        isDragging = true;
         const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
         chrome.storage.local.get(['modifiedKey', 'dragDirections'], (data) => {
             const modifiedKey = data.modifiedKey || 'None';
@@ -1445,7 +1446,8 @@ async function handleDragStart(e, anchorElement) {
             }
 
 
-        }
+        } else {
+            isDragging = false;
     }
 
     document.addEventListener('dragleave', updateLastLeaveTimestamp)
