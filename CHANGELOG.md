@@ -1,3 +1,7 @@
+0.0.38
+- Added indicator for trigger.
+- Added contact icon.
+
 0.0.37
 - Fixed an issue where "Hold to Preview" did not work in certain cases.
 - Improved title fetching for collections.
