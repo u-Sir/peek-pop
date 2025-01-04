@@ -2163,7 +2163,7 @@ async function handleMouseOver(e) {
     const path = e.composedPath();
     const iframe = path.find((node) => node instanceof HTMLIFrameElement);
 
-    if (iframe && iframe.contentWindow.location.href !== 'about:blank') {
+    if (iframe && iframe.getAttribute('src') !== 'about:blank') {
         e.target.focus();
     }
     // Check if any of the nodes in the path are part of a shadow root
