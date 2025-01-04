@@ -2044,7 +2044,7 @@ function addLinkToCollection(e) {
         const linkUrl = linkElement ?
             (linkElement.getAttribute('data-url') ||
                 (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
-            : null;
+            : window.location.href;
 
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
         if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
