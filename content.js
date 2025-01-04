@@ -2501,6 +2501,11 @@ function addClickMask() {
         return;
     }
 
+    const hasClickMask = document.getElementById('clickMask');
+    if (hasClickMask) {
+        return;
+    }
+
     // Create the mask element
     const mask = document.createElement('div');
     mask.id = 'clickMask';
