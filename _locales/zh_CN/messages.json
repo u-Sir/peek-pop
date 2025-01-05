@@ -174,7 +174,7 @@
         "message": "启用划词搜索条"
     },
     "collectionEnable": {
-        "message": "Ctrl + 右击将链接添加到收集列表，列表可通过 Alt + U（默认） 或者点击插件图标查看"
+        "message": "Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表。"
     },
     "linkSettings": {
         "message": "链接"

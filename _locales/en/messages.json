@@ -174,7 +174,7 @@
         "message": "Tooltips for selected text."
     },
     "collectionEnable": {
-        "message": "Ctrl + Right-click to add the link to the collection list. The list can be viewed via Alt + U (default) or by clicking the extension icon."
+        "message": "Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon."
     },
     "linkSettings": {
         "message": "Link"
