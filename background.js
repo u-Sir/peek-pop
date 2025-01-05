@@ -295,7 +295,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         
                                                     // Check if key is a valid window ID and clean recursively
                                                     if (key === 'savedPositionAndSize' || existingWindowIds.includes(keyAsInt)) {
-                                                        acc[key] = cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
+                                                        acc[key] = (key === 'savedPositionAndSize') ? info[key] : cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
                                                     }
                                         
                                                     return acc;
