@@ -13,3 +13,12 @@
 </div>
 
 An open-source add-on for previewing, searching, and collecting links to read later in a popup window. Source code available in releases or branches.
+
+
+### FAQ
+
+##### Is it possible to set a popup always on top?  
+Due to browser add-on limitations, this can't be done directly by the add-on. However, you can use third-party software like **PowerToys** to achieve this. Don't forget to uncheck **"Close popup when origin window is focused"** on the settings page.
+
+##### Why are other actions triggered during preview?  
+Try disabling other add-ons to check if they are causing the issue. If you're using **Edge**, also check the settings at `edge://settings/superDragDrop`.
