@@ -287,20 +287,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         chrome.windows.getAll({ populate: false }, (windows) => {
                                             const existingWindowIds = windows.map(win => win.id); // List of all current window IDs
                                         
-                                            const popupWindowsInfo = Object.keys(result.popupWindowsInfo).reduce((acc, key) => {
-                                                const keyAsInt = parseInt(key, 10);
+                                            function cleanPopupInfo(info) {
+                                                return Object.keys(info).reduce((acc, key) => {
+                                                    const keyAsInt = parseInt(key, 10);
                                         
-                                                // Only include valid windows (key exists in current window IDs)
-                                                if (existingWindowIds.includes(keyAsInt) && Object.keys(result.popupWindowsInfo[key]).length > 0) {
-                                                    acc[key] = result.popupWindowsInfo[key];
-                                                }
+                                                    // Check if key is a valid window ID and clean recursively
+                                                    if (key === 'savedPositionAndSize' || existingWindowIds.includes(keyAsInt)) {
+                                                        acc[key] = cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
+                                                    }
                                         
-                                                return acc;
-                                            }, {});
+                                                    return acc;
+                                                }, {});
+                                            }
+                                        
+                                            const cleanedPopupWindowsInfo = cleanPopupInfo(result.popupWindowsInfo);
                                         
                                             // Set the cleaned popupWindowsInfo back to storage
-                                            chrome.storage.local.set({ popupWindowsInfo });
+                                            chrome.storage.local.set({ popupWindowsInfo: cleanedPopupWindowsInfo });
                                         });
+                                        
                                         
                                         
                                         

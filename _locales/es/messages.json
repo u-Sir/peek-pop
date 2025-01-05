@@ -171,7 +171,7 @@
         "message": "Tooltips para el texto seleccionado."
     },
     "collectionEnable": {
-        "message": "Ctrl + clic derecho para agregar el enlace a la lista de colecciones. La lista se puede ver mediante Alt/MacCtrl + U (por defecto) o haciendo clic en el ícono de la extensión."
+        "message": "Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión."
     },
     "linkSettings": {
         "message": "Enlace"
