@@ -1,4 +1,4 @@
-0.0.40
+0.0.42
 - **Fixed:** An issue where pressing `Esc` to close a tab would unintentionally trigger on the origin tab after restarting the browser.  
 - **Improved:** Attempted to prevent page elements from disappearing in certain cases.  
 - **Improved:** `Ctrl + right-click` on non-link elements will now add the current page to the collection (if the collection feature is enabled).  
