@@ -2581,7 +2581,7 @@ function removeClickMask() {
 
 // Function to add the blur overlay
 function addBlurOverlay(blurPx, blurTime) {
-    if (!blurOverlay) { // Check if the overlay does not already exist
+    if (!blurOverlay) { 
         blurOverlay = document.createElement('div');
         blurOverlay.style.position = 'fixed';
         blurOverlay.style.top = '0';
@@ -2589,10 +2589,16 @@ function addBlurOverlay(blurPx, blurTime) {
         blurOverlay.style.width = '100%';
         blurOverlay.style.height = '100%';
         blurOverlay.style.zIndex = '2147483647';
-        blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
+        blurOverlay.style.backdropFilter = 'blur(0px)'; // Start with no blur
         blurOverlay.style.transition = `backdrop-filter ${blurTime}s ease`;
-        blurOverlay.style.pointerEvents = 'none'; // Optional: Allows clicks to pass through
+        blurOverlay.style.pointerEvents = 'none';
         document.body.appendChild(blurOverlay);
+
+        // Force a reflow by reading offsetWidth
+        void blurOverlay.offsetWidth;
+
+        // Now apply the desired blur, which should trigger the transition
+        blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
     }
 }
 
