@@ -1193,19 +1193,19 @@ async function handleDragStart(e, anchorElement) {
 
     // Define lastKeys as a Set at the script/module level
     let lastLeaveKeys = { shiftKey: false, metaKey: false, ctrlKey: false, altKey: false };
-
+    let dragLeaveTimer;
     function updateLastLeaveTimestamp(e) {
+        clearTimeout(dragLeaveTimer); // Clear any previous timer
+        dragLeaveTimer = setTimeout(() => {
+            lastLeaveTimestamp = e.timeStamp;
+            lastLeaveRelatedTarget = e.relatedTarget;
 
-        // Update the last leave timestamp and related target
-        lastLeaveTimestamp = e.timeStamp;
-        lastLeaveRelatedTarget = e.relatedTarget;
-
-        // Update lastKeys object based on the event properties
-        lastLeaveKeys.shiftKey = e.shiftKey;
-        lastLeaveKeys.metaKey = e.metaKey;
-        lastLeaveKeys.ctrlKey = e.ctrlKey;
-        lastLeaveKeys.altKey = e.altKey;
-
+            // Update lastKeys object based on the event properties
+            lastLeaveKeys.shiftKey = e.shiftKey;
+            lastLeaveKeys.metaKey = e.metaKey;
+            lastLeaveKeys.ctrlKey = e.ctrlKey;
+            lastLeaveKeys.altKey = e.altKey;
+        }, 20);
     }
 
 
