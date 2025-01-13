@@ -144,7 +144,7 @@
         "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
     }, 
     "previewModeEnable": {
-        "message": "点击链接预览（取消勾选时，下方的设置不会生效）"
+        "message": "点击链接预览"
     }, 
     "imgSearchEnable": {
         "message": "以图搜图"
