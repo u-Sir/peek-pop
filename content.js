@@ -1193,13 +1193,15 @@ async function handleDragStart(e, anchorElement) {
         const dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
 
 
-        let dragLeaveTimer;
+        let lastLeaveTime = 0;
         function updateLastLeaveTimestamp(e) {
-            clearTimeout(dragLeaveTimer); // Clear any previous timer
-            dragLeaveTimer = setTimeout(() => {
-                lastLeaveTimestamp = e.timeStamp;
-                lastLeaveRelatedTarget = e.relatedTarget;
-            }, 20);
+            const now = performance.now();
+
+            if (now - lastLeaveTime < 20) return; // Ignore events triggered too quickly
+
+            lastLeaveTime = now;
+            lastLeaveTimestamp = e.timeStamp;
+            lastLeaveRelatedTarget = e.relatedTarget;
         }
 
         if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
