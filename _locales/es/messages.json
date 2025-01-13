@@ -147,7 +147,7 @@
         "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
     "previewModeEnable": {
-        "message": "Hacer clic en el enlace para previsualizar (deshabilitar - ignorar las opciones a continuación)"
+        "message": "Hacer clic en el enlace para previsualizar"
     },
     "imgSearchEnable": {
         "message": "Reemplazar Previsualización con Búsqueda de Imágenes."
