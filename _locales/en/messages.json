@@ -147,7 +147,7 @@
         "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
     },
     "previewModeEnable": {
-        "message": "Clicking on the link to preview (disable - ignore below options)"
+        "message": "Clicking on the link to preview"
     },
     "imgSearchEnable": {
         "message": "Replace Preview with Image Search."
