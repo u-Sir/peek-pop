@@ -602,8 +602,6 @@ function handleMouseDown(e) {
             if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
                 isMouseDownOnLink = false;
                 clearTimeoutsAndProgressBars();
-                // document.removeEventListener('mouseup', handleHoldLink, true);
-                document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                 return;
             } else {
@@ -617,7 +615,6 @@ function handleMouseDown(e) {
                     }
                 }, { once: true });
 
-                document.addEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                 document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 
                 document.addEventListener('click', (e) => {
@@ -666,8 +663,6 @@ function handleMouseDown(e) {
                 previewProgressBar.remove();
                 previewProgressBar = null;
             }
-            // document.removeEventListener('mouseup', handleHoldLink, true);
-            document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
         }
 
@@ -687,21 +682,11 @@ function handleMouseDown(e) {
     hasPopupTriggered = false;
 }
 
-// Function to cancel hold-to-preview when mouse is moved
-function cancelHoldToPreviewOnMove() {
-    isMouseDownOnLink = false;
-    clearTimeoutsAndProgressBars();
-    // document.removeEventListener('mouseup', handleHoldLink, true);
-    document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
-    document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-}
-
 // Function to cancel hold-to-preview when dragging starts
 function cancelHoldToPreviewOnDrag() {
+    firstDownOnLinkAt = undefined;
     isMouseDownOnLink = false;
     clearTimeoutsAndProgressBars();
-    // document.removeEventListener('mouseup', handleHoldLink, true);
-    document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
 
@@ -770,7 +755,6 @@ function handleHoldLink(e, anchorElement = null) {
                     isMouseDownOnLink = false;
                     clearTimeoutsAndProgressBars();
                     document.removeEventListener('mouseup', handleHoldLink, true);
-                    document.removeEventListener('mousemove', cancelHoldToPreviewOnMove, true);
                     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
                     if (linkIndicator) linkIndicator.remove();
                     linkIndicator = null;
