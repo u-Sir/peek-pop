@@ -1,3 +1,8 @@
+0.0.43
+- Fixed issue where blur duration was not functioning correctly.
+- Fixed an issue where "Hold to Preview" did not work in certain cases.
+- Improved overall performance.
+
 0.0.42
 - **Fixed:** An issue where pressing `Esc` to close a tab would unintentionally trigger on the origin tab after restarting the browser.  
 - **Improved:** Attempted to prevent page elements from disappearing in certain cases.  
