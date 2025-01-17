@@ -1,4 +1,4 @@
-function handleLinkClick(e, data) {
+function handleLinkClick(e) {
     e.preventDefault(); // Prevent the default link behavior
 
     const linkElement = e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a'));
@@ -110,7 +110,6 @@ function loadLinks() {
         const collection = result.collection || [];
         const linksContainer = document.getElementById('links');
         const emptyMessage = document.getElementById('empty');
-        const data = result; // Store the retrieved settings
         linksContainer.innerHTML = ''; // Clear previous links
 
         let hasLinks = false;
@@ -178,7 +177,7 @@ function loadLinks() {
             } else if (index > 1) {
                 // Attach the standard click handler to other items
                 a.addEventListener('click', function (e) {
-                    handleLinkClick(e, data);
+                    handleLinkClick(e);
                 });
                 linkContainer.appendChild(a); // Append the link to the link container
             }

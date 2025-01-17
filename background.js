@@ -1,59 +1,76 @@
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'closedByEsc': false,
+    'doubleTapKeyToSendPageBack': 'None',
+
+    'windowType': 'popup',
+    'popupWindowsInfo': {},
+    
+    'rememberPopupSizeAndPosition': false,
+    'rememberPopupSizeAndPositionForDomain': false,
+
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
+
     'searchEngine': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],
+
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
-    'modifiedKey': 'None',
-    'rememberPopupSizeAndPosition': false,
-    'windowType': 'popup',
-    'popupWindowsInfo': {},
-    'closedByEsc': false,
+
     'contextItemCreated': false,
+
+    'modifiedKey': 'None',
     'dragDirections': ['up', 'down', 'right', 'left'],
     'dragPx': 0,
     'imgSupport': false,
-    'hoverTimeout': 0,
+    'imgSearchEnable': false,
+    'dropInEmptyOnly': false,
+    'dragStartEnable': false,
+
     'urlCheck': true,
-    'doubleTapKeyToSendPageBack': 'None',
+
+    'hoverTimeout': 0,
     'hoverDisabledUrls': [],
     'hoverImgSupport': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
     'hoverWindowType': 'popup',
+    'hoverImgSearchEnable': false,
+
+    'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
-    'imgSearchEnable': false,
-    'hoverImgSearchEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
-    'rememberPopupSizeAndPositionForDomain': false,
-    'isFirefox': false,
-    'linkHint': false,
-    'collection': [],
-    'searchTooltipsEnable': false,
-    'collectionEnable': false,
+    
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
-    'clickModifiedKey': 'None',
-    'linkDisabledUrls': [],
+
+    'isFirefox': false,
     'enableContainerIdentify': true,
-    'dragStartEnable': false,
-    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
-    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+
+    'linkHint': false,
+    'linkDisabledUrls': [],
+
+    'collection': [],
+    'collectionEnable': false,
+
+
+    'searchTooltipsEnable': false,
     'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
 Baidu=>https://www.baidu.com/s?wd=%s
 Yandex=>https://yandex.com/search/?text=%s
 DuckduckGo=>https://duckduckgo.com/?q=%s
 Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
     'copyButtonEnable': false,
-    'dropInEmptyOnly': false,
     'sendBackButtonEnable': false
 };
 

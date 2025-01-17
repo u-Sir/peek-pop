@@ -3,91 +3,162 @@ let hasPopupTriggered = false;
 let isMouseDown = false;
 let initialMouseX = 0;
 let initialMouseY = 0;
-let hoverTimeoutId;
-let progressBar;
-let hoverElement;
-let hoverInitialMouseX, hoverInitialMouseY, mouseMoveCheckInterval;
 let lastKeyTime = 0;
 let lastClickTime = 0;
 let lastKey = '';
-let isDoubleClick;
-let previewMode;
 let clickTimeout = null;
 const moveThreshold = 15;
-let linkIndicator;
-let tooltip;
-let searchTooltips;
-let collection;
 let hoverlinkOrText = false;
 let isMouseDownOnLink = false;
-let firstDownOnLinkAt;
-let previewProgressBar;
-let holdToPreviewTimeout = 1500;
-let focusAt;
-let clickModifiedKey = 'None';
-let linkDisabledUrls;
-let theme;
-let blurOverlay;
-let holdTimeout;
-let lastLeaveTimestamp;
-let lastLeaveRelatedTarget;
-let copyButtonPosition;
-let sendBackButtonPosition;
-let searchTooltipsEngines;
-let dropInEmptyOnly;
+
+
+let linkIndicator,
+    tooltip,
+    progressBar,
+    focusAt,
+    theme,
+
+    urlCheck,
+    enableContainerIdentify,
+
+    isDoubleClick,
+    previewMode,
+    firstDownOnLinkAt,
+    previewModeDisabledUrls,
+    previewProgressBar,
+    doubleClickToSwitch,
+    doubleClickAsClick,
+    previewModeEnable,
+    clickModifiedKey,
+
+    holdTimeout,
+    holdToPreview,
+    holdToPreviewTimeout,
+
+    searchTooltipsEnable,
+    searchTooltips,
+    searchTooltipsEngines,
+
+    hoverTimeoutId,
+    hoverElement,
+    hoverInitialMouseX,
+    hoverInitialMouseY,
+    mouseMoveCheckInterval,
+
+    hoverImgSearchEnable,
+    hoverTimeout,
+    hoverImgSupport,
+    hoverModifiedKey,
+    hoverDisabledUrls,
+    hoverSearchEngine,
+
+
+    collection,
+    collectionEnable,
+
+    closedByEsc,
+    doubleTapKeyToSendPageBack,
+    closeWhenFocusedInitialWindow,
+
+    linkHint,
+    linkDisabledUrls,
+
+    copyButtonPosition,
+    sendBackButtonPosition,
+
+    blurOverlay,
+    blurEnabled,
+    blurPx,
+    blurTime,
+
+    modifiedKey,
+    dragPx,
+    dragDirections,
+    dropInEmptyOnly,
+    imgSupport,
+    imgSearchEnable,
+    searchEngine,
+    dragStartEnable,
+
+    lastLeaveTimestamp,
+    lastLeaveRelatedTarget,
+
+    debounceTimer,
+    lastMessage = null,
+    shouldResetClickState = false;
+
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'closedByEsc': false,
+    'doubleTapKeyToSendPageBack': 'None',
+
+    'popupWindowsInfo': {},
+
+    'rememberPopupSizeAndPosition': false,
+    'rememberPopupSizeAndPositionForDomain': false,
+
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
-    'searchEngine': 'https://www.google.com/search?q=%s',
-    'disabledUrls': [],
+
+
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
-    'modifiedKey': 'None',
-    'popupWindowsInfo': {},
-    'closedByEsc': false,
+
     'contextItemCreated': false,
+
+    'modifiedKey': 'None',
+    'dropInEmptyOnly': false,
     'dragDirections': ['up', 'down', 'right', 'left'],
     'dragPx': 0,
     'imgSupport': false,
-    'hoverTimeout': 0,
+    'searchEngine': 'https://www.google.com/search?q=%s',
+    'disabledUrls': [],
+    'imgSearchEnable': false,
+
     'urlCheck': true,
-    'doubleTapKeyToSendPageBack': 'None',
+
+    'hoverTimeout': 0,
     'hoverDisabledUrls': [],
     'hoverImgSupport': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
     'hoverWindowType': 'popup',
+    'hoverImgSearchEnable': false,
+
+    'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
-    'imgSearchEnable': false,
-    'hoverImgSearchEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
-    'rememberPopupSizeAndPositionForDomain': false,
-    'isFirefox': false,
-    'linkHint': false,
-    'collection': [],
-    'searchTooltipsEnable': false,
-    'collectionEnable': false,
+
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
-    'clickModifiedKey': 'None',
+
+    'isFirefox': false,
+    'enableContainerIdentify': true,
+
+    'linkHint': false,
     'linkDisabledUrls': [],
-    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
-    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+
+    'collection': [],
+    'collectionEnable': false,
+
+
+    'searchTooltipsEnable': false,
     'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
 Baidu=>https://www.baidu.com/s?wd=%s
 Yandex=>https://yandex.com/search/?text=%s
 DuckduckGo=>https://duckduckgo.com/?q=%s
 Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
     'copyButtonEnable': false,
-    'dropInEmptyOnly': false,
     'sendBackButtonEnable': false
 };
 
@@ -238,13 +309,13 @@ function addSearchTooltipsOnHover(e) {
 
         if (tooltip) tooltip.remove();
         // if (searchTooltips) searchTooltips.remove();
-        chrome.storage.local.get(['urlCheck', 'searchTooltipsEnable'], (data) => {
-            if (typeof data.searchTooltipsEnable === 'undefined' || !data.searchTooltipsEnable) return;
+        setTimeout(() => {
+            if (typeof searchTooltipsEnable === 'undefined' || !searchTooltipsEnable) return;
             // Regular expression to match URLs including IP addresses
             const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
             // Check if the selected text is a URL
-            const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
+            const isURL = urlCheck ? urlPattern.test(selectionText) : false;
             // If the text is a URL and doesn't start with "http://" or "https://", prepend "http://"
             const link = isURL
                 ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
@@ -317,7 +388,9 @@ function addSearchTooltipsOnHover(e) {
                 document.removeEventListener('mouseleave', removeSearchTooltip);
                 document.removeEventListener('mousemove', checkSearchCursorInsideViewport);
             });
-        });
+
+        }, 0);
+
     } else {
 
         if (searchTooltips) searchTooltips.remove();
@@ -442,8 +515,7 @@ function handleContextMenu() {
 async function handleKeyDown(e) {
     if (e.key === 'Escape') {
         try {
-            const data = await loadUserConfigs(['closedByEsc']);
-            if (data.closedByEsc) {
+            if (closedByEsc) {
                 chrome.runtime.sendMessage({ action: 'closeCurrentTab' });
             }
         } catch (error) {
@@ -451,10 +523,8 @@ async function handleKeyDown(e) {
         }
     } else {
         try {
-            const data = await loadUserConfigs(['clickModifiedKey', 'previewModeEnable']);
 
-            if (data.previewModeEnable && data.clickModifiedKey !== 'None') {
-                const clickModifiedKey = data.clickModifiedKey === 'Ctrl' ? 'Control' : data.clickModifiedKey;
+            if (previewModeEnable && clickModifiedKey !== 'None') {
                 if (e.key === clickModifiedKey) {
                     previewMode = true;
                     document.addEventListener('keyup', (e) => {
@@ -462,20 +532,20 @@ async function handleKeyDown(e) {
                             previewMode = false;
                         }
 
-                        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+                        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 
                     }, { once: true })
                 } else {
                     previewMode = false;
                 }
-            } else if (data.previewModeEnable && data.clickModifiedKey === 'None') {
+            } else if (previewModeEnable && clickModifiedKey === 'None') {
                 previewMode = true;
             } else {
                 previewMode = false;
             }
 
 
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+            handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 
         } catch (error) {
             console.error('Error loading user configs:', error);
@@ -484,11 +554,48 @@ async function handleKeyDown(e) {
     }
 }
 
+function sendDebouncedMessage() {
+    // Clear any existing timeout to reset the debounce
+    clearTimeout(debounceTimer);
+
+    // Set a new timeout to send the message after a small delay (e.g., 100ms)
+    debounceTimer = setTimeout(() => {
+        // Only send the last message (to avoid duplicate requests)
+        if (lastMessage) {
+            chrome.runtime.sendMessage(lastMessage, () => {
+                if (chrome.runtime.lastError) {
+                    console.error('Error sending message:', chrome.runtime.lastError);
+                }
+
+                // Reset click state if required
+                if (shouldResetClickState) {
+                    resetClickState(); // Ensure the reset happens
+                }
+
+                // Reset the flag and last message after sending
+                shouldResetClickState = false;
+                lastMessage = null;
+            });
+        }
+    }, 300); // Adjust delay as needed
+}
+
+function handleMessageRequest(message, resetClickState = null) {
+    // Store the latest message to be sent
+    lastMessage = message;
+
+    // Update the flag if a resetClickState function is provided
+    if (typeof resetClickState === 'function') {
+        shouldResetClickState = true;
+    }
+
+    // Call the debounced function to handle the message
+    sendDebouncedMessage();
+}
+
 async function handleKeyUp(e) {
 
     try {
-        const data = await loadUserConfigs(['doubleTapKeyToSendPageBack']);
-        const doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
         const key = e.key === 'Control' ? 'Ctrl' : e.key;
         if (doubleTapKeyToSendPageBack === 'None' || key !== doubleTapKeyToSendPageBack) return;
 
@@ -530,17 +637,53 @@ function handleMouseDown(e) {
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
 
-    chrome.storage.local.get(['modifiedKey',
-        'previewModeEnable',
-        'previewModeDisabledUrls',
-        'closeWhenFocusedInitialWindow',
-        'holdToPreview',
-        'holdToPreviewTimeout'
-    ], (data) => {
+    const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+    const linkElement = anchorElement ||
+        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
-        const modifiedKey = data.modifiedKey || 'None';
-        const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
-        const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
+    const linkUrl = linkElement ?
+        (linkElement.getAttribute('data-url') ||
+            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+        : null;
+
+    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
+    if (modifiedKey === 'None' || keyMap[modifiedKey]) {
+
+        const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
+        events.forEach(event => document.addEventListener(event, handleEvent, true));
+
+    } else {
+        const events = ["click", "dragstart", "dragover", "drop"];
+
+        events.forEach(event => document.removeEventListener(event, handleEvent, true));
+    }
+
+    if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && previewModeEnable) {
+        if (clickModifiedKey === 'None' || keyMap[clickModifiedKey]) {
+
+            previewMode = (previewMode !== undefined) ? previewMode : previewModeEnable;
+
+            // Add the event listener
+            const events = ["click", "mouseup"];
+
+            events.forEach(event => document.addEventListener(event, handleEvent, true));
+        } else {
+            previewMode = false;
+        }
+
+        // In popup.js or content.js
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+        } else {
+            theme = 'light';
+        }
+
+        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    }
+
+    if (holdToPreview && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
         const linkElement = anchorElement ||
             (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
@@ -549,133 +692,87 @@ function handleMouseDown(e) {
                 (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
             : null;
 
-        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
-        if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+        // Check for left mouse button click
+        if (e.button !== 0) return;
 
-        if (modifiedKey === 'None' || keyMap[modifiedKey]) {
-
-            const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
-            events.forEach(event => document.addEventListener(event, handleEvent, true));
-
-        } else {
-            const events = ["click", "dragstart", "dragover", "drop"];
-
-            events.forEach(event => document.removeEventListener(event, handleEvent, true));
-        }
-
-        if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
-            if (clickModifiedKey === 'None' || keyMap[clickModifiedKey]) {
-
-                previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
-
-                // Add the event listener
-                const events = ["click", "mouseup"];
-
-                events.forEach(event => document.addEventListener(event, handleEvent, true));
-            } else {
-                previewMode = false;
-            }
-
-            // In popup.js or content.js
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                theme = 'dark';
-            } else {
-                theme = 'light';
-            }
-
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
-        }
-
-        if (data.holdToPreview && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
-            const linkElement = anchorElement ||
-                (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
-
-            const linkUrl = linkElement ?
-                (linkElement.getAttribute('data-url') ||
-                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
-                : null;
-
-            // Check for left mouse button click
-            if (e.button !== 0) return;
-
-            // Check if the URL is valid and not a JavaScript link
-            if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
-                isMouseDownOnLink = false;
-                clearTimeoutsAndProgressBars();
-                document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-                return;
-            } else {
-                isMouseDownOnLink = true;
-                document.addEventListener('mouseup', () => {
-                    if (isMouseDownOnLink) {
-                        firstDownOnLinkAt = undefined;
-                        isMouseDownOnLink = false; // Reset the flag
-                        clearTimeout(holdTimeout); // Clear the hold timeout to prevent handleHoldLink
-                        clearTimeoutsAndProgressBars(); // Cleanup progress bar
-                    }
-                }, { once: true });
-                document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-
-                document.addEventListener('click', (e) => {
-                    if (
-                        firstDownOnLinkAt &&
-                        isMouseDownOnLink &&
-                        (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500))
-                    ) {
-                        // Prevent default action on the link immediately
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                }, true);
-
-                // Show progress bar for preview
-                setTimeout(() => {
-                    if (!isMouseDownOnLink) return; // Abort if mouse is not held down
-                    previewProgressBar = createCandleProgressBar(
-                        e.clientX - 20,
-                        e.clientY - 50,
-                        (holdToPreviewTimeout ?? 1500) - 100
-                    );
-                }, 100);
-
-                // Set a timeout for the hold-to-preview action
-                holdTimeout = setTimeout(() => {
-                    if (!isMouseDownOnLink) return; // Ensure the mouse is still down
-                    clearTimeoutsAndProgressBars(); // Cleanup any progress bar
-                    handleHoldLink(e, anchorElement); // Trigger the hold-to-preview action
-                }, holdToPreviewTimeout ?? 1500);
-
-                // Check the initial mouse down time
-                if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
-                    e.preventDefault();
-                    clearTimeout(holdTimeout); // Clear the timeout
-                    clearTimeoutsAndProgressBars(); // Cleanup
-                    firstDownOnLinkAt = null;
-                    hasPopupTriggered = true; // Mark the popup as triggered
-                } else {
-                    firstDownOnLinkAt = Date.now(); // Record the initial mouse down time
-                }
-            }
-        } else {
+        // Check if the URL is valid and not a JavaScript link
+        if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
             isMouseDownOnLink = false;
-            if (previewProgressBar) {
-                previewProgressBar.remove();
-                previewProgressBar = null;
-            }
+            clearTimeoutsAndProgressBars();
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+            return;
+        } else {
+            isMouseDownOnLink = true;
+            document.addEventListener('mouseup', () => {
+                if (isMouseDownOnLink) {
+                    firstDownOnLinkAt = undefined;
+                    isMouseDownOnLink = false; // Reset the flag
+                    clearTimeout(holdTimeout); // Clear the hold timeout to prevent handleHoldLink
+                    clearTimeoutsAndProgressBars(); // Cleanup progress bar
+                }
+            }, { once: true });
+            document.addEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+
+            document.addEventListener('click', (e) => {
+                if (
+                    firstDownOnLinkAt &&
+                    isMouseDownOnLink &&
+                    (Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500))
+                ) {
+                    // Prevent default action on the link immediately
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+
+            // Show progress bar for preview
+            setTimeout(() => {
+                if (!isMouseDownOnLink) return; // Abort if mouse is not held down
+                previewProgressBar = createCandleProgressBar(
+                    e.clientX - 20,
+                    e.clientY - 50,
+                    (holdToPreviewTimeout ?? 1500) - 100
+                );
+            }, 100);
+
+            // Set a timeout for the hold-to-preview action
+            holdTimeout = setTimeout(() => {
+                if (!isMouseDownOnLink) return; // Ensure the mouse is still down
+                clearTimeoutsAndProgressBars(); // Cleanup any progress bar
+                handleHoldLink(e, anchorElement); // Trigger the hold-to-preview action
+            }, holdToPreviewTimeout ?? 1500);
+
+            // Check the initial mouse down time
+            if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500)) {
+                e.preventDefault();
+                clearTimeout(holdTimeout); // Clear the timeout
+                clearTimeoutsAndProgressBars(); // Cleanup
+                firstDownOnLinkAt = null;
+                hasPopupTriggered = true; // Mark the popup as triggered
+            } else {
+                firstDownOnLinkAt = Date.now(); // Record the initial mouse down time
+            }
         }
-
-
-        try {
-            const message = data.closeWhenFocusedInitialWindow
-                ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
-                : { checkContextMenuItem: true };
-            chrome.runtime.sendMessage(message);
-        } catch (error) {
-            console.error('Error loading user configs:', error);
+    } else {
+        isMouseDownOnLink = false;
+        if (previewProgressBar) {
+            previewProgressBar.remove();
+            previewProgressBar = null;
         }
+        document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+    }
 
-    });
+
+    try {
+        const message = closeWhenFocusedInitialWindow
+            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
+            : { checkContextMenuItem: true };
+        chrome.runtime.sendMessage(message);
+    } catch (error) {
+        console.error('Error loading user configs:', error);
+    }
+
+
 
     isMouseDown = true;
     hasPopupTriggered = false;
@@ -713,56 +810,51 @@ function handleHoldLink(e, anchorElement = null) {
             e.preventDefault();
             e.stopPropagation();
 
-            chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime'], (data) => {
-                const blurTime = data.blurTime || 1;
-                const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-                const blurPx = parseFloat(data.blurPx || 3);
+            // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+            let finalLinkUrl = linkUrl;
 
-                // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-                let finalLinkUrl = linkUrl;
+            if (!finalLinkUrl) return;
 
-                if (!finalLinkUrl) return;
+            if (linkIndicator) {
+                linkIndicator.remove();
+            }
+            linkIndicator = null;
 
-                if (linkIndicator) {
-                    linkIndicator.remove();
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
+
+            if (window.self !== window.top) {
+                // Inside the iframe content script
+                window.parent.postMessage({ action: 'blurParent' }, '*');
+            } else {
+                if (blurEnabled) {
+                    addBlurOverlay(blurPx, blurTime);
                 }
-                linkIndicator = null;
+                addClickMask();
+            }
 
+            chrome.runtime.sendMessage({
+                linkUrl: finalLinkUrl,
+                lastClientX: e.screenX,
+                lastClientY: e.screenY,
+                width: window.screen.availWidth,
+                height: window.screen.availHeight,
+                top: window.screen.availTop,
+                left: window.screen.availLeft,
+                trigger: 'click'
+            }, () => {
+                isMouseDownOnLink = false;
+                clearTimeoutsAndProgressBars();
+                document.removeEventListener('mouseup', handleHoldLink, true);
+                document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
+                if (linkIndicator) linkIndicator.remove();
+                linkIndicator = null;
                 if (searchTooltips) searchTooltips.remove();
                 searchTooltips = null;
-
-                if (window.self !== window.top) {
-                    // Inside the iframe content script
-                    window.parent.postMessage({ action: 'blurParent' }, '*');
-                } else {
-                    if (blurEnabled) {
-                        addBlurOverlay(blurPx, blurTime);
-                    }
-                    addClickMask();
-                }
-
-                chrome.runtime.sendMessage({
-                    linkUrl: finalLinkUrl,
-                    lastClientX: e.screenX,
-                    lastClientY: e.screenY,
-                    width: window.screen.availWidth,
-                    height: window.screen.availHeight,
-                    top: window.screen.availTop,
-                    left: window.screen.availLeft,
-                    trigger: 'click'
-                }, () => {
-                    isMouseDownOnLink = false;
-                    clearTimeoutsAndProgressBars();
-                    document.removeEventListener('mouseup', handleHoldLink, true);
-                    document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-                    if (linkIndicator) linkIndicator.remove();
-                    linkIndicator = null;
-                    if (searchTooltips) searchTooltips.remove();
-                    searchTooltips = null;
-                    hasPopupTriggered = true;
-                    finalLinkUrl = null;
-                });
+                hasPopupTriggered = true;
+                finalLinkUrl = null;
             });
+
         }
     } else {
         firstDownOnLinkAt = null;
@@ -788,61 +880,19 @@ function handleDoubleClick(e) {
             (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
         : null;
 
-    chrome.storage.local.get(['doubleClickToSwitch', 'doubleClickAsClick', 'previewModeEnable', 'clickModifiedKey'], (data) => {
-        if (!data.previewModeEnable || data.clickModifiedKey !== 'None') return;
+    if (!previewModeEnable || clickModifiedKey !== 'None') return;
 
 
-        // Check if the double-clicked element is a link
-        const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
-        const imageUrl = imageElement ? imageElement.src : null;
-        if (data.doubleClickToSwitch && !imageUrl && !linkUrl) {
-            e.preventDefault(); // Prevent the default double-click action
-            e.stopPropagation(); // Stop the event from bubbling up
-            hasPopupTriggered = true;
-            isDoubleClick = true;
+    // Check if the double-clicked element is a link
+    const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
+    const imageUrl = imageElement ? imageElement.src : null;
+    if (doubleClickToSwitch && !imageUrl && !linkUrl) {
+        e.preventDefault(); // Prevent the default double-click action
+        e.stopPropagation(); // Stop the event from bubbling up
+        hasPopupTriggered = true;
+        isDoubleClick = true;
 
-            previewMode = !previewMode;
-
-
-            // In popup.js or content.js
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                theme = 'dark';
-            } else {
-                theme = 'light';
-            }
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme }), () => {
-                resetClickState();
-            };
-
-        } else if (linkUrl) {
-            if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
-            if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-            if (data.doubleClickAsClick) {
-                e.preventDefault(); // Prevent the default double-click action
-                e.stopPropagation(); // Stop the event from bubbling up
-                hasPopupTriggered = true;
-                isDoubleClick = true;
-                if (e.target.shadowRoot) {
-                    linkElement.click();
-                } else {
-                    try {
-                        const clickEvent = new MouseEvent('click', {
-                            bubbles: true, // Make sure the event bubbles
-                            cancelable: true // Make the event cancelable
-                        });
-                        e.target.dispatchEvent(clickEvent);
-                    } catch (error) {
-                        e.target.closest('a').click();
-                    }
-                }
-            }
-        } else {
-            resetClickState();
-        }
-
-        // Remove the event listener after it triggers once
-        document.removeEventListener('dblclick', handleDoubleClick, true);
-        // isDoubleClick = false;
+        previewMode = !previewMode;
 
 
         // In popup.js or content.js
@@ -851,12 +901,52 @@ function handleDoubleClick(e) {
         } else {
             theme = 'light';
         }
+        
+        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme }, resetClickState);
 
-        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
-        setTimeout(() => {
-            isDoubleClick = false;
-        }, 250);
-    });
+    } else if (linkUrl) {
+        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+        if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+        if (doubleClickAsClick) {
+            e.preventDefault(); // Prevent the default double-click action
+            e.stopPropagation(); // Stop the event from bubbling up
+            hasPopupTriggered = true;
+            isDoubleClick = true;
+            if (e.target.shadowRoot) {
+                linkElement.click();
+            } else {
+                try {
+                    const clickEvent = new MouseEvent('click', {
+                        bubbles: true, // Make sure the event bubbles
+                        cancelable: true // Make the event cancelable
+                    });
+                    e.target.dispatchEvent(clickEvent);
+                } catch (error) {
+                    e.target.closest('a').click();
+                }
+            }
+        }
+    } else {
+        resetClickState();
+    }
+
+    // Remove the event listener after it triggers once
+    document.removeEventListener('dblclick', handleDoubleClick, true);
+    // isDoubleClick = false;
+
+
+    // In popup.js or content.js
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        theme = 'dark';
+    } else {
+        theme = 'light';
+    }
+
+    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    setTimeout(() => {
+        isDoubleClick = false;
+    }, 250);
+
 }
 function resetClickState() {
     // Reset variables after click or double-click
@@ -869,17 +959,15 @@ function handleEvent(e) {
     if (e.type === 'dragstart') {
         isDragging = true;
         const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
-        chrome.storage.local.get(['modifiedKey', 'dragDirections'], (data) => {
-            const modifiedKey = data.modifiedKey || 'None';
-            const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
-            if (modifiedKey === 'None' || keyMap[modifiedKey]) {
+        const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+        if (modifiedKey === 'None' || keyMap[modifiedKey]) {
 
-                handleDragStart(e, anchorElement);
+            handleDragStart(e, anchorElement);
 
-            } else {
-                isDragging = false;
-            }
-        });
+        } else {
+            isDragging = false;
+        }
+
     } else if (['dragover', 'drop'].includes(e.type) && isDragging) {
         preventEvent(e);
 
@@ -923,7 +1011,7 @@ function handleEvent(e) {
                 theme = 'light';
             }
 
-            chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+            handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         }
 
 
@@ -934,7 +1022,7 @@ function handleEvent(e) {
             theme = 'light';
         }
 
-        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 
 
     } else if (e.type === 'mouseup' && isDragging && e.button === 0) {
@@ -975,7 +1063,7 @@ function handleEvent(e) {
         theme = 'light';
     }
 
-    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 }
 
 function handlePreviewMode(e, linkUrl) {
@@ -985,57 +1073,47 @@ function handlePreviewMode(e, linkUrl) {
         e.preventDefault();
         e.stopPropagation();
 
-        chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime'], (data) => {
-            const blurTime = data.blurTime || 1;
-            const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-            const blurPx = parseFloat(data.blurPx || 3);
+        // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+        let finalLinkUrl = linkUrl;
 
+        if (!finalLinkUrl) return;
 
+        if (linkIndicator) {
+            linkIndicator.remove();
+        }
+        linkIndicator = null;
 
-            // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-            let finalLinkUrl = linkUrl;
-
-            if (!finalLinkUrl) return;
-
-            if (linkIndicator) {
-                linkIndicator.remove();
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
+        if (window.self !== window.top) {
+            // Inside the iframe content script
+            window.parent.postMessage({ action: 'blurParent' }, '*');
+        } else {
+            if (blurEnabled) {
+                addBlurOverlay(blurPx, blurTime);
             }
-            linkIndicator = null;
+            addClickMask();
+        }
 
+        chrome.runtime.sendMessage({
+            linkUrl: finalLinkUrl,
+            lastClientX: e.screenX,
+            lastClientY: e.screenY,
+            width: window.screen.availWidth,
+            height: window.screen.availHeight,
+            top: window.screen.availTop,
+            left: window.screen.availLeft,
+            trigger: 'click'
+        }, () => {
+            if (linkIndicator) linkIndicator.remove();
+            linkIndicator = null;
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
-            if (window.self !== window.top) {
-                // Inside the iframe content script
-                window.parent.postMessage({ action: 'blurParent' }, '*');
-            } else {
-                if (blurEnabled) {
-                    addBlurOverlay(blurPx, blurTime);
-                }
-                addClickMask();
-            }
+            hasPopupTriggered = true;
+            finalLinkUrl = null;
+            isDoubleClick = false;
 
-            chrome.runtime.sendMessage({
-                linkUrl: finalLinkUrl,
-                lastClientX: e.screenX,
-                lastClientY: e.screenY,
-                width: window.screen.availWidth,
-                height: window.screen.availHeight,
-                top: window.screen.availTop,
-                left: window.screen.availLeft,
-                trigger: 'click'
-            }, () => {
-                if (linkIndicator) linkIndicator.remove();
-                linkIndicator = null;
-                if (searchTooltips) searchTooltips.remove();
-                searchTooltips = null;
-                hasPopupTriggered = true;
-                finalLinkUrl = null;
-                isDoubleClick = false;
-
-            });
         });
-
-
 
     }
 
@@ -1059,9 +1137,7 @@ async function handleMouseUpWithProgressBar(e) {
         clearTimeoutsAndProgressBars();
         return;
     }
-    const data = await loadUserConfigs(['hoverSearchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverModifiedKey', 'urlCheck']);
-    const hoverTimeout = data.hoverTimeout || 0;
-    const hoverModifiedKey = data.hoverModifiedKey || 'None';
+
     const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
     if (hoverModifiedKey === 'None' || keyMap[hoverModifiedKey]) {
         if (hasPopupTriggered) return;
@@ -1080,21 +1156,21 @@ async function handleMouseUpWithProgressBar(e) {
 
             if (hoverElement === selectionText) return; // Avoid resetting if the same selection is still being hovered
 
-            const hoverSearchEngine = (data.hoverSearchEngine !== 'None' ? (data.hoverSearchEngine || 'https://www.google.com/search?q=%s') : null);
+            const finalHoverSearchEngine = (hoverSearchEngine !== 'None' ? (hoverSearchEngine || 'https://www.google.com/search?q=%s') : null);
 
             // Regular expression to match URLs including IP addresses
             const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
             // Check if the selected text is a URL
-            const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
+            const isURL = urlCheck ? urlPattern.test(selectionText) : false;
 
             // If the text is a URL and doesn't start with "http://" or "https://", prepend "http://"
             let finalLinkUrl = isURL
                 ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
                     ? selectionText
                     : 'http://' + selectionText)
-                : (hoverSearchEngine && selectionText !== ''
-                    ? hoverSearchEngine.replace('%s', encodeURIComponent(selectionText))
+                : (finalHoverSearchEngine && selectionText !== ''
+                    ? finalHoverSearchEngine.replace('%s', encodeURIComponent(selectionText))
                     : null);
 
             if (!finalLinkUrl) return;
@@ -1108,7 +1184,7 @@ async function handleMouseUpWithProgressBar(e) {
             hoverInitialMouseX = e.clientX; // Store initial mouse position
             hoverInitialMouseY = e.clientY;
 
-            const hoverTimeoutDuration = parseInt(data.hoverTimeout, 10) || 0; // Default to disabled if not set
+            const hoverTimeoutDuration = parseInt(hoverTimeout, 10) || 0; // Default to disabled if not set
 
             // Create and display the progress bar immediately
             progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
@@ -1180,17 +1256,15 @@ async function handleDragStart(e, anchorElement) {
     if (searchTooltips) searchTooltips.remove();
     searchTooltips = null;
 
-    const data = await loadUserConfigs(['dropInEmptyOnly', 'modifiedKey', 'dragStartEnable', 'imgSearchEnable', 'searchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'dragPx', 'dragDirections', 'imgSupport']);
-    const dragStartEnable = data.dragStartEnable !== 'undefined' ? data.dragStartEnable : false;
+    const finalDragStartEnable = dragStartEnable !== 'undefined' ? dragStartEnable : false;
+    const finalDropInEmptyOnly = dropInEmptyOnly !== 'undefined' ? dropInEmptyOnly : false;
 
-    if (!dragStartEnable) {
+    if (!finalDragStartEnable) {
 
         const viewportTop = e.screenY - e.clientY;
         const viewportBottom = e.screenY - e.clientY + window.innerHeight;
         const viewportLeft = e.screenX - e.clientX;
         const viewportRight = e.screenX - e.clientX + window.innerWidth;
-        const dragPx = data.dragPx || 0;
-        const dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
 
 
         let lastLeaveTime = 0;
@@ -1209,9 +1283,8 @@ async function handleDragStart(e, anchorElement) {
             return;
         }
         function onDragend(e, endInfo = null) {
-            if (dropInEmptyOnly && (endInfo ? endInfo.dropEffect : e.dataTransfer.dropEffect) !== 'none') return;
+            if (finalDropInEmptyOnly && (endInfo ? endInfo.dropEffect : e.dataTransfer.dropEffect) !== 'none') return;
             if (!endInfo) {
-                const modifiedKey = data.modifiedKey || 'None';
                 const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
                 if (modifiedKey === 'None') {
                     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
@@ -1255,16 +1328,12 @@ async function handleDragStart(e, anchorElement) {
             let imageUrl = imageElement ? imageElement.src : null;
 
             if (linkUrl || selectionText || imageUrl) {
-                const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
+                const finalSearchEngine = (searchEngine !== 'None' ? (searchEngine || 'https://www.google.com/search?q=%s') : null);
                 // Regular expression to match URLs including IP addresses
                 const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
                 // Check if the selected text is a URL
-                const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
-
-                const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-                const blurPx = parseFloat(data.blurPx || 3);
-                const blurTime = parseFloat(data.blurTime || 1);
+                const isURL = urlCheck ? urlPattern.test(selectionText) : false;
 
                 // Ensure that URLs without a protocol are handled
                 const processedLinkUrl = isURL
@@ -1273,23 +1342,23 @@ async function handleDragStart(e, anchorElement) {
                         : 'http://' + selectionText)
                     : null;
 
-                if (data.imgSearchEnable && imageUrl) {
+                if (imgSearchEnable && imageUrl) {
                     const imgSearchEngineMap = {
                         "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
                         "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
                         "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
                         "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
                     };
-                    if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
+                    if (imgSearchEngineMap.hasOwnProperty(searchEngine)) {
 
-                        imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
+                        imageUrl = imgSearchEngineMap[finalSearchEngine].replace('%s', encodeURIComponent(imageUrl));
                     }
                 }
 
                 // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-                let finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
-                    ((searchEngine && selectionText.trim() !== '')
-                        ? searchEngine.replace('%s', encodeURIComponent(selectionText))
+                let finalLinkUrl = processedLinkUrl || linkUrl || (imgSupport ? imageUrl : null) ||
+                    ((finalSearchEngine && selectionText.trim() !== '')
+                        ? finalSearchEngine.replace('%s', encodeURIComponent(selectionText))
                         : null);
                 if (!finalLinkUrl) return;
 
@@ -1446,7 +1515,6 @@ async function handleDragStart(e, anchorElement) {
                     endClientY: e.clientY,
                     dropEffect: e.dataTransfer.dropEffect
                 }
-                const modifiedKey = data.modifiedKey || 'None';
                 const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
                 if (modifiedKey === 'None') {
                     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
@@ -1492,16 +1560,13 @@ async function handleDragStart(e, anchorElement) {
         let imageUrl = imageElement ? imageElement.src : null;
 
         if (linkUrl || selectionText || imageUrl) {
-            const searchEngine = (data.searchEngine !== 'None' ? (data.searchEngine || 'https://www.google.com/search?q=%s') : null);
+            const searchEngine = (searchEngine !== 'None' ? (searchEngine || 'https://www.google.com/search?q=%s') : null);
             // Regular expression to match URLs including IP addresses
             const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
             // Check if the selected text is a URL
-            const isURL = data.urlCheck ? urlPattern.test(selectionText) : false;
+            const isURL = urlCheck ? urlPattern.test(selectionText) : false;
 
-            const blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
-            const blurPx = parseFloat(data.blurPx || 3);
-            const blurTime = parseFloat(data.blurTime || 1);
 
             // Ensure that URLs without a protocol are handled
             const processedLinkUrl = isURL
@@ -1510,21 +1575,21 @@ async function handleDragStart(e, anchorElement) {
                     : 'http://' + selectionText)
                 : null;
 
-            if (data.imgSearchEnable && imageUrl) {
+            if (imgSearchEnable && imageUrl) {
                 const imgSearchEngineMap = {
                     "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s",
                     "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
                     "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
                     "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
                 };
-                if (imgSearchEngineMap.hasOwnProperty(data.searchEngine)) {
+                if (imgSearchEngineMap.hasOwnProperty(searchEngine)) {
 
                     imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
                 }
             }
 
             // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-            let finalLinkUrl = processedLinkUrl || linkUrl || (data.imgSupport ? imageUrl : null) ||
+            let finalLinkUrl = processedLinkUrl || linkUrl || (imgSupport ? imageUrl : null) ||
                 ((searchEngine && selectionText.trim() !== '')
                     ? searchEngine.replace('%s', encodeURIComponent(selectionText))
                     : null);
@@ -1639,57 +1704,130 @@ async function checkUrlAndToggleListeners() {
         theme = 'light';
     }
 
-    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     const data = await loadUserConfigs([
-        'disabledUrls',
-        'searchEngine',
+
         'hoverSearchEngine',
+        'hoverImgSearchEnable',
+        'hoverTimeout',
+        'hoverImgSupport',
+        'hoverModifiedKey',
+        'hoverDisabledUrls',
+
         'previewModeDisabledUrls',
         'previewModeEnable',
-        'holdToPreview',
-        'collectionEnable',
-        'holdToPreviewTimeout',
         'clickModifiedKey',
-        'linkDisabledUrls',
+        'doubleClickToSwitch',
+        'doubleClickAsClick',
+
+        'holdToPreview',
+        'holdToPreviewTimeout',
+
+        'collection',
+        'collectionEnable',
+
         'searchTooltipsEnable',
+        'searchTooltipsEngines',
+
         'blurEnabled',
         'blurPx',
         'blurTime',
+
         'copyButtonPosition',
-        'searchTooltipsEngines',
         'copyButtonEnable',
-        'dropInEmptyOnly',
         'sendBackButtonPosition',
         'sendBackButtonEnable',
+
+        'urlCheck',
+        'enableContainerIdentify',
+
+        'closedByEsc',
+        'closeWhenFocusedInitialWindow',
+        'doubleTapKeyToSendPageBack',
+
+        'linkHint',
+        'linkDisabledUrls',
+
+        'disabledUrls',
+        'searchEngine',
+        'modifiedKey',
+        'dropInEmptyOnly',
+        'imgSearchEnable',
+        'dragPx',
+        'dragDirections',
+        'dragStartEnable',
+        'imgSupport'
     ]);
     const disabledUrls = data.disabledUrls || [];
+
+    linkHint = data.linkHint || false;
     linkDisabledUrls = data.linkDisabledUrls || [];
+
+    holdToPreview = data.holdToPreview;
     holdToPreviewTimeout = data.holdToPreviewTimeout || 1500;
+
+    collectionEnable = data.collectionEnable;
+    collection = data.collection || [];
+
     const currentUrl = window.location.href;
+
     copyButtonPosition = data.copyButtonPosition;
     sendBackButtonPosition = data.sendBackButtonPosition;
+
     searchTooltipsEngines = data.searchTooltipsEngines || configs.searchTooltipsEngines;
+    searchTooltipsEnable = data.searchTooltipsEnable;
+
+    blurTime = data.blurTime || 1;
+    blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+    blurPx = parseFloat(data.blurPx || 3);
+
+    urlCheck = data.urlCheck;
+
+    closeWhenFocusedInitialWindow = data.closeWhenFocusedInitialWindow;
+    doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
+    closedByEsc = data.closedByEsc;
+    enableContainerIdentify = data.enableContainerIdentify;
+
+    hoverImgSearchEnable = data.hoverImgSearchEnable;
+    hoverTimeout = data.hoverTimeout || 0;
+    hoverImgSupport = data.hoverImgSupport;
+    hoverModifiedKey = data.hoverModifiedKey || 'None';
+    hoverDisabledUrls = data.hoverDisabledUrls || [];
+
     dropInEmptyOnly = data.dropInEmptyOnly;
+    modifiedKey = data.modifiedKey || 'None';
+    imgSearchEnable = data.imgSearchEnable;
+    dragPx = data.dragPx || 0;
+    dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
+    imgSupport = data.imgSupport;
+    dragStartEnable = data.dragStartEnable;
+
+    previewModeEnable = data.previewModeEnable;
+    clickModifiedKey = data.clickModifiedKey || 'None';
+    doubleClickToSwitch = data.doubleClickToSwitch;
+    doubleClickAsClick = data.doubleClickAsClick;
+
     if (isUrlDisabled(currentUrl, disabledUrls)) {
         removeListeners();
     } else {
         addListeners();
     }
 
-    if (data.searchTooltipsEnable) {
+    if (searchTooltipsEnable) {
         document.addEventListener('mouseup', handleEvent)
     }
 
-    clickModifiedKey = data.clickModifiedKey || 'None';
 
     if (typeof data.searchEngine === 'undefined') {
+        searchEngine = 'https://www.google.com/search?q=%s';
         chrome.storage.local.set({ searchEngine: 'https://www.google.com/search?q=%s' });
     }
     if (typeof data.hoverSearchEngine === 'undefined') {
+        hoverSearchEngine = 'https://www.google.com/search?q=%s';
         chrome.storage.local.set({ hoverSearchEngine: 'https://www.google.com/search?q=%s' });
     }
 
-    if (!data.previewModeEnable) {
+    if (!previewModeEnable) {
         previewMode = false;
 
     } else {
@@ -1707,56 +1845,56 @@ async function checkUrlAndToggleListeners() {
 
                 if (response.windowType === 'popup') {
                     const css = `
-                        /* Common styles for both buttons */
-                        #dynamicButton {
-                          background-color: #f2f7fa;
-                          width: 100px;
-                          height: 30px;
-                          border: none;
-                          border-radius: 10px;
-                          font-weight: 600;
-                          cursor: pointer;
-                          overflow: hidden;
-                          transition-duration: 700ms;
-                        }
-        
-                        #dynamicButton span:first-child {
-                          color: #0e418f;
-                          position: absolute;
-                          transform: translate(-50%, -50%);
-                        }
-        
-                        #dynamicButton span:last-child {
-                          position: absolute;
-                          color: #b5ccf3;
-                          opacity: 0;
-                          transform: translateY(100%) translateX(-50%);
-                          height: 14px;
-                          line-height: 13px;
-                        }
-        
-                        #dynamicButton:focus {
-                          background-color: #0e418f;
-                          width: 120px;
-                          height: 40px;
-                          transition-delay: 100ms;
-                          transition-duration: 500ms;
-                        }
-        
-                        #dynamicButton:focus span:first-child {
-                          color: #b5ccf3;
-                          transform: translateX(-50%) translateY(-150%);
-                          opacity: 0;
-                          transition-duration: 500ms;
-                        }
-        
-                        #dynamicButton:focus span:last-child {
-                          transform: translateX(-50%) translateY(-50%);
-                          opacity: 1;
-                          transition-delay: 300ms;
-                          transition-duration: 500ms;
-                        }
-                    `;
+                            /* Common styles for both buttons */
+                            #dynamicButton {
+                              background-color: #f2f7fa;
+                              width: 100px;
+                              height: 30px;
+                              border: none;
+                              border-radius: 10px;
+                              font-weight: 600;
+                              cursor: pointer;
+                              overflow: hidden;
+                              transition-duration: 700ms;
+                            }
+            
+                            #dynamicButton span:first-child {
+                              color: #0e418f;
+                              position: absolute;
+                              transform: translate(-50%, -50%);
+                            }
+            
+                            #dynamicButton span:last-child {
+                              position: absolute;
+                              color: #b5ccf3;
+                              opacity: 0;
+                              transform: translateY(100%) translateX(-50%);
+                              height: 14px;
+                              line-height: 13px;
+                            }
+            
+                            #dynamicButton:focus {
+                              background-color: #0e418f;
+                              width: 120px;
+                              height: 40px;
+                              transition-delay: 100ms;
+                              transition-duration: 500ms;
+                            }
+            
+                            #dynamicButton:focus span:first-child {
+                              color: #b5ccf3;
+                              transform: translateX(-50%) translateY(-150%);
+                              opacity: 0;
+                              transition-duration: 500ms;
+                            }
+            
+                            #dynamicButton:focus span:last-child {
+                              transform: translateX(-50%) translateY(-50%);
+                              opacity: 1;
+                              transition-delay: 300ms;
+                              transition-duration: 500ms;
+                            }
+                        `;
 
                     function createButton(id, positionKey, clickHandler) {
                         // Remove existing button if present
@@ -1901,8 +2039,8 @@ async function checkUrlAndToggleListeners() {
         // Inside the parent page content script
         window.addEventListener('message', function (e) {
             if (e.data && e.data.action === 'blurParent') {
-                if (data.blurEnabled) {
-                    addBlurOverlay(data.blurPx, data.blurTime);
+                if (blurEnabled) {
+                    addBlurOverlay(blurPx, blurTime);
                 }
                 addClickMask();
             } else if (e.data && e.data.action === 'removeParentBlur') {
@@ -1910,32 +2048,25 @@ async function checkUrlAndToggleListeners() {
                 removeClickMask();
             } else if (e.data.type === 'GET_SCREEN_COORDS') {
 
-                chrome.runtime.sendMessage({ action: 'getZoomFactor' }, (response) => {
-                    if (response.error) {
-                        console.error('Error:', response.error);
-                    } else {
-                        // Find the iframe that sent the request
-                        const iframes = document.getElementsByTagName('iframe');
-                        let iframeRect;
-                        for (let iframe of iframes) {
-                            if (iframe.contentWindow === e.source) {
-                                iframeRect = iframe.getBoundingClientRect();
-                                break;
-                            }
-                        }
-
-                        const zoomFactor = response.zoom; // zoom factor
-                        // Send the screen coordinates back to the iframe
-                        e.source.postMessage({
-                            type: 'SCREEN_COORDS',
-                            topOffset: iframeRect.top,
-                            leftOffset: iframeRect.left,
-                            innerHeight: window.innerHeight,
-                            innerWidth: window.innerWidth,
-                            zoomFactor: zoomFactor
-                        }, e.origin);
+                // Find the iframe that sent the request
+                const iframes = document.getElementsByTagName('iframe');
+                let iframeRect;
+                for (let iframe of iframes) {
+                    if (iframe.contentWindow === e.source) {
+                        iframeRect = iframe.getBoundingClientRect();
+                        break;
                     }
-                });
+                }
+
+                // Send the screen coordinates back to the iframe
+                e.source.postMessage({
+                    type: 'SCREEN_COORDS',
+                    topOffset: iframeRect.top,
+                    leftOffset: iframeRect.left,
+                    innerHeight: window.innerHeight,
+                    innerWidth: window.innerWidth,
+                }, e.origin);
+
 
             } else if (e.data) {
 
@@ -1943,38 +2074,31 @@ async function checkUrlAndToggleListeners() {
                     lastLeaveTimestamp = e.timeStamp;
                 }
                 if (e.data.action === 'dragendCheck') {
-                    const { top, left, endY, endX, endEvent, endTimestamp } = e.data;
-                    chrome.runtime.sendMessage({ action: 'getZoomFactor' }, (response) => {
-
-                        if (response.error) {
-                            console.error('Error:', response.error);
-                        } else {
-                            // Find the iframe that sent the request
-                            const iframes = document.getElementsByTagName('iframe');
-                            let iframeRect;
-                            for (let iframe of iframes) {
-                                if (iframe.contentWindow === e.source) {
-                                    iframeRect = iframe.getBoundingClientRect();
-                                    break;
-                                }
-                            }
-
-                            const zoomFactor = response.zoom; // zoom factor
-                            const viewportLeft = (left - iframeRect.left) * zoomFactor;
-                            const viewportRight = viewportLeft + window.innerWidth * zoomFactor;
-                            const viewportTop = (top - iframeRect.top) * zoomFactor;
-                            const viewportBottom = viewportTop + window.innerHeight * zoomFactor;
-                            const isOut = (!(viewportLeft < endX && endX < viewportRight && viewportTop < endY && endY < viewportBottom) || endTimestamp - lastLeaveTimestamp > 600);
-                            document.removeEventListener('dragleave', dragleaveUpdate)
-
-                            // Send the screen coordinates back to the iframe
-                            e.source.postMessage({
-                                type: 'RESULT',
-                                isOut,
-                                endEvent
-                            }, e.origin);
+                    const { top, left, endY, endX, endEvent, endTimestamp, lastLeaveTimestampFromIframe } = e.data;
+                    // Find the iframe that sent the request
+                    const iframes = document.getElementsByTagName('iframe');
+                    let iframeRect;
+                    for (let iframe of iframes) {
+                        if (iframe.contentWindow === e.source) {
+                            iframeRect = iframe.getBoundingClientRect();
+                            break;
                         }
-                    });
+                    }
+
+                    const viewportLeft = left;
+                    const viewportRight = viewportLeft + window.innerWidth;
+                    const viewportTop = top;
+                    const viewportBottom = viewportTop + window.innerHeight;
+                    lastLeaveTimestamp = lastLeaveTimestamp ? lastLeaveTimestamp : lastLeaveTimestampFromIframe;
+                    const isOut = (!(viewportLeft < endX && endX < viewportRight && viewportTop < endY && endY < viewportBottom) || endTimestamp - lastLeaveTimestamp > 600);
+                    document.removeEventListener('dragleave', dragleaveUpdate)
+                    // Send the screen coordinates back to the iframe
+                    e.source.postMessage({
+                        type: 'RESULT',
+                        isOut,
+                        endEvent
+                    }, e.origin);
+
                 } else if (e.data.action === 'dragleaveUpdate') {
                     lastLeaveTimestamp = undefined;
 
@@ -2003,11 +2127,11 @@ async function checkUrlAndToggleListeners() {
         theme = 'light';
     }
 
-    chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
-    const previewModeDisabledUrls = data.previewModeDisabledUrls || [];
+    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    previewModeDisabledUrls = data.previewModeDisabledUrls || [];
 
-    if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && data.previewModeEnable) {
-        previewMode = (previewMode !== undefined) ? previewMode : data.previewModeEnable;
+    if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && previewModeEnable) {
+        previewMode = (previewMode !== undefined) ? previewMode : previewModeEnable;
 
         // Add the event listener
         const events = ["click", "mouseup"];
@@ -2023,133 +2147,154 @@ function addLinkToCollection(e) {
     const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
     e.preventDefault();
     e.stopPropagation();
-    chrome.storage.local.get(['collection', 'collectionEnable'], async (data) => {
-        const linkElement = anchorElement ||
-            (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+    const linkElement = anchorElement ||
+        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
-        if (!data.collectionEnable) return;
+    if (!collectionEnable) return;
 
 
-        const linkUrl = linkElement ?
-            (linkElement.getAttribute('data-url') ||
-                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
-            : window.location.href;
+    const linkUrl = linkElement ?
+        (linkElement.getAttribute('data-url') ||
+            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+        : window.location.href;
 
-        if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
-        if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
-        // Initialize or load the collection
-        collection = (Array.isArray(data.collection) && data.collection.length > 0)
-            ? data.collection
-            : [
-                {
-                    label: '+'
-                },
-                {
-                    label: '↗️',
-                    links: []
-                }
-            ];
+    // Initialize or load the collection
+    collection = (Array.isArray(collection) && collection.length > 0)
+        ? collection
+        : [
+            {
+                label: '+'
+            },
+            {
+                label: '↗️',
+                links: []
+            }
+        ];
 
-        // Ensure collection[1] and collection[1].links are initialized
-        if (!collection[1]) {
-            collection[1] = { label: '↗️', links: [] };
-        }
-        if (!Array.isArray(collection[1].links)) {
-            collection[1].links = [];
-        }
+    // Ensure collection[1] and collection[1].links are initialized
+    if (!collection[1]) {
+        collection[1] = { label: '↗️', links: [] };
+    }
+    if (!Array.isArray(collection[1].links)) {
+        collection[1].links = [];
+    }
 
-        // Check if the link is already in the collection before adding
-        if (!isLinkInCollection(linkUrl)) {
-            const fetchFinalTitle = (url, timeout = 5000) => {
-                return new Promise((resolve) => {
-                    const timeoutId = setTimeout(() => {
-                        resolve({ title: url, finalUrl: url }); // Fallback to URL on timeout
-                    }, timeout);
+    // Check if the link is already in the collection before adding
+    if (!isLinkInCollection(linkUrl)) {
+        const fetchFinalTitle = (url, timeout = 5000) => {
+            return new Promise((resolve) => {
+                const timeoutId = setTimeout(() => {
+                    resolve({ title: url, finalUrl: url }); // Fallback to URL on timeout
+                }, timeout);
 
-                    // Use fetch to get the page content
-                    fetch(url, { redirect: 'follow' })
-                        .then((response) => {
-                            clearTimeout(timeoutId);
+                // Use fetch to get the page content
+                fetch(url, { redirect: 'follow' })
+                    .then((response) => {
+                        clearTimeout(timeoutId);
 
-                            // Directly use the URL if response isn't OK
-                            if (!response.ok) {
-                                console.warn(`HTTP status not OK: ${response.status}`);
-                                resolve({ title: url, finalUrl: url });
-                                return;
-                            }
+                        // Directly use the URL if response isn't OK
+                        if (!response.ok) {
+                            console.warn(`HTTP status not OK: ${response.status}`);
+                            resolve({ title: url, finalUrl: url });
+                            return;
+                        }
 
-                            const finalUrl = response.url; // Final URL after redirection
-                            return response.text().then((html) => {
-                                const parser = new DOMParser();
-                                const doc = parser.parseFromString(html, 'text/html');
-                                const title = doc.querySelector('title')?.innerText || finalUrl || url;
-                                resolve({ title, finalUrl });
-                            });
-                        })
-                        .catch((error) => {
-                            clearTimeout(timeoutId);
-                            resolve({ title: url, finalUrl: url }); // Fallback to URL on error
+                        const finalUrl = response.url; // Final URL after redirection
+                        return response.text().then((html) => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const title = doc.querySelector('title')?.innerText || finalUrl || url;
+                            resolve({ title, finalUrl });
                         });
-                });
+                    })
+                    .catch((error) => {
+                        clearTimeout(timeoutId);
+                        resolve({ title: url, finalUrl: url }); // Fallback to URL on error
+                    });
+            });
+        };
+        // Example usage
+        fetchFinalTitle(linkUrl, 2000).then(({ title, finalUrl }) => {
+
+            const newItem = {
+                label: title,
+                url: finalUrl,
             };
-            // Example usage
-            fetchFinalTitle(linkUrl, 2000).then(({ title, finalUrl }) => {
-
-                const newItem = {
-                    label: title,
-                    url: finalUrl,
-                };
 
 
-                // Example of adding the item to the collection
-                collection[1].links.push(newItem);
-                collection.push(newItem);
+            // Example of adding the item to the collection
+            collection[1].links.push(newItem);
+            collection.push(newItem);
 
-                // Save to Chrome storage
-                chrome.storage.local.set({ collection }, () => {
-                    chrome.runtime.sendMessage({ action: 'updateBadge' });
-                });
-
+            // Save to Chrome storage
+            chrome.storage.local.set({ collection }, () => {
+                chrome.runtime.sendMessage({ action: 'updateBadge' });
             });
 
+        });
 
 
-        } else {
-            // console.log('Link already exists in the collection.');
-        }
-        isMouseDownOnLink = false;
-        firstDownOnLinkAt = null;
 
-    });
-
-
+    } else {
+        // console.log('Link already exists in the collection.');
+    }
+    isMouseDownOnLink = false;
+    firstDownOnLinkAt = null;
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-    if (namespace === 'local' && (changes.hoverTimeout ||
+    if (namespace === 'local' && (
         changes.linkHint ||
         changes.disabledUrls ||
-        changes.searchEngine ||
-        changes.hoverDisabledUrls ||
-        changes.hoverSearchEngine ||
+
         changes.dragDirections ||
         changes.dragPx ||
+        changes.dropInEmptyOnly ||
+        changes.searchEngine ||
+        changes.imgSearchEnable ||
+        changes.imgSupport ||
+        changes.modifiedKey ||
+
         changes.previewModeDisabledUrls ||
         changes.previewModeEnable ||
+        changes.clickModifiedKey ||
         changes.doubleClickAsClick ||
         changes.doubleClickToSwitch ||
+
         changes.searchTooltipsEnable ||
-        changes.collectionEnable ||
-        changes.holdToPreview ||
-        changes.clickModifiedKey ||
-        changes.linkDisabledUrls ||
-        changes.copyButtonPosition ||
         changes.searchTooltipsEngines ||
+
+        changes.collection ||
+        changes.collectionEnable ||
+
+        changes.holdToPreview ||
+        changes.holdToPreviewTimeout ||
+
+        changes.hoverTimeout ||
+        changes.hoverDisabledUrls ||
+        changes.hoverSearchEngine ||
+        changes.hoverModifiedKey ||
+        changes.hoverImgSearchEnable ||
+        changes.hoverImgSupport ||
+
+        changes.linkDisabledUrls ||
+
+        changes.copyButtonPosition ||
         changes.copyButtonEnable ||
-        changes.dropInEmptyOnly ||
         changes.sendBackButtonPosition ||
-        changes.sendBackButtonEnable
+        changes.sendBackButtonEnable ||
+
+        changes.blurEnabled ||
+        changes.blurPx ||
+        changes.blurTime ||
+
+        changes.urlCheck ||
+        changes.closeWhenFocusedInitialWindow ||
+        changes.doubleTapKeyToSendPageBack ||
+        changes.closedByEsc
     )) {
         await checkUrlAndToggleListeners();
     }
@@ -2210,10 +2355,9 @@ window.addEventListener('focus', async () => {
             theme = 'light';
         }
 
-        chrome.runtime.sendMessage({ action: 'updateIcon', previewMode: previewMode, theme: theme });
-        const data = await loadUserConfigs(['closeWhenFocusedInitialWindow']);
+        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         document.addEventListener('mouseover', handleMouseOver, true);
-        const message = data.closeWhenFocusedInitialWindow
+        const message = closeWhenFocusedInitialWindow
             ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
             : { checkContextMenuItem: true };
         chrome.runtime.sendMessage(message);
@@ -2302,12 +2446,8 @@ async function handleMouseOver(e) {
         return;
     }
 
-    const data = await loadUserConfigs(['linkHint', 'hoverImgSearchEnable', 'blurEnabled', 'blurPx', 'blurTime', 'hoverTimeout', 'hoverImgSupport', 'hoverModifiedKey', 'hoverDisabledUrls']);
-    const linkHint = data.linkHint || false;
-    const hoverTimeout = data.hoverTimeout || 0;
     // do nothing when is in blacklist
     const currentUrl = window.location.href;
-    const hoverDisabledUrls = data.hoverDisabledUrls || [];
     if (isUrlDisabled(currentUrl, hoverDisabledUrls)) {
         return;
     }
@@ -2325,13 +2465,11 @@ async function handleMouseOver(e) {
 
 
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
-        // console.log(window.self, window.top)
         changeCursorOnHover(e, anchorElement);
 
     }
 
 
-    const hoverModifiedKey = data.hoverModifiedKey || 'None';
     const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
     if (hoverModifiedKey === 'None' || keyMap[hoverModifiedKey]) {
         if (!hoverTimeout || parseInt(hoverTimeout, 10) === 0) {
@@ -2356,7 +2494,7 @@ async function handleMouseOver(e) {
                     return; // Avoid resetting if the same element is still being hovered
                 }
 
-                let finalLinkUrl = linkUrl || (data.hoverImgSupport ? imageUrl : null);
+                let finalLinkUrl = linkUrl || (hoverImgSupport ? imageUrl : null);
 
                 if (!finalLinkUrl) return;
 
@@ -2367,7 +2505,7 @@ async function handleMouseOver(e) {
                 hoverInitialMouseX = e.clientX; // Store initial mouse position
                 hoverInitialMouseY = e.clientY;
 
-                const hoverTimeoutDuration = parseInt(data.hoverTimeout, 10) || 0; // Default to disabled if not set
+                const hoverTimeoutDuration = parseInt(hoverTimeout, 10) || 0; // Default to disabled if not set
 
                 // Create and display the progress bar immediately
                 progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
@@ -2459,95 +2597,41 @@ function clearTimeoutsAndProgressBars() {
 
 // Trigger the popup logic
 function triggerPopup(e, linkElement, imageElement, selectionText) {
-    chrome.storage.local.get('hoverModifiedKey', async (data) => {
-        const hoverModifiedKey = data.hoverModifiedKey || 'None';
-        const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
+    const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
 
-        if (hoverModifiedKey === 'None' || keyMap[hoverModifiedKey]) {
-            const configData = await loadUserConfigs(['hoverImgSearchEnable', 'hoverSearchEngine', 'blurEnabled', 'blurPx', 'blurTime', 'hoverImgSupport', 'urlCheck']);
-            const hoverSearchEngine = (configData.hoverSearchEngine !== 'None' ? (configData.hoverSearchEngine || 'https://www.google.com/search?q=%s') : null);
-            const blurEnabled = configData.blurEnabled !== undefined ? configData.blurEnabled : true;
-            const blurPx = parseFloat(configData.blurPx || 3);
-            const blurTime = parseFloat(configData.blurTime || 1);
+    if (hoverModifiedKey === 'None' || keyMap[hoverModifiedKey]) {
+        const finalHoverSearchEngine = (hoverSearchEngine !== 'None' ? (hoverSearchEngine || 'https://www.google.com/search?q=%s') : null);
 
-            // Regular expression to match URLs including IP addresses
-            const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
+        // Regular expression to match URLs including IP addresses
+        const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
-            // Check if the selected text is a URL
-            const isURL = configData.urlCheck ? urlPattern.test(selectionText) : false;
+        // Check if the selected text is a URL
+        const isURL = urlCheck ? urlPattern.test(selectionText) : false;
 
-            // Ensure that URLs without a protocol are handled
-            const processedLinkUrl = isURL
-                ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
-                    ? selectionText
-                    : 'http://' + selectionText)
-                : null;
+        // Ensure that URLs without a protocol are handled
+        const processedLinkUrl = isURL
+            ? (selectionText.startsWith('http://') || selectionText.startsWith('https://')
+                ? selectionText
+                : 'http://' + selectionText)
+            : null;
 
-            let imageUrl = configData.hoverImgSupport ? imageElement?.src : null;
-            if (configData.hoverImgSearchEnable && imageUrl) {
-                const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
-                if (imgSearchEngineMap.hasOwnProperty(configData.hoverSearchEngine)) {
-                    imageUrl = imgSearchEngineMap[configData.hoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
-                }
+        let imageUrl = hoverImgSupport ? imageElement?.src : null;
+        if (hoverImgSearchEnable && imageUrl) {
+            const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
+            if (imgSearchEngineMap.hasOwnProperty(hoverSearchEngine)) {
+                imageUrl = imgSearchEngineMap[hoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
             }
-
-            // Set finalLinkUrl based on linkUrl, hoverImgSupport, and searchEngine
-            let finalLinkUrl = processedLinkUrl || linkElement?.href || imageUrl ||
-                ((hoverSearchEngine && selectionText.trim() !== '')
-                    ? hoverSearchEngine.replace('%s', encodeURIComponent(selectionText))
-                    : null);
-
-            if (!finalLinkUrl) return;
-            if (finalLinkUrl.trim().startsWith('javascript:')) return;
-            if (isUrlDisabled(finalLinkUrl, linkDisabledUrls)) return;
-
-            if (linkIndicator) {
-                linkIndicator.remove();
-            }
-            linkIndicator = null;
-            if (searchTooltips) searchTooltips.remove();
-            searchTooltips = null;
-
-            if (window.self !== window.top) {
-                // Inside the iframe content script
-                window.parent.postMessage({ action: 'blurParent' }, '*');
-            } else {
-                if (blurEnabled) {
-                    addBlurOverlay(blurPx, blurTime);
-                }
-                addClickMask();
-            }
-            chrome.runtime.sendMessage({
-                linkUrl: finalLinkUrl,
-                lastClientX: e.screenX,
-                lastClientY: e.screenY,
-                width: window.screen.availWidth,
-                height: window.screen.availHeight,
-                top: window.screen.availTop,
-                left: window.screen.availLeft,
-                trigger: 'hover'
-            }, () => {
-                hasPopupTriggered = true;
-                imageUrl = null;
-                document.removeEventListener('mousemove', updateProgressBarPosition, true);
-                if (linkIndicator) linkIndicator.remove();
-                linkIndicator = null;
-                if (searchTooltips) searchTooltips.remove();
-                searchTooltips = null;
-                finalLinkUrl = null;
-
-                if (window.getSelection().toString()) {
-                    window.getSelection().removeAllRanges();
-                }
-
-            });
         }
-    });
-}
 
-// Trigger the popup logic
-function triggerLinkPopup(e, link) {
-    chrome.storage.local.get(['blurEnabled', 'blurPx', 'blurTime'], async (data) => {
+        // Set finalLinkUrl based on linkUrl, hoverImgSupport, and searchEngine
+        let finalLinkUrl = processedLinkUrl || linkElement?.href || imageUrl ||
+            ((finalHoverSearchEngine && selectionText.trim() !== '')
+                ? finalHoverSearchEngine.replace('%s', encodeURIComponent(selectionText))
+                : null);
+
+        if (!finalLinkUrl) return;
+        if (finalLinkUrl.trim().startsWith('javascript:')) return;
+        if (isUrlDisabled(finalLinkUrl, linkDisabledUrls)) return;
 
         if (linkIndicator) {
             linkIndicator.remove();
@@ -2556,26 +2640,28 @@ function triggerLinkPopup(e, link) {
         if (searchTooltips) searchTooltips.remove();
         searchTooltips = null;
 
-
         if (window.self !== window.top) {
             // Inside the iframe content script
             window.parent.postMessage({ action: 'blurParent' }, '*');
         } else {
-            if (data.blurEnabled) {
-                addBlurOverlay(data.blurPx, data.blurTime);
+            if (blurEnabled) {
+                addBlurOverlay(blurPx, blurTime);
             }
             addClickMask();
         }
         chrome.runtime.sendMessage({
-            linkUrl: link,
+            linkUrl: finalLinkUrl,
             lastClientX: e.screenX,
             lastClientY: e.screenY,
             width: window.screen.availWidth,
             height: window.screen.availHeight,
             top: window.screen.availTop,
             left: window.screen.availLeft,
-            trigger: 'tooltips'
+            trigger: 'hover'
         }, () => {
+            hasPopupTriggered = true;
+            imageUrl = null;
+            document.removeEventListener('mousemove', updateProgressBarPosition, true);
             if (linkIndicator) linkIndicator.remove();
             linkIndicator = null;
             if (searchTooltips) searchTooltips.remove();
@@ -2585,8 +2671,53 @@ function triggerLinkPopup(e, link) {
             if (window.getSelection().toString()) {
                 window.getSelection().removeAllRanges();
             }
+
         });
+    }
+
+}
+
+// Trigger the popup logic
+function triggerLinkPopup(e, link) {
+
+    if (linkIndicator) {
+        linkIndicator.remove();
+    }
+    linkIndicator = null;
+    if (searchTooltips) searchTooltips.remove();
+    searchTooltips = null;
+
+
+    if (window.self !== window.top) {
+        // Inside the iframe content script
+        window.parent.postMessage({ action: 'blurParent' }, '*');
+    } else {
+        if (blurEnabled) {
+            addBlurOverlay(blurPx, blurTime);
+        }
+        addClickMask();
+    }
+    chrome.runtime.sendMessage({
+        linkUrl: link,
+        lastClientX: e.screenX,
+        lastClientY: e.screenY,
+        width: window.screen.availWidth,
+        height: window.screen.availHeight,
+        top: window.screen.availTop,
+        left: window.screen.availLeft,
+        trigger: 'tooltips'
+    }, () => {
+        if (linkIndicator) linkIndicator.remove();
+        linkIndicator = null;
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
+        finalLinkUrl = null;
+
+        if (window.getSelection().toString()) {
+            window.getSelection().removeAllRanges();
+        }
     });
+
 }
 
 // Handle mouseout event
@@ -2682,7 +2813,7 @@ function removeClickMask() {
 
 // Function to add the blur overlay
 function addBlurOverlay(blurPx, blurTime) {
-    if (!blurOverlay) { 
+    if (!blurOverlay) {
         blurOverlay = document.createElement('div');
         blurOverlay.style.position = 'fixed';
         blurOverlay.style.top = '0';
