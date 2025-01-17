@@ -1,60 +1,75 @@
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'closedByEsc': false,
+    'doubleTapKeyToSendPageBack': 'None',
+
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
-    'searchEngine': 'https://www.google.com/search?q=%s',
-    'disabledUrls': [],
+
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
-    'modifiedKey': 'None',
-    'rememberPopupSizeAndPosition': false,
-    'windowType': 'popup',
+
     'popupWindowsInfo': {},
-    'closedByEsc': false,
+    'windowType': 'popup',
+
+    'rememberPopupSizeAndPosition': false,
+    'rememberPopupSizeAndPositionForDomain': false,
+
     'contextItemCreated': false,
+
+    'modifiedKey': 'None',
     'dragDirections': ['up', 'down', 'right', 'left'],
     'dragPx': 0,
     'imgSupport': false,
-    'hoverTimeout': 0,
-    'urlCheck': true,
+    'imgSearchEnable': false,
     'popupInBackground': false,
-    'doubleTapKeyToSendPageBack': 'None',
+    'dropInEmptyOnly': false,
+    'searchEngine': 'https://www.google.com/search?q=%s',
+    'disabledUrls': [],
+
+    'urlCheck': true,
+
+    'hoverTimeout': 0,
     'hoverDisabledUrls': [],
     'hoverImgSupport': false,
     'hoverPopupInBackground': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
     'hoverWindowType': 'popup',
+    'hoverImgSearchEnable': false,
+
+    'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
     'previewModePopupInBackground': false,
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
-    'imgSearchEnable': false,
-    'hoverImgSearchEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
-    'rememberPopupSizeAndPositionForDomain': false,
-    'isFirefox': false,
-    'linkHint': false,
-    'collection': [],
-    'searchTooltipsEnable': false,
-    'collectionEnable': false,
+
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
-    'clickModifiedKey': 'None',
+
+    'isFirefox': false,
+
+    'linkHint': false,
     'linkDisabledUrls': [],
-    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
-    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+
+    'collection': [],
+    'collectionEnable': false,
+
+    'searchTooltipsEnable': false,
     'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
 Baidu=>https://www.baidu.com/s?wd=%s
 Yandex=>https://yandex.com/search/?text=%s
 DuckduckGo=>https://duckduckgo.com/?q=%s
 Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
     'copyButtonEnable': false,
-    'dropInEmptyOnly': false,
     'sendBackButtonEnable': false
 };
 
@@ -139,147 +154,139 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 // Check if the filtered object is empty
                 if (Object.keys(filteredPopupWindowsInfo).length === 0) {
                     popupWindowsInfo[currentWindow.id] = {}; // Set the current window ID as the original window ID
-                    return saveConfig('popupWindowsInfo', popupWindowsInfo).then(() => popupWindowsInfo);
+                    userConfigs.popupWindowsInfo = popupWindowsInfo; // Update in-memory userConfigs
+                    return saveConfig('popupWindowsInfo', popupWindowsInfo).then(() => ({ popupWindowsInfo, userConfigs }));
                 }
 
 
                 // If originWindowId is already defined, just return popupWindowsInfo
-                return popupWindowsInfo;
+                return { popupWindowsInfo, userConfigs };
 
-            }).then(popupWindowsInfo => {
+            }).then(({ popupWindowsInfo, userConfigs }) => {
 
 
                 chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                 chrome.contextMenus.onClicked.addListener(onMenuItemClicked);
-
-                if (request.checkContextMenuItem) {
-                    chrome.storage.local.get('popupWindowsInfo', (result) => {
-                        const popupWindowsInfo = result.popupWindowsInfo || {};
+                if (!request.linkUrl) {
+                    if (request.checkContextMenuItem) {
 
                         const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).some(windowId => {
                             return parseInt(windowId) === currentWindow.id;
                         });
 
 
-                        loadUserConfigs().then(userConfigs => {
-                            if (!isCurrentWindowOriginal) {
-                                if (!userConfigs.contextItemCreated) {
-                                    chrome.contextMenus.create({
-                                        id: 'sendPageBack',
-                                        title: chrome.i18n.getMessage('sendPageBack'),
-                                        contexts: ['page']
-                                    }, () => {
-                                        if (chrome.runtime.lastError) {
-                                            userConfigs.contextItemCreated = true;
-                                            chrome.storage.local.set({ contextItemCreated: true });
-                                        } else {
-                                            userConfigs.contextItemCreated = true;
-                                            chrome.storage.local.set({ contextItemCreated: true });
-                                        }
-                                    });
+                        if (!isCurrentWindowOriginal) {
+                            if (!userConfigs.contextItemCreated) {
+                                chrome.contextMenus.create({
+                                    id: 'sendPageBack',
+                                    title: chrome.i18n.getMessage('sendPageBack'),
+                                    contexts: ['page']
+                                }, () => {
+                                    if (chrome.runtime.lastError) {
+                                        userConfigs.contextItemCreated = true;
+                                        chrome.storage.local.set({ contextItemCreated: true });
+                                    } else {
+                                        userConfigs.contextItemCreated = true;
+                                        chrome.storage.local.set({ contextItemCreated: true });
+                                    }
+                                });
+                            }
+
+                            if (userConfigs.rememberPopupSizeAndPosition || userConfigs.rememberPopupSizeAndPositionForDomain) {
+
+                                if (!popupWindowsInfo['savedPositionAndSize']) {
+                                    popupWindowsInfo['savedPositionAndSize'] = {};
                                 }
 
-                                if (userConfigs.rememberPopupSizeAndPosition || userConfigs.rememberPopupSizeAndPositionForDomain) {
 
-                                    if (!popupWindowsInfo['savedPositionAndSize']) {
-                                        popupWindowsInfo['savedPositionAndSize'] = {};
+                                if (popupWindowsInfo.savedPositionAndSize) {
+                                    popupWindowsInfo.savedPositionAndSize.left = currentWindow.left;
+                                    popupWindowsInfo.savedPositionAndSize.top = currentWindow.top;
+                                    popupWindowsInfo.savedPositionAndSize.width = currentWindow.width;
+                                    popupWindowsInfo.savedPositionAndSize.height = currentWindow.height;
+
+                                } else {
+                                    popupWindowsInfo.savedPositionAndSize = {
+                                        top: currentWindow.top,
+                                        left: currentWindow.left,
+                                        width: currentWindow.width,
+                                        height: currentWindow.height
+                                    };
+                                }
+
+                                for (const originWindowId in popupWindowsInfo) {
+                                    if (originWindowId === 'savedPositionAndSize') {
+                                        continue; // Skip the savedPositionAndSize key
                                     }
 
+                                    if (popupWindowsInfo[originWindowId][currentWindow.id]) {
+                                        const domain = (popupWindowsInfo[originWindowId][currentWindow.id].originDomain !== new URL(sender.tab.url).hostname)
+                                            ? popupWindowsInfo[originWindowId][currentWindow.id].originDomain
+                                            : new URL(sender.tab.url).hostname;
 
-                                    if (popupWindowsInfo.savedPositionAndSize) {
-                                        popupWindowsInfo.savedPositionAndSize.left = currentWindow.left;
-                                        popupWindowsInfo.savedPositionAndSize.top = currentWindow.top;
-                                        popupWindowsInfo.savedPositionAndSize.width = currentWindow.width;
-                                        popupWindowsInfo.savedPositionAndSize.height = currentWindow.height;
-
-                                    } else {
-                                        popupWindowsInfo.savedPositionAndSize = {
+                                        if (!popupWindowsInfo[originWindowId]) {
+                                            popupWindowsInfo[originWindowId] = {};
+                                        }
+                                        popupWindowsInfo[originWindowId][currentWindow.id] = {
+                                            windowType: currentWindow.type,
                                             top: currentWindow.top,
                                             left: currentWindow.left,
                                             width: currentWindow.width,
-                                            height: currentWindow.height
+                                            height: currentWindow.height,
+                                            originDomain: domain
                                         };
-                                    }
 
-                                    for (const originWindowId in popupWindowsInfo) {
-                                        if (originWindowId === 'savedPositionAndSize') {
-                                            continue; // Skip the savedPositionAndSize key
-                                        }
-
-                                        if (popupWindowsInfo[originWindowId][currentWindow.id]) {
-                                            const domain = (popupWindowsInfo[originWindowId][currentWindow.id].originDomain !== new URL(sender.tab.url).hostname)
-                                                ? popupWindowsInfo[originWindowId][currentWindow.id].originDomain
-                                                : new URL(sender.tab.url).hostname;
-
-                                            if (!popupWindowsInfo[originWindowId]) {
-                                                popupWindowsInfo[originWindowId] = {};
-                                            }
-                                            popupWindowsInfo[originWindowId][currentWindow.id] = {
-                                                windowType: currentWindow.type,
-                                                top: currentWindow.top,
-                                                left: currentWindow.left,
-                                                width: currentWindow.width,
-                                                height: currentWindow.height,
-                                                originDomain: domain
-                                            };
-
-                                            // Handle domain-specific saving
-                                            if (userConfigs.rememberPopupSizeAndPositionForDomain && sender && sender.tab && sender.tab.url) {
-                                                try {
-                                                    if (!popupWindowsInfo['savedPositionAndSize']) {
-                                                        popupWindowsInfo['savedPositionAndSize'] = {};
-                                                    }
-                                                    // Ensure domain-specific object exists
-                                                    if (!popupWindowsInfo['savedPositionAndSize'][domain]) {
-                                                        popupWindowsInfo['savedPositionAndSize'][domain] = {};
-                                                    }
-                                                    // Store the position and size under the domain
-                                                    // Update or add the domain-specific position and size
-                                                    popupWindowsInfo.savedPositionAndSize[domain] = {
-                                                        top: currentWindow.top,
-                                                        left: currentWindow.left,
-                                                        width: currentWindow.width,
-                                                        height: currentWindow.height
-                                                    };
-                                                } catch (error) {
-                                                    console.error('Invalid URL for domain extraction:', error);
+                                        // Handle domain-specific saving
+                                        if (userConfigs.rememberPopupSizeAndPositionForDomain && sender && sender.tab && sender.tab.url) {
+                                            try {
+                                                if (!popupWindowsInfo['savedPositionAndSize']) {
+                                                    popupWindowsInfo['savedPositionAndSize'] = {};
                                                 }
+                                                // Ensure domain-specific object exists
+                                                if (!popupWindowsInfo['savedPositionAndSize'][domain]) {
+                                                    popupWindowsInfo['savedPositionAndSize'][domain] = {};
+                                                }
+                                                // Store the position and size under the domain
+                                                // Update or add the domain-specific position and size
+                                                popupWindowsInfo.savedPositionAndSize[domain] = {
+                                                    top: currentWindow.top,
+                                                    left: currentWindow.left,
+                                                    width: currentWindow.width,
+                                                    height: currentWindow.height
+                                                };
+                                            } catch (error) {
+                                                console.error('Invalid URL for domain extraction:', error);
                                             }
-
-
-                                            chrome.storage.local.set({ popupWindowsInfo }, () => {
-
-                                                addBoundsChangeListener(sender.tab.url, currentWindow.id, originWindowId);
-                                                chrome.windows.onRemoved.addListener(windowRemovedListener);
-                                            });
                                         }
+
+
+                                        chrome.storage.local.set({ popupWindowsInfo }, () => {
+
+                                            addBoundsChangeListener(sender.tab.url, currentWindow.id, originWindowId);
+                                            chrome.windows.onRemoved.addListener(windowRemovedListener);
+                                        });
                                     }
                                 }
-                            } else {
-                                // console.log('not popup window, do nothing')
                             }
+                        } else {
+                            // console.log('not popup window, do nothing')
+                        }
+                        sendResponse({ status: 'item checked' });
+                    }
 
-
-                        });
-                    });
-
-                    sendResponse({ status: 'item checked' });
-                }
-
-                if (request.action === 'closeCurrentTab') {
-                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
+                    if (request.action === 'closeCurrentTab') {
                         // filter out empty objects under popupWindowsInfo
-                        const popupWindowsInfo = Object.keys(result.popupWindowsInfo).reduce((acc, key) => {
-                            if (Object.keys(result.popupWindowsInfo[key]).length > 0) {
-                                acc[key] = result.popupWindowsInfo[key];
+                        const popupWindowsInfo = Object.keys(userConfigs.popupWindowsInfo).reduce((acc, key) => {
+                            if (Object.keys(userConfigs.popupWindowsInfo[key]).length > 0) {
+                                acc[key] = userConfigs.popupWindowsInfo[key];
                             }
                             return acc;
                         }, {});
                         const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) || Object.keys(popupWindowsInfo).some(windowId => {
                             // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
-                            return windowId && 
-                                   parseInt(windowId) === currentWindow.id && 
-                                   Object.keys(popupWindowsInfo[windowId]).length === 0;
+                            return windowId &&
+                                parseInt(windowId) === currentWindow.id &&
+                                Object.keys(popupWindowsInfo[windowId]).length === 0;
                         });
                         if (!isCurrentWindowOriginal) {
                             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -288,30 +295,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     chrome.tabs.remove(currentTab.id, () => {
                                         chrome.windows.getAll({ populate: false }, (windows) => {
                                             const existingWindowIds = windows.map(win => win.id); // List of all current window IDs
-                                        
+
                                             function cleanPopupInfo(info) {
                                                 return Object.keys(info).reduce((acc, key) => {
                                                     const keyAsInt = parseInt(key, 10);
-                                        
+
                                                     // Check if key is a valid window ID and clean recursively
                                                     if (key === 'savedPositionAndSize' || existingWindowIds.includes(keyAsInt)) {
                                                         acc[key] = (key === 'savedPositionAndSize') ? info[key] : cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
                                                     }
-                                        
+
                                                     return acc;
                                                 }, {});
                                             }
-                                        
-                                            const cleanedPopupWindowsInfo = cleanPopupInfo(result.popupWindowsInfo);
-                                        
+
+                                            const cleanedPopupWindowsInfo = cleanPopupInfo(userConfigs.popupWindowsInfo);
+
                                             // Set the cleaned popupWindowsInfo back to storage
                                             chrome.storage.local.set({ popupWindowsInfo: cleanedPopupWindowsInfo });
                                         });
-                                        
+
                                     });
                                 }
                             });
-                            if (result.contextItemCreated) {
+                            if (userConfigs.contextItemCreated) {
                                 chrome.contextMenus.remove('sendPageBack', () => {
                                     if (chrome.runtime.lastError) {
                                         // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
@@ -320,19 +327,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     }
                                 });
 
-                                result.contextItemCreated = false;
+                                userConfigs.contextItemCreated = false;
                                 chrome.storage.local.set({ contextItemCreated: false });
                             }
                         }
 
-                    });
-                    sendResponse({ status: 'esc handled' });
 
-                }
+                        sendResponse({ status: 'esc handled' });
 
-                if (request.action === 'windowRegainedFocus') {
-                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
-                        const popupWindowsInfo = result.popupWindowsInfo || {};
+                    }
+
+                    if (request.action === 'windowRegainedFocus') {
+                        const popupWindowsInfo = userConfigs.popupWindowsInfo || {};
                         const isCurrentWindowOriginal = popupWindowsInfo.hasOwnProperty(currentWindow.id);
 
                         if (isCurrentWindowOriginal) {
@@ -372,7 +378,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 });
 
                                 // Remove context menu item if necessary
-                                if (result.contextItemCreated) {
+                                if (userConfigs.contextItemCreated) {
                                     chrome.contextMenus.remove('sendPageBack', () => {
                                         if (chrome.runtime.lastError) {
                                             // Error handling for context menu removal
@@ -381,82 +387,79 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         }
                                     });
 
-                                    result.contextItemCreated = false;
+                                    userConfigs.contextItemCreated = false;
                                     chrome.storage.local.set({ contextItemCreated: false });
                                 }
                             });
                         }
-                    });
-                    sendResponse({ status: 'window focus handled' });
-                }
 
-                if (request.action === 'updateIcon') {
-                    chrome.storage.local.get(['previewModeEnable'], userConfigs => {
-                        chrome.windows.getCurrent({ populate: true }, (window) => {
-                            if (request.theme === 'dark') {
-                                if (userConfigs.previewModeEnable) {
-                                    if (request.previewMode !== undefined && !request.previewMode) {
+                        sendResponse({ status: 'window focus handled' });
+                    }
 
-                                        chrome.action.setIcon({
-                                            path: {
-                                                "128": "action/non-inclickmode-dark.png"
-                                            }
-                                        });
-                                    } else {
+                    if (request.action === 'updateIcon') {
+                        if (request.theme === 'dark') {
+                            if (userConfigs.previewModeEnable) {
+                                if (request.previewMode !== undefined && !request.previewMode) {
 
-                                        chrome.action.setIcon({
-                                            path: {
-                                                "128": "action/inclickmode-dark.png"
-                                            }
-                                        });
-                                    }
+                                    chrome.action.setIcon({
+                                        path: {
+                                            "128": "action/non-inclickmode-dark.png"
+                                        }
+                                    });
                                 } else {
 
                                     chrome.action.setIcon({
                                         path: {
-                                            "128": "action/icon-dark.png"
+                                            "128": "action/inclickmode-dark.png"
                                         }
                                     });
-
                                 }
                             } else {
-                                if (userConfigs.previewModeEnable) {
-                                    if (request.previewMode !== undefined && !request.previewMode) {
 
-                                        chrome.action.setIcon({
-                                            path: {
-                                                "128": "action/non-inclickmode.png"
-                                            }
-                                        });
-                                    } else {
-
-                                        chrome.action.setIcon({
-                                            path: {
-                                                "128": "action/inclickmode.png"
-                                            }
-                                        });
+                                chrome.action.setIcon({
+                                    path: {
+                                        "128": "action/icon-dark.png"
                                     }
+                                });
+
+                            }
+                        } else {
+                            if (userConfigs.previewModeEnable) {
+                                if (request.previewMode !== undefined && !request.previewMode) {
+
+                                    chrome.action.setIcon({
+                                        path: {
+                                            "128": "action/non-inclickmode.png"
+                                        }
+                                    });
                                 } else {
 
                                     chrome.action.setIcon({
                                         path: {
-                                            "128": "action/icon.png"
+                                            "128": "action/inclickmode.png"
                                         }
                                     });
-
                                 }
+                            } else {
+
+                                chrome.action.setIcon({
+                                    path: {
+                                        "128": "action/icon.png"
+                                    }
+                                });
+
                             }
-                        });
-
-                    });
+                        }
 
 
-                    sendResponse({ status: 'Icon update handled' });
-                }
 
-                if (request.action === 'updateBadge') {
 
-                    chrome.storage.local.get(['collection'], userConfigs => {
+
+                        sendResponse({ status: 'Icon update handled' });
+                    }
+
+                    if (request.action === 'updateBadge') {
+
 
                         // Filter links in the collection to exclude those with specific labels
                         const validLinks = userConfigs.collection
@@ -473,20 +476,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             action.setBadgeText({ text: '' });
                         }
                         sendResponse({ status: 'Badge updated' });
-                    })
-                }
+
+                    }
 
 
-                if (request.action === 'getWindowType') {
-                    chrome.windows.getCurrent({ populate: true }, (window) => {
-                        sendResponse({ status: 'Window type sent', windowType: window.type});
+                    if (request.action === 'getWindowType') {
+                        chrome.windows.getCurrent({ populate: true }, (window) => {
+                            sendResponse({ status: 'Window type sent', windowType: window.type });
+                        });
+                    }
 
-                    });
-                }
 
-
-                if (request.action === 'sendPageBack') {
-                    loadUserConfigs().then(userConfigs => {
+                    if (request.action === 'sendPageBack') {
                         const { popupWindowsInfo } = userConfigs;
 
                         if (popupWindowsInfo && Object.keys(popupWindowsInfo).length > 0) {
@@ -510,7 +511,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                                 } else {
                                                     // console.log("Window removed successfully.");
                                                 }
-                                            });                                            
+                                            });
                                         }
                                     });
 
@@ -522,7 +523,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                                 // console.log("Context menu 'sendPageBack' removed successfully.");
                                             }
                                         });
-                                        
+
                                         userConfigs.contextItemCreated = false;
                                         chrome.storage.local.set({ contextItemCreated: false });
                                         chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
@@ -535,85 +536,89 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         } else {
                             console.error('popupWindowsInfo is empty or not properly structured.');
                         }
-                    });
-                    sendResponse({ status: 'send Page Back handled' });
 
+                        sendResponse({ status: 'send Page Back handled' });
+
+                    }
                 }
 
+                const updates = {
+                    lastClientX: request.lastClientX,
+                    lastClientY: request.lastClientY,
+                    lastScreenTop: request.top,
+                    lastScreenLeft: request.left,
+                    lastScreenWidth: request.width,
+                    lastScreenHeight: request.height
+                };
 
 
+                return Promise.all(
+                    Object.entries(updates).map(([key, value]) =>
+                        saveConfig(key, value).then(() => userConfigs[key] = value)
+                    )
+                ).then(() => {
+                    const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
+                    let typeToSend;
+                    let urls;
 
-                return Promise.all([
-                    saveConfig('lastClientX', request.lastClientX),
-                    saveConfig('lastClientY', request.lastClientY),
-                    saveConfig('lastScreenTop', request.top),
-                    saveConfig('lastScreenLeft', request.left),
-                    saveConfig('lastScreenWidth', request.width),
-                    saveConfig('lastScreenHeight', request.height)
-                ]).then(() => {
-                    return loadUserConfigs().then(userConfigs => {
-                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
-                        let typeToSend;
-                        let urls;
+                    if (request.trigger === 'drag') {
+                        typeToSend = windowType || 'popup';
+                    } else if (request.trigger === 'hover') {
+                        typeToSend = hoverWindowType || 'popup';
+                    } else if (request.trigger === 'click') {
+                        typeToSend = previewModeWindowType || 'popup';
+                    } else if (request.action === 'group' && request.links && request.links.length > 0) {
+                        // Extract URLs from the message
+                        urls = request.links.map(link => link.url);
+                        typeToSend = 'normal';
 
-                        if (request.trigger === 'drag') {
-                            typeToSend = windowType || 'popup';
-                        } else if (request.trigger === 'hover') {
-                            typeToSend = hoverWindowType || 'popup';
-                        } else if (request.trigger === 'click') {
-                            typeToSend = previewModeWindowType || 'popup';
-                        } else if (request.action === 'group' && request.links && request.links.length > 0) {
-                            // Extract URLs from the message
-                            urls = request.links.map(link => link.url);
-                            typeToSend = 'normal';
-
-                        } else {
-                            // console.log(request.action)
-                        }
-                        const currentUrl = typeof sender.tab !== 'undefined' ? sender.tab.url : 'https://www.example.com';
-                        if (isUrlDisabled(currentUrl, disabledUrls)) {
-                            sendResponse({ status: 'url disabled' });
-                        } else if (request.linkUrl) {
-                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                                if (chrome.runtime.lastError) {
-                                    //
-                                }
-                                if (tabs.length > 0) {
-                                    let currentTab = tabs[0];
-                                    if (sender.tab) currentTab = sender.tab;
-                                    handleLinkInPopup(request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
-                                        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
+                    } else {
+                        // console.log(request.action)
+                    }
+                    const currentUrl = typeof sender.tab !== 'undefined' ? sender.tab.url : 'https://www.example.com';
+                    if (isUrlDisabled(currentUrl, disabledUrls)) {
+                        sendResponse({ status: 'url disabled' });
+                    } else if (request.linkUrl) {
+                        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                            if (chrome.runtime.lastError) {
+                                //
+                            }
+                            if (tabs.length > 0) {
+                                let currentTab = tabs[0];
+                                if (sender.tab) currentTab = sender.tab;
+                                handleLinkInPopup(userConfigs, request.trigger, request.linkUrl, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
+                                    lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
                                         // sendResponse({ status: 'link handled' });
                                     });
-                                    sendResponse({ status: 'link handled' });
+                                sendResponse({ status: 'link handled' });
 
-                                } else {
-                                    //
-                                }
-                            });
-                        } else if (request.action === 'group') {
-                            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                                if (chrome.runtime.lastError) {
-                                    //
-                                }
-                                if (tabs.length > 0) {
-                                    let currentTab = tabs[0];
-                                    if (sender.tab) currentTab = sender.tab;
+                            } else {
+                                //
+                            }
+                        });
+                    } else if (request.action === 'group') {
+                        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                            if (chrome.runtime.lastError) {
+                                //
+                            }
+                            if (tabs.length > 0) {
+                                let currentTab = tabs[0];
+                                if (sender.tab) currentTab = sender.tab;
 
-                                    handleLinkInPopup(request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
-                                        lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
+                                handleLinkInPopup(userConfigs, request.trigger, urls, currentTab, currentWindow, rememberPopupSizeAndPosition, typeToSend, lastClientX, lastClientY,
+                                    lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight).then(() => {
                                         // sendResponse({ status: 'group handled' });
                                     });
 
-                                    sendResponse({ status: 'message processed' });
-                                } else {
-                                    //
-                                }
-                            });
-                        } else {
-                            sendResponse({ status: 'message processed' });
-                        }
-                    });
+                                sendResponse({ status: 'message processed' });
+                            } else {
+                                //
+                            }
+                        });
+                    } else {
+                        sendResponse({ status: 'message processed' });
+                    }
+
                 });
             });
         })
@@ -626,114 +631,106 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Handle link opening in a popup
-function handleLinkInPopup(trigger, linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight) {
+function handleLinkInPopup(userConfigs, trigger, linkUrl, tab, currentWindow, rememberPopupSizeAndPosition, windowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight) {
     if (!isValidUrl(linkUrl)) {
         console.error('Invalid URL:', linkUrl);
         return Promise.reject(new Error('Invalid URL'));
     }
 
-    return loadUserConfigs().then(userConfigs => {
-        const {
-            popupHeight, popupWidth, tryOpenAtMousePosition
-        } = userConfigs;
+    const {
+        popupHeight, popupWidth, tryOpenAtMousePosition
+    } = userConfigs;
 
-        const defaultHeight = parseInt(popupHeight, 10) || 800;
-        const defaultWidth = parseInt(popupWidth, 10) || 1000;
+    const defaultHeight = parseInt(popupHeight, 10) || 800;
+    const defaultWidth = parseInt(popupWidth, 10) || 1000;
 
-        let dx, dy, width = defaultWidth, height = defaultHeight;
+    let dx, dy, width = defaultWidth, height = defaultHeight;
 
-        return new Promise((resolve, reject) => {
-            if (rememberPopupSizeAndPosition) {
-                chrome.storage.local.get(['popupWindowsInfo'], result => {
-                    const popupWindowsInfo = result.popupWindowsInfo;
-                    const savedPositionAndSize = popupWindowsInfo.savedPositionAndSize || {};
-                    console.log(savedPositionAndSize)
-                    if (Object.keys(savedPositionAndSize).length > 0) {
-                        ({ left: dx, top: dy, width, height } = savedPositionAndSize);
+    return new Promise((resolve, reject) => {
+        if (rememberPopupSizeAndPosition) {
+            const popupWindowsInfo = userConfigs.popupWindowsInfo;
+            const savedPositionAndSize = popupWindowsInfo.savedPositionAndSize || {};
+            if (Object.keys(savedPositionAndSize).length > 0) {
+                ({ left: dx, top: dy, width, height } = savedPositionAndSize);
 
-                        createPopupWindow(trigger, linkUrl, tab, windowType, dx, dy, width, height, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
-                    } else {
-                        defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
-                    }
-                });
+                createPopupWindow(userConfigs, trigger, linkUrl, tab, windowType, dx, dy, width, height, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
             } else {
-                chrome.storage.local.get(['popupWindowsInfo'], result => {
-                    const popupWindowsInfo = result.popupWindowsInfo || {};
-                    defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
-                });
+                defaultPopupCreation(userConfigs, trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
             }
-        });
+        } else {
+            const popupWindowsInfo = userConfigs.popupWindowsInfo || {};
+            defaultPopupCreation(userConfigs, trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+        }
     });
 }
 
 // Function to create a popup window
-function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
-    chrome.storage.local.get(['popupInBackground', 'hoverPopupInBackground', 'previewModePopupInBackground', 'rememberPopupSizeAndPositionForDomain'], (result) => {
-        let popupInBackground = false;
-        if (trigger === 'drag') {
-            popupInBackground = result.popupInBackground !== undefined
-                ? result.popupInBackground
-                : false;
-        } else if (trigger === 'hover' || trigger === 'tooltips') {
+function createPopupWindow(userConfigs, trigger, linkUrl, tab, windowType, left, top, width, height, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+    let popupInBackground = false;
+    if (trigger === 'drag') {
+        popupInBackground = userConfigs.popupInBackground !== undefined
+            ? userConfigs.popupInBackground
+            : false;
+    } else if (trigger === 'hover' || trigger === 'tooltips') {
 
-            popupInBackground = result.hoverPopupInBackground !== undefined
-                ? result.hoverPopupInBackground
-                : false;
-        } else if (trigger === 'click') {
+        popupInBackground = userConfigs.hoverPopupInBackground !== undefined
+            ? userConfigs.hoverPopupInBackground
+            : false;
+    } else if (trigger === 'click') {
 
-            popupInBackground = result.previewModePopupInBackground !== undefined
-                ? result.previewModePopupInBackground
-                : false;
+        popupInBackground = userConfigs.previewModePopupInBackground !== undefined
+            ? userConfigs.previewModePopupInBackground
+            : false;
+    }
+    let savedPositionAndSize;
+    const domain = new URL(linkUrl).hostname;
+    // Safely access the saved position and size if `rememberPopupSizeAndPositionForDomain` is enabled
+    if (userConfigs.rememberPopupSizeAndPositionForDomain && popupWindowsInfo.savedPositionAndSize) {
+        if (popupWindowsInfo.savedPositionAndSize[domain]) {
+            savedPositionAndSize = {
+                top: popupWindowsInfo.savedPositionAndSize[domain].top,
+                left: popupWindowsInfo.savedPositionAndSize[domain].left,
+                width: popupWindowsInfo.savedPositionAndSize[domain].width,
+                height: popupWindowsInfo.savedPositionAndSize[domain].height,
+
+            };
         }
-        let savedPositionAndSize;
-        const domain = new URL(linkUrl).hostname;
-        // Safely access the saved position and size if `rememberPopupSizeAndPositionForDomain` is enabled
-        if (result.rememberPopupSizeAndPositionForDomain && popupWindowsInfo.savedPositionAndSize) {
-            if (popupWindowsInfo.savedPositionAndSize[domain]) {
-                savedPositionAndSize = {
-                    top: popupWindowsInfo.savedPositionAndSize[domain].top,
-                    left: popupWindowsInfo.savedPositionAndSize[domain].left,
-                    width: popupWindowsInfo.savedPositionAndSize[domain].width,
-                    height: popupWindowsInfo.savedPositionAndSize[domain].height,
-
-                };
-            }
+    } else {
+        savedPositionAndSize = false;
+    }
+    chrome.windows.create({
+        url: linkUrl,
+        type: windowType,
+        top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
+        left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
+        width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
+        height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
+        focused: !popupInBackground,
+        incognito: tab && tab.incognito !== undefined ? tab.incognito : false
+    }, (newWindow) => {
+        if (chrome.runtime.lastError) {
+            console.error('Error creating popup window:', chrome.runtime.lastError.message, chrome.runtime.lastError);
+            reject(chrome.runtime.lastError);
         } else {
-            savedPositionAndSize = false;
+            updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, userConfigs.rememberPopupSizeAndPositionForDomain, resolve, reject);
         }
-        chrome.windows.create({
-            url: linkUrl,
-            type: windowType,
-            top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
-            left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
-            width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
-            height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
-            focused: !popupInBackground,
-            incognito: tab && tab.incognito !== undefined ? tab.incognito : false
-        }, (newWindow) => {
-            if (chrome.runtime.lastError) {
-                console.error('Error creating popup window:', chrome.runtime.lastError.message, chrome.runtime.lastError);
-                reject(chrome.runtime.lastError);
-            } else {
-                updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, result.rememberPopupSizeAndPositionForDomain, resolve, reject);
-            }
-        });
-
-
     });
+
+
+
 
 }
 
 // Function to handle default popup creation
-function defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
+function defaultPopupCreation(userConfigs, trigger, linkUrl, tab, currentWindow, defaultWidth, defaultHeight, tryOpenAtMousePosition, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight, windowType, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject) {
     let dx, dy;
 
     if (tryOpenAtMousePosition) {
         dx = parseInt(lastClientX);
         dy = parseInt(lastClientY);
     } else {
-        const screenWidth = lastScreenWidth || screen.width;
-        const screenHeight = lastScreenHeight || screen.height;
+        const screenWidth = lastScreenWidth;
+        const screenHeight = lastScreenHeight;
 
         const centerX = (screenWidth - defaultWidth) / 2;
         const centerY = (screenHeight - defaultHeight) / 2;
@@ -747,7 +744,7 @@ function defaultPopupCreation(trigger, linkUrl, tab, currentWindow, defaultWidth
     dy = Math.max(lastScreenTop, Math.min(dy, lastScreenTop + lastScreenHeight - defaultHeight));
 
 
-    createPopupWindow(trigger, linkUrl, tab, windowType, dx, dy, defaultWidth, defaultHeight, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
+    createPopupWindow(userConfigs, trigger, linkUrl, tab, windowType, dx, dy, defaultWidth, defaultHeight, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
 }
 
 // Function to update popup info and add listeners
@@ -960,7 +957,7 @@ function onMenuItemClicked(info, tab) {
                                         // console.log("Window removed successfully.");
                                     }
                                 });
-                                
+
                             }
                         });
 
@@ -972,7 +969,7 @@ function onMenuItemClicked(info, tab) {
                                     // console.log("Context menu 'sendPageBack' removed successfully.");
                                 }
                             });
-                            
+
                             userConfigs.contextItemCreated = false;
                             chrome.storage.local.set({ contextItemCreated: false });
                             chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);

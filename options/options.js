@@ -1,61 +1,75 @@
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'closedByEsc': false,
+    'doubleTapKeyToSendPageBack': 'None',
+
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
+
+    'modifiedKey': 'None',
     'searchEngine': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],
-    'blurEnabled': true,
-    'blurPx': 3,
-    'blurTime': 1,
-    'modifiedKey': 'None',
-    'originWindowId': '',
-    'rememberPopupSizeAndPosition': false,
-    'windowType': 'popup',
-    'popupWindowsInfo': {},
-    'closedByEsc': false,
-    'contextItemCreated': false,
     'dragDirections': ['up', 'down', 'right', 'left'],
     'dragPx': 0,
     'imgSupport': false,
-    'hoverTimeout': 0,
-    'urlCheck': true,
+    'imgSearchEnable': false,
     'popupInBackground': false,
-    'doubleTapKeyToSendPageBack': 'None',
+    'dropInEmptyOnly': false,
+
+    'blurEnabled': true,
+    'blurPx': 3,
+    'blurTime': 1,
+    
+    'windowType': 'popup',
+    'originWindowId': '',
+    'rememberPopupSizeAndPosition': false,
+    'rememberPopupSizeAndPositionForDomain': false,
+    'popupWindowsInfo': {},
+    
+    'contextItemCreated': false,
+    
+    'urlCheck': true,
+    
+    'hoverTimeout': 0,
     'hoverDisabledUrls': [],
     'hoverImgSupport': false,
+    'hoverImgSearchEnable': false,
     'hoverPopupInBackground': false,
     'hoverSearchEngine': 'https://www.google.com/search?q=%s',
     'hoverModifiedKey': 'None',
     'hoverWindowType': 'popup',
+
+    'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
     'previewModePopupInBackground': false,
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
-    'imgSearchEnable': false,
-    'hoverImgSearchEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
-    'rememberPopupSizeAndPositionForDomain': false,
-    'isFirefox': false,
-    'linkHint': false,
-    'collection': [],
-    'searchTooltipsEnable': false,
-    'collectionEnable': false,
+
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
-    'clickModifiedKey': 'None',
+
+    'isFirefox': false,
+
+    'linkHint': false,
     'linkDisabledUrls': [],
-    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
-    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
+
+    'collection': [],
+    'collectionEnable': false,
+
+    'searchTooltipsEnable': false,
     'searchTooltipsEngines':  `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
 Baidu=>https://www.baidu.com/s?wd=%s
 Yandex=>https://yandex.com/search/?text=%s
 DuckduckGo=>https://duckduckgo.com/?q=%s
 Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
+
+    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
+    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
     'copyButtonEnable': false,
-    'dropInEmptyOnly': false,
     'sendBackButtonEnable': false
 };
 
@@ -830,7 +844,6 @@ async function importSettings(file) {
         const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(jsonContent));
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        console.log(importData)
         if (hashHex !== importData.hash) {
             console.error('Hash mismatch! Import aborted.');
             return;
