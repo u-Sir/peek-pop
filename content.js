@@ -52,7 +52,6 @@ let linkIndicator,
     hoverDisabledUrls,
     hoverSearchEngine,
 
-
     collection,
     collectionEnable,
 
@@ -79,6 +78,7 @@ let linkIndicator,
     imgSearchEnable,
     searchEngine,
     dragStartEnable,
+    disabledUrls,
 
     lastLeaveTimestamp,
     lastLeaveRelatedTarget,
@@ -1349,7 +1349,7 @@ async function handleDragStart(e, anchorElement) {
                         "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
                         "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
                     };
-                    if (imgSearchEngineMap.hasOwnProperty(searchEngine)) {
+                    if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
 
                         imageUrl = imgSearchEngineMap[finalSearchEngine].replace('%s', encodeURIComponent(imageUrl));
                     }
@@ -1560,7 +1560,7 @@ async function handleDragStart(e, anchorElement) {
         let imageUrl = imageElement ? imageElement.src : null;
 
         if (linkUrl || selectionText || imageUrl) {
-            const searchEngine = (searchEngine !== 'None' ? (searchEngine || 'https://www.google.com/search?q=%s') : null);
+            const finalSearchEngine = (searchEngine !== 'None' ? (searchEngine || 'https://www.google.com/search?q=%s') : null);
             // Regular expression to match URLs including IP addresses
             const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
@@ -1582,9 +1582,9 @@ async function handleDragStart(e, anchorElement) {
                     "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
                     "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
                 };
-                if (imgSearchEngineMap.hasOwnProperty(searchEngine)) {
+                if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
 
-                    imageUrl = imgSearchEngineMap[searchEngine].replace('%s', encodeURIComponent(imageUrl));
+                    imageUrl = imgSearchEngineMap[finalSearchEngine].replace('%s', encodeURIComponent(imageUrl));
                 }
             }
 
@@ -1758,7 +1758,6 @@ async function checkUrlAndToggleListeners() {
         'dragStartEnable',
         'imgSupport'
     ]);
-    const disabledUrls = data.disabledUrls || [];
 
     linkHint = data.linkHint || false;
     linkDisabledUrls = data.linkDisabledUrls || [];
@@ -1801,6 +1800,7 @@ async function checkUrlAndToggleListeners() {
     dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
     imgSupport = data.imgSupport;
     dragStartEnable = data.dragStartEnable;
+    disabledUrls = data.disabledUrls || [];
 
     previewModeEnable = data.previewModeEnable;
     clickModifiedKey = data.clickModifiedKey || 'None';
@@ -2618,8 +2618,8 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
         let imageUrl = hoverImgSupport ? imageElement?.src : null;
         if (hoverImgSearchEnable && imageUrl) {
             const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
-            if (imgSearchEngineMap.hasOwnProperty(hoverSearchEngine)) {
-                imageUrl = imgSearchEngineMap[hoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
+            if (imgSearchEngineMap.hasOwnProperty(finalHoverSearchEngine)) {
+                imageUrl = imgSearchEngineMap[finalHoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
             }
         }
 
