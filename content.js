@@ -1631,44 +1631,54 @@ async function checkUrlAndToggleListeners() {
     
     handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     const data = await loadUserConfigs([
-        'disabledUrls',
-        'searchEngine',
-        'hoverSearchEngine',
-        'previewModeDisabledUrls',
-        'previewModeEnable',
-        'holdToPreview',
+    
         'collection',
         'collectionEnable',
-        'holdToPreviewTimeout',
-        'modifiedKey',
+    
         'clickModifiedKey',
-        'linkDisabledUrls',
+        'previewModeDisabledUrls',
+        'previewModeEnable',
+        'doubleClickToSwitch',
+        'doubleClickAsClick',
+
+        'holdToPreview',
+        'holdToPreviewTimeout',
+
         'searchTooltipsEnable',
+        'searchTooltipsEngines',
+
         'blurEnabled',
         'blurPx',
         'blurTime',
+
         'copyButtonPosition',
-        'searchTooltipsEngines',
         'copyButtonEnable',
-        'dropInEmptyOnly',
         'sendBackButtonPosition',
         'sendBackButtonEnable',
+
         'urlCheck',
+
         'closeWhenFocusedInitialWindow',
-        'doubleClickToSwitch',
-        'doubleClickAsClick',
         'doubleTapKeyToSendPageBack',
+        'closedByEsc',
+
         'linkHint',
+        'linkDisabledUrls',
+
+        'hoverSearchEngine',
+        'hoverImgSupport',
         'hoverImgSearchEnable',
         'hoverTimeout',
-        'hoverImgSupport',
         'hoverModifiedKey',
         'hoverDisabledUrls',
-        'closedByEsc',
+
+        'disabledUrls',
+        'searchEngine',
+        'modifiedKey',
         'dropInEmptyOnly',
-        'imgSearchEnable',
         'dragPx',
         'dragDirections',
+        'imgSearchEnable',
         'imgSupport'
     ]);
 
@@ -1693,6 +1703,7 @@ async function checkUrlAndToggleListeners() {
     imgSupport = data.imgSupport;
     imgSearchEnable = data.imgSearchEnable;
     disabledUrls = data.disabledUrls || [];
+    searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
 
 
     blurTime = data.blurTime || 1;
@@ -1718,6 +1729,7 @@ async function checkUrlAndToggleListeners() {
     hoverImgSearchEnable = data.hoverImgSearchEnable;
     hoverModifiedKey = data.hoverModifiedKey || 'None';
     hoverDisabledUrls = data.hoverDisabledUrls || [];
+    hoverSearchEngine = data.hoverSearchEngine || 'https://www.google.com/search?q=%s';
 
     if (isUrlDisabled(currentUrl, disabledUrls)) {
         removeListeners();
@@ -2537,7 +2549,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
         if (hoverImgSearchEnable && imageUrl) {
             const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
             if (imgSearchEngineMap.hasOwnProperty(finalHoverSearchEngine)) {
-                imageUrl = imgSearchEngineMap[hoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
+                imageUrl = imgSearchEngineMap[finalHoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
             }
         }
 
