@@ -75,6 +75,7 @@ let linkIndicator,
     imgSupport,
     imgSearchEnable,
     searchEngine,
+    disabledUrls,
 
     lastLeaveTimestamp,
     lastLeaveRelatedTarget,
@@ -1372,7 +1373,7 @@ async function handleDragStart(e) {
                     "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
                     "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s"
                 };
-                if (imgSearchEngineMap.hasOwnProperty(searchEngine)) {
+                if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
 
                     imageUrl = imgSearchEngineMap[finalSearchEngine].replace('%s', encodeURIComponent(imageUrl));
                 }
@@ -1670,43 +1671,54 @@ async function checkUrlAndToggleListeners() {
         'dragDirections',
         'imgSupport'
     ]);
-    const disabledUrls = data.disabledUrls || [];
+
+    linkHint = data.linkHint || false;
     linkDisabledUrls = data.linkDisabledUrls || [];
-    holdToPreview = data.holdToPreview;
-    holdToPreviewTimeout = data.holdToPreviewTimeout || 1500;
+
     collectionEnable = data.collectionEnable;
     collection = data.collection || [];
+
     const currentUrl = window.location.href;
+
     copyButtonPosition = data.copyButtonPosition;
     sendBackButtonPosition = data.sendBackButtonPosition;
+
+    searchTooltipsEnable = data.searchTooltipsEnable;
     searchTooltipsEngines = data.searchTooltipsEngines || configs.searchTooltipsEngines;
+
     dropInEmptyOnly = data.dropInEmptyOnly;
     modifiedKey = data.modifiedKey || 'None';
-    searchTooltipsEnable = data.searchTooltipsEnable;
+    dragPx = data.dragPx || 0;
+    dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
+    imgSupport = data.imgSupport;
+    imgSearchEnable = data.imgSearchEnable;
+    disabledUrls = data.disabledUrls || [];
+
 
     blurTime = data.blurTime || 1;
     blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
     blurPx = parseFloat(data.blurPx || 3);
 
     urlCheck = data.urlCheck;
+
+    closedByEsc = data.closedByEsc;
     closeWhenFocusedInitialWindow = data.closeWhenFocusedInitialWindow;
+
+    previewModeEnable = data.previewModeEnable;
+    clickModifiedKey = data.clickModifiedKey || 'None';
     doubleClickToSwitch = data.doubleClickToSwitch;
     doubleClickAsClick = data.doubleClickAsClick;
     doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
-    linkHint = data.linkHint || false;
-    hoverImgSearchEnable = data.hoverImgSearchEnable;
+
+    holdToPreview = data.holdToPreview;
+    holdToPreviewTimeout = data.holdToPreviewTimeout || 1500;
+
     hoverTimeout = data.hoverTimeout || 0;
     hoverImgSupport = data.hoverImgSupport;
+    hoverImgSearchEnable = data.hoverImgSearchEnable;
     hoverModifiedKey = data.hoverModifiedKey || 'None';
     hoverDisabledUrls = data.hoverDisabledUrls || [];
-    closedByEsc = data.closedByEsc;
-    imgSearchEnable = data.imgSearchEnable;
-    dragPx = data.dragPx || 0;
-    dragDirections = data.dragDirections || ['up', 'down', 'right', 'left'];
-    imgSupport = data.imgSupport;
-    previewModeEnable = data.previewModeEnable;
 
-    clickModifiedKey = data.clickModifiedKey || 'None';
     if (isUrlDisabled(currentUrl, disabledUrls)) {
         removeListeners();
     } else {
@@ -2146,42 +2158,54 @@ function addLinkToCollection(e) {
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-    if (namespace === 'local' && (changes.hoverTimeout ||
+    if (namespace === 'local' && (
+
         changes.linkHint ||
-        changes.disabledUrls ||
-        changes.searchEngine ||
-        changes.hoverDisabledUrls ||
-        changes.hoverSearchEngine ||
-        changes.dragDirections ||
-        changes.dragPx ||
+        changes.linkDisabledUrls ||
+
+        changes.clickModifiedKey ||
         changes.previewModeDisabledUrls ||
         changes.previewModeEnable ||
         changes.doubleClickAsClick ||
         changes.doubleClickToSwitch ||
-        changes.searchTooltipsEnable ||
-        changes.collection ||
-        changes.collectionEnable ||
+
         changes.holdToPreview ||
         changes.holdToPreviewTimeout ||
-        changes.modifiedKey ||
-        changes.clickModifiedKey ||
-        changes.hoverModifiedKey ||
-        changes.linkDisabledUrls ||
-        changes.copyButtonPosition ||
+
+        changes.searchTooltipsEnable ||
         changes.searchTooltipsEngines ||
+
+        changes.collection ||
+        changes.collectionEnable ||
+
+        changes.copyButtonPosition ||
         changes.copyButtonEnable ||
-        changes.dropInEmptyOnly ||
         changes.sendBackButtonPosition ||
         changes.sendBackButtonEnable ||
+
         changes.blurEnabled ||
         changes.blurPx ||
         changes.blurTime ||
+
         changes.urlCheck ||
+
         changes.closeWhenFocusedInitialWindow ||
         changes.doubleTapKeyToSendPageBack ||
+        changes.closedByEsc ||
+
+        changes.hoverTimeout ||
+        changes.hoverModifiedKey ||
         changes.hoverImgSearchEnable ||
         changes.hoverImgSupport ||
-        changes.closedByEsc ||
+        changes.hoverDisabledUrls ||
+        changes.hoverSearchEngine ||
+
+        changes.modifiedKey ||
+        changes.disabledUrls ||
+        changes.searchEngine ||
+        changes.dragDirections ||
+        changes.dragPx ||
+        changes.dropInEmptyOnly ||
         changes.imgSearchEnable ||
         changes.imgSupport
     )) {
@@ -2512,7 +2536,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
         let imageUrl = hoverImgSupport ? imageElement?.src : null;
         if (hoverImgSearchEnable && imageUrl) {
             const imgSearchEngineMap = { "https://www.google.com/search?q=%s": "https://lens.google.com/uploadbyurl?url=%s", "https://www.bing.com/search?q=%s": "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi", "https://www.baidu.com/s?wd=%s": "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s", "https://yandex.com/search/?text=%s": "https://yandex.com/images/search?rpt=imageview&url=%s" };
-            if (imgSearchEngineMap.hasOwnProperty(hoverSearchEngine)) {
+            if (imgSearchEngineMap.hasOwnProperty(finalHoverSearchEngine)) {
                 imageUrl = imgSearchEngineMap[hoverSearchEngine].replace('%s', encodeURIComponent(imageUrl));
             }
         }
