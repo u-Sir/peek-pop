@@ -1792,6 +1792,7 @@ async function checkUrlAndToggleListeners() {
     hoverImgSupport = data.hoverImgSupport;
     hoverModifiedKey = data.hoverModifiedKey || 'None';
     hoverDisabledUrls = data.hoverDisabledUrls || [];
+    hoverSearchEngine = data.hoverSearchEngine || 'https://www.google.com/search?q=%s';
 
     dropInEmptyOnly = data.dropInEmptyOnly;
     modifiedKey = data.modifiedKey || 'None';
@@ -1801,6 +1802,7 @@ async function checkUrlAndToggleListeners() {
     imgSupport = data.imgSupport;
     dragStartEnable = data.dragStartEnable;
     disabledUrls = data.disabledUrls || [];
+    searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
 
     previewModeEnable = data.previewModeEnable;
     clickModifiedKey = data.clickModifiedKey || 'None';
@@ -2601,7 +2603,6 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
 
     if (hoverModifiedKey === 'None' || keyMap[hoverModifiedKey]) {
         const finalHoverSearchEngine = (hoverSearchEngine !== 'None' ? (hoverSearchEngine || 'https://www.google.com/search?q=%s') : null);
-
         // Regular expression to match URLs including IP addresses
         const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 

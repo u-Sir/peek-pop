@@ -1,4 +1,4 @@
-0.0.44
+0.0.45
 - Fixed issue where blur duration was not functioning correctly.
 - Fixed an issue where "Hold to Preview" did not work in certain cases.
 - Improved overall performance.
