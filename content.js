@@ -993,7 +993,7 @@ function handleEvent(e) {
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-            if (previewMode && linkUrl && !isDoubleClick && e.isTrusted) {
+            if (previewMode && linkUrl && !isDoubleClick) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -1067,7 +1067,11 @@ function handleEvent(e) {
 }
 
 function handlePreviewMode(e, linkUrl) {
-    if (!isMouseDown || hasPopupTriggered || isDoubleClick) return;
+    if (!e.isTrusted) {
+        if (hasPopupTriggered || isDoubleClick) return;
+    } else {
+        if (!isMouseDown || hasPopupTriggered || isDoubleClick) return;
+    }
 
     if (linkUrl) {
         e.preventDefault();
