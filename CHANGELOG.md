@@ -1,3 +1,6 @@
+0.0.46
+- Enhance handling when triggered by non-human clicks.
+
 0.0.45
 - Fixed issue where blur duration was not functioning correctly.
 - Fixed an issue where "Hold to Preview" did not work in certain cases.
