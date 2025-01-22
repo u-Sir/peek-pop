@@ -1016,45 +1016,44 @@ chrome.commands.onCommand.addListener((command) => {
 
             chrome.storage.local.set({ previewModeEnable: newValue }, () => {
 
-                chrome.windows.getCurrent({ populate: true }, (window) => {
-                    if (request.theme === 'dark') {
+                if (request.theme === 'dark') {
 
-                        if (newValue) {
+                    if (newValue) {
 
-                            chrome.action.setIcon({
-                                path: {
-                                    "128": "action/inclickmode-dark.png"
-                                }
-                            });
+                        chrome.action.setIcon({
+                            path: {
+                                "128": "action/inclickmode-dark.png"
+                            }
+                        });
 
-                        } else {
-                            chrome.action.setIcon({
-                                path: {
-                                    "128": "action/icon-dark.png"
-                                }
-                            });
-                        }
                     } else {
-
-                        if (newValue) {
-
-                            chrome.action.setIcon({
-                                path: {
-                                    "128": "action/inclickmode.png"
-                                }
-                            });
-
-                        } else {
-                            chrome.action.setIcon({
-                                path: {
-                                    "128": "action/icon.png"
-                                }
-                            });
-                        }
+                        chrome.action.setIcon({
+                            path: {
+                                "128": "action/icon-dark.png"
+                            }
+                        });
                     }
-                });
+                } else {
+
+                    if (newValue) {
+
+                        chrome.action.setIcon({
+                            path: {
+                                "128": "action/inclickmode.png"
+                            }
+                        });
+
+                    } else {
+                        chrome.action.setIcon({
+                            path: {
+                                "128": "action/icon.png"
+                            }
+                        });
+                    }
+                }
 
             });
         });
     }
 });
+
