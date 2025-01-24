@@ -22,3 +22,6 @@ Due to browser add-on limitations, this can't be done directly by the add-on. Ho
 
 ## Why are other actions triggered during preview?  
 Try disabling other add-ons to see if the issue persists. If you're using Edge, also check **`edge://settings/superDragDrop`**. If the problem continues, please create an issue.
+
+## Why is the add-on version not up-to-date on Microsoft Edge Add-ons?
+The update process may take up to 7 business days due to review procedures.
