@@ -15,6 +15,20 @@
 An open-source add-on for previewing, searching, and collecting links to read later in a popup window. Source code available in releases or branches.
 
 
+# Usage
+
+## Blacklist Format Examples
+
+- **Regex format**: `/^https:\/\/example\.com\/.*$/`
+- **Wildcard format**: `https://example.com/*`
+- **Plain text format**: `https://example.com`
+
+## Modifying Plugin Shortcuts
+
+- **Chrome**: Go to the settings page: `chrome://extensions/shortcuts`
+- **Firefox**: Go to `about:addons`, click the gear icon, then select "Manage Extension Shortcuts"
+
+
 # FAQ
 
 ## Is it possible to set a popup always on top?  
@@ -25,3 +39,10 @@ Try disabling other add-ons to see if the issue persists. If you're using Edge, 
 
 ## Why is the add-on version not up-to-date on Microsoft Edge Add-ons?
 The update process may take up to 7 business days due to review procedures.
+
+## Can I customize the appearance of the preview window?  
+The preview window is based on the native browser window, so customization is not supported. Firefox users may be able to adjust it using `userChrome.css`.
+
+## Is it possible to retain the page's original drag functionality while using drag-to-preview?  
+You can enable the **"Only respond when dragging to empty areas"** option in the settings to preserve the page's native drag behavior.
+
