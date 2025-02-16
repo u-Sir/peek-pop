@@ -43,6 +43,6 @@ The update process may take up to 7 business days due to review procedures.
 ### Can I customize the appearance of the preview window?  
 The preview window is based on the native browser window, so customization is not supported. Firefox users may be able to adjust it using `userChrome.css`.
 
-## Is it possible to retain the page's original drag functionality while using drag-to-preview?  
+### Is it possible to retain the page's original drag functionality while using drag-to-preview?  
 You can enable the **"Only respond when dragging to empty areas"** option in the settings to preserve the page's native drag behavior.
 
