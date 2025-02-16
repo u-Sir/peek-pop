@@ -21,6 +21,7 @@ An open-source add-on for previewing, searching, and collecting links to read la
 
 It's recommended to visit the options page after installation to customize the settings and tailor the plugin to your needs.
 
+
 ### Blacklist Format Examples
 
 - **Regex format**: `/^https:\/\/example\.com\/.*$/`
@@ -32,6 +33,9 @@ It's recommended to visit the options page after installation to customize the s
 - **Chrome**: Go to the settings page: `chrome://extensions/shortcuts`
 - **Firefox**: Go to `about:addons`, click the gear icon, then select "Manage Extension Shortcuts"
 
+### Known Issue on macOS
+
+The preview popup window does not function as expected when the window is in `fullscreen` mode on macOS. It is recommended to use the window in a non-fullscreen state for proper functionality.
 
 # FAQ
 
