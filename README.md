@@ -17,13 +17,13 @@ An open-source add-on for previewing, searching, and collecting links to read la
 
 # Usage
 
-## Blacklist Format Examples
+### Blacklist Format Examples
 
 - **Regex format**: `/^https:\/\/example\.com\/.*$/`
 - **Wildcard format**: `https://example.com/*`
 - **Plain text format**: `https://example.com`
 
-## Modifying Plugin Shortcuts
+### Modifying Plugin Shortcuts
 
 - **Chrome**: Go to the settings page: `chrome://extensions/shortcuts`
 - **Firefox**: Go to `about:addons`, click the gear icon, then select "Manage Extension Shortcuts"
@@ -31,16 +31,16 @@ An open-source add-on for previewing, searching, and collecting links to read la
 
 # FAQ
 
-## Is it possible to set a popup always on top?  
+### Is it possible to set a popup always on top?  
 Due to browser add-on limitations, this can't be done directly by the add-on. However, you can use third-party software like **PowerToys** to achieve this. Don't forget to uncheck **"Close popup when origin window is focused"** on the settings page.
 
-## Why are other actions triggered during preview?  
+### Why are other actions triggered during preview?  
 Try disabling other add-ons to see if the issue persists. If you're using Edge, also check **`edge://settings/superDragDrop`**. If the problem continues, please create an issue.
 
-## Why is the add-on version not up-to-date on Microsoft Edge Add-ons?
+### Why is the add-on version not up-to-date on Microsoft Edge Add-ons?
 The update process may take up to 7 business days due to review procedures.
 
-## Can I customize the appearance of the preview window?  
+### Can I customize the appearance of the preview window?  
 The preview window is based on the native browser window, so customization is not supported. Firefox users may be able to adjust it using `userChrome.css`.
 
 ## Is it possible to retain the page's original drag functionality while using drag-to-preview?  
