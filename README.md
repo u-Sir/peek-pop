@@ -17,6 +17,10 @@ An open-source add-on for previewing, searching, and collecting links to read la
 
 # Usage
 
+### New Users
+
+It's recommended to visit the options page after installation to customize the settings and tailor the plugin to your needs.
+
 ### Blacklist Format Examples
 
 - **Regex format**: `/^https:\/\/example\.com\/.*$/`
