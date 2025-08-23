@@ -2344,7 +2344,7 @@ window.addEventListener('focus', async () => {
 
     hoverInitialMouseX = null;
     hoverInitialMouseY = null;
-    if (window.self !== window.top) {
+    if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
         window.parent.postMessage({ action: 'removeParentBlur' }, '*');
     }
     try {
