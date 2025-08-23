@@ -683,7 +683,7 @@ function handleMouseDown(e) {
         handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     }
 
-    if (holdToPreview && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+    if (holdToPreview && e.button === 0 && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
         const linkElement = anchorElement ||
             (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
 
@@ -692,15 +692,11 @@ function handleMouseDown(e) {
                 (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
             : null;
 
-        // Check for left mouse button click
-        if (e.button !== 0) return;
-
         // Check if the URL is valid and not a JavaScript link
         if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
             isMouseDownOnLink = false;
             clearTimeoutsAndProgressBars();
             document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
-            return;
         } else {
             isMouseDownOnLink = true;
             document.addEventListener('mouseup', () => {
