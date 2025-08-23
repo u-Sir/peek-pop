@@ -27,7 +27,7 @@
         "message": "Close popup when origin window is focused"
     },
     "tryOpenAtMousePosition": {
-        "message": "Try to open at mouse position (disabled — open at screen center)"
+        "message": "Try to open at mouse position"
     },
     "disabledUrls": {
         "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."

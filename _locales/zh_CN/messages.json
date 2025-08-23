@@ -27,7 +27,7 @@
         "message": "焦点回到原窗口时自动关闭弹窗"
     },
     "tryOpenAtMousePosition": {
-        "message": "尝试在鼠标附近弹出 (关闭 — 居中)"
+        "message": "尝试在鼠标附近弹出"
     },  
     "openPageInMainWindow": {
         "message": "在主窗口中打开页面"
