@@ -915,7 +915,7 @@ function handleDoubleClick(e) {
         } else {
             theme = 'light';
         }
-        
+
         handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme }, resetClickState);
 
     } else if (linkUrl) {
@@ -956,7 +956,7 @@ function handleDoubleClick(e) {
         theme = 'light';
     }
 
-    
+
     handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     setTimeout(() => {
         isDoubleClick = false;
@@ -1022,7 +1022,7 @@ function handleEvent(e) {
             } else {
                 theme = 'light';
             }
-            
+
             handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         }
 
@@ -1033,7 +1033,7 @@ function handleEvent(e) {
         } else {
             theme = 'light';
         }
-        
+
         handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 
 
@@ -1074,7 +1074,7 @@ function handleEvent(e) {
     } else {
         theme = 'light';
     }
-    
+
     handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
 }
 
@@ -1628,13 +1628,13 @@ async function checkUrlAndToggleListeners() {
         theme = 'light';
     }
 
-    
+
     handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     const data = await loadUserConfigs([
-    
+
         'collection',
         'collectionEnable',
-    
+
         'clickModifiedKey',
         'previewModeDisabledUrls',
         'previewModeEnable',
@@ -2051,7 +2051,7 @@ async function checkUrlAndToggleListeners() {
         theme = 'light';
     }
 
-    
+
     handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     previewModeDisabledUrls = data.previewModeDisabledUrls || [];
 
@@ -2278,7 +2278,7 @@ window.addEventListener('focus', async () => {
             theme = 'light';
         }
 
-        
+
         handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         document.addEventListener('mouseover', handleMouseOver, true);
         const message = closeWhenFocusedInitialWindow
@@ -2723,6 +2723,15 @@ function addClickMask() {
         e.preventDefault();
 
     });
+    document.addEventListener('mouseenter', () => {
+        removeClickMask();
+        document.addEventListener('mouseleave', () => {
+            // check if is focused
+            if (!document.hasFocus()) {
+                addClickMask();
+            }
+        }, { once: true });
+    }, { once: true });
 }
 
 function removeClickMask() {
@@ -2741,7 +2750,7 @@ function removeClickMask() {
 
 // Function to add the blur overlay
 function addBlurOverlay(blurPx, blurTime) {
-    if (!blurOverlay) { 
+    if (!blurOverlay) {
         blurOverlay = document.createElement('div');
         blurOverlay.style.position = 'fixed';
         blurOverlay.style.top = '0';
@@ -2759,6 +2768,15 @@ function addBlurOverlay(blurPx, blurTime) {
 
         // Now apply the desired blur, which should trigger the transition
         blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
+
+        document.addEventListener('mouseenter', () => {
+            removeBlurOverlay();
+            document.addEventListener('mouseleave', () => {
+                if (!document.hasFocus()) {
+                    addBlurOverlay(blurPx, blurTime);
+                }
+            }, { once: true });
+        }, { once: true });
     }
 }
 
