@@ -18,7 +18,7 @@
         "message": "Cerrar ventana emergente cuando la ventana de origen está enfocada"
     },
     "tryOpenAtMousePosition": {
-        "message": "Intente abrir en la posición del mouse (deshabilitado: abrir en el centro de la pantalla)"
+        "message": "Intente abrir en la posición del mouse"
     },
     "disabledUrls": {
         "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
