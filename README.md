@@ -54,3 +54,14 @@ The preview window is based on the native browser window, so customization is no
 ### Is it possible to retain the page's original drag functionality while using drag-to-preview?  
 You can enable the **"Only respond when dragging to empty areas"** option in the settings to preserve the page's native drag behavior.
 
+### Where Links Are Supported
+
+| Location                | Supported? |
+|--------------------------|------------|
+| Normal page             | ✅ Yes     |
+| Inside an iframe        | ✅ Yes     |
+| Inside an open shadow root | ✅ Yes  |
+| Inside a closed shadow root | ❌ No   |
+
+👉 Currently, all links are supported except those inside **closed shadow roots**.
+
