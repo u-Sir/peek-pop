@@ -17,7 +17,7 @@ An open-source add-on for previewing, searching, and collecting links to read la
 
 # Usage
 
-### New Users
+### After Installation
 
 It's recommended to visit the options page after installation to customize the settings and tailor the plugin to your needs.
 
@@ -33,9 +33,6 @@ It's recommended to visit the options page after installation to customize the s
 - **Chrome**: Go to the settings page: `chrome://extensions/shortcuts`
 - **Firefox**: Go to `about:addons`, click the gear icon, then select "Manage Extension Shortcuts"
 
-### Known Issue on macOS
-
-The preview popup window does not function as expected when the window is in `fullscreen` mode on macOS. It is recommended to use the window in a non-fullscreen state for proper functionality.
 
 # FAQ
 
@@ -65,3 +62,11 @@ You can enable the **"Only respond when dragging to empty areas"** option in the
 
 👉 Currently, all links are supported except those inside **closed shadow roots**.
 
+## Known Issues
+
+### On Firefox
+When system scaling is not set to 100%, the popup window may briefly flash when it appears.
+
+### On macOS
+The preview popup window does not work properly in `fullscreen` mode.  
+For best results, use the window in non-fullscreen mode.
