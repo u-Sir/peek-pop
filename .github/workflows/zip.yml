@@ -26,7 +26,7 @@ jobs:
         with:
           extensionDir: '.'
           zipFilePath: build/Peek_Pop-firefox-${{ env.EXT_VERSION }}.zip
-          ignoreFiles: 'CHANGELOG.md,LICENSE'
+          ignoreFiles: 'CHANGELOG.md,LICENSE,manifest_for_v2.json'
 
       # 打包 chromium 分支
       - name: Checkout chromium branch
@@ -60,7 +60,7 @@ jobs:
         with:
           tag_name: v${{ env.EXT_VERSION }}
           name: Release v${{ env.EXT_VERSION }}
-          body: 
+          body: |
             - Changes:
               ${{ github.event.inputs.release_notes }}
           draft: false
