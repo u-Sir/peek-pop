@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 打包 firefox 分支
+      # 打包 Firefox 分支
       - name: Checkout firefox branch
         uses: actions/checkout@v3
         with:
@@ -22,53 +22,55 @@ jobs:
         id: firefox_version
         run: |
           VERSION=$(jq -r '.version' ./manifest.json)
-          echo "EXT_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "FIREFOX_EXT_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Pack Firefox extension
         uses: cardinalby/webext-buildtools-pack-extension-dir-action@1.0.8
         with:
           extensionDir: '.'
-          zipFilePath: build/Peek_Pop-firefox-${{ env.EXT_VERSION }}.zip
+          zipFilePath: build/firefox/Peek_Pop-firefox-${{ env.FIREFOX_EXT_VERSION }}.zip
           zipIgnore: 'CHANGELOG.md|LICENSE|manifest_for_v2.json'
 
-      # 打包 chromium 分支
+      # 打包 Chromium 分支
       - name: Checkout chromium branch
         uses: actions/checkout@v3
         with:
           ref: chromium
+          path: chromium_workdir   # ✅ 关键：切换到子目录，不清空 root
 
       - name: Get Chromium version
         id: chromium_version
         run: |
-          VERSION=$(jq -r '.version' ./manifest.json)
-          echo "EXT_VERSION=$VERSION" >> $GITHUB_ENV
+          VERSION=$(jq -r '.version' ./chromium_workdir/manifest.json)
+          echo "CHROMIUM_EXT_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Pack Chromium extension
         uses: cardinalby/webext-buildtools-pack-extension-dir-action@1.0.8
         with:
-          extensionDir: '.'
-          zipFilePath: build/Peek_Pop-chromium-${{ env.EXT_VERSION }}.zip
+          extensionDir: 'chromium_workdir'
+          zipFilePath: build/chromium/Peek_Pop-chromium-${{ env.CHROMIUM_EXT_VERSION }}.zip
           zipIgnore: 'CHANGELOG.md|LICENSE'
 
-      # 上传 workflow artifact（可选）
+      # 上传 workflow artifact
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: all-zips
-          path: build/*.zip
+          path: build/**/*
 
       # 创建或更新 Release
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ env.EXT_VERSION }}
-          name: Release v${{ env.EXT_VERSION }}
+          tag_name: v${{ env.FIREFOX_EXT_VERSION }}  # 可选：用 Firefox 版本作为统一 tag
+          name: Release v${{ env.FIREFOX_EXT_VERSION }}
           body: |
             - Changes:
               ${{ github.event.inputs.release_notes }}
           draft: false
           prerelease: false
           files: |
-            build/*.zip
+            build/firefox/*.zip
+            build/chromium/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
