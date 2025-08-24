@@ -1,4 +1,5 @@
 0.0.47
+- Fixed popup positioning on systems with scaling other than 100%.
 - Removed the blur effect when the mouse enters the original window.  
 - Improved the hold-to-preview functionality.  
 - Enhanced the handling of iframes.

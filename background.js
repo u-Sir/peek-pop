@@ -5,7 +5,7 @@ const configs = {
 
     'windowType': 'popup',
     'popupWindowsInfo': {},
-    
+
     'rememberPopupSizeAndPosition': false,
     'rememberPopupSizeAndPositionForDomain': false,
 
@@ -46,7 +46,7 @@ const configs = {
     'previewModeEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
-    
+
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
 
@@ -292,9 +292,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         }, {});
                         const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) || Object.keys(popupWindowsInfo).some(windowId => {
                             // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
-                            return windowId && 
-                                   parseInt(windowId) === currentWindow.id && 
-                                   Object.keys(popupWindowsInfo[windowId]).length === 0;
+                            return windowId &&
+                                parseInt(windowId) === currentWindow.id &&
+                                Object.keys(popupWindowsInfo[windowId]).length === 0;
                         });
                         if (!isCurrentWindowOriginal) {
                             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -303,29 +303,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     chrome.tabs.remove(currentTab.id, () => {
                                         chrome.windows.getAll({ populate: false }, (windows) => {
                                             const existingWindowIds = windows.map(win => win.id); // List of all current window IDs
-                                        
+
                                             function cleanPopupInfo(info) {
                                                 return Object.keys(info).reduce((acc, key) => {
                                                     const keyAsInt = parseInt(key, 10);
-                                        
+
                                                     // Check if key is a valid window ID and clean recursively
                                                     if (key === 'savedPositionAndSize' || existingWindowIds.includes(keyAsInt)) {
                                                         acc[key] = (key === 'savedPositionAndSize') ? info[key] : cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
                                                     }
-                                        
+
                                                     return acc;
                                                 }, {});
                                             }
-                                        
+
                                             const cleanedPopupWindowsInfo = cleanPopupInfo(result.popupWindowsInfo);
-                                        
+
                                             // Set the cleaned popupWindowsInfo back to storage
                                             chrome.storage.local.set({ popupWindowsInfo: cleanedPopupWindowsInfo });
                                         });
-                                        
-                                        
-                                        
-                                        
+
+
+
+
                                     });
                                 }
                             });
@@ -791,6 +791,12 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
                 console.error('Error creating popup window:', chrome.runtime.lastError.message, chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
             } else {
+                if (window.devicePixelRatio !== 1) {
+                    chrome.windows.update(newWindow.id, {
+                        top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
+                        left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left)
+                    });
+                }
                 updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, result.rememberPopupSizeAndPositionForDomain, resolve, reject);
             }
         });
