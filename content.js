@@ -819,7 +819,7 @@ function handleHoldLink(e, anchorElement = null) {
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
 
-            if (window.self !== window.top) {
+            if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
                 // Inside the iframe content script
                 window.parent.postMessage({ action: 'blurParent' }, '*');
             } else {
@@ -1085,7 +1085,7 @@ function handlePreviewMode(e, linkUrl) {
 
         if (searchTooltips) searchTooltips.remove();
         searchTooltips = null;
-        if (window.self !== window.top) {
+        if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
             // Inside the iframe content script
             window.parent.postMessage({ action: 'blurParent' }, '*');
         } else {
@@ -1390,7 +1390,7 @@ async function handleDragStart(e, anchorElement) {
                             e.preventDefault();
                             e.stopImmediatePropagation();
 
-                            if (window.self !== window.top) {
+                            if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
                                 // Inside the iframe content script
                                 window.parent.postMessage({ action: 'blurParent' }, '*');
                             } else {
@@ -1452,7 +1452,7 @@ async function handleDragStart(e, anchorElement) {
                         if (searchTooltips) searchTooltips.remove();
                         searchTooltips = null;
 
-                        if (window.self !== window.top) {
+                        if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
                             // Inside the iframe content script
                             window.parent.postMessage({ action: 'blurParent' }, '*');
                         } else {
@@ -1498,7 +1498,7 @@ async function handleDragStart(e, anchorElement) {
             }
         }
 
-        if (window.self !== window.top) {
+        if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
             window.parent.postMessage({ action: 'dragleaveUpdate' }, '*');
 
             window.addEventListener('dragend', (e) => {
@@ -1610,7 +1610,7 @@ async function handleDragStart(e, anchorElement) {
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
 
-            if (window.self !== window.top) {
+            if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
                 // Inside the iframe content script
                 window.parent.postMessage({ action: 'blurParent' }, '*');
             } else {
@@ -1836,7 +1836,7 @@ async function checkUrlAndToggleListeners() {
         previewMode = data.previewMode;
     }
 
-    if (!(window.self !== window.top)) {
+    if (!(window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com')) {
 
         if (data.copyButtonEnable || data.sendBackButtonEnable) {
             chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
@@ -2641,7 +2641,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
         if (searchTooltips) searchTooltips.remove();
         searchTooltips = null;
 
-        if (window.self !== window.top) {
+        if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
             // Inside the iframe content script
             window.parent.postMessage({ action: 'blurParent' }, '*');
         } else {
@@ -2689,7 +2689,7 @@ function triggerLinkPopup(e, link) {
     searchTooltips = null;
 
 
-    if (window.self !== window.top) {
+    if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
         // Inside the iframe content script
         window.parent.postMessage({ action: 'blurParent' }, '*');
     } else {
