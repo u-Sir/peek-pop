@@ -1,0 +1,71 @@
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: "Release notes / changes"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 打包 firefox 分支
+      - name: Checkout firefox branch
+        uses: actions/checkout@v3
+        with:
+          ref: firefox
+
+      - name: Get Firefox version
+        id: firefox_version
+        run: |
+          VERSION=$(jq -r '.version' ./manifest.json)
+          echo "EXT_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Pack Firefox extension
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@1.0.8
+        with:
+          extensionDir: '.'
+          zipFilePath: build/Peek_Pop-firefox-${{ env.EXT_VERSION }}.zip
+          ignoreFiles: 'CHANGELOG.md,LICENSE'
+
+      # 打包 chromium 分支
+      - name: Checkout chromium branch
+        uses: actions/checkout@v3
+        with:
+          ref: chromium
+
+      - name: Get Chromium version
+        id: chromium_version
+        run: |
+          VERSION=$(jq -r '.version' ./manifest.json)
+          echo "EXT_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Pack Chromium extension
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@1.0.8
+        with:
+          extensionDir: '.'
+          zipFilePath: build/Peek_Pop-chromium-${{ env.EXT_VERSION }}.zip
+          ignoreFiles: 'CHANGELOG.md,LICENSE'
+
+      # 上传 workflow artifact（可选）
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: all-zips
+          path: build/*.zip
+
+      # 创建或更新 Release
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.EXT_VERSION }}
+          name: Release v${{ env.EXT_VERSION }}
+          body: 
+            - Changes:
+              ${{ github.event.inputs.release_notes }}
+          draft: false
+          prerelease: false
+          files: |
+            build/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
