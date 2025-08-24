@@ -29,7 +29,7 @@ jobs:
         with:
           extensionDir: '.'
           zipFilePath: build/firefox/Peek_Pop-firefox-${{ env.FIREFOX_EXT_VERSION }}.zip
-          zipIgnore: 'CHANGELOG.md|LICENSE|manifest_for_v2.json'
+          zipIgnore: 'CHANGELOG.md|LICENSE|manifest_for_v3.json'
 
       # 打包 Chromium 分支
       - name: Checkout chromium branch
