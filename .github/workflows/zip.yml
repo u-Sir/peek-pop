@@ -62,11 +62,10 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ env.FIREFOX_EXT_VERSION }}  # 可选：用 Firefox 版本作为统一 tag
-          name: Release v${{ env.FIREFOX_EXT_VERSION }}
+          tag_name: ${{ env.FIREFOX_EXT_VERSION }}  # 可选：用 Firefox 版本作为统一 tag
+          name: ${{ env.FIREFOX_EXT_VERSION }}
           body: |
-            - Changes:
-              ${{ github.event.inputs.release_notes }}
+            ${{ github.event.inputs.release_notes }}
           draft: false
           prerelease: false
           files: |
