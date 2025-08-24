@@ -40,7 +40,7 @@ The preview popup window does not function as expected when the window is in `fu
 # FAQ
 
 ### Is it possible to set a popup always on top?  
-Due to browser add-on limitations, this can't be done directly by the add-on. However, you can use third-party software like **PowerToys** to achieve this. Don't forget to uncheck **"Close popup when origin window is focused"** on the settings page.
+Due to browser add-on limitations, this can't be done directly by the add-on. However, you can use third-party software like **PowerToys - Always On Top** to achieve this. Don't forget to uncheck **"Close popup when origin window is focused"** on the settings page.
 
 ### Why are other actions triggered during preview?  
 Try disabling other add-ons to see if the issue persists. If you're using Edge, also check **`edge://settings/superDragDrop`**. If the problem continues, please create an issue.
