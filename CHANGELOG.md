@@ -1,3 +1,8 @@
+0.0.47
+- Removed the blur effect when the mouse enters the original window.  
+- Improved the hold-to-preview functionality.  
+- Enhanced the handling of iframes.
+
 0.0.46
 - Enhance handling when triggered by non-human clicks.
 

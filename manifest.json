@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "0.0.45",
+  "version": "0.0.47",
   "default_locale": "en",
   "icons": {
     "48": "icon.svg",
@@ -10,13 +10,18 @@
     "128": "icon.svg"
   },
   "background": {
-    "scripts": [ "background.js" ],
-    "persistent": false
+    "scripts": [
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_start",
       "match_about_blank": true,
       "all_frames": true
@@ -25,12 +30,17 @@
   "permissions": [
     "contextMenus",
     "storage",
-    "tabs",
-    "cookies",
-    "*://*/*"
+    "tabs"
   ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
   "commands": {
-    "_execute_browser_action": {
+    "_execute_action": {
       "suggested_key": {
         "default": "Alt+U",
         "mac": "MacCtrl+U"
@@ -43,20 +53,16 @@
       "description": "__MSG_clickModeToggle__"
     }
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "16": "icon.svg",
       "32": "icon.svg"
     },
     "default_popup": "action/action.html"
   },
-  "options_ui": {
-    "page": "options/options.html",
-    "open_in_tab": false
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "drag_to_privew@uxer"
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "peek_pop@uxer"
+        }
     }
-  }
 }
