@@ -12,7 +12,7 @@
 
 </div>
 
-An open-source add-on for previewing, searching, and collecting links to read later in a popup window. Source code available in releases or branches.
+***A lightweight, open-source browser extension that lets you preview, search, and save pages to read later. Source code available in releases or branches.***
 
 
 # Usage
