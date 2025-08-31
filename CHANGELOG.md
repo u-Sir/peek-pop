@@ -1,3 +1,8 @@
+0.0.48  
+- Fixed search tooltip position in certain cases.  
+- Updated the InClickMode icon.  
+
+
 0.0.47
 - Removed the blur effect when the mouse enters the original window.  
 - Improved the hold-to-preview functionality.  
