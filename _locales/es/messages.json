@@ -15,7 +15,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Un complemento de código abierto para previsualizar, buscar y recopilar enlaces para leer más tarde en una ventana emergente."
+        "message": "Una extensión de navegador ligera y de código abierto que te permite previsualizar, buscar y guardar páginas para leer más tarde."
     },
     "popupHeight": {
         "message": "Altura emergente (px)"
