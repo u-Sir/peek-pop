@@ -1,5 +1,6 @@
 0.0.48  
-- Updated the InClickMode icon.  
+- Updated the InClickMode icon.
+- Refined click mask logic.
 
 0.0.47
 - Fixed popup positioning on systems with scaling other than 100%.
