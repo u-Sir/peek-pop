@@ -292,6 +292,16 @@ function createTooltip(x, y, actions, timeout = 2000) {
         timeoutId = setTimeout(removeTooltip, timeout); // Reset the timeout
     });
 
+    
+    // remove tooltip when clicking outside
+    const onDocClick = (event) => {
+        if (!tooltip.contains(event.target)) {
+            tooltip.remove();
+            document.removeEventListener('mousedown', onDocClick);
+        }
+    };
+    document.addEventListener('mousedown', onDocClick);
+
     return tooltip;
 }
 
