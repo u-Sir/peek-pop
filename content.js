@@ -2741,15 +2741,7 @@ function addClickMask() {
         e.preventDefault();
 
     });
-    document.body.addEventListener('mouseenter', () => {
-        removeClickMask();
-        document.body.addEventListener('mouseleave', () => {
-            // check if is focused
-            if (!document.hasFocus()) {
-                addClickMask();
-            }
-        }, { once: true });
-    }, { once: true });
+
 }
 
 function removeClickMask() {
@@ -2787,10 +2779,12 @@ function addBlurOverlay(blurPx, blurTime) {
         // Now apply the desired blur, which should trigger the transition
         blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
 
-        document.body.addEventListener('mouseenter', () => {
+                document.body.addEventListener('mouseenter', () => {
+            removeClickMask();
             removeBlurOverlay();
             document.body.addEventListener('mouseleave', () => {
                 if (!document.hasFocus()) {
+                    addClickMask();
                     addBlurOverlay(blurPx, blurTime);
                 }
             }, { once: true });
