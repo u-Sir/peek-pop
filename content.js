@@ -298,7 +298,16 @@ function addSearchTooltipsOnHover(e) {
         searchTooltips = null;
         return;
     }
-    const selection = window.getSelection();
+    const shadowRoot = e.composedPath().find(n => n instanceof ShadowRoot);
+
+    let selection;
+    if (shadowRoot && typeof shadowRoot.getSelection === "function") {
+        selection = shadowRoot.getSelection(); 
+    } else {
+        selection = window.getSelection();
+    }
+
+    if (!selection || selection.isCollapsed) return;
     const selectionText = selection.toString().trim();
 
     if (selectionText !== '' && selection.rangeCount && selection.rangeCount > 0) {
