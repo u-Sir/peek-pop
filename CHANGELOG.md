@@ -1,6 +1,7 @@
 0.0.48  
 - Fixed search tooltip position in certain cases.  
-- Updated the InClickMode icon.  
+- Updated the InClickMode icon.
+- Refined click mask logic
 
 
 0.0.47
