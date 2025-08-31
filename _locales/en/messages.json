@@ -6,7 +6,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Preview links or images in the popup window, search selected text or images."
+        "message": "A lightweight, open-source browser extension that lets you preview, search, and save pages to read later. "
     },
     "popupHeight": {
         "message": "Popup height (px)"

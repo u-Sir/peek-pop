@@ -6,7 +6,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Previsualizar enlaces o imágenes en la ventana emergente, buscar texto o imágenes seleccionadas."
+        "message": "Una extensión de navegador ligera y de código abierto que te permite previsualizar, buscar y guardar páginas para leer más tarde."
     },
     "popupHeight": {
         "message": "Altura emergente (px)"
