@@ -292,7 +292,7 @@ function createTooltip(x, y, actions, timeout = 2000) {
         timeoutId = setTimeout(removeTooltip, timeout); // Reset the timeout
     });
 
-    
+
     // remove tooltip when clicking outside
     const onDocClick = (event) => {
         if (!tooltip.contains(event.target)) {
@@ -907,7 +907,7 @@ function handleDoubleClick(e) {
         } else {
             theme = 'light';
         }
-        
+
         handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme }, resetClickState);
 
     } else if (linkUrl) {
@@ -2807,15 +2807,7 @@ function addClickMask() {
 
     });
 
-    document.body.addEventListener('mouseenter', () => {
-        removeClickMask();
-        document.body.addEventListener('mouseleave', () => {
-            // check if is focused
-            if (!document.hasFocus()) {
-                addClickMask();
-            }
-        }, { once: true });
-    }, { once: true });
+
 }
 
 function removeClickMask() {
@@ -2854,13 +2846,16 @@ function addBlurOverlay(blurPx, blurTime) {
         blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
 
         document.body.addEventListener('mouseenter', () => {
+            removeClickMask();
             removeBlurOverlay();
             document.body.addEventListener('mouseleave', () => {
                 if (!document.hasFocus()) {
+                    addClickMask();
                     addBlurOverlay(blurPx, blurTime);
                 }
             }, { once: true });
         }, { once: true });
+
     }
 }
 
