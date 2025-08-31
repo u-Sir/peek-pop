@@ -1,3 +1,6 @@
+0.0.48  
+- Updated the InClickMode icon.  
+
 0.0.47
 - Fixed popup positioning on systems with scaling other than 100%.
 - Removed the blur effect when the mouse enters the original window.  
