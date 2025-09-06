@@ -14,6 +14,12 @@
     "popupWidth": {
         "message": "Popup width (px)"
     },
+    "popupHeightInPercentage": {
+        "message": "Popup height (%): 0=off, 1-100% of last window"
+    },
+    "popupWidthInPercentage": {
+        "message": "Popup width (%): 0=off, 1-100% of last window"
+    },
     "closeWhenFocusedInitialWindow": {
         "message": "Close popup when origin window is focused"
     },
@@ -166,6 +172,12 @@
     },
     "note": {
         "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse."
+    },
+    "staticSize": {
+        "message": "Static window size"
+    },
+    "percentageSize": {
+        "message": "Window size by percentage of last window"
     },
     "linkHint": {
         "message": "Indicator."

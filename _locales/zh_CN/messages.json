@@ -14,6 +14,12 @@
     "popupWidth": {
         "message": "窗口宽度 (px)"
     },
+    "popupHeightInPercentage": {
+        "message": "窗口高度（%）：0=关闭，上一个窗口的 1-100%"
+    },
+    "popupWidthInPercentage": {
+        "message": "窗口宽度（%）：0=关闭，上一个窗口的 1-100%"
+    },
     "closeWhenFocusedInitialWindow": {
         "message": "焦点回到原窗口时自动关闭弹窗"
     },
@@ -166,6 +172,12 @@
     },
     "note": {
         "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"
+    },
+    "staticSize": {
+        "message": "固定窗口大小"
+    },
+    "percentageSize": {
+        "message": "按百分比设置窗口大小"
     },
     "linkHint": {
         "message": "链接提示"

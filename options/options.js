@@ -14,6 +14,8 @@ const configs = {
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
+    'popupHeightInPercentage': 0,
+    'popupWidthInPercentage': 0,
 
     'blurEnabled': true,
     'blurPx': 3,
@@ -302,6 +304,8 @@ function setupPage(userConfigs) {
         { id: 'popupSettings', messageId: 'popupSettings' },
 
         { id: 'note', messageId: 'note' },
+        { id: 'staticSize', messageId: 'staticSize' },
+        { id: 'percentageSize', messageId: 'percentageSize' },
 
         { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
 
