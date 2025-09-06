@@ -68,7 +68,7 @@ You can enable the **"Only respond when dragging to empty areas"** option in the
 
 👉 Currently, all links are supported except those inside **closed shadow roots**.
 
-## Known Issues
+# Known Issues
 
 ### On Firefox
 When system scaling is not set to 100%, the popup window may briefly flash when it appears.
@@ -77,5 +77,5 @@ When system scaling is not set to 100%, the popup window may briefly flash when 
 The preview popup window does not work properly in `fullscreen` mode.  
 For best results, use the window in non-fullscreen mode.
 
-## Source
+# Source
 Source code available in releases or branches.
