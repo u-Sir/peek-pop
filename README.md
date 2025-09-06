@@ -61,10 +61,10 @@ You can enable the **"Only respond when dragging to empty areas"** option in the
 
 | Location                | Supported? |
 |--------------------------|------------|
-| Normal page             | ✅ Yes     |
-| Inside an iframe        | ✅ Yes     |
-| Inside an open shadow root | ✅ Yes  |
-| Inside a closed shadow root | ❌ No   |
+| Normal page             | ✅     |
+| Inside an iframe        | ✅     |
+| Inside an open shadow root | ✅  |
+| Inside a closed shadow root | ❌   |
 
 👉 Currently, all links are supported except those inside **closed shadow roots**.
 
