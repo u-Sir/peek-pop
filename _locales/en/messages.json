@@ -45,10 +45,10 @@
         "message": "Keep open in the same container as original page"
     },
     "blurPx": {
-        "message": "Blur effect strengh: "
+        "message": "Blur intensity: "
     },
     "blurTime": {
-        "message": "Blur in specific seconds (s): "
+        "message": "Blur duration (s): "
     },
     "modifiedKey": {
         "message": "Response when selected key is pressing (Please test to ensure it meets expectations.)"
