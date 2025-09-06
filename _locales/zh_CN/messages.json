@@ -23,6 +23,12 @@
     "popupWidth": {
         "message": "窗口宽度 (px)"
     },
+    "popupHeightInPercentage": {
+        "message": "窗口高度（%）：0=关闭，上一个窗口的 1-100%"
+    },
+    "popupWidthInPercentage": {
+        "message": "窗口宽度（%）：0=关闭，上一个窗口的 1-100%"
+    },
     "closeWhenFocusedInitialWindow": {
         "message": "焦点回到原窗口时自动关闭弹窗"
     },
@@ -31,7 +37,7 @@
     },
     "tryOpenAtMousePosition": {
         "message": "尝试在鼠标附近弹出"
-    },  
+    },
     "openPageInMainWindow": {
         "message": "在主窗口中打开页面"
     },
@@ -124,13 +130,13 @@
     },
     "hoverImgSupport": {
         "message": "预览图片"
-    },  
+    },
     "hoverDisabledUrls": {
         "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "searchSettings": {
         "message": "搜索"
-    }, 
+    },
     "generalSettingsTab": {
         "message": "通用"
     },
@@ -139,7 +145,7 @@
     },
     "importButton": {
         "message": "导入"
-    },  
+    },
     "exportButton": {
         "message": "导出"
     },
@@ -148,19 +154,19 @@
     },
     "previewModeDisabledUrls": {
         "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
-    }, 
+    },
     "previewModeEnable": {
         "message": "点击链接预览"
-    }, 
+    },
     "imgSearchEnable": {
         "message": "以图搜图"
-    }, 
+    },
     "hoverImgSearchEnable": {
         "message": "以图搜图"
-    }, 
+    },
     "doubleClickToSwitch": {
         "message": "双击临时切换当前页面模式：需在非图片、链接上双击，工具栏的插件图标会显示当前状态"
-    }, 
+    },
     "doubleClickAsClick": {
         "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
     },
@@ -168,7 +174,13 @@
         "message": "动态弹窗：记住每个域名最后的窗口大小和位置"
     },
     "note": {
-        "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"
+        "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 按百分比的 > 居中/鼠标附近"
+    },
+    "staticSize": {
+        "message": "固定窗口大小"
+    },
+    "percentageSize": {
+        "message": "按百分比设置窗口大小"
     },
     "linkHint": {
         "message": "链接提示"
@@ -208,21 +220,20 @@
     },
     "holdToPreviewSettings": {
         "message": "长按"
-    },  
+    },
     "linkDisabledUrls": {
         "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "copyButtonEnable": {
         "message": "在 'popup' 类型窗口中显示“复制当前页面链接”按钮"
-    },  
+    },
     "searchTooltipsEngines": {
         "message": "搜索条内的搜索引擎，每行一个，格式：显示名称=>带有%s的搜索链接"
-    },  
+    },
     "dropInEmptyOnly": {
         "message": "仅拖拽到空白处时才响应"
     },
     "sendBackButtonEnable": {
         "message": "在 'popup' 类型窗口中显示“发送当前页面到原窗口”按钮"
     }
-    
 }

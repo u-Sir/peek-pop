@@ -97,6 +97,8 @@ const configs = {
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
+    'popupHeightInPercentage': 0,
+    'popupWidthInPercentage': 0,
 
     'searchEngine': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],

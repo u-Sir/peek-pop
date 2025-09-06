@@ -6,6 +6,8 @@ const configs = {
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
+    'popupHeightInPercentage': 0,
+    'popupWidthInPercentage': 0,
 
     'blurEnabled': true,
     'blurPx': 3,
@@ -638,13 +640,42 @@ function handleLinkInPopup(userConfigs, trigger, linkUrl, tab, currentWindow, re
     }
 
     const {
-        popupHeight, popupWidth, tryOpenAtMousePosition
+        popupHeight,
+        popupWidth,
+        popupHeightInPercentage,
+        popupWidthInPercentage,
+        tryOpenAtMousePosition
     } = userConfigs;
 
-    const defaultHeight = parseInt(popupHeight, 10) || 800;
-    const defaultWidth = parseInt(popupWidth, 10) || 1000;
+    // Parse user-specified values
+    let defaultHeight = parseInt(popupHeight, 10) || 800;
+    let defaultWidth = parseInt(popupWidth, 10) || 1000;
+
+    // Helper to clamp percentage between >0 and <=100
+    function clampPercentage(p) {
+        const num = parseFloat(p);
+        if (isNaN(num) || num <= 0) return 0;      // invalid or non-positive → ignore
+        return Math.min(num, 100);                 // max 100
+    }
+
+    // Apply percentages if valid
+    const heightPercent = clampPercentage(popupHeightInPercentage);
+    if (heightPercent > 0) {
+        defaultHeight = Math.round(currentWindow.height * (heightPercent / 100));
+    }
+
+    const widthPercent = clampPercentage(popupWidthInPercentage);
+    if (widthPercent > 0) {
+        defaultWidth = Math.round(currentWindow.width * (widthPercent / 100));
+    }
+
+    console.log(defaultHeight, defaultWidth);
+
 
     let dx, dy, width = defaultWidth, height = defaultHeight;
+
+
+
 
     return new Promise((resolve, reject) => {
         if (rememberPopupSizeAndPosition) {
