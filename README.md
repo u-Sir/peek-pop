@@ -3,30 +3,29 @@
 </div>
 <h1 align="center">Peek Pop</h1>
 
+
+
+
+
+<p align="center"><i>
+A lightweight, open-source browser extension that lets you preview, search, and save pages to read later.
+</i></p>
+
 <div align="center">
-
+<a href="https://github.com/u-Sir/peek-pop/releases/latest"><img src="https://img.shields.io/github/v/release/u-Sir/peek-pop?label=Github&logo=github&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases" alt="Github release" /></a> <a href="https://addons.mozilla.org/firefox/addon/peek_pop"><img src="https://img.shields.io/amo/v/peek_pop.svg?label=Firefox&logo=firefoxbrowser" alt="Add to Firefox"/></a> <a href="https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh"><img src="https://img.shields.io/chrome-web-store/v/fjllepdpgikphekgbinhpdkalliiejdh.svg?label=Chrome&logo=googlechrome" alt="Add to Chrome" /></a> <a href="https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop"><img src="https://img.shields.io/badge/dynamic/json?label=Edge&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fecpgdeolbpelhdjcplojlpdmfppjljop" alt="Add to Microsoft Edge" /></a> 
 </div>
-
-***A lightweight, open-source browser extension that lets you preview, search, and save pages to read later. Source code available in releases or branches.***
-
 
 # Usage
 
-### Install
+### Installation
+<div align="left">
+<a href="https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh"><img src="https://user-images.githubusercontent.com/72879799/229783871-ec49dba0-5c17-411b-892a-6ba0abee3fe7.svg" alt="Add to Chrome" height="64px"/></a> <a href="https://addons.mozilla.org/firefox/addon/peek_pop"><img src="https://user-images.githubusercontent.com/72879799/229780855-df16725a-f232-478d-99c2-052344601626.svg" alt="Add to Firefox" height="64px"/></a> <a href="https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop"><img src="https://user-images.githubusercontent.com/72879799/229780863-e60a44cd-a768-47d8-9755-c46075c3751b.svg" alt="Add to Microsoft Edge" height="64px"/></a>
+</div>
 
-
-[![](https://img.shields.io/amo/v/peek_pop.svg?label=Get%20it%20on%20Firefox&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/peek_pop)
-
-
-[![](https://img.shields.io/chrome-web-store/v/fjllepdpgikphekgbinhpdkalliiejdh.svg?label=Get%20it%20on%20Chrome&logo=googlechrome)](https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh)
-
-[![](https://img.shields.io/badge/dynamic/json?label=Get%20it%20on%20Edge&prefix=v&query=%24.version&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fecpgdeolbpelhdjcplojlpdmfppjljop)](https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop)
-
-[![](https://img.shields.io/github/v/release/u-Sir/peek-pop?label=Get%20it%20on%20Github&logo=github&display_name=release&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases&link=https%3A%2F%2Fgithub.com%2Fu-Sir%2Fpeek-pop%2Freleases)](https://github.com/u-Sir/peek-pop/releases/latest)
 
 ### After Installation
 
-It's recommended to visit the options page after installation to customize the settings and tailor the plugin to your needs.
+**It's recommended to visit the options page after installation to customize the settings and tailor the plugin to your needs.**
 
 
 ### Blacklist Format Examples
@@ -77,3 +76,6 @@ When system scaling is not set to 100%, the popup window may briefly flash when 
 ### On macOS
 The preview popup window does not work properly in `fullscreen` mode.  
 For best results, use the window in non-fullscreen mode.
+
+## Source
+Source code available in releases or branches.
