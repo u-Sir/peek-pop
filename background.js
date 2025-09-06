@@ -669,9 +669,6 @@ function handleLinkInPopup(userConfigs, trigger, linkUrl, tab, currentWindow, re
         defaultWidth = Math.round(currentWindow.width * (widthPercent / 100));
     }
 
-    console.log(defaultHeight, defaultWidth);
-
-
     let dx, dy, width = defaultWidth, height = defaultHeight;
 
 
