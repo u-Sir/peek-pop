@@ -51,10 +51,10 @@
         "message": "Habilitar desenfoque de fondo"
     },
     "blurPx": {
-        "message": "Intensidad del efecto de desenfoque: "
+        "message": "Intensidad de desenfoque: "
     },
     "blurTime": {
-        "message": "Desenfoque en segundos específicos (s): "
+        "message": "Duración del desenfoque (s): "
     },
     "modifiedKey": {
         "message": "Respuesta cuando se presiona la tecla seleccionada (Por favor, prueba para asegurarte de que cumple con las expectativas.)"
