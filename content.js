@@ -659,11 +659,21 @@ function handleMouseDown(e) {
         : null;
 
 
-    if (sendBackByMiddleClickEnable && e.button === 1 && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey && !linkElement && !["A", "INPUT", "TEXTAREA", "BUTTON"].includes(e.target.tagName)) {
+    if (
+        sendBackByMiddleClickEnable &&
+        e.button === 1 &&
+        !e.altKey &&
+        !e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !linkElement &&
+        !["A", "INPUT", "TEXTAREA", "BUTTON", "IMG"].includes(e.target.tagName)
+    ) {
         e.preventDefault();
         e.stopPropagation();
         chrome.runtime.sendMessage({ action: "sendPageBack" });
     }
+
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 

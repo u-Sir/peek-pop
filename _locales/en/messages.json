@@ -6,7 +6,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "A lightweight, open-source browser extension that lets you preview, search, and save pages to read later. "
+        "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later."
     },
     "popupHeight": {
         "message": "Popup height (px)"

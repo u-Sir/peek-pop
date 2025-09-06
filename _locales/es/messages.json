@@ -6,7 +6,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Una extensión de navegador ligera y de código abierto que te permite previsualizar, buscar y guardar páginas para leer más tarde."
+        "message": "Una extensión de navegador ligera y de código abierto permite previsualizar, buscar y guardar páginas para leerlas más tarde."
     },
     "popupHeight": {
         "message": "Altura emergente (px)"
