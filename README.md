@@ -8,7 +8,7 @@
 
 
 <p align="center"><i>
-A lightweight, open-source browser extension that lets you preview, search, and save pages to read later.
+A lightweight, open-source browser extension lets you preview, search, and save pages to read later.
 </i></p>
 
 <div align="center">
