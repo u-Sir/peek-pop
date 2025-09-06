@@ -51,6 +51,7 @@ let linkIndicator,
 
     linkDisabledUrls,
     closeWhenFocusedInitialWindow,
+    sendBackByMiddleClickEnable,
 
     collection,
     collectionEnable,
@@ -87,6 +88,7 @@ let linkIndicator,
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
 
@@ -311,7 +313,7 @@ function addSearchTooltipsOnHover(e) {
 
     let selection;
     if (shadowRoot && typeof shadowRoot.getSelection === "function") {
-        selection = shadowRoot.getSelection(); 
+        selection = shadowRoot.getSelection();
     } else {
         selection = window.getSelection();
     }
@@ -663,6 +665,22 @@ function handleMouseDown(e) {
         (linkElement.getAttribute('data-url') ||
             (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
         : null;
+
+    if (
+        sendBackByMiddleClickEnable &&
+        e.button === 1 &&
+        !e.altKey &&
+        !e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !linkElement &&
+        !["A", "INPUT", "TEXTAREA", "BUTTON", "IMG"].includes(e.target.tagName)
+    ) {
+        e.preventDefault();
+        e.stopPropagation();
+        chrome.runtime.sendMessage({ action: "sendPageBack" });
+    }
+
 
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -1677,6 +1695,7 @@ async function checkUrlAndToggleListeners() {
         'urlCheck',
 
         'closeWhenFocusedInitialWindow',
+        'sendBackByMiddleClickEnable',
         'doubleTapKeyToSendPageBack',
         'closedByEsc',
 
@@ -1732,6 +1751,7 @@ async function checkUrlAndToggleListeners() {
 
     closedByEsc = data.closedByEsc;
     closeWhenFocusedInitialWindow = data.closeWhenFocusedInitialWindow;
+    sendBackByMiddleClickEnable = data.sendBackByMiddleClickEnable || false;
 
     previewModeEnable = data.previewModeEnable;
     clickModifiedKey = data.clickModifiedKey || 'None';
@@ -2220,6 +2240,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.urlCheck ||
 
         changes.closeWhenFocusedInitialWindow ||
+        changes.sendBackByMiddleClickEnable ||
         changes.doubleTapKeyToSendPageBack ||
         changes.closedByEsc ||
 
@@ -2779,7 +2800,7 @@ function addBlurOverlay(blurPx, blurTime) {
         // Now apply the desired blur, which should trigger the transition
         blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
 
-                document.body.addEventListener('mouseenter', () => {
+        document.body.addEventListener('mouseenter', () => {
             removeClickMask();
             removeBlurOverlay();
             document.body.addEventListener('mouseleave', () => {

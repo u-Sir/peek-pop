@@ -1,8 +1,10 @@
+0.0.49
+- New option: Middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window.
+
 0.0.48  
 - Fixed search tooltip position in certain cases.  
 - Updated the InClickMode icon.
 - Refined click mask logic
-
 
 0.0.47
 - Removed the blur effect when the mouse enters the original window.  

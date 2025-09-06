@@ -15,7 +15,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "A lightweight, open-source browser extension that lets you preview, search, and save pages to read later. "
+        "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later."
     },
     "popupHeight": {
         "message": "Popup height (px)"
@@ -25,6 +25,9 @@
     },
     "closeWhenFocusedInitialWindow": {
         "message": "Close popup when origin window is focused"
+    },
+    "sendBackByMiddleClickEnable": {
+        "message": "Middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window."
     },
     "tryOpenAtMousePosition": {
         "message": "Try to open at mouse position"
