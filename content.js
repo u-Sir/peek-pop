@@ -674,7 +674,7 @@ function handleMouseDown(e) {
         !e.ctrlKey &&
         !e.metaKey &&
         !linkElement &&
-        !["A", "INPUT", "TEXTAREA", "BUTTON", "IMG"].includes(e.target.tagName)
+        !e.target.closest("a, input, textarea, button, img")
     ) {
         e.preventDefault();
         e.stopPropagation();
