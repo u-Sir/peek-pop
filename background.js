@@ -1,5 +1,6 @@
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
 

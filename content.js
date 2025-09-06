@@ -58,6 +58,7 @@ let linkIndicator,
     closedByEsc,
     doubleTapKeyToSendPageBack,
     closeWhenFocusedInitialWindow,
+    sendBackByMiddleClickEnable,
 
     linkHint,
     linkDisabledUrls,
@@ -90,6 +91,7 @@ let linkIndicator,
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
 
@@ -656,6 +658,12 @@ function handleMouseDown(e) {
             (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
         : null;
 
+
+    if (sendBackByMiddleClickEnable && e.button === 1 && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey && !linkElement && !["A", "INPUT", "TEXTAREA", "BUTTON"].includes(e.target.tagName)) {
+        e.preventDefault();
+        e.stopPropagation();
+        chrome.runtime.sendMessage({ action: "sendPageBack" });
+    }
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
@@ -1753,6 +1761,7 @@ async function checkUrlAndToggleListeners() {
 
         'closedByEsc',
         'closeWhenFocusedInitialWindow',
+        'sendBackByMiddleClickEnable',
         'doubleTapKeyToSendPageBack',
 
         'linkHint',
@@ -1793,6 +1802,7 @@ async function checkUrlAndToggleListeners() {
     urlCheck = data.urlCheck;
 
     closeWhenFocusedInitialWindow = data.closeWhenFocusedInitialWindow;
+    sendBackByMiddleClickEnable = data.sendBackByMiddleClickEnable || false;
     doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
     closedByEsc = data.closedByEsc;
     enableContainerIdentify = data.enableContainerIdentify;
@@ -2305,6 +2315,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
         changes.urlCheck ||
         changes.closeWhenFocusedInitialWindow ||
+        changes.sendBackByMiddleClickEnable ||
         changes.doubleTapKeyToSendPageBack ||
         changes.closedByEsc
     )) {
