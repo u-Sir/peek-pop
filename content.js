@@ -86,7 +86,10 @@ let linkIndicator,
 
     debounceTimer,
     lastMessage = null,
-    shouldResetClickState = false;
+    shouldResetClickState = false,
+
+    isFirefox,
+    isMac;
 
 
 const configs = {
@@ -143,6 +146,7 @@ const configs = {
     'holdToPreviewTimeout': 1500,
 
     'isFirefox': false,
+    'isMac': false,
     'enableContainerIdentify': true,
 
     'linkHint': false,
@@ -1736,6 +1740,8 @@ async function checkUrlAndToggleListeners() {
 
     handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     const data = await loadUserConfigs([
+        'isFirefox',
+        'isMac',
 
         'hoverSearchEngine',
         'hoverImgSearchEnable',
@@ -1825,6 +1831,9 @@ async function checkUrlAndToggleListeners() {
     hoverModifiedKey = data.hoverModifiedKey || 'None';
     hoverDisabledUrls = data.hoverDisabledUrls || [];
     hoverSearchEngine = data.hoverSearchEngine || 'https://www.google.com/search?q=%s';
+
+    isFirefox = data.isFirefox;
+    isMac = data.isMac;
 
     dropInEmptyOnly = data.dropInEmptyOnly;
     modifiedKey = data.modifiedKey || 'None';
@@ -2868,16 +2877,18 @@ function addBlurOverlay(blurPx, blurTime) {
         // Now apply the desired blur, which should trigger the transition
         blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
 
-        document.body.addEventListener('mouseenter', () => {
-            removeClickMask();
-            removeBlurOverlay();
-            document.body.addEventListener('mouseleave', () => {
-                if (!document.hasFocus()) {
-                    addClickMask();
-                    addBlurOverlay(blurPx, blurTime);
-                }
+        if (!isMac) {
+            document.body.addEventListener('mouseenter', () => {
+                removeClickMask();
+                removeBlurOverlay();
+                document.body.addEventListener('mouseleave', () => {
+                    if (!document.hasFocus()) {
+                        addClickMask();
+                        addBlurOverlay(blurPx, blurTime);
+                    }
+                }, { once: true });
             }, { once: true });
-        }, { once: true });
+        }
 
     }
 }

@@ -1,6 +1,7 @@
 0.0.49
 - New option: middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window.
 - New option: popup window size as a percentage of the last window size.
+- Disabled the blur removal feature when the mouse enters the original window on macOS.
 
 0.0.48  
 - Updated the InClickMode icon.
