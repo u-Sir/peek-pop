@@ -24,10 +24,10 @@
         "message": "窗口宽度 (px)"
     },
     "popupHeightInPercentage": {
-        "message": "窗口高度（%）：0=关闭，上一个窗口的 1-100%"
+        "message": "窗口高度（%）：0=关闭"
     },
     "popupWidthInPercentage": {
-        "message": "窗口宽度（%）：0=关闭，上一个窗口的 1-100%"
+        "message": "窗口宽度（%）：0=关闭"
     },
     "closeWhenFocusedInitialWindow": {
         "message": "焦点回到原窗口时自动关闭弹窗"
