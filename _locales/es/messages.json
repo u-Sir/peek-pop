@@ -15,10 +15,10 @@
         "message": "Ancho de la ventana emergente (px)"
     },
     "popupHeightInPercentage": {
-        "message": "Altura del popup (%): 0=desactivado, 1-100% de la última ventana"
+        "message": "Altura del popup (%): 0=desactivado"
     },
     "popupWidthInPercentage": {
-        "message": "Ancho del popup (%): 0=desactivado, 1-100% de la última ventana"
+        "message": "Ancho del popup (%): 0=desactivado"
     },
     "closeWhenFocusedInitialWindow": {
         "message": "Cerrar ventana emergente cuando la ventana de origen está enfocada"

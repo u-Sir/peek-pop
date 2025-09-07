@@ -15,10 +15,10 @@
         "message": "Popup width (px)"
     },
     "popupHeightInPercentage": {
-        "message": "Popup height (%): 0=off, 1-100% of last window"
+        "message": "Popup height (%): 0=off"
     },
     "popupWidthInPercentage": {
-        "message": "Popup width (%): 0=off, 1-100% of last window"
+        "message": "Popup width (%): 0=off"
     },
     "closeWhenFocusedInitialWindow": {
         "message": "Close popup when origin window is focused"

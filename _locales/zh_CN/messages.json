@@ -9,16 +9,16 @@
         "message": "集预览、搜索、稍后阅读于一体的轻量级开源浏览器插件"
     },
     "popupHeight": {
-        "message": "窗口高度 (px)"
+        "message": "高度 (px)"
     },
     "popupWidth": {
-        "message": "窗口宽度 (px)"
+        "message": "宽度 (px)"
     },
     "popupHeightInPercentage": {
-        "message": "窗口高度（%）：0=关闭，上一个窗口的 1-100%"
+        "message": "高度（%）：0=关闭"
     },
     "popupWidthInPercentage": {
-        "message": "窗口宽度（%）：0=关闭，上一个窗口的 1-100%"
+        "message": "宽度（%）：0=关闭"
     },
     "closeWhenFocusedInitialWindow": {
         "message": "焦点回到原窗口时自动关闭弹窗"
