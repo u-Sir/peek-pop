@@ -76,6 +76,9 @@ Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
     'sendBackButtonEnable': false
 };
 
+let openPopups = [];
+let activePopupCount = 0;
+
 // Load user configurations from storage
 async function loadUserConfigs() {
     return new Promise(resolve => {
@@ -550,6 +553,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         sendResponse({ status: 'send Page Back handled' });
 
                     }
+
+                    if (request.action === 'addblur') {
+                        //console.log('forward')
+                        activePopupCount++;
+                        openPopups.forEach(tabId => {
+                            // 跳过最后一个 popup
+                            if (tabId === openPopups[openPopups.length - 1]) return;
+
+                            chrome.tabs.sendMessage(tabId, { action: 'ADD_BLUR' });
+                        });
+
+
+                        sendResponse({ status: 'blur handled' });
+                    }
+                    if (request.action === 'removeblur') {
+                        //console.log('forward')
+                        activePopupCount--;
+                        if (activePopupCount <= 0) {
+                            openPopups.forEach(tabId => {
+                                // 跳过最后一个 popup
+                                if (tabId === openPopups[openPopups.length - 1]) return;
+
+
+                                chrome.tabs.sendMessage(tabId, { action: 'REMOVE_BLUR' });
+                            });
+
+                        }
+                        //chrome.tabs.sendMessage(request.originalTabId, { action: "REMOVE_BLUR" });
+                        sendResponse({ status: 'blur handled' });
+                    }
                 }
 
                 const updates = {
@@ -734,24 +767,39 @@ function createPopupWindow(userConfigs, trigger, linkUrl, tab, windowType, left,
     } else {
         savedPositionAndSize = false;
     }
-    chrome.windows.create({
-        url: linkUrl,
-        type: windowType,
-        top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
-        left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
-        width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
-        height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
-        focused: !popupInBackground,
-        incognito: tab && tab.incognito !== undefined ? tab.incognito : false
-    }, (newWindow) => {
-        if (chrome.runtime.lastError) {
-            console.error('Error creating popup window:', chrome.runtime.lastError.message, chrome.runtime.lastError);
-            reject(chrome.runtime.lastError);
-        } else {
-            updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, userConfigs.rememberPopupSizeAndPositionForDomain, resolve, reject);
-        }
-    });
 
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.windows.create({
+            url: linkUrl,
+            type: windowType,
+            top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
+            left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
+            width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
+            height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
+            focused: !popupInBackground,
+            incognito: tab && tab.incognito !== undefined ? tab.incognito : false
+        }, (newWindow) => {
+            if (chrome.runtime.lastError) {
+                console.error('Error creating popup window:', chrome.runtime.lastError.message, chrome.runtime.lastError);
+                reject(chrome.runtime.lastError);
+            } else {
+                if (userConfigs.isMac) {
+                    if (!openPopups.includes(tabs[0].id)) openPopups.push(tabs[0].id);
+                    if (!openPopups.includes(newWindow.tabs[0].id)) openPopups.push(newWindow.tabs[0].id);
+                    chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+                        if (tabId === newWindow.tabs[0].id && info.status === "complete") {
+                            chrome.tabs.sendMessage(newWindow.tabs[0].id, {
+                                action: "INIT_POPUP_LISTENER",
+                                originalTabId: tabs[0].id
+                            });
+                            chrome.tabs.onUpdated.removeListener(listener);
+                        }
+                    });
+                }
+                updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, userConfigs.rememberPopupSizeAndPositionForDomain, resolve, reject);
+            }
+        });
+    });
 
 
 

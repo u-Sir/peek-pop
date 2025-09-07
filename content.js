@@ -2833,3 +2833,43 @@ function removeBlurOverlay() {
         blurOverlay = null; // Clear the reference
     }
 }
+
+
+// special for macOS
+chrome.runtime.onMessage.addListener((msg) => {
+    if (!isMac) return;
+    if (!blurEnabled) return;
+    if (window.self !== window.top) return;
+    //console.log(msg)
+    if (msg.action === "INIT_POPUP_LISTENER") {
+        const originalTabId = msg.originalTabId; // ✅ 来自 background
+
+        document.body.addEventListener("mouseenter", () => {
+            if (!document.hasFocus()) return;
+            //console.log('send msg')
+            chrome.runtime.sendMessage({ action: "addblur", originalTabId });
+        });
+        document.body.addEventListener("mouseleave", () => {
+
+            if (!document.hasFocus()) return;
+            //console.log('send msg')
+            chrome.runtime.sendMessage({ action: "removeblur", originalTabId });
+        });
+
+    }
+
+    if (msg.action === "ADD_BLUR") {
+        if (document.hasFocus()) return;
+        //console.log('add?')
+        addClickMask();
+        addBlurOverlay(blurPx, blurTime);
+    }
+    if (msg.action === "REMOVE_BLUR") {
+        //console.log('add?')
+        removeClickMask();
+        removeBlurOverlay();
+    }
+
+});
+
+
