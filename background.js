@@ -54,6 +54,7 @@ const configs = {
     'holdToPreviewTimeout': 1500,
 
     'isFirefox': false,
+    'isMac': false,
 
     'linkHint': false,
     'linkDisabledUrls': [],
@@ -99,29 +100,36 @@ async function saveConfig(key, value) {
 
 
 // Initialize the extension
-chrome.runtime.onInstalled.addListener(() => {
-    loadUserConfigs().then(userConfigs => {
-        const setBrowserInfo = new Promise((resolve, reject) => {
-            try {
-                chrome.runtime.getBrowserInfo((browserInfo) => {
-                    if (browserInfo.name === 'Firefox') {
-                        userConfigs['isFirefox'] = true;
-                    } else {
-                        userConfigs['isFirefox'] = false;
-                    }
-                    resolve();
-                });
-            } catch (error) {
-                userConfigs['isFirefox'] = false;
-                resolve();
-            }
-        });
+chrome.runtime.onInstalled.addListener(async () => {
+    try {
+        const storedConfigs = await chrome.storage.local.get(Object.keys(configs));
+        const mergedConfigs = { ...configs, ...storedConfigs };
+        Object.assign(configs, mergedConfigs);
 
-        setBrowserInfo.then(() => {
-            const keysToSave = Object.keys(configs).filter(key => userConfigs[key] === undefined);
-            return Promise.all(keysToSave.map(key => saveConfig(key, configs[key])));
-        }).catch(error => console.error('Error during installation setup:', error));
-    });
+        if (chrome.runtime.getBrowserInfo) {
+            const browserInfo = await new Promise(resolve =>
+                chrome.runtime.getBrowserInfo(resolve)
+            );
+            configs.isFirefox = browserInfo.name === "Firefox";
+        }
+
+        if (chrome.runtime.getPlatformInfo) {
+            const platformInfo = await new Promise(resolve =>
+                chrome.runtime.getPlatformInfo(resolve)
+            );
+            configs.isMac = platformInfo.os === "mac";
+        }
+
+        const keysToSave = Object.keys(configs).filter(k => storedConfigs[k] === undefined || k === 'isFirefox' || k === 'isMac');
+        if (keysToSave.length > 0) {
+            const defaultsToSave = {};
+            for (const key of keysToSave) defaultsToSave[key] = configs[key];
+            await chrome.storage.local.set(defaultsToSave);
+        }
+
+    } catch (err) {
+        console.error("Error during installation setup:", err);
+    }
 });
 
 

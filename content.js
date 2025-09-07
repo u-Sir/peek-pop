@@ -83,7 +83,10 @@ let linkIndicator,
 
     debounceTimer,
     lastMessage = null,
-    shouldResetClickState = false;
+    shouldResetClickState = false,
+
+    isFirefox,
+    isMac;
 
 
 const configs = {
@@ -140,6 +143,7 @@ const configs = {
     'rememberPopupSizeAndPositionForDomain': false,
 
     'isFirefox': false,
+    'isMac': false,
 
     'linkHint': false,
     'linkDisabledUrls': [],
@@ -1669,6 +1673,8 @@ async function checkUrlAndToggleListeners() {
 
     handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     const data = await loadUserConfigs([
+        'isFirefox',
+        'isMac',
 
         'collection',
         'collectionEnable',
@@ -1744,6 +1750,8 @@ async function checkUrlAndToggleListeners() {
     disabledUrls = data.disabledUrls || [];
     searchEngine = data.searchEngine || 'https://www.google.com/search?q=%s';
 
+    isFirefox = data.isFirefox;
+    isMac = data.isMac;
 
     blurTime = data.blurTime || 1;
     blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
@@ -2802,16 +2810,19 @@ function addBlurOverlay(blurPx, blurTime) {
         // Now apply the desired blur, which should trigger the transition
         blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
 
-        document.body.addEventListener('mouseenter', () => {
-            removeClickMask();
-            removeBlurOverlay();
-            document.body.addEventListener('mouseleave', () => {
-                if (!document.hasFocus()) {
-                    addClickMask();
-                    addBlurOverlay(blurPx, blurTime);
-                }
+        // disable blur on mouse enter and enable on mouse leave for Mac systems
+        if (!isMac) {
+            document.body.addEventListener('mouseenter', () => {
+                removeClickMask();
+                removeBlurOverlay();
+                document.body.addEventListener('mouseleave', () => {
+                    if (!document.hasFocus()) {
+                        addClickMask();
+                        addBlurOverlay(blurPx, blurTime);
+                    }
+                }, { once: true });
             }, { once: true });
-        }, { once: true });
+        }
     }
 }
 
