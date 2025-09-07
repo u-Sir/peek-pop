@@ -56,7 +56,10 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "drag_to_privew@uxer"
+      "id": "drag_to_privew@uxer",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }

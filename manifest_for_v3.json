@@ -48,8 +48,7 @@
       "description": "__MSG_popAction__"
     },
     "clickModeToggle": {
-      "suggested_key": {
-      },
+      "suggested_key": {},
       "description": "__MSG_clickModeToggle__"
     }
   },
@@ -60,9 +59,14 @@
     },
     "default_popup": "action/action.html"
   },
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "peek_pop@uxer"
-        }
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "peek_pop@uxer",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
     }
+  }
 }
