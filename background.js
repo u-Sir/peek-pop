@@ -1073,7 +1073,15 @@ function onMenuItemClicked(info, tab) {
 
 // Listener for popup window removal
 function windowRemovedListener(windowId) {
-    chrome.storage.local.get('popupWindowsInfo', (result) => {
+    chrome.storage.local.get(['popupWindowsInfo', 'isMac'], (result) => {
+        if (result.isMac) {
+            chrome.tabs.query({}, (tabs) => {
+                const existingIds = tabs.map(t => t.id);
+                openPopups = openPopups.filter(id => existingIds.includes(id));
+            });
+        }
+
+
         const popupWindowsInfo = result.popupWindowsInfo || {};
 
         for (const originWindowId in popupWindowsInfo) {
