@@ -114,7 +114,7 @@
         "message": "悬停预览（为 0 时不启用）"
     },
     "urlCheck": {
-        "message": "对选中 URL 文本，仅显示打开按钮"
+        "message": "当选中 URL 文本时，仅显示打开按钮"
     },
     "doubleTapKeyToSendPageBack": {
         "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
