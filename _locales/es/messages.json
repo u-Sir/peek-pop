@@ -9,16 +9,16 @@
         "message": "Una extensión de navegador ligera y de código abierto permite previsualizar, buscar y guardar páginas para leerlas más tarde."
     },
     "popupHeight": {
-        "message": "Altura emergente (px)"
+        "message": "Altura (px)"
     },
     "popupWidth": {
-        "message": "Ancho de la ventana emergente (px)"
+        "message": "Ancho (px)"
     },
     "popupHeightInPercentage": {
-        "message": "Altura del popup (%): 0=desactivado"
+        "message": "Altura (%): 0=desactivado"
     },
     "popupWidthInPercentage": {
-        "message": "Ancho del popup (%): 0=desactivado"
+        "message": "Ancho (%): 0=desactivado"
     },
     "closeWhenFocusedInitialWindow": {
         "message": "Cerrar ventana emergente cuando la ventana de origen está enfocada"
@@ -48,7 +48,7 @@
         "message": "Intensidad de desenfoque: "
     },
     "blurTime": {
-        "message": "Duración del desenfoque (s): " 
+        "message": "Duración del desenfoque (s): "
     },
     "modifiedKey": {
         "message": "Respuesta cuando se presiona la tecla seleccionada (Por favor, prueba para asegurarte de que cumple con las expectativas.)"
@@ -114,7 +114,7 @@
         "message": "hover to preview"
     },
     "urlCheck": {
-        "message": "Abrir directamente si lo seleccionado es una URL"
+        "message": "Mostrar el botón de abrir solo si el contenido seleccionado es una URL"
     },
     "doubleTapKeyToSendPageBack": {
         "message": "Doble toque en una tecla específica para enviar la página a la ventana original (Por favor, verifica si funciona correctamente.)"
@@ -180,13 +180,13 @@
         "message": "Tamaño de ventana por porcentaje de la última ventana"
     },
     "linkHint": {
-        "message": "Indicador de enlace."
+        "message": "Indicador de enlace: muestra una pista al pasar el cursor sobre los enlaces compatibles."
     },
     "searchTooltipsEnable": {
         "message": "Tooltips para el texto seleccionado."
     },
     "collectionEnable": {
-        "message": "Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión."
+        "message": "Leer más tarde: Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión."
     },
     "linkSettings": {
         "message": "Enlace"
