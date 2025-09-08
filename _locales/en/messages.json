@@ -120,7 +120,7 @@
         "message": "hover (ms) to preview ( 0 to disabled )"
     },
     "urlCheck": {
-        "message": "Open directly if selected is url"
+        "message": "Only display the open button if the selected content is a URL"
     },
     "doubleTapKeyToSendPageBack": {
         "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
@@ -183,7 +183,7 @@
         "message": "Window size by percentage of last window"
     },
     "linkHint": {
-        "message": "Indicator."
+        "message": "Link Indicator: displays a hint on hover for supported links"
     },
     "searchTooltipsEnable": {
         "message": "Tooltips for selected text."
