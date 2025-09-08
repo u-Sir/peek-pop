@@ -9,16 +9,16 @@
         "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later."
     },
     "popupHeight": {
-        "message": "Popup height (px)"
+        "message": "Height (px)"
     },
     "popupWidth": {
-        "message": "Popup width (px)"
+        "message": "Width (px)"
     },
     "popupHeightInPercentage": {
-        "message": "Popup height (%): 0=off"
+        "message": "Height (%): 0=off"
     },
     "popupWidthInPercentage": {
-        "message": "Popup width (%): 0=off"
+        "message": "Width (%): 0=off"
     },
     "closeWhenFocusedInitialWindow": {
         "message": "Close popup when origin window is focused"
@@ -114,7 +114,7 @@
         "message": "hover (ms) to preview ( 0 to disabled )"
     },
     "urlCheck": {
-        "message": "Open directly if selected is url"
+        "message": "Only display the open button if the selected content is a URL"
     },
     "doubleTapKeyToSendPageBack": {
         "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
@@ -186,7 +186,7 @@
         "message": "Tooltips for selected text."
     },
     "collectionEnable": {
-        "message": "Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon."
+        "message": "Read later: Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon."
     },
     "linkSettings": {
         "message": "Link"
@@ -222,7 +222,7 @@
         "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
     },
     "copyButtonEnable": {
-        "message": "Displays a button to copy the current page URL in a window of type 'popup'."
+        "message": "Adds a Copy URL button for popup-type windows"
     },
     "searchTooltipsEngines": {
         "message": "Search engines in the search bar, one per line, format: Display Name=>Search link with %s"
@@ -231,6 +231,6 @@
         "message": "Only respose when drop in empty area."
     },
     "sendBackButtonEnable": {
-        "message": "Displays a button to send the current page URL back to the origin window in a window of type 'popup'."
+        "message": "Adds a Send Back button for popup-type windows"
     }
 }

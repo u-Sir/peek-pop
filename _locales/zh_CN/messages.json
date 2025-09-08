@@ -84,7 +84,7 @@
         "message": "弹出窗口类型："
     },
     "closedByEsc": {
-        "message": "Esc 关闭当前弹窗页面（覆盖页面 Esc 原有行为）"
+        "message": "使用 Esc 关闭当前弹窗页面（开启后会覆盖页面 Esc 原有行为）"
     },
     "dragSettings": {
         "message": "拖拽"
@@ -114,7 +114,7 @@
         "message": "悬停预览（为 0 时不启用）"
     },
     "urlCheck": {
-        "message": "如果选中文本是 URL，直接打开"
+        "message": "对选中 URL 文本，仅显示打开按钮"
     },
     "doubleTapKeyToSendPageBack": {
         "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
@@ -171,22 +171,22 @@
         "message": "动态弹窗：记住每个域名最后的窗口大小和位置，需要滑动或点击页面。"
     },
     "note": {
-        "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 居中/鼠标附近"
+        "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 按比例缩小的 > 居中/鼠标附近"
     },
     "staticSize": {
         "message": "固定窗口大小"
     },
     "percentageSize": {
-        "message": "按百分比设置窗口大小"
+        "message": "按比例缩小窗口"
     },
     "linkHint": {
-        "message": "链接提示"
+        "message": "链接指示器：当鼠标悬停在支持的链接上方时显示一个小图标"
     },
     "searchTooltipsEnable": {
         "message": "启用划词搜索条"
     },
     "collectionEnable": {
-        "message": "Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表。"
+        "message": "稍后阅读：通过 Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表。"
     },
     "linkSettings": {
         "message": "链接"
@@ -222,7 +222,7 @@
         "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "copyButtonEnable": {
-        "message": "在 'popup' 类型窗口中显示“复制当前页面链接”按钮"
+        "message": "添加“复制页面链接”按钮到在 'popup' 类型窗口"
     },  
     "searchTooltipsEngines": {
         "message": "搜索条内的搜索引擎，每行一个，格式：显示名称=>带有%s的搜索链接"
@@ -231,7 +231,7 @@
         "message": "仅拖拽到空白处时才响应"
     },
     "sendBackButtonEnable": {
-        "message": "在 'popup' 类型窗口中显示“发送当前页面到原窗口”按钮"
+        "message": "添加“发送当前页面到原窗口”按钮到 'popup' 类型窗口"
     }
     
 }
