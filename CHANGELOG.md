@@ -1,4 +1,4 @@
-0.0.49
+0.0.50
 - New option: middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window.
 - New option: popup window size as a percentage of the last window size.
 - Refined blur removal behavior on macOS.
