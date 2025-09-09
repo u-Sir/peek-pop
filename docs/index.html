@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from e826bwscpk.fellou.io/peek-pop-lightweight-browser-extension-JwnZVx8s by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 09 Sep 2025 14:59:30 GMT -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peek Pop - Lightweight Browser Extension</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <link href="../cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            filter: hue-rotate(25deg) saturate(0.8) brightness(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: hue-rotate(25deg) saturate(1) brightness(0.8);
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+            background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: rotate(0deg) translate(0, 0);
+            }
+
+            33% {
+                transform: rotate(120deg) translate(30px, -30px);
+            }
+
+            66% {
+                transform: rotate(240deg) translate(-20px, 20px);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            filter: hue-rotate(25deg) saturate(0.9) brightness(0.8);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #718096;
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .download-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+        }
+
+        .badge i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .section:nth-child(even) {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2.5rem 2rem;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .feature-card p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        /* Installation Section */
+        .installation-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .installation-steps {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .step-content p {
+            color: #718096;
+        }
+
+        /* FAQ Section */
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-question {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 1.5rem;
+            width: 100%;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .faq-answer {
+            padding: 1.5rem;
+            background: rgba(247, 250, 252, 0.8);
+            border-radius: 0 0 15px 15px;
+            color: #718096;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-answer.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Table Styles */
+        .support-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .support-table th,
+        .support-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .support-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .support-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .support-table .supported {
+            color: #38a169;
+            font-weight: 600;
+        }
+
+        .support-table .not-supported {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        /* Code blocks */
+        code {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: #9C7AEA;
+        }
+
+        .code-block {
+            background: rgba(45, 55, 72, 0.95);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            overflow-x: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .download-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section h2 {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .hero {
+                padding: 100px 0 60px;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo-container">
+                <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid meet">
+                    <g transform="translate(0,100) scale(0.025,-0.025)" fill="url(#logoGradient)" stroke="none">
+                        <path d="M1615 3820 c-569 -68 -1029 -460 -1209 -1030 -56 -175 -56 -179 -56
+                    -1287 0 -722 3 -1038 11 -1075 46 -215 217 -372 430 -395 275 -28 527 228 489
+                    499 -27 186 -136 284 -326 294 l-64 3 0 815 c0 865 1 890 49 1028 96 280 323
+                    499 606 584 78 23 108 27 230 28 160 0 219 -12 352 -74 92 -43 145 -77 229
+                    -150 33 -27 63 -50 68 -50 9 0 182 157 320 289 l79 76 -74 68 c-192 177 -442
+                    304 -702 358 -114 23 -321 33 -432 19z" />
+                        <path d="M2750 3823 c0 -5 104 -109 231 -233 l231 -226 -251 -233 c-276 -257
+                    -291 -277 -311 -404 -7 -48 -8 -105 0 -191 17 -193 -7 -341 -80 -503 -77 -170
+                    -240 -332 -421 -418 -148 -70 -201 -78 -516 -83 l-283 -4 0 -269 0 -269 258 0
+                    c348 0 467 18 692 105 128 50 278 137 383 222 240 197 422 498 488 808 25 116
+                    35 362 20 475 l-11 85 161 155 c89 85 166 157 172 159 5 2 81 -68 168 -155
+                    l159 -159 0 573 0 572 -545 0 c-300 0 -545 -3 -545 -7z" />
+                        <path d="M1636 2745 c-85 -34 -149 -97 -193 -185 -24 -48 -27 -67 -28 -150 0
+                    -82 4 -103 27 -152 35 -76 95 -138 170 -179 59 -32 69 -34 158 -34 81 0 103 4
+                    150 26 191 89 271 329 172 512 -36 67 -120 141 -187 166 -80 30 -191 28 -269
+                    -4z" />
+                    </g>
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4a5568" />
+                            <stop offset="100%" style="stop-color:#2d3748" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">Peek Pop</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#usage">Usage</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content fade-in">
+                    <svg class="hero-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"
+                        preserveAspectRatio="xMidYMid meet">
+                        <g transform="translate(0,100) scale(0.025,-0.025)" fill="url(#heroLogoGradient)" stroke="none">
+                            <path d="M1615 3820 c-569 -68 -1029 -460 -1209 -1030 -56 -175 -56 -179 -56
+                    -1287 0 -722 3 -1038 11 -1075 46 -215 217 -372 430 -395 275 -28 527 228 489
+                    499 -27 186 -136 284 -326 294 l-64 3 0 815 c0 865 1 890 49 1028 96 280 323
+                    499 606 584 78 23 108 27 230 28 160 0 219 -12 352 -74 92 -43 145 -77 229
+                    -150 33 -27 63 -50 68 -50 9 0 182 157 320 289 l79 76 -74 68 c-192 177 -442
+                    304 -702 358 -114 23 -321 33 -432 19z" />
+                            <path d="M2750 3823 c0 -5 104 -109 231 -233 l231 -226 -251 -233 c-276 -257
+                    -291 -277 -311 -404 -7 -48 -8 -105 0 -191 17 -193 -7 -341 -80 -503 -77 -170
+                    -240 -332 -421 -418 -148 -70 -201 -78 -516 -83 l-283 -4 0 -269 0 -269 258 0
+                    c348 0 467 18 692 105 128 50 278 137 383 222 240 197 422 498 488 808 25 116
+                    35 362 20 475 l-11 85 161 155 c89 85 166 157 172 159 5 2 81 -68 168 -155
+                    l159 -159 0 573 0 572 -545 0 c-300 0 -545 -3 -545 -7z" />
+                            <path d="M1636 2745 c-85 -34 -149 -97 -193 -185 -24 -48 -27 -67 -28 -150 0
+                    -82 4 -103 27 -152 35 -76 95 -138 170 -179 59 -32 69 -34 158 -34 81 0 103 4
+                    150 26 191 89 271 329 172 512 -36 67 -120 141 -187 166 -80 30 -191 28 -269
+                    -4z" />
+                        </g>
+                        <defs>
+                            <linearGradient id="heroLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea" />
+                                <stop offset="100%" style="stop-color:#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h1>Peek Pop</h1>
+                    <p>A lightweight, open-source browser extension that lets you preview, search, and save pages to
+                        read later. </p>
+                    <div class="download-badges">
+                        <a href="https://addons.mozilla.org/firefox/addon/peek_pop" class="badge">
+                            <i class="fab fa-firefox-browser"></i>
+                            Get it on Firefox
+                        </a>
+                        <a href="https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh"
+                            class="badge">
+                            <i class="fab fa-chrome"></i>
+                            Get it on Chrome
+                        </a>
+                        <a href="https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop"
+                            class="badge">
+                            <i class="fab fa-edge"></i>
+                            Get it on Microsoft Edge
+                        </a>
+                        <a href="https://github.com/u-Sir/peek-pop/releases/latest" class="badge">
+                            <i class="fab fa-github"></i>
+                            GitHub Release
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="installation" class="section">
+            <div class="container">
+                <h2 class="fade-in">Installation</h2>
+                <div class="installation-content">
+                    <div class="card fade-in">
+                        <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem; color: #2d3748;">Quick
+                            Setup Guide</h3>
+                        <div class="installation-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Install Extension</h4>
+                                    <p>Choose your browser and install Peek Pop from the official store using the
+                                        download buttons above.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Visit Options Page</h4>
+                                    <p>After installation, it's recommended to visit the options page to customize the
+                                        settings and tailor the plugin to your needs.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Configure Settings</h4>
+                                    <p>Set up blacklists, customize shortcuts, and adjust preview behavior according to
+                                        your preferences.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Key Features Section -->
+        <section id="features" class="section">
+            <div class="container">
+                <h2 class="fade-in">Key Features</h2>
+                <div class="features-grid">
+                    <div class="card feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3>Preview Pages</h3>
+                        <p>Instantly preview web pages without leaving your current tab. Get a quick look at content
+                            before deciding to visit.</p>
+                    </div>
+                    <div class="card feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Search Functionality</h3>
+                        <p>
+                        <p>Quickly search and find exactly what you need within the content you’ve selected.</p>
+                        </p>
+                    </div>
+                    <div class="card feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                        <h3>Read Later</h3>
+                        <p>Save pages to read later and never lose track of important content.</p>
+
+                    </div>
+                    <div class="card feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-hand-pointer"></i>
+                        </div>
+                        <h3>Flexible Trigger</h3>
+                        <p>Activate preview via drag, hover, or click, with optional modifier keys.</p>
+                    </div>
+                    <div class="card feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3>Customizable Settings</h3>
+                        <p>Extensive customization options through the options page to tailor the extension to your
+                            specific workflow.</p>
+                    </div>
+                    <div class="card feature-card fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <h3>Blacklist Support</h3>
+                        <p>Multiple format support including regex, wildcard, and plain text to exclude specific sites
+                            from preview.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Usage Section -->
+        <section id="usage" class="section">
+            <div class="container">
+                <h2 class="fade-in">Usage Guide</h2>
+
+                <div class="card fade-in">
+                    <h3><i class="fas fa-list"></i> Blacklist Format Examples</h3>
+                    <p>Configure which sites to exclude from preview using these formats:</p>
+                    <div class="code-block">
+                        <strong>Regex format:</strong><br>
+                        <code>/^https:\/\/example\.com\/.*$/</code><br><br>
+                        <strong>Wildcard format:</strong><br>
+                        <code>https://example.com/*</code><br><br>
+                        <strong>Plain text format:</strong><br>
+                        <code>https://example.com</code>
+                    </div>
+                </div>
+
+                <div class="card fade-in">
+                    <h3><i class="fas fa-keyboard"></i> Modifying Plugin Shortcuts</h3>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 1rem;">
+                        <div>
+                            <h4 style="color: #667eea; margin-bottom: 0.5rem;"><i class="fab fa-chrome"></i> Chrome</h4>
+                            <p>Go to the settings page: <code>chrome://extensions/shortcuts</code></p>
+                        </div>
+                        <div>
+                            <h4 style="color: #667eea; margin-bottom: 0.5rem;"><i class="fab fa-firefox"></i> Firefox
+                            </h4>
+                            <p>Go to <code>about:addons</code>, click the gear icon, then select "Manage Extension
+                                Shortcuts"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card fade-in">
+                    <h3><i class="fas fa-map-marker-alt"></i> Where Links Are Supported</h3>
+                    <table class="support-table">
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Supported?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Normal page</td>
+                                <td class="supported">✅ Yes</td>
+                            </tr>
+                            <tr>
+                                <td>Inside an iframe</td>
+                                <td class="supported">✅ Yes</td>
+                            </tr>
+                            <tr>
+                                <td>Inside an open shadow root</td>
+                                <td class="supported">✅ Yes</td>
+                            </tr>
+                            <tr>
+                                <td>Inside a closed shadow root</td>
+                                <td class="not-supported">❌ No</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; color: #667eea; font-weight: 500;">
+                        👉 Currently, all links are supported except those inside <strong>closed shadow roots</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="section">
+            <div class="container">
+                <h2 class="fade-in">Frequently Asked Questions</h2>
+
+                <div class="faq-item fade-in">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Is it possible to set a popup always on top?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Due to browser add-on limitations, this can't be done directly by the add-on. However, you can
+                        use third-party software like <strong>PowerToys - Always On Top</strong> to achieve this. Don't
+                        forget to uncheck <strong>"Close popup when origin window is focused"</strong> on the settings
+                        page.
+                    </div>
+                </div>
+
+                <div class="faq-item fade-in">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Why are other actions triggered during preview?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Try disabling other add-ons to see if the issue persists. If you're using Edge, also check
+                        <code>edge://settings/superDragDrop</code>. If the problem continues, please create an issue on
+                        GitHub.
+                    </div>
+                </div>
+
+                <div class="faq-item fade-in">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Why is the add-on version not up-to-date on Microsoft Edge Add-ons?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        The update process may take up to 7 business days due to review procedures by Microsoft.
+                    </div>
+                </div>
+
+                <div class="faq-item fade-in">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Can I customize the appearance of the preview window?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        The preview window is based on the native browser window, so customization is not supported.
+                        Firefox users may be able to adjust it using <code>userChrome.css</code>.
+                    </div>
+                </div>
+
+                <div class="faq-item fade-in">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Is it possible to retain the page's original drag functionality while using drag-to-preview?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        You can enable the <strong>"Only respond when dragging to empty areas"</strong> option in the
+                        settings to preserve the page's native drag behavior.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Known Issues Section -->
+        <section class="section">
+            <div class="container">
+                <h2 class="fade-in">Known Issues</h2>
+
+                <div class="card fade-in">
+                    <h3><i class="fab fa-firefox"></i> On Firefox</h3>
+                    <p>When system scaling is not set to 100%, the popup window may briefly flash when it appears.</p>
+                </div>
+
+                <div class="card fade-in">
+                    <h3><i class="fab fa-apple"></i> On macOS</h3>
+                    <p>The preview popup window does not work properly in fullscreen mode. For best results, use the
+                        window in non-fullscreen mode.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // FAQ Toggle
+        function toggleFAQ(button) {
+            const answer = button.nextElementSibling;
+            const isActive = button.classList.contains('active');
+
+            // Close all FAQ items
+            document.querySelectorAll('.faq-question').forEach(q => {
+                q.classList.remove('active');
+                q.nextElementSibling.classList.remove('active');
+            });
+
+            // Toggle current item
+            if (!isActive) {
+                button.classList.add('active');
+                answer.classList.add('active');
+            }
+        }
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Header scroll effect
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                header.style.transform = 'translateY(0)';
+            }
+
+            if (scrollTop > 50) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.9)';
+                header.style.boxShadow = 'none';
+            }
+
+            lastScrollTop = scrollTop;
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    const targetPosition = target.offsetTop - headerHeight - 20;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+
+    <script>
+        const createFloatingBall = () => {
+            let a = document.createElement("style"); a.textContent = `
+          .fellou-floating-ball {
+              position: fixed;
+              bottom: 20px;
+              right: 20px;
+              background: #fff;
+              border-radius: 50%;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+              display: flex;
+              gap: 8px;
+              flex-direction: row;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              transition: all 0.15s ease;
+              z-index: 100000;
+              width: 28px;
+              height: 28px;
+              text-align: center;
+              border: 2px solid #f4f4f4;
+          }
+
+          .fellou-floating-ball:hover {
+              width: 140px;
+              border-radius: 99px;
+          }
+
+          .fellou-floating-ball svg {
+              width: 16px;
+              height: 16px;
+          }
+
+          .fellou-floating-ball-text {
+              display: none;
+              width: 0px;
+              transition: width 0.3s ease;
+              color: #595561;
+              font-size: 12px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 20px;
+              white-space: nowrap;
+              overflow: hidden;
+           
+          }
+
+          .fellou-floating-ball:hover .fellou-floating-ball-text {
+              display: block;
+              width: 100px;
+          }
+      `, document.head.appendChild(a); let b = document.createElement("div"); b.className = "fellou-floating-ball", b.addEventListener("click", () => { window.open("https://fellou.ai/", "_blank") }), b.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 152 152" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path opacity="0.72" d="M108.71 15.909C133.671 36.8541 134.337 77.1554 110.197 105.924C86.0565 134.694 46.2518 141.036 21.2904 120.091C-3.67096 99.1459 -4.33674 58.8446 19.8034 30.0755C43.9435 1.30644 83.7482 -5.03614 108.71 15.909ZM102.282 23.5694C81.8118 6.39315 48.2407 11.7425 27.4638 36.5034C6.68694 61.2643 7.24845 95.2543 27.7183 112.431C48.1882 129.607 81.7593 124.258 102.536 99.4966C123.313 74.7357 122.752 40.7457 102.282 23.5694Z" fill="url(#paint0_linear_34_1408)"/>
+              <path d="M116.986 29.3811C141.525 49.9712 143.286 88.2698 120.921 114.924C98.5561 141.577 60.5333 146.493 35.995 125.903C11.4567 105.313 9.69493 67.0139 32.06 40.3602C54.4252 13.7065 92.4479 8.79095 116.986 29.3811ZM110.558 37.0415C90.3987 20.1255 58.6488 24.2301 39.7205 46.788C20.7921 69.346 22.2632 101.326 42.4229 118.242C62.5825 135.158 94.3324 131.054 113.261 108.496C132.189 85.9377 130.718 53.9574 110.558 37.0415Z" fill="url(#paint1_linear_34_1408)"/>
+              <path d="M131.544 35.0694C155.71 55.3471 155.731 95.1074 131.591 123.876C107.451 152.646 68.291 159.529 44.1249 139.251C19.9589 118.974 19.9379 79.2135 44.078 50.4444C68.2182 21.6753 107.378 14.7917 131.544 35.0694ZM125.116 42.7299C105.505 26.2745 72.5526 32.067 51.7385 56.8723C30.9244 81.6776 30.9421 115.136 50.5528 131.591C70.1636 148.046 103.116 142.254 123.931 117.449C144.745 92.6433 144.727 59.1852 125.116 42.7299Z" fill="url(#paint2_linear_34_1408)"/>
+              <defs>
+                  <linearGradient id="paint0_linear_34_1408" x1="108.71" y1="15.909" x2="21.2904" y2="120.091" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#6401F8" stop-opacity="0.7"/>
+                      <stop offset="0.465" stop-color="#FF9000" stop-opacity="0.42"/>
+                      <stop offset="1" stop-color="#33B3FF" stop-opacity="0.2"/>
+                  </linearGradient>
+                  <linearGradient id="paint1_linear_34_1408" x1="116.986" y1="29.381" x2="35.995" y2="125.903" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#6401F8" stop-opacity="0.7"/>
+                      <stop offset="0.465" stop-color="#FF9000" stop-opacity="0.42"/>
+                      <stop offset="1" stop-color="#33B3FF" stop-opacity="0.2"/>
+                  </linearGradient>
+                  <linearGradient id="paint2_linear_34_1408" x1="131.544" y1="35.0694" x2="44.1249" y2="139.251" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#6401F8"/>
+                      <stop offset="0.5" stop-color="#FF9000"/>
+                      <stop offset="1" stop-color="#33B3FF"/>
+                  </linearGradient>
+              </defs>
+          </svg>
+      `; let c = document.createElement("div"); c.className = "fellou-floating-ball-text", c.textContent = "powered by fellou", b.appendChild(c), document.body.appendChild(b)
+        };
+        // Call createFloatingBall when the page loads
+        window.addEventListener('load', createFloatingBall);
+    </script>
+</body>
+
+</html>
