@@ -1023,7 +1023,7 @@ function handleEvent(e) {
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-            if (previewMode && linkUrl && !isDoubleClick) {
+            if (previewMode && linkUrl && !isDoubleClick && e.isTrusted) {
                 e.preventDefault();
                 e.stopPropagation();
 
