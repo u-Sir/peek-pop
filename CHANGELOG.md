@@ -1,3 +1,6 @@
+0.0.51
+- Prevent popups from opening on non-human (scripted) clicks.
+
 0.0.50
 - New option: middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window.
 - New option: popup window size as a percentage of the last window size.

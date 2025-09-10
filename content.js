@@ -1047,7 +1047,7 @@ function handleEvent(e) {
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-            if (previewMode && linkUrl && !isDoubleClick) {
+            if (previewMode && linkUrl && !isDoubleClick && !e.target.closest("[hx-on\\:click]")) {
                 e.preventDefault();
                 e.stopPropagation();
 
