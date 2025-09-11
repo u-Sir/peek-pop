@@ -1023,7 +1023,11 @@ function handleEvent(e) {
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-            if (previewMode && linkUrl && !isDoubleClick && !e.target.closest("[hx-on\\:click]")) {
+            if (previewMode && 
+                linkUrl && 
+                !isDoubleClick && 
+                !e.target.closest("[hx-on\\:click]") &&
+                !(e.target.closest("button") && e.target.closest("button").getAttribute("aria-haspopup") === "menu")) {
                 e.preventDefault();
                 e.stopPropagation();
 
