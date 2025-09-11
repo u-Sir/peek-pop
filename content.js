@@ -1027,7 +1027,7 @@ function handleEvent(e) {
                 linkUrl && 
                 !isDoubleClick && 
                 !linkElement.closest("[hx-on\\:click]") &&
-                !(linkElement.closest("button") && linkElement.closest("button").getAttribute("aria-haspopup") === "menu")) {
+                !(e.target.closest("button") && e.target.closest("button").getAttribute("aria-haspopup") === "menu")) {
                 e.preventDefault();
                 e.stopPropagation();
 
