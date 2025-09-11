@@ -86,8 +86,8 @@ let linkIndicator,
     shouldResetClickState = false,
 
     isFirefox,
-    isMac;
-isInputboxFocused = false;
+    isMac,
+    isInputboxFocused = false;
 
 
 const configs = {
