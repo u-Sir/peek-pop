@@ -1053,8 +1053,8 @@ function handleEvent(e) {
             if (previewMode && 
                 linkUrl && 
                 !isDoubleClick && 
-                !e.target.closest("[hx-on\\:click]") &&
-                !(e.target.closest("button") && e.target.closest("button").getAttribute("aria-haspopup") === "menu")) {
+                !linkElement.closest("[hx-on\\:click]") &&
+                !(linkElement.closest("button") && linkElement.closest("button").getAttribute("aria-haspopup") === "menu")) {
                 e.preventDefault();
                 e.stopPropagation();
 
