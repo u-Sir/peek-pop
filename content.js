@@ -87,6 +87,7 @@ let linkIndicator,
 
     isFirefox,
     isMac;
+isInputboxFocused = false;
 
 
 const configs = {
@@ -688,6 +689,7 @@ function handleMouseDown(e) {
     }
 
 
+
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
@@ -968,6 +970,7 @@ function handleDoubleClick(e) {
             e.stopPropagation(); // Stop the event from bubbling up
             hasPopupTriggered = true;
             isDoubleClick = true;
+
             if (e.target.shadowRoot) {
                 linkElement.click();
             } else {
@@ -1097,6 +1100,18 @@ function handleEvent(e) {
             (linkElement.getAttribute('data-url') ||
                 (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
             : null;
+
+
+        // Check if the focused element is an input or textarea
+        const activeEl = document.activeElement;
+        if (
+            activeEl &&
+            (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")
+        ) {
+            isInputboxFocused = true;
+        } else {
+            isInputboxFocused = false;
+        }
 
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
         if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -2379,8 +2394,7 @@ async function handleMouseOver(e) {
 
     const path = e.composedPath();
     const iframe = path.find((node) => node instanceof HTMLIFrameElement);
-
-    if (iframe && !iframe.closest('[aria-hidden]') && !iframe.hasAttribute('aria-hidden')) {
+    if (!isInputboxFocused && iframe && !iframe.closest('[aria-hidden]') && !iframe.hasAttribute('aria-hidden')) {
         e.target.focus();
     }
     // Check if any of the nodes in the path are part of a shadow root
