@@ -1,3 +1,6 @@
+0.0.52
+- Keep focus on input when hovering over iframe.
+
 0.0.51
 - Prevent popups from opening on non-human (scripted) clicks.
 

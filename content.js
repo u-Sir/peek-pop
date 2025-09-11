@@ -89,8 +89,8 @@ let linkIndicator,
     shouldResetClickState = false,
 
     isFirefox,
-    isMac;
-
+    isMac,
+    isInputboxFocused = false;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -1023,7 +1023,7 @@ function handleEvent(e) {
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-            if (previewMode && linkUrl && !isDoubleClick && !e.target.closest("[hx-on\\:click]") ) {
+            if (previewMode && linkUrl && !isDoubleClick && !e.target.closest("[hx-on\\:click]")) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -1073,6 +1073,17 @@ function handleEvent(e) {
             (linkElement.getAttribute('data-url') ||
                 (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
             : null;
+
+        // Check if the focused element is an input or textarea
+        const activeEl = document.activeElement;
+        if (
+            activeEl &&
+            (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")
+        ) {
+            isInputboxFocused = true;
+        } else {
+            isInputboxFocused = false;
+        }
 
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
         if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
