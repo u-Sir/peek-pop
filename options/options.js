@@ -30,8 +30,6 @@ const configs = {
     'rememberPopupSizeAndPositionForDomain': false,
     'popupWindowsInfo': {},
     
-    'contextItemCreated': false,
-    
     'urlCheck': true,
     
     'hoverTimeout': 0,
