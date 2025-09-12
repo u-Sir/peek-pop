@@ -50,6 +50,9 @@
     "blurTime": {
         "message": "Blur duration (s): "
     },
+    "blurRemoval": {
+        "message": "Enable automatic blur removal"
+    },
     "modifiedKey": {
         "message": "Response when selected key is pressing (Please test to ensure it meets expectations.)"
     },

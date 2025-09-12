@@ -70,6 +70,7 @@ let linkIndicator,
     blurEnabled,
     blurPx,
     blurTime,
+    blurRemoval,
 
     modifiedKey,
     dragPx,
@@ -114,6 +115,7 @@ const configs = {
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
+    'blurRemoval': true,
 
     'modifiedKey': 'None',
     'dropInEmptyOnly': false,
@@ -1782,6 +1784,7 @@ async function checkUrlAndToggleListeners() {
         'blurEnabled',
         'blurPx',
         'blurTime',
+        'blurRemoval',
 
         'copyButtonPosition',
         'copyButtonEnable',
@@ -1829,6 +1832,7 @@ async function checkUrlAndToggleListeners() {
 
     blurTime = data.blurTime || 1;
     blurEnabled = data.blurEnabled !== undefined ? data.blurEnabled : true;
+    blurRemoval = data.blurRemoval !== undefined ? data.blurRemoval : true;
     blurPx = parseFloat(data.blurPx || 3);
 
     urlCheck = data.urlCheck;
@@ -2347,6 +2351,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.blurEnabled ||
         changes.blurPx ||
         changes.blurTime ||
+        changes.blurRemoval ||
 
         changes.urlCheck ||
         changes.closeWhenFocusedInitialWindow ||
@@ -2892,6 +2897,7 @@ function addBlurOverlay(blurPx, blurTime) {
         blurOverlay.style.backdropFilter = `blur(${blurPx}px)`;
 
         if (!isMac) {
+            if (!blurRemoval) return;
             document.body.addEventListener('mouseenter', () => {
                 removeClickMask();
                 removeBlurOverlay();
@@ -2923,19 +2929,18 @@ chrome.runtime.onMessage.addListener((msg) => {
     if (!isMac) return;
     if (!blurEnabled) return;
     if (window.self !== window.top) return;
-    //console.log(msg)
+    if (!blurRemoval) return;
+
     if (msg.action === "INIT_POPUP_LISTENER") {
-        const originalTabId = msg.originalTabId; // ✅ 来自 background
+        const originalTabId = msg.originalTabId; 
 
         document.body.addEventListener("mouseenter", () => {
             if (!document.hasFocus()) return;
-            //console.log('send msg')
             chrome.runtime.sendMessage({ action: "addblur", originalTabId });
         });
         document.body.addEventListener("mouseleave", () => {
 
             if (!document.hasFocus()) return;
-            //console.log('send msg')
             chrome.runtime.sendMessage({ action: "removeblur", originalTabId });
         });
 
@@ -2943,12 +2948,10 @@ chrome.runtime.onMessage.addListener((msg) => {
 
     if (msg.action === "ADD_BLUR") {
         if (document.hasFocus()) return;
-        //console.log('add?')
         addClickMask();
         addBlurOverlay(blurPx, blurTime);
     }
     if (msg.action === "REMOVE_BLUR") {
-        //console.log('add?')
         removeClickMask();
         removeBlurOverlay();
     }

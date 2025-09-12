@@ -28,7 +28,7 @@
     },
     "tryOpenAtMousePosition": {
         "message": "尝试在鼠标附近弹出"
-    },  
+    },
     "openPageInMainWindow": {
         "message": "在主窗口中打开页面"
     },
@@ -49,6 +49,9 @@
     },
     "blurTime": {
         "message": "模糊效果过渡时间（秒）："
+    },
+    "blurRemoval": {
+        "message": "启用自动消除模糊"
     },
     "modifiedKey": {
         "message": "按下所选键时响应（设置后请自行测试）"
@@ -124,13 +127,13 @@
     },
     "hoverImgSupport": {
         "message": "预览图片"
-    },  
+    },
     "hoverDisabledUrls": {
         "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "searchSettings": {
         "message": "搜索"
-    }, 
+    },
     "generalSettingsTab": {
         "message": "通用"
     },
@@ -139,7 +142,7 @@
     },
     "importButton": {
         "message": "导入"
-    },  
+    },
     "exportButton": {
         "message": "导出"
     },
@@ -151,19 +154,19 @@
     },
     "previewModeDisabledUrls": {
         "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
-    }, 
+    },
     "previewModeEnable": {
         "message": "点击链接预览"
-    }, 
+    },
     "imgSearchEnable": {
         "message": "以图搜图"
-    }, 
+    },
     "hoverImgSearchEnable": {
         "message": "以图搜图"
-    }, 
+    },
     "doubleClickToSwitch": {
         "message": "双击临时切换当前页面模式：需在非图片、链接上双击，工具栏的插件图标会显示当前状态"
-    }, 
+    },
     "doubleClickAsClick": {
         "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
     },
@@ -217,22 +220,20 @@
     },
     "holdToPreviewSettings": {
         "message": "长按"
-    },  
+    },
     "linkDisabledUrls": {
         "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "copyButtonEnable": {
         "message": "添加“复制页面链接”按钮到在 'popup' 类型窗口"
-    },  
+    },
     "searchTooltipsEngines": {
         "message": "搜索条内的搜索引擎，每行一个，格式：显示名称=>带有%s的搜索链接"
-    },  
+    },
     "dropInEmptyOnly": {
         "message": "仅拖拽到空白处时才响应"
     },
     "sendBackButtonEnable": {
         "message": "添加“发送当前页面到原窗口”按钮到 'popup' 类型窗口"
     }
-    
 }
-

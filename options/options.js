@@ -20,6 +20,7 @@ const configs = {
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
+    'blurRemoval': true,
 
     'modifiedKey': 'None',
     'dragDirections': ['up', 'down', 'right', 'left'],

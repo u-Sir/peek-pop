@@ -50,6 +50,9 @@
     "blurTime": {
         "message": "Duración del desenfoque (s): "
     },
+    "blurRemoval": {
+        "message": "Habilitar eliminación automática del desenfoque"
+    },
     "modifiedKey": {
         "message": "Respuesta cuando se presiona la tecla seleccionada (Por favor, prueba para asegurarte de que cumple con las expectativas.)"
     },
