@@ -188,7 +188,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             // console.log("Context menu 'sendPageBack' removed successfully.");
                         }
                     });
-                    if (request.checkContextMenuItem) {
+                    if (request.addContextMenuItem) {
                         chrome.storage.local.get('popupWindowsInfo', (result) => {
                             const popupWindowsInfo = result.popupWindowsInfo || {};
 
@@ -820,7 +820,7 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
                     let payload = { enableContextMenu: true };
 
                     // extend for mac
-                    if (userConfigs.isMac) {
+                    if (result.isMac) {
                         if (!openPopups.includes(tabs[0].id)) openPopups.push(tabs[0].id);
                         if (!openPopups.includes(newWindow.tabs[0].id)) openPopups.push(newWindow.tabs[0].id);
                         payload = {
