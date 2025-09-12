@@ -90,7 +90,8 @@ let linkIndicator,
 
     isFirefox,
     isMac,
-    isInputboxFocused = false;
+    isInputboxFocused = false,
+    contextMenuEnabled = false;
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
@@ -113,8 +114,6 @@ const configs = {
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
-
-    'contextItemCreated': false,
 
     'modifiedKey': 'None',
     'dropInEmptyOnly': false,
@@ -513,7 +512,7 @@ function changeCursorOnHover(e, anchorElement) {
 
 
 function handleContextMenu() {
-    chrome.runtime.sendMessage({ checkContextMenuItem: true }, (response) => {
+    chrome.runtime.sendMessage({ addContextMenuItem: contextMenuEnabled }, (response) => {
         if (chrome.runtime.lastError) {
             console.error("Runtime error:", chrome.runtime.lastError);
         } else {
@@ -795,8 +794,8 @@ function handleMouseDown(e) {
 
     try {
         const message = closeWhenFocusedInitialWindow
-            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
-            : { checkContextMenuItem: true };
+            ? { action: 'windowRegainedFocus', addContextMenuItem: contextMenuEnabled }
+            : { addContextMenuItem: contextMenuEnabled };
         chrome.runtime.sendMessage(message);
     } catch (error) {
         console.error('Error loading user configs:', error);
@@ -1023,9 +1022,9 @@ function handleEvent(e) {
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
-            if (previewMode && 
-                linkUrl && 
-                !isDoubleClick && 
+            if (previewMode &&
+                linkUrl &&
+                !isDoubleClick &&
                 !linkElement.closest("[hx-on\\:click]") &&
                 !(e.target.closest("button") && e.target.closest("button").getAttribute("aria-haspopup") === "menu")) {
                 e.preventDefault();
@@ -2417,8 +2416,8 @@ window.addEventListener('focus', async () => {
         handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         document.addEventListener('mouseover', handleMouseOver, true);
         const message = closeWhenFocusedInitialWindow
-            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
-            : { checkContextMenuItem: true };
+            ? { action: 'windowRegainedFocus', addContextMenuItem: contextMenuEnabled }
+            : { addContextMenuItem: contextMenuEnabled };
         chrome.runtime.sendMessage(message);
     } catch (error) {
         // console.error('Error loading user configs:', error);
@@ -2916,8 +2915,11 @@ function removeBlurOverlay() {
     }
 }
 
-// special for macOS
 chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.enableContextMenu) {
+        contextMenuEnabled = true;
+    }
+
     if (!isMac) return;
     if (!blurEnabled) return;
     if (window.self !== window.top) return;

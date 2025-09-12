@@ -23,8 +23,6 @@ const configs = {
     'blurPx': 3,
     'blurTime': 1,
 
-    'contextItemCreated': false,
-
     'modifiedKey': 'None',
     'dragDirections': ['up', 'down', 'right', 'left'],
     'dragPx': 0,
@@ -182,32 +180,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                 chrome.contextMenus.onClicked.addListener(onMenuItemClicked);
 
-                if (request.checkContextMenuItem) {
-                    chrome.storage.local.get('popupWindowsInfo', (result) => {
-                        const popupWindowsInfo = result.popupWindowsInfo || {};
+                if (typeof request.addContextMenuItem !== "undefined") {
+                    chrome.contextMenus.remove('sendPageBack', () => {
+                        if (chrome.runtime.lastError) {
+                            // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                        } else {
+                            // console.log("Context menu 'sendPageBack' removed successfully.");
+                        }
+                    });
+                    if (request.checkContextMenuItem) {
+                        chrome.storage.local.get('popupWindowsInfo', (result) => {
+                            const popupWindowsInfo = result.popupWindowsInfo || {};
 
-                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).some(windowId => {
-                            return parseInt(windowId) === currentWindow.id;
-                        });
-
-
-                        loadUserConfigs().then(userConfigs => {
-                            if (!isCurrentWindowOriginal) {
-                                if (!userConfigs.contextItemCreated) {
-                                    chrome.contextMenus.create({
-                                        id: 'sendPageBack',
-                                        title: chrome.i18n.getMessage('sendPageBack'),
-                                        contexts: ['page']
-                                    }, () => {
-                                        if (chrome.runtime.lastError) {
-                                            userConfigs.contextItemCreated = true;
-                                            chrome.storage.local.set({ contextItemCreated: true });
-                                        } else {
-                                            userConfigs.contextItemCreated = true;
-                                            chrome.storage.local.set({ contextItemCreated: true });
-                                        }
-                                    });
-                                }
+                            loadUserConfigs().then(userConfigs => {
+                                chrome.contextMenus.create({
+                                    id: 'sendPageBack',
+                                    title: chrome.i18n.getMessage('sendPageBack'),
+                                    contexts: ['page']
+                                });
 
                                 if (userConfigs.rememberPopupSizeAndPosition || userConfigs.rememberPopupSizeAndPositionForDomain) {
 
@@ -284,19 +274,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         }
                                     }
                                 }
-                            } else {
-                                // console.log('not popup window, do nothing')
-                            }
 
 
+
+                            });
                         });
-                    });
 
-                    sendResponse({ status: 'item checked' });
+                        sendResponse({ status: 'item added' });
+                    }
                 }
 
                 if (request.action === 'closeCurrentTab') {
-                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
+                    chrome.storage.local.get(['popupWindowsInfo'], (result) => {
                         // filter out empty objects under popupWindowsInfo
                         const popupWindowsInfo = Object.keys(result.popupWindowsInfo).reduce((acc, key) => {
                             if (Object.keys(result.popupWindowsInfo[key]).length > 0) {
@@ -343,18 +332,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                     });
                                 }
                             });
-                            if (result.contextItemCreated) {
-                                chrome.contextMenus.remove('sendPageBack', () => {
-                                    if (chrome.runtime.lastError) {
-                                        // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
-                                    } else {
-                                        // console.log("Context menu 'sendPageBack' removed successfully.");
-                                    }
-                                });
-
-                                result.contextItemCreated = false;
-                                chrome.storage.local.set({ contextItemCreated: false });
-                            }
                         }
 
                     });
@@ -363,7 +340,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }
 
                 if (request.action === 'windowRegainedFocus') {
-                    chrome.storage.local.get(['popupWindowsInfo', 'contextItemCreated'], (result) => {
+                    chrome.storage.local.get(['popupWindowsInfo'], (result) => {
                         const popupWindowsInfo = result.popupWindowsInfo || {};
                         const isCurrentWindowOriginal = popupWindowsInfo.hasOwnProperty(currentWindow.id);
 
@@ -402,20 +379,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         });
                                     }
                                 });
-
-                                // Remove context menu item if necessary
-                                if (result.contextItemCreated) {
-                                    chrome.contextMenus.remove('sendPageBack', () => {
-                                        if (chrome.runtime.lastError) {
-                                            // Error handling for context menu removal
-                                        } else {
-                                            // Context menu 'sendPageBack' removed successfully
-                                        }
-                                    });
-
-                                    result.contextItemCreated = false;
-                                    chrome.storage.local.set({ contextItemCreated: false });
-                                }
                             });
                         }
                     });
@@ -549,20 +512,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                             });
                                         }
                                     });
-
-                                    if (userConfigs.contextItemCreated) {
-                                        chrome.contextMenus.remove('sendPageBack', () => {
-                                            if (chrome.runtime.lastError) {
-                                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
-                                            } else {
-                                                // console.log("Context menu 'sendPageBack' removed successfully.");
-                                            }
-                                        });
-
-                                        userConfigs.contextItemCreated = false;
-                                        chrome.storage.local.set({ contextItemCreated: false });
-                                        chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
-                                    }
 
                                 });
                             } else {
@@ -867,19 +816,26 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
                         });
                     }
 
-                    if (result.isMac) {
+                    // default payload
+                    let payload = { enableContextMenu: true };
+
+                    // extend for mac
+                    if (userConfigs.isMac) {
                         if (!openPopups.includes(tabs[0].id)) openPopups.push(tabs[0].id);
                         if (!openPopups.includes(newWindow.tabs[0].id)) openPopups.push(newWindow.tabs[0].id);
-                        chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-                            if (tabId === newWindow.tabs[0].id && info.status === "complete") {
-                                chrome.tabs.sendMessage(newWindow.tabs[0].id, {
-                                    action: "INIT_POPUP_LISTENER",
-                                    originalTabId: tabs[0].id
-                                });
-                                chrome.tabs.onUpdated.removeListener(listener);
-                            }
-                        });
+                        payload = {
+                            ...payload,
+                            action: "INIT_POPUP_LISTENER",
+                            originalTabId: tabs[0].id
+                        };
                     }
+                    chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+                        if (tabId === newWindow.tabs[0].id && info.status === "complete") {
+                            chrome.tabs.sendMessage(newWindow.tabs[0].id, payload);
+                            chrome.tabs.onUpdated.removeListener(listener);
+                        }
+                    });
+
                     updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWindowsInfo, rememberPopupSizeAndPosition, result.rememberPopupSizeAndPositionForDomain, resolve, reject);
                 }
             });
@@ -1024,20 +980,6 @@ function onMenuItemClicked(info, tab) {
 
                             }
                         });
-
-                        if (userConfigs.contextItemCreated) {
-                            chrome.contextMenus.remove('sendPageBack', () => {
-                                if (chrome.runtime.lastError) {
-                                    // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
-                                } else {
-                                    // console.log("Context menu 'sendPageBack' removed successfully.");
-                                }
-                            });
-
-                            userConfigs.contextItemCreated = false;
-                            chrome.storage.local.set({ contextItemCreated: false });
-                            chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
-                        }
 
                     });
                 } else {

@@ -1,3 +1,6 @@
+0.0.53
+- Show the 'Send Page Back to Original Window' context menu item only in popup windows.
+
 0.0.52
 - Keep focus on input when hovering over iframe.
 - Prevent popup from auto-hiding buttons on links with menus.

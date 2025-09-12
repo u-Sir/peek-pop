@@ -21,8 +21,6 @@ const configs = {
     'blurPx': 3,
     'blurTime': 1,
 
-    'contextItemCreated': false,
-
     'modifiedKey': 'None',
     'dragDirections': ['up', 'down', 'right', 'left'],
     'dragPx': 0,
