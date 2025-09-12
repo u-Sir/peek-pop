@@ -1,3 +1,6 @@
+0.0.54
+- New option: Enable automatic blur removal.
+
 0.0.53
 - Show the 'Send Page Back to Original Window' context menu item only in popup windows.
 

@@ -50,6 +50,9 @@
     "blurEnabled": {
         "message": "Habilitar desenfoque de fondo"
     },
+    "blurRemoval": {
+        "message": "Habilitar eliminación automática del desenfoque"
+    },
     "blurPx": {
         "message": "Intensidad de desenfoque: "
     },

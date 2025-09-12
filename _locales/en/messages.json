@@ -50,6 +50,9 @@
     "blurEnabled": {
         "message": "Enable background blur"
     },
+    "blurRemoval": {
+        "message": "Enable automatic blur removal"
+    },
     "blurPx": {
         "message": "Blur intensity: "
     },

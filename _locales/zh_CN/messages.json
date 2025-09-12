@@ -50,6 +50,9 @@
     "blurEnabled": {
         "message": "启用背景模糊"
     },
+    "blurRemoval": {
+        "message": "启用自动消除模糊"
+    },
     "blurPx": {
         "message": "模糊程度："
     },

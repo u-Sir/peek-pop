@@ -23,6 +23,7 @@ const configs = {
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
+    'blurRemoval': true,
     
     'windowType': 'popup',
     'originWindowId': '',

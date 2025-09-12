@@ -12,6 +12,7 @@ const configs = {
     'blurEnabled': true,
     'blurPx': 3,
     'blurTime': 1,
+    'blurRemoval': true,
 
     'popupWindowsInfo': {},
     'windowType': 'popup',
