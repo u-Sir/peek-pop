@@ -811,8 +811,8 @@ function handleMouseDown(e) {
 
     try {
         const message = closeWhenFocusedInitialWindow
-            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
-            : { checkContextMenuItem: true };
+            ? { action: 'windowRegainedFocus', addContextMenuItem: contextMenuEnabled }
+            : { addContextMenuItem: contextMenuEnabled };
         chrome.runtime.sendMessage(message);
     } catch (error) {
         console.error('Error loading user configs:', error);
@@ -2350,8 +2350,8 @@ window.addEventListener('focus', async () => {
         handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
         document.addEventListener('mouseover', handleMouseOver, true);
         const message = closeWhenFocusedInitialWindow
-            ? { action: 'windowRegainedFocus', checkContextMenuItem: true }
-            : { checkContextMenuItem: true };
+            ? { action: 'windowRegainedFocus', addContextMenuItem: contextMenuEnabled }
+            : { addContextMenuItem: contextMenuEnabled };
         chrome.runtime.sendMessage(message);
     } catch (error) {
         // console.error('Error loading user configs:', error);
