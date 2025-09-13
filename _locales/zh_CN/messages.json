@@ -152,6 +152,9 @@
     "exportButton": {
         "message": "导出"
     },
+    "shortcuts": {
+        "message": "快捷键"
+    },
     "previewModeSettings": {
         "message": "点击"
     },

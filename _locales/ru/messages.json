@@ -152,6 +152,9 @@
     "exportButton": {
         "message": "Экспортировать"
     },
+    "shortcuts": {
+        "message": "Горячие клавиши"
+    },
     "previewModeSettings": {
         "message": "Щелчок"
     },

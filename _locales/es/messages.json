@@ -152,6 +152,9 @@
     "exportButton": {
         "message": "Exportar"
     },
+    "shortcuts": {
+        "message": "Atajos"
+    },
     "previewModeSettings": {
         "message": "Hacer clic"
     },

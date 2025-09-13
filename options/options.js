@@ -119,6 +119,18 @@ function init() {
         document.querySelector('.align-label-1').style.marginBottom = '4px';
     }
 
+    document.getElementById('shortcuts').addEventListener('click', () => {
+        if (typeof browser !== "undefined" && browser.commands?.openShortcutSettings) {
+            // Firefox
+            return browser.commands.openShortcutSettings();
+        } else if (typeof chrome !== "undefined" && chrome.tabs?.create) {
+            // Chrome
+            return chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+        } else {
+            console.warn("Shortcut settings not supported here.");
+        }
+    });
+
     document.getElementById('exportButton').addEventListener('click', exportSettings);
 
     document.getElementById('importButton').addEventListener('click', () => {
@@ -300,7 +312,9 @@ function setupPage(userConfigs) {
 
         { id: 'exportImportSettings', messageId: 'exportImportSettings' },
         { id: 'importButton', messageId: 'importButton' },
-        { id: 'exportButton', messageId: 'exportButton' }
+        { id: 'exportButton', messageId: 'exportButton' },
+
+        { id: 'shortcuts', messageId: 'shortcuts' }
     ];
 
     elementsToTranslate.forEach(({ id, messageId }) => setTextContent(id, messageId));
