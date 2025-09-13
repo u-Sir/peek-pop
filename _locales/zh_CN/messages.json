@@ -146,6 +146,9 @@
     "exportButton": {
         "message": "导出"
     },
+    "shortcuts": {
+        "message": "快捷键"
+    },
     "dragStartEnable": {
         "message": "拖拽立即触发，不等待释放。（无方向检测）"
     },

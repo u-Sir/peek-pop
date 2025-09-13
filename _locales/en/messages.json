@@ -146,6 +146,9 @@
     "exportButton": {
         "message": "Export"
     },
+    "shortcuts": {
+        "message": "Shortcuts"
+    },
     "dragStartEnable": {
         "message": "Dragging triggers immediately, without waiting for release. (No direction detection)"
     },

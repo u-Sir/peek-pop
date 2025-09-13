@@ -1,3 +1,6 @@
+0.0.55
+- Added a shortcuts button.
+
 0.0.54
 - New option: Enable automatic blur removal.
 

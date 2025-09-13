@@ -146,6 +146,9 @@
     "exportButton": {
         "message": "Exportar"
     },
+    "shortcuts": {
+        "message": "Atajos"
+    },
     "dragStartEnable": {
         "message": "El arrastre se activa inmediatamente, sin esperar a soltar. (Sin detección de dirección)"
     },
