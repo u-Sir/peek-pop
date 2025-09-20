@@ -77,6 +77,12 @@
     "noneKey": {
         "message": "无"
     },
+    "circle": {
+        "message": "圆圈"
+    },
+    "bar": {
+        "message": "条状"
+    },
     "blurEffectSettings": {
         "message": "背景模糊"
     },
@@ -130,6 +136,9 @@
     },
     "doubleTapKeyToSendPageBack": {
         "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
+    },
+    "countdownStyle": {
+        "message": "倒计时样式"
     },
     "hoverSettings": {
         "message": "悬停"

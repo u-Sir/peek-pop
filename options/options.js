@@ -5,6 +5,8 @@ const configs = {
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
 
+    'countdownStyle': 'bar',
+
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,
@@ -355,6 +357,10 @@ function setupPage(userConfigs) {
     setInputLabel('dragRight', 'dragRight');
     setInputLabel('doubleTapKeyToSendPageBack', 'doubleTapKeyToSendPageBack');
 
+    setInputLabel('countdownStyle', 'countdownStyle');
+    setInputLabel('circle', 'circle');
+    setInputLabel('bar', 'bar');
+
     // Initialize input elements
     Object.keys(configs).forEach(key => {
         const input = document.getElementById(key);
@@ -386,6 +392,9 @@ function setupPage(userConfigs) {
     setupHoverModifiedKeySelection(userConfigs.hoverModifiedKey);
     setupClickModifiedKeySelection(userConfigs.clickModifiedKey);
     setupDoubleTapKeyToSendPageBackSelection(userConfigs.doubleTapKeyToSendPageBack);
+
+    
+    setupCountdownStyleSelection(userConfigs.countdownStyle);
 
     // Setup search engine selection
     setupSearchEngineSelection(userConfigs.searchEngine);
@@ -786,6 +795,20 @@ function setupDoubleTapKeyToSendPageBackSelection(doubleTapKeyToSendPageBack) {
         });
     });
 }
+
+function setupCountdownStyleSelection(countdownStyle) {
+    countdownStyle = countdownStyle ?? 'bar';
+    document.querySelector(`input[name="countdownStyle"][value="${countdownStyle}"]`).checked = true;
+    document.querySelectorAll('input[name="countdownStyle"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newCountdownStyle = event.target.value;
+            chrome.storage.local.set({ countdownStyle: newCountdownStyle }, () => {
+                configs.countdownStyle = newCountdownStyle;
+            });
+        });
+    });
+}
+
 
 function initializeDragDirectionCheckboxes(directions) {
     const directionCheckboxes = document.querySelectorAll('input[name="dragDirections"]');

@@ -4,6 +4,8 @@ const configs = {
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
 
+    'countdownStyle': 'bar',
+
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,
     'popupWidth': 1000,

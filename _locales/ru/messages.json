@@ -77,6 +77,12 @@
     "noneKey": {
         "message": "Никакой"
     },
+    "circle": {
+        "message": "Круг"
+    },
+    "bar": {
+        "message": "Полоса"
+    },
     "blurEffectSettings": {
         "message": "Эффект размытия"
     },
@@ -130,6 +136,9 @@
     },
     "doubleTapKeyToSendPageBack": {
         "message": "Двойное нажатие на определённую клавишу для возврата страницы в оригинальное окно (Пожалуйста, проверьте, работает ли это как ожидалось.)"
+    },
+    "countdownStyle": {
+        "message": "Стиль обратного отсчёта"
     },
     "hoverSettings": {
         "message": "Наведение"
