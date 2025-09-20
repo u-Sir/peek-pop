@@ -32,6 +32,9 @@
     "closeWhenFocusedInitialWindow": {
         "message": "焦点回到原窗口时自动关闭弹窗"
     },
+    "closeWhenScrollingInitialWindow": {
+        "message": "原窗口滚动时自动关闭弹窗"
+    },
     "sendBackByMiddleClickEnable": {
         "message": "鼠标中键（滚轮）单击页面空白处将当前页面发送回原窗口"
     },

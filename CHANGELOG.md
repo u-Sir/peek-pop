@@ -1,4 +1,5 @@
 0.0.55
+- New option: Automatically close popup when scrolling in the original window.
 - Added a shortcuts button.
 
 0.0.54

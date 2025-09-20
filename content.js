@@ -51,6 +51,7 @@ let linkIndicator,
 
     linkDisabledUrls,
     closeWhenFocusedInitialWindow,
+    closeWhenScrollingInitialWindow,
     sendBackByMiddleClickEnable,
 
     collection,
@@ -94,6 +95,7 @@ let linkIndicator,
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'closeWhenScrollingInitialWindow': false,
     'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
@@ -1725,6 +1727,7 @@ async function checkUrlAndToggleListeners() {
         'urlCheck',
 
         'closeWhenFocusedInitialWindow',
+        'closeWhenScrollingInitialWindow',
         'sendBackByMiddleClickEnable',
         'doubleTapKeyToSendPageBack',
         'closedByEsc',
@@ -1784,6 +1787,7 @@ async function checkUrlAndToggleListeners() {
 
     closedByEsc = data.closedByEsc;
     closeWhenFocusedInitialWindow = data.closeWhenFocusedInitialWindow;
+    closeWhenScrollingInitialWindow = data.closeWhenScrollingInitialWindow;
     sendBackByMiddleClickEnable = data.sendBackByMiddleClickEnable || false;
 
     previewModeEnable = data.previewModeEnable;
@@ -2274,6 +2278,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.urlCheck ||
 
         changes.closeWhenFocusedInitialWindow ||
+        changes.closeWhenScrollingInitialWindow ||
         changes.sendBackByMiddleClickEnable ||
         changes.doubleTapKeyToSendPageBack ||
         changes.closedByEsc ||
@@ -2896,4 +2901,19 @@ chrome.runtime.onMessage.addListener((msg) => {
 
 });
 
+window.addEventListener('blur', () => {
+    if (window.self !== window.top) return; // only run in top window
+
+    if (closeWhenScrollingInitialWindow) {
+        const onScrollEnd = () => {
+            if (document.hasFocus()) {
+                document.removeEventListener('scrollend', onScrollEnd);
+            } else {
+                // Do nothing if the document has regained focus
+                chrome.runtime.sendMessage({ action: 'closeCurrentTab' });
+            }
+        };
+        document.addEventListener('scrollend', onScrollEnd);
+    }
+});
 

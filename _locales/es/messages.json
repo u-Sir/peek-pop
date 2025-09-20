@@ -32,6 +32,9 @@
     "closeWhenFocusedInitialWindow": {
         "message": "Cerrar ventana emergente cuando la ventana de origen está enfocada"
     },
+    "closeWhenScrollingInitialWindow": {
+        "message": "Cerrar el popup cuando se desplaza la ventana de origen"
+    },
     "sendBackByMiddleClickEnable": {
         "message": "Al hacer clic con el botón central del ratón (rueda de desplazamiento) en un área en blanco de la página, se envía la página actual a la ventana original."
     },
