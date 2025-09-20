@@ -55,6 +55,8 @@ let linkIndicator,
     collection,
     collectionEnable,
 
+    countdownStyle,
+
     closedByEsc,
     doubleTapKeyToSendPageBack,
     closeWhenFocusedInitialWindow,
@@ -101,6 +103,8 @@ const configs = {
     'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
+
+    'countdownStyle': 'bar',
 
     'popupWindowsInfo': {},
 
@@ -761,11 +765,13 @@ function handleMouseDown(e) {
             // Show progress bar for preview
             setTimeout(() => {
                 if (!isMouseDownOnLink) return; // Abort if mouse is not held down
-                previewProgressBar = createCandleProgressBar(
-                    e.clientX - 20,
-                    e.clientY - 50,
-                    (holdToPreviewTimeout ?? 1500) - 100
-                );
+                previewProgressBar = (countdownStyle === 'circle') ?
+                    createCircleProgressBar(e.clientX, e.clientY - 30, (holdToPreviewTimeout ?? 1500) - 100)
+                    : createCandleProgressBar(
+                        e.clientX - 20,
+                        e.clientY - 50,
+                        (holdToPreviewTimeout ?? 1500) - 100
+                    );
             }, 100);
 
             // Set a timeout for the hold-to-preview action
@@ -1239,7 +1245,10 @@ async function handleMouseUpWithProgressBar(e) {
             const hoverTimeoutDuration = parseInt(hoverTimeout, 10) || 0; // Default to disabled if not set
 
             // Create and display the progress bar immediately
-            progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
+            progressBar = (countdownStyle === 'circle') ?
+                createCircleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration)
+                : createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
+
             const onMouseMove = (moveEvent) => {
 
                 if (isDragging) {
@@ -1268,7 +1277,9 @@ async function handleMouseUpWithProgressBar(e) {
                         const selectionText = selection.toString().trim();
                         if (selectionText === '') return;
 
-                        progressBar = createCandleProgressBar(currentMouseX, currentMouseY, hoverTimeoutDuration);
+                        progressBar = (countdownStyle === 'circle') ?
+                            createCircleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration)
+                            : createCandleProgressBar(currentMouseX, currentMouseY, hoverTimeoutDuration);
                         // Set the hover timeout to trigger the popup after the progress bar finishes animating
                         hoverTimeoutId = setTimeout(() => {
                             triggerPopup(e, null, null, selectionText); // Ensure this line triggers the popup correctly
@@ -1802,6 +1813,8 @@ async function checkUrlAndToggleListeners() {
         'sendBackByMiddleClickEnable',
         'doubleTapKeyToSendPageBack',
 
+        'countdownStyle',
+
         'linkHint',
         'linkDisabledUrls',
 
@@ -1846,6 +1859,8 @@ async function checkUrlAndToggleListeners() {
     doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
     closedByEsc = data.closedByEsc;
     enableContainerIdentify = data.enableContainerIdentify;
+
+    countdownStyle = data.countdownStyle || 'bar';
 
     hoverImgSearchEnable = data.hoverImgSearchEnable;
     hoverTimeout = data.hoverTimeout || 0;
@@ -2357,6 +2372,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.blurTime ||
         changes.blurRemoval ||
 
+        changes.countdownStyle ||
+
         changes.urlCheck ||
         changes.closeWhenFocusedInitialWindow ||
         changes.closeWhenScrollingInitialWindow ||
@@ -2440,7 +2457,6 @@ window.addEventListener('focus', async () => {
     }, 50);
 });
 
-
 // Create candle-like progress bar element
 function createCandleProgressBar(x, y, duration) {
     const barContainer = document.createElement('div');
@@ -2467,6 +2483,67 @@ function createCandleProgressBar(x, y, duration) {
     }
     return barContainer;
 }
+
+function createCircleProgressBar(x, y, duration = 10000, diameter = 20, color = '#ffa742', strokeWidth = 2) {
+    const svgNS = "http://www.w3.org/2000/svg";
+
+    // Container div
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.top = `${y}px`;
+    container.style.left = `${x}px`;
+    container.style.width = `${diameter}px`;
+    container.style.height = `${diameter}px`;
+    container.style.transform = 'translate(-25%, 0)';
+    container.style.zIndex = '2147483647';
+    container.style.pointerEvents = 'none'; // allow clicks to pass through
+
+    // Create SVG circle
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('width', diameter);
+    svg.setAttribute('height', diameter);
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.transform = 'rotate(-90deg)';
+
+    const circle = document.createElementNS(svgNS, 'circle');
+    const radius = diameter / 2 - strokeWidth; // adjust radius based on stroke
+    const circumference = 2 * Math.PI * radius;
+
+    circle.setAttribute('r', radius);
+    circle.setAttribute('cx', diameter / 2);
+    circle.setAttribute('cy', diameter / 2);
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', color);
+    circle.setAttribute('stroke-width', strokeWidth);
+    circle.setAttribute('stroke-linecap', 'round');
+    circle.setAttribute('stroke-dasharray', circumference);
+    circle.setAttribute('stroke-dashoffset', '0');
+
+    svg.appendChild(circle);
+    container.appendChild(svg);
+    document.body.appendChild(container);
+
+    // Animate circle stroke
+    setTimeout(() => {
+        circle.style.transition = `stroke-dashoffset ${duration}ms linear`;
+        circle.setAttribute('stroke-dashoffset', circumference);
+    }, 20);
+
+    // Remove after duration
+    setTimeout(() => {
+        container.remove();
+    }, duration + 50);
+
+    return container;
+}
+
+
+
+
+
+
 
 
 // Handle mouseover event
@@ -2576,7 +2653,10 @@ async function handleMouseOver(e) {
                 const hoverTimeoutDuration = parseInt(hoverTimeout, 10) || 0; // Default to disabled if not set
 
                 // Create and display the progress bar immediately
-                progressBar = createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
+                progressBar = (countdownStyle === 'circle') ?
+                    createCircleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration)
+                    : createCandleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration);
+
                 if (anchorElement) {
                     anchorElement.addEventListener('mouseleave', () => {
                         clearTimeoutsAndProgressBars();

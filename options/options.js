@@ -5,6 +5,8 @@ const configs = {
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
 
+    'countdownStyle': 'bar',
+
     'windowType': 'popup',
     'popupWindowsInfo': {},
     'originWindowId': '',
@@ -380,6 +382,8 @@ function setupPage(userConfigs) {
     setInputLabel('dragRight', 'dragRight');
     setInputLabel('doubleTapKeyToSendPageBack', 'doubleTapKeyToSendPageBack');
 
+    setInputLabel('countdownStyle', 'countdownStyle');
+
     // Initialize input elements
     Object.keys(configs).forEach(key => {
         const input = document.getElementById(key);
@@ -411,6 +415,9 @@ function setupPage(userConfigs) {
     setupHoverModifiedKeySelection(userConfigs.hoverModifiedKey);
     setupClickModifiedKeySelection(userConfigs.clickModifiedKey);
     setupDoubleTapKeyToSendPageBackSelection(userConfigs.doubleTapKeyToSendPageBack);
+
+    // Set countdown style
+    setupCountdownStyleSelection(userConfigs.countdownStyle);
 
     // Setup search engine selection
     setupSearchEngineSelection(userConfigs.searchEngine);
@@ -809,6 +816,19 @@ function setupDoubleTapKeyToSendPageBackSelection(doubleTapKeyToSendPageBack) {
             const newDoubleTapKeyToSendPageBack = event.target.value;
             chrome.storage.local.set({ doubleTapKeyToSendPageBack: newDoubleTapKeyToSendPageBack }, () => {
                 configs.doubleTapKeyToSendPageBack = newDoubleTapKeyToSendPageBack;
+            });
+        });
+    });
+}
+
+function setupCountdownStyleSelection(countdownStyle) {
+    countdownStyle = countdownStyle ?? 'bar';
+    document.querySelector(`input[name="countdownStyle"][value="${countdownStyle}"]`).checked = true;
+    document.querySelectorAll('input[name="countdownStyle"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newCountdownStyle = event.target.value;
+            chrome.storage.local.set({ countdownStyle: newCountdownStyle }, () => {
+                configs.countdownStyle = newCountdownStyle;
             });
         });
     });

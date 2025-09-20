@@ -125,6 +125,9 @@
     "doubleTapKeyToSendPageBack": {
         "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
     },
+    "countdownStyle": {
+        "message": "Countdown style"
+    },
     "hoverSettings": {
         "message": "Hover"
     },

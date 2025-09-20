@@ -1,5 +1,6 @@
 0.0.55
 - New option: Automatically close popup when scrolling in the original window.
+- New option: Customize countdown style.
 - Added a shortcuts button.
 - Options page layout adjusted.
 

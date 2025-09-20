@@ -5,6 +5,8 @@ const configs = {
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
 
+    'countdownStyle': 'bar',
+
     'windowType': 'popup',
     'popupWindowsInfo': {},
 
