@@ -27,12 +27,6 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 - **Wildcard format**: `https://example.com/*`
 - **Plain text format**: `https://example.com`
 
-### Modifying Plugin Shortcuts
-
-- **Chrome**: Go to the settings page: `chrome://extensions/shortcuts`
-- **Firefox**: Go to `about:addons`, click the gear icon, then select "Manage Extension Shortcuts"
-
-
 # FAQ
 
 ### Is it possible to set a popup always on top?  
