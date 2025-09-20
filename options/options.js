@@ -383,6 +383,8 @@ function setupPage(userConfigs) {
     setInputLabel('doubleTapKeyToSendPageBack', 'doubleTapKeyToSendPageBack');
 
     setInputLabel('countdownStyle', 'countdownStyle');
+    setInputLabel('circle', 'circle');
+    setInputLabel('bar', 'bar');
 
     // Initialize input elements
     Object.keys(configs).forEach(key => {

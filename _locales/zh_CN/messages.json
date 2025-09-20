@@ -71,6 +71,12 @@
     "noneKey": {
         "message": "无"
     },
+    "circle": {
+        "message": "圆圈"
+    },
+    "bar": {
+        "message": "条状"
+    },
     "blurEffectSettings": {
         "message": "背景模糊"
     },

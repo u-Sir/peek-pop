@@ -1278,7 +1278,7 @@ async function handleMouseUpWithProgressBar(e) {
                         if (selectionText === '') return;
 
                         progressBar = (countdownStyle === 'circle') ?
-                            createCircleProgressBar(hoverInitialMouseX, hoverInitialMouseY, hoverTimeoutDuration)
+                            createCircleProgressBar(currentMouseX, currentMouseY, hoverTimeoutDuration)
                             : createCandleProgressBar(currentMouseX, currentMouseY, hoverTimeoutDuration);
                         // Set the hover timeout to trigger the popup after the progress bar finishes animating
                         hoverTimeoutId = setTimeout(() => {

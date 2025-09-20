@@ -71,6 +71,12 @@
     "noneKey": {
         "message": "Ninguno"
     },
+    "circle": {
+        "message": "Círculo"
+    },
+    "bar": {
+        "message": "Barra"
+    },
     "blurEffectSettings": {
         "message": "Efecto de desenfoque"
     },

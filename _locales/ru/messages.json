@@ -71,6 +71,12 @@
     "noneKey": {
         "message": "Никакой"
     },
+    "circle": {
+        "message": "Круг"
+    },
+    "bar": {
+        "message": "Полоса"
+    },
     "blurEffectSettings": {
         "message": "Эффект размытия"
     },
