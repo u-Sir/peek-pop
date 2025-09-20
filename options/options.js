@@ -290,6 +290,8 @@ function setupPage(userConfigs) {
         { id: 'previewModePopupSettings', messageId: 'popupSettings' },
         { id: 'popupSettings', messageId: 'popupSettings' },
 
+        { id: 'closeTrigger', messageId: 'closeTrigger' },
+        { id: 'button', messageId: 'button' },
         { id: 'note', messageId: 'note' },
         { id: 'staticSize', messageId: 'staticSize' },
         { id: 'percentageSize', messageId: 'percentageSize' },
