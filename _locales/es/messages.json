@@ -21,10 +21,10 @@
         "message": "Ancho (%): 0=desactivado"
     },
     "closeWhenFocusedInitialWindow": {
-        "message": "Cerrar ventana emergente cuando la ventana de origen está enfocada"
+        "message": "Enfocar la ventana original"
     },
     "closeWhenScrollingInitialWindow": {
-        "message": "Cerrar el popup cuando se desplaza la ventana de origen"
+        "message": "Desplazar la ventana original"
     },
     "sendBackByMiddleClickEnable": {
         "message": "Al hacer clic con el botón central del ratón (rueda de desplazamiento) en un área en blanco de la página, se envía la página actual a la ventana original."
@@ -90,7 +90,7 @@
         "message": "Tipo de ventana emergente:"
     },
     "closedByEsc": {
-        "message": "Presiona Esc para cerrar la ventana emergente actual (anula el comportamiento predeterminado de Esc en la página)"
+        "message": "Presiona Esc (anula el comportamiento predeterminado de Esc en la página)"
     },
     "dragSettings": {
         "message": "Arrastrar"

@@ -21,10 +21,10 @@
         "message": "宽度（%）：0=关闭"
     },
     "closeWhenFocusedInitialWindow": {
-        "message": "焦点回到原窗口时"
+        "message": "焦点回到原窗口"
     },
     "closeWhenScrollingInitialWindow": {
-        "message": "滚动原窗口时"
+        "message": "原窗口上滚动"
     },
     "sendBackByMiddleClickEnable": {
         "message": "鼠标中键（滚轮）单击页面空白处将当前页面发送回原窗口"
