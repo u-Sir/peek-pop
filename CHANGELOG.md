@@ -1,6 +1,7 @@
 0.0.55
 - New option: Automatically close popup when scrolling in the original window.
 - Added a shortcuts button.
+- Options page layout adjusted.
 
 0.0.54
 - New option: Enable automatic blur removal.

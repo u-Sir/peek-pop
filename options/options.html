@@ -49,7 +49,7 @@
             <div class='option' id="option">
                 <label><input type="checkbox" id="searchTooltipsEnable"></label>
             </div>
-            
+
             <div class='option' id="option">
                 <label><input type="checkbox" id="urlCheck"></label>
             </div>
@@ -69,17 +69,24 @@
                 <label><input type="checkbox" id="blurRemoval"></label>
             </div>
 
-            <div class='option'>
-                <label for="blurPx" class="align-label"></label><output for="blurPx" id="blurPxOutput"></output>
-                <br>
-                <input type="range" id="blurPx" name="blurPx" min="0" max="20" step="0.1">
-            </div>
+            <div class='row'>
+                <div class='block'>
+                    <div class='option'>
+                        <label for="blurPx" class="align-label"></label><output for="blurPx" id="blurPxOutput"></output>
+                        <br>
+                        <input type="range" id="blurPx" name="blurPx" min="0" max="20" step="0.1">
+                    </div>
+                </div>
 
 
-            <div class='option'>
-                <label for="blurTime" class="align-label"></label><output for="blurTime" id="blurTimeOutput"></output>
-                <br>
-                <input type="range" id="blurTime" name="blurTime" min="0" max="2" step="0.1">
+                <div class='block'>
+                    <div class='option'>
+                        <label for="blurTime" class="align-label"></label><output for="blurTime"
+                            id="blurTimeOutput"></output>
+                        <br>
+                        <input type="range" id="blurTime" name="blurTime" min="0" max="2" step="0.1">
+                    </div>
+                </div>
             </div>
             </p>
 
@@ -151,24 +158,31 @@
                 <label><input type="checkbox" id="tryOpenAtMousePosition"></label>
             </div>
 
-            <h5 id="staticSize"></h5>
 
-            <div class='option'>
-                <label><input type="number" max="10000" min="100" step="50" id="popupHeight"> </label>
-            </div>
+            <div class='row'>
+                <div class='block'>
+                    <h5 id="staticSize"></h5>
 
-            <div class='option'>
-                <label><input type="number" max="10000" min="100" step="50" id="popupWidth"> </label>
-            </div>
+                    <div class='option'>
+                        <label><input type="number" max="10000" min="100" step="50" id="popupHeight"> </label>
+                    </div>
 
-            <h5 id="percentageSize"></h5>
-            
-            <div class='option'>
-                <label><input type="number" max="100" min="0" step="1" id="popupHeightInPercentage"> </label>
-            </div>
+                    <div class='option'>
+                        <label><input type="number" max="10000" min="100" step="50" id="popupWidth"> </label>
+                    </div>
+                </div>
 
-            <div class='option'>
-                <label><input type="number" max="100" min="0" step="1" id="popupWidthInPercentage"> </label>
+                <div class='block'>
+                    <h5 id="percentageSize"></h5>
+
+                    <div class='option'>
+                        <label><input type="number" max="100" min="0" step="1" id="popupHeightInPercentage"> </label>
+                    </div>
+
+                    <div class='option'>
+                        <label><input type="number" max="100" min="0" step="1" id="popupWidthInPercentage"> </label>
+                    </div>
+                </div>
             </div>
             </p>
 
