@@ -181,10 +181,24 @@ textarea {
     box-sizing: border-box;
     /* Ensure the textarea takes the full width */
     margin-top: 5px;
-    padding: 0px;
     font-size: 14px;
     resize: vertical;
     /* Allow vertical resize */
+}
+
+.row {
+    display: flex;
+    gap: 10px;       /* space between the two blocks */
+    align-items: left; /* vertical alignment */
+}
+.block {
+    flex: 1;             /* each block takes equal width */
+    display: flex;
+    flex-direction: column; /* stack title and options vertically */
+}
+.block > .option {
+    flex: 1;          /* make both blocks take equal width */
+    min-width: 100px; /* optional minimum width */
 }
 
 
