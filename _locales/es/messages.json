@@ -179,6 +179,12 @@
     "rememberPopupSizeAndPositionForDomain": {
         "message": "Ventanas emergentes dinámicas: recuerda el último tamaño y posición de la ventana para cada dominio. Es necesario desplazarse o hacer clic en la página."
     },
+    "closeTrigger": {
+        "message": "Disparador de cierre"
+    },
+    "button": {
+        "message": "Botones para ventanas tipo popup"
+    },
     "note": {
         "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón."
     },
@@ -231,7 +237,7 @@
         "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
     "copyButtonEnable": {
-        "message": "Muestra un botón para copiar la URL de la página actual en una ventana de tipo 'popup'."
+        "message": "Copiar URL"
     },
     "searchTooltipsEngines": {
         "message": "Motores de búsqueda en la barra de búsqueda, uno por línea, formato: Nombre a mostrar=>Enlace de búsqueda con %s"
@@ -240,6 +246,6 @@
         "message": "Solo responde cuando se suelta en un área vacía."
     },
     "sendBackButtonEnable": {
-        "message": "Muestra un botón para enviar la URL de la página actual de vuelta a la ventana original en una ventana de tipo 'popup'."
+        "message": "Enviar de vuelta"
     }
 }

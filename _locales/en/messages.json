@@ -21,10 +21,10 @@
         "message": "Width (%): 0=off"
     },
     "closeWhenFocusedInitialWindow": {
-        "message": "Close popup when origin window is focused"
+        "message": "Focus on original window"
     },
     "closeWhenScrollingInitialWindow": {
-        "message": "Close popup when origin window is scrolled"
+        "message": "Scroll on original window"
     },
     "sendBackByMiddleClickEnable": {
         "message": "Middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window."
@@ -90,7 +90,7 @@
         "message": "Popup window type:"
     },
     "closedByEsc": {
-        "message": "Press Esc to close the current popup page (overrides page's default Esc behavior)"
+        "message": "Press Esc (overrides page's default Esc behavior)"
     },
     "dragSettings": {
         "message": "Drag"
@@ -179,6 +179,12 @@
     "rememberPopupSizeAndPositionForDomain": {
         "message": "Dynamic popups: Remember the last window size and position for each domain. Scrolling or clicking the page is required."
     },
+    "closeTrigger": {
+        "message": "Close Trigger"
+    },
+    "button": {
+        "message": "Buttons for popup-type windows"
+    },
     "note": {
         "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse."
     },
@@ -231,7 +237,7 @@
         "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
     },
     "copyButtonEnable": {
-        "message": "Adds a Copy URL button for popup-type windows"
+        "message": "Copy URL"
     },
     "searchTooltipsEngines": {
         "message": "Search engines in the search bar, one per line, format: Display Name=>Search link with %s"
@@ -240,6 +246,6 @@
         "message": "Only respose when drop in empty area."
     },
     "sendBackButtonEnable": {
-        "message": "Adds a Send Back button for popup-type windows"
+        "message": "Send Back"
     }
 }

@@ -21,10 +21,10 @@
         "message": "宽度（%）：0=关闭"
     },
     "closeWhenFocusedInitialWindow": {
-        "message": "焦点回到原窗口时自动关闭弹窗"
+        "message": "焦点回到原窗口时"
     },
     "closeWhenScrollingInitialWindow": {
-        "message": "滚动原窗口时自动关闭弹窗"
+        "message": "滚动原窗口时"
     },
     "sendBackByMiddleClickEnable": {
         "message": "鼠标中键（滚轮）单击页面空白处将当前页面发送回原窗口"
@@ -90,7 +90,7 @@
         "message": "弹出窗口类型："
     },
     "closedByEsc": {
-        "message": "使用 Esc 关闭当前弹窗页面（开启后会覆盖页面 Esc 原有行为）"
+        "message": "按 Esc（开启后会覆盖页面 Esc 原有行为）"
     },
     "dragSettings": {
         "message": "拖拽"
@@ -179,6 +179,12 @@
     "rememberPopupSizeAndPositionForDomain": {
         "message": "动态弹窗：记住每个域名最后的窗口大小和位置，需要滑动或点击页面。"
     },
+    "closeTrigger": {
+        "message": "关闭方式"
+    },
+    "button": {
+        "message": "添加按钮到 'popup' 类型窗口"
+    },
     "note": {
         "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 按比例缩小的 > 居中/鼠标附近"
     },
@@ -231,7 +237,7 @@
         "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
     },
     "copyButtonEnable": {
-        "message": "添加“复制页面链接”按钮到在 'popup' 类型窗口"
+        "message": "复制页面链接"
     },
     "searchTooltipsEngines": {
         "message": "搜索条内的搜索引擎，每行一个，格式：显示名称=>带有%s的搜索链接"
@@ -240,6 +246,6 @@
         "message": "仅拖拽到空白处时才响应"
     },
     "sendBackButtonEnable": {
-        "message": "添加“发送当前页面到原窗口”按钮到 'popup' 类型窗口"
+        "message": "页面返回"
     }
 }
