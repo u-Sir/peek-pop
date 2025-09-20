@@ -58,6 +58,7 @@ let linkIndicator,
     closedByEsc,
     doubleTapKeyToSendPageBack,
     closeWhenFocusedInitialWindow,
+    closeWhenScrollingInitialWindow,
     sendBackByMiddleClickEnable,
 
     linkHint,
@@ -96,6 +97,7 @@ let linkIndicator,
 
 const configs = {
     'closeWhenFocusedInitialWindow': true,
+    'closeWhenScrollingInitialWindow': false,
     'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
@@ -1796,6 +1798,7 @@ async function checkUrlAndToggleListeners() {
 
         'closedByEsc',
         'closeWhenFocusedInitialWindow',
+        'closeWhenScrollingInitialWindow',
         'sendBackByMiddleClickEnable',
         'doubleTapKeyToSendPageBack',
 
@@ -1838,6 +1841,7 @@ async function checkUrlAndToggleListeners() {
     urlCheck = data.urlCheck;
 
     closeWhenFocusedInitialWindow = data.closeWhenFocusedInitialWindow;
+    closeWhenScrollingInitialWindow = data.closeWhenScrollingInitialWindow;
     sendBackByMiddleClickEnable = data.sendBackByMiddleClickEnable || false;
     doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || 'None';
     closedByEsc = data.closedByEsc;
@@ -2355,6 +2359,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
         changes.urlCheck ||
         changes.closeWhenFocusedInitialWindow ||
+        changes.closeWhenScrollingInitialWindow ||
         changes.sendBackByMiddleClickEnable ||
         changes.doubleTapKeyToSendPageBack ||
         changes.closedByEsc
@@ -2932,7 +2937,7 @@ chrome.runtime.onMessage.addListener((msg) => {
     if (!blurRemoval) return;
 
     if (msg.action === "INIT_POPUP_LISTENER") {
-        const originalTabId = msg.originalTabId; 
+        const originalTabId = msg.originalTabId;
 
         document.body.addEventListener("mouseenter", () => {
             if (!document.hasFocus()) return;
@@ -2956,4 +2961,20 @@ chrome.runtime.onMessage.addListener((msg) => {
         removeBlurOverlay();
     }
 
+});
+
+window.addEventListener('blur', () => {
+    if (window.self !== window.top) return; // only run in top window
+
+    if (closeWhenScrollingInitialWindow) {
+        const onScrollEnd = () => {
+            if (document.hasFocus()) {
+                document.removeEventListener('scrollend', onScrollEnd);
+            } else {
+                // Do nothing if the document has regained focus
+                chrome.runtime.sendMessage({ action: 'closeCurrentTab' });
+            }
+        };
+        document.addEventListener('scrollend', onScrollEnd);
+    }
 });

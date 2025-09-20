@@ -23,6 +23,9 @@
     "closeWhenFocusedInitialWindow": {
         "message": "Close popup when origin window is focused"
     },
+    "closeWhenScrollingInitialWindow": {
+        "message": "Close popup when origin window is scrolled"
+    },
     "sendBackByMiddleClickEnable": {
         "message": "Middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window."
     },
