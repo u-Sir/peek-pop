@@ -125,6 +125,9 @@
     "doubleTapKeyToSendPageBack": {
         "message": "Doble toque en una tecla específica para enviar la página a la ventana original (Por favor, verifica si funciona correctamente.)"
     },
+    "countdownStyle": {
+        "message": "Estilo de cuenta regresiva"
+    },
     "hoverSettings": {
         "message": "Desplegar"
     },
