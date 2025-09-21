@@ -27,15 +27,15 @@ const configs = {
     'blurPx': 3,
     'blurTime': 1,
     'blurRemoval': true,
-    
+
     'windowType': 'popup',
     'originWindowId': '',
     'rememberPopupSizeAndPosition': false,
     'rememberPopupSizeAndPositionForDomain': false,
     'popupWindowsInfo': {},
-    
+
     'urlCheck': true,
-    
+
     'hoverTimeout': 0,
     'hoverDisabledUrls': [],
     'hoverImgSupport': false,
@@ -65,7 +65,7 @@ const configs = {
     'collectionEnable': false,
 
     'searchTooltipsEnable': false,
-    'searchTooltipsEngines':  `Google=>https://www.google.com/search?q=%s
+    'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
 Baidu=>https://www.baidu.com/s?wd=%s
 Yandex=>https://yandex.com/search/?text=%s
@@ -192,7 +192,7 @@ function init() {
             linkHintCheckbox.checked = false;
             linkHintCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('linkHint', false);
-            
+
             addGreenDot("hover_settings")
         } else {
             linkHintCheckbox.disabled = false;  // reset the checkbox
@@ -214,11 +214,11 @@ function init() {
 
             doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
             doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
-            
+
             addGreenDot("previewMode_settings")
         } else {
             holdToPreviewCheckbox.disabled = false;  // reset the checkbox
-            
+
             doubleClickToSwitchCheckbox.checked = false;
             doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('doubleClickToSwitch', false);
@@ -226,7 +226,7 @@ function init() {
             doubleClickAsClickCheckbox.checked = false;
             doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('doubleClickAsClick', false);
-            
+
             removeGreenDot("previewMode_settings")
         }
     });
@@ -393,7 +393,7 @@ function setupPage(userConfigs) {
     setupClickModifiedKeySelection(userConfigs.clickModifiedKey);
     setupDoubleTapKeyToSendPageBackSelection(userConfigs.doubleTapKeyToSendPageBack);
 
-    
+
     setupCountdownStyleSelection(userConfigs.countdownStyle);
 
     // Setup search engine selection
@@ -426,21 +426,21 @@ function setupPage(userConfigs) {
         doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
         saveConfig('doubleClickAsClick', false);
     }
-    
-    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) { 
-        addGreenDot("hover_settings"); 
+
+    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) {
+        addGreenDot("hover_settings");
     } else {
         removeGreenDot("hover_settings");
     }
 
-    if (userConfigs.previewModeEnable || userConfigs.holdToPreview) { 
-        addGreenDot("previewMode_settings"); 
+    if (userConfigs.previewModeEnable || userConfigs.holdToPreview) {
+        addGreenDot("previewMode_settings");
     } else {
         removeGreenDot("previewMode_settings");
     }
 
-    if (userConfigs.dragDirections === undefined || userConfigs.dragDirections.length !== 0) { 
-        addGreenDot("drag_settings"); 
+    if (userConfigs.dragDirections === undefined || userConfigs.dragDirections.length !== 0) {
+        addGreenDot("drag_settings");
     } else {
         removeGreenDot("drag_settings");
     }
@@ -572,7 +572,7 @@ function initializeTextareaForSearchTooltips(textareaId, userConfigs) {
     if (textarea) {
         // Initialize with userConfigs or fallback to default configs
         textarea.value = userConfigs[textareaId] ?? configs[textareaId];
-        
+
         // Save changes on input
         textarea.addEventListener('input', () => {
             configs[textareaId] = textarea.value.trim(); // Store as a multiline string
@@ -834,10 +834,19 @@ async function exportSettings() {
                 delete allItems[key];
             }
         }
+        
+        // If popupWindowsInfo has more than just savedSizeAndPosition, keep only that
+        if (allItems.popupWindowsInfo
+            && typeof allItems.popupWindowsInfo === "object"
+            && Object.keys(allItems.popupWindowsInfo).length > 1) {
+            allItems.popupWindowsInfo = {
+                savedSizeAndPosition: allItems.popupWindowsInfo.savedSizeAndPosition
+            };
+        }
 
         const keep = confirm(chrome.i18n.getMessage("confirm"));
         // Check if popupWindowsInfo exists and process it
-        if (!keep) {allItems.popupWindowsInfo = {};}
+        if (!keep) { allItems.popupWindowsInfo = {}; }
 
         const jsonContent = JSON.stringify(allItems);
 
@@ -903,7 +912,16 @@ async function importSettings(file) {
             // console.error('Error getting browser info:', error);
         }
 
-        if (!keep) {delete importData.settings.popupWindowsInfo;}
+
+        if (importData.settings.popupWindowsInfo
+            && typeof importData.settings.popupWindowsInfo === "object"
+            && Object.keys(importData.settings.popupWindowsInfo).length > 1) {
+            importData.settings.popupWindowsInfo = {
+                savedSizeAndPosition: importData.settings.popupWindowsInfo.savedSizeAndPosition
+            };
+        }
+
+        if (!keep) { delete importData.settings.popupWindowsInfo; }
 
         await chrome.storage.local.set(importData.settings);
 
