@@ -134,18 +134,18 @@ function init() {
         }
     });
 
-    document.getElementById('exportButton').addEventListener('click', exportSettings);
+    document.getElementById('exportButton').onclick = exportSettings;
 
-    document.getElementById('importButton').addEventListener('click', () => {
+    document.getElementById('importButton').onclick = () => {
         document.getElementById('importFile').click();
-    });
+    };
 
-    document.getElementById('importFile').addEventListener('change', (e) => {
+    document.getElementById('importFile').onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
             importSettings(file);
         }
-    });
+    };
 
     document.getElementById('imgSearchEnable').addEventListener('change', function () {
         const imgSupportCheckbox = document.getElementById('imgSupport');
@@ -835,26 +835,9 @@ async function exportSettings() {
             }
         }
 
+        const keep = confirm(chrome.i18n.getMessage("confirm"));
         // Check if popupWindowsInfo exists and process it
-        if (allItems.popupWindowsInfo) {
-            const popupWindowsInfo = allItems.popupWindowsInfo;
-
-            if (popupWindowsInfo.savedPositionAndSize) {
-                // Keep only the height, width, and left in savedPositionAndSize, remove other information
-                allItems.popupWindowsInfo = {
-                    savedPositionAndSize: {
-                        height: popupWindowsInfo.savedPositionAndSize.height,
-                        width: popupWindowsInfo.savedPositionAndSize.width,
-                        left: popupWindowsInfo.savedPositionAndSize.left,
-                        top: popupWindowsInfo.savedPositionAndSize.top
-                    }
-                };
-
-            } else {
-                // If savedPositionAndSize doesn't exist, set popupWindowsInfo as empty
-                allItems.popupWindowsInfo = {};
-            }
-        }
+        if (!keep) {allItems.popupWindowsInfo = {};}
 
         const jsonContent = JSON.stringify(allItems);
 
@@ -871,7 +854,13 @@ async function exportSettings() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'settings_backup.json';
+
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+        const withWindowsInfo = keep ? 'Settings-withWindowsInfo' : 'Settings';
+        a.download = `PeekPop_${withWindowsInfo}_${dateStr}.json`;
+
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -892,7 +881,7 @@ async function importSettings(file) {
             console.error('Hash mismatch! Import aborted.');
             return;
         }
-
+        const keep = confirm(chrome.i18n.getMessage("confirm"));
         // Load user configs and handle Firefox-specific settings
         try {
             const browserInfo = await new Promise((resolve, reject) => {
@@ -914,7 +903,7 @@ async function importSettings(file) {
             // console.error('Error getting browser info:', error);
         }
 
-        delete importData.settings.popupWindowsInfo;
+        if (!keep) {delete importData.settings.popupWindowsInfo;}
 
         await chrome.storage.local.set(importData.settings);
 

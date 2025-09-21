@@ -259,5 +259,8 @@
     },
     "sendBackButtonEnable": {
         "message": "页面返回"
+    },
+    "confirm": {
+        "message": "点击确认保留弹出窗口的大小和位置信息，或点击取消跳过它们。"
     }
 }
