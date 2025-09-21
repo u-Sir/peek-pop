@@ -256,5 +256,8 @@
     },
     "sendBackButtonEnable": {
         "message": "Send Back"
+    },
+    "confirm": {
+        "message": "Click 'OK' to keep the popup window size and position, or 'Cancel' to skip them."
     }
 }

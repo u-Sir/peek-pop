@@ -65,7 +65,7 @@ const configs = {
     'collectionEnable': false,
 
     'searchTooltipsEnable': false,
-    'searchTooltipsEngines':  `Google=>https://www.google.com/search?q=%s
+    'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
 Baidu=>https://www.baidu.com/s?wd=%s
 Yandex=>https://yandex.com/search/?text=%s
@@ -146,13 +146,13 @@ function init() {
             console.warn("Shortcut settings not supported here.");
         }
     });
-    
+
     // Check if the current context is the popup
     const views = browser.extension.getViews({ type: "popup" });
 
     // If the view is a popup, hide the import/export block
     if (views.length > 0) {
-        
+
         // Hide the elements by setting display: none
         document.getElementById('exportImportSettings').style.display = 'none';
         document.getElementById('importFile').style.display = 'none';
@@ -160,18 +160,18 @@ function init() {
         document.getElementById('exportButton').style.display = 'none';
     }
 
-    document.getElementById('exportButton').addEventListener('click', exportSettings);
+    document.getElementById('exportButton').onclick = exportSettings;
 
-    document.getElementById('importButton').addEventListener('click', () => {
+    document.getElementById('importButton').onclick = () => {
         document.getElementById('importFile').click();
-    });
+    };
 
-    document.getElementById('importFile').addEventListener('change', (e) => {
+    document.getElementById('importFile').onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
             importSettings(file);
         }
-    });
+    };
 
     document.getElementById('imgSearchEnable').addEventListener('change', function () {
         const imgSupportCheckbox = document.getElementById('imgSupport');
@@ -239,11 +239,11 @@ function init() {
 
             doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
             doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
-            
+
             addGreenDot("previewMode_settings")
         } else {
             holdToPreviewCheckbox.disabled = false;  // reset the checkbox
-            
+
             doubleClickToSwitchCheckbox.checked = false;
             doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('doubleClickToSwitch', false);
@@ -251,7 +251,7 @@ function init() {
             doubleClickAsClickCheckbox.checked = false;
             doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('doubleClickAsClick', false);
-            
+
             removeGreenDot("previewMode_settings")
         }
     });
@@ -451,21 +451,21 @@ function setupPage(userConfigs) {
         doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
         saveConfig('doubleClickAsClick', false);
     }
-    
-    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) { 
-        addGreenDot("hover_settings"); 
+
+    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) {
+        addGreenDot("hover_settings");
     } else {
         removeGreenDot("hover_settings");
     }
 
-    if (userConfigs.previewModeEnable || userConfigs.holdToPreview) { 
-        addGreenDot("previewMode_settings"); 
+    if (userConfigs.previewModeEnable || userConfigs.holdToPreview) {
+        addGreenDot("previewMode_settings");
     } else {
         removeGreenDot("previewMode_settings");
     }
 
-    if (userConfigs.dragDirections === undefined || userConfigs.dragDirections.length !== 0) { 
-        addGreenDot("drag_settings"); 
+    if (userConfigs.dragDirections === undefined || userConfigs.dragDirections.length !== 0) {
+        addGreenDot("drag_settings");
     } else {
         removeGreenDot("drag_settings");
     }
@@ -598,7 +598,7 @@ function initializeTextareaForSearchTooltips(textareaId, userConfigs) {
     if (textarea) {
         // Initialize with userConfigs or fallback to default configs
         textarea.value = userConfigs[textareaId] ?? configs[textareaId];
-        
+
         // Save changes on input
         textarea.addEventListener('input', () => {
             configs[textareaId] = textarea.value.trim(); // Store as a multiline string
@@ -861,25 +861,10 @@ async function exportSettings() {
             }
         }
 
+        const keep = confirm(chrome.i18n.getMessage("confirm"));
         // Check if popupWindowsInfo exists and process it
-        if (allItems.popupWindowsInfo) {
-            const popupWindowsInfo = allItems.popupWindowsInfo;
-
-            if (popupWindowsInfo.savedPositionAndSize) {
-                // Keep only the height, width, and left in savedPositionAndSize, remove other information
-                allItems.popupWindowsInfo = {
-                    savedPositionAndSize: {
-                        height: popupWindowsInfo.savedPositionAndSize.height,
-                        width: popupWindowsInfo.savedPositionAndSize.width,
-                        left: popupWindowsInfo.savedPositionAndSize.left,
-                        top: popupWindowsInfo.savedPositionAndSize.top
-                    }
-                };
-
-            } else {
-                // If savedPositionAndSize doesn't exist, set popupWindowsInfo as empty
-                allItems.popupWindowsInfo = {};
-            }
+        if (!keep) {
+            allItems.popupWindowsInfo = {};
         }
 
         const jsonContent = JSON.stringify(allItems);
@@ -897,7 +882,13 @@ async function exportSettings() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'settings_backup.json';
+
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+        const withWindowsInfo = keep ? 'with_WindowsInfo' : 'no_WindowsInfo';
+        a.download = `PeekPop_settings_${withWindowsInfo}_backup_${dateStr}.json`;
+
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -919,6 +910,7 @@ async function importSettings(file) {
             return;
         }
 
+        const keep = confirm("Click 'OK' to keep the popup window size and position, or 'Cancel' to skip them.");
         // Load user configs and handle Firefox-specific settings
         try {
             const browserInfo = await new Promise((resolve, reject) => {
@@ -940,7 +932,9 @@ async function importSettings(file) {
             // console.error('Error getting browser info:', error);
         }
 
-        delete importData.settings.popupWindowsInfo;
+        if (!keep) {
+            delete importData.settings.popupWindowsInfo;
+        }
 
         await browser.storage.local.set(importData.settings);
 

@@ -256,5 +256,8 @@
     },
     "sendBackButtonEnable": {
         "message": "Enviar de vuelta"
+    },
+    "confirm": {
+        "message": "Haga clic en 'Aceptar' para mantener el tamaño y la posición de la ventana emergente, o en 'Cancelar' para omitirlos."
     }
 }

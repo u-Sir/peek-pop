@@ -1,3 +1,6 @@
+0.0.56
+- Option to preserve popup window size and position during export/import.
+
 0.0.55
 - New option: Automatically close popup when scrolling in the original window.
 - New option: Customize countdown style.
