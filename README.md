@@ -27,6 +27,24 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 - **Wildcard format**: `https://example.com/*`
 - **Plain text format**: `https://example.com`
 
+#### Common Pattern Examples
+- files: 
+`/\.(zip|rar|7z|exe|msi|md|pdf|docx?|xlsx?|pptx?|apk|dmg|iso)(\?.*)?$/`
+
+
+- images: 
+`/\.(jpg|jpeg|avif|png|svg|ico|webp|gif)(\?.*)?$/`
+
+
+- videos: 
+`/\.(mp4|mkv|rmvb|rm|avi|ts|mov|flv)(\?.*)?$/`
+
+- audio: 
+`/\.(mp3|flac|ogg|wav|aac)(\?.*)?$/`
+
+- download links: 
+`/^(magnet:\?xt=urn:[a-z0-9]+:[a-f0-9]{32,40}.*|https?:\/\/[^\s]+\/dl[a-zA-Z0-9\/%+=_-]+)$/`
+
 # FAQ
 
 ### Is it possible to set a popup always on top?  
