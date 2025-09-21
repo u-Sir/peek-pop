@@ -886,8 +886,8 @@ async function exportSettings() {
         const now = new Date();
         const pad = (n) => String(n).padStart(2, "0");
         const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-        const withWindowsInfo = keep ? 'with_WindowsInfo' : 'no_WindowsInfo';
-        a.download = `PeekPop_settings_${withWindowsInfo}_backup_${dateStr}.json`;
+        const withWindowsInfo = keep ? 'Settings-withWindowsInfo' : 'Settings';
+        a.download = `PeekPop_${withWindowsInfo}_${dateStr}.json`;
 
         document.body.appendChild(a);
         a.click();
