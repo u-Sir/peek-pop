@@ -861,6 +861,16 @@ async function exportSettings() {
             }
         }
 
+        // If popupWindowsInfo has more than just savedSizeAndPosition, keep only that
+        if (allItems.popupWindowsInfo
+            && typeof allItems.popupWindowsInfo === "object"
+            && Object.keys(allItems.popupWindowsInfo).length > 1) {
+            allItems.popupWindowsInfo = {
+                savedSizeAndPosition: allItems.popupWindowsInfo.savedSizeAndPosition
+            };
+        }
+
+
         const keep = confirm(chrome.i18n.getMessage("confirm"));
         // Check if popupWindowsInfo exists and process it
         if (!keep) {
@@ -930,6 +940,14 @@ async function importSettings(file) {
             }
         } catch (error) {
             // console.error('Error getting browser info:', error);
+        }
+
+        if (importData.settings.popupWindowsInfo
+            && typeof importData.settings.popupWindowsInfo === "object"
+            && Object.keys(importData.settings.popupWindowsInfo).length > 1) {
+            importData.settings.popupWindowsInfo = {
+                savedSizeAndPosition: importData.settings.popupWindowsInfo.savedSizeAndPosition
+            };
         }
 
         if (!keep) {
