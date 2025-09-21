@@ -1,5 +1,6 @@
 0.0.56
 - Option to preserve popup window size and position during export/import.
+- Special handling: build title from Weibo search query if default title is "微博搜索"
 
 0.0.55
 - New option: Automatically close popup when scrolling in the original window.
