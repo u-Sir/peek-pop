@@ -2286,7 +2286,7 @@ function addLinkToCollection(e) {
                         return response.text().then((html) => {
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(html, 'text/html');
-                            const title = doc.querySelector('title')?.innerText || finalUrl || url;
+                            const title = (doc.querySelector("title")?.innerText === "微博搜索") ? `微博搜索 - ${decodeURIComponent(new URL(finalUrl || url).searchParams.get("q") || "")}` : (doc.querySelector("title")?.innerText || finalUrl || url);
                             resolve({ title, finalUrl });
                         });
                     })
