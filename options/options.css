@@ -169,6 +169,7 @@ input[type="text"],
 input[type="number"],
 textarea {
     min-width: 40%;
+    white-space: nowrap;
 }
 
 input[type="number"] {

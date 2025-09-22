@@ -559,7 +559,8 @@ function addInputListener(input, key) {
 function initializeTextarea(textareaId, userConfigs) {
     const textarea = document.getElementById(textareaId);
     if (textarea) {
-        textarea.value = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
+        lines = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
+        textarea.value = (Array.isArray(lines) ? lines.join('\n') : lines).replace(/\n*$/, '') + '\n';
         textarea.addEventListener('input', () => {
             configs[textareaId] = textarea.value.split('\n').filter(line => line.trim());
             saveAllSettings();
@@ -571,8 +572,8 @@ function initializeTextareaForSearchTooltips(textareaId, userConfigs) {
     const textarea = document.getElementById(textareaId);
     if (textarea) {
         // Initialize with userConfigs or fallback to default configs
-        textarea.value = userConfigs[textareaId] ?? configs[textareaId];
-
+        lines = userConfigs[textareaId] ?? configs[textareaId];
+        textarea.value = (Array.isArray(lines) ? lines.join('\n') : lines).replace(/\n*$/, '') + '\n';
         // Save changes on input
         textarea.addEventListener('input', () => {
             configs[textareaId] = textarea.value.trim(); // Store as a multiline string
