@@ -138,10 +138,12 @@ function init() {
     document.getElementById('shortcuts').addEventListener('click', () => {
         if (typeof browser !== "undefined" && browser.commands?.openShortcutSettings) {
             // Firefox
-            return browser.commands.openShortcutSettings();
+            browser.commands.openShortcutSettings();
+            window.close();
+            
         } else if (typeof chrome !== "undefined" && chrome.tabs?.create) {
             // Chrome
-            return chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+            chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
         } else {
             console.warn("Shortcut settings not supported here.");
         }
@@ -585,7 +587,9 @@ function addInputListener(input, key) {
 function initializeTextarea(textareaId, userConfigs) {
     const textarea = document.getElementById(textareaId);
     if (textarea) {
-        textarea.value = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
+        lines = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
+        textarea.value = (Array.isArray(lines) ? lines.join('\n') : lines).replace(/\n*$/, '') + '\n';
+
         textarea.addEventListener('input', () => {
             configs[textareaId] = textarea.value.split('\n').filter(line => line.trim());
             saveAllSettings();
@@ -597,7 +601,9 @@ function initializeTextareaForSearchTooltips(textareaId, userConfigs) {
     const textarea = document.getElementById(textareaId);
     if (textarea) {
         // Initialize with userConfigs or fallback to default configs
-        textarea.value = userConfigs[textareaId] ?? configs[textareaId];
+        lines = userConfigs[textareaId] ?? configs[textareaId];
+        textarea.value = (Array.isArray(lines) ? lines.join('\n') : lines).replace(/\n*$/, '') + '\n';
+
 
         // Save changes on input
         textarea.addEventListener('input', () => {

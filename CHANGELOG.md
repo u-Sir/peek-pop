@@ -1,3 +1,8 @@
+0.0.57
+- Automatically close the popup options page after clicking the **Shortcuts** button in Firefox.
+- Disable text wrapping in textareas.
+- Clean up import/export settings information.
+
 0.0.56
 - Option to preserve popup window size and position during export/import.
 - Special handling: build title from Weibo search query if default title is "微博搜索"
