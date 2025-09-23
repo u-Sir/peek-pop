@@ -836,12 +836,12 @@ async function exportSettings() {
             }
         }
         
-        // If popupWindowsInfo has more than just savedSizeAndPosition, keep only that
+        // If popupWindowsInfo has more than just savedPositionAndSize, keep only that
         if (allItems.popupWindowsInfo
             && typeof allItems.popupWindowsInfo === "object"
             && Object.keys(allItems.popupWindowsInfo).length > 1) {
             allItems.popupWindowsInfo = {
-                savedSizeAndPosition: allItems.popupWindowsInfo.savedSizeAndPosition
+                savedPositionAndSize: allItems.popupWindowsInfo.savedPositionAndSize
             };
         }
 
@@ -918,7 +918,7 @@ async function importSettings(file) {
             && typeof importData.settings.popupWindowsInfo === "object"
             && Object.keys(importData.settings.popupWindowsInfo).length > 1) {
             importData.settings.popupWindowsInfo = {
-                savedSizeAndPosition: importData.settings.popupWindowsInfo.savedSizeAndPosition
+                savedPositionAndSize: importData.settings.popupWindowsInfo.savedPositionAndSize
             };
         }
 

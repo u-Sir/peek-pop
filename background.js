@@ -125,19 +125,6 @@ chrome.runtime.onInstalled.addListener(async () => {
             configs.isMac = platformInfo.os === "mac";
         }
 
-        // migration for popupWindowsInfo key rename
-        if (mergedConfigs.popupWindowsInfo &&
-            typeof mergedConfigs.popupWindowsInfo === "object" &&
-            mergedConfigs.popupWindowsInfo.savedPositionAndSize &&
-            !mergedConfigs.popupWindowsInfo.savedSizeAndPosition) {
-
-            mergedConfigs.popupWindowsInfo.savedSizeAndPosition = mergedConfigs.popupWindowsInfo.savedPositionAndSize;
-            delete mergedConfigs.popupWindowsInfo.savedPositionAndSize;
-
-            await chrome.storage.local.set({ popupWindowsInfo: mergedConfigs.popupWindowsInfo });
-        }
-
-
         const keysToSave = Object.keys(configs).filter(k => storedConfigs[k] === undefined || k === 'isFirefox' || k === 'isMac');
         if (keysToSave.length > 0) {
             const defaultsToSave = {};
@@ -171,9 +158,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 let popupWindowsInfo = userConfigs.popupWindowsInfo || {};
 
 
-                // Filter out the 'savedSizeAndPosition' key
+                // Filter out the 'savedPositionAndSize' key
                 const filteredPopupWindowsInfo = Object.keys(popupWindowsInfo).reduce((acc, key) => {
-                    if (key !== 'savedSizeAndPosition') {
+                    if (key !== 'savedPositionAndSize') {
                         acc[key] = popupWindowsInfo[key];
                     }
                     return acc;
@@ -215,19 +202,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                             if (userConfigs.rememberPopupSizeAndPosition || userConfigs.rememberPopupSizeAndPositionForDomain) {
 
-                                if (!popupWindowsInfo['savedSizeAndPosition']) {
-                                    popupWindowsInfo['savedSizeAndPosition'] = {};
+                                if (!popupWindowsInfo['savedPositionAndSize']) {
+                                    popupWindowsInfo['savedPositionAndSize'] = {};
                                 }
 
 
-                                if (popupWindowsInfo.savedSizeAndPosition) {
-                                    popupWindowsInfo.savedSizeAndPosition.left = currentWindow.left;
-                                    popupWindowsInfo.savedSizeAndPosition.top = currentWindow.top;
-                                    popupWindowsInfo.savedSizeAndPosition.width = currentWindow.width;
-                                    popupWindowsInfo.savedSizeAndPosition.height = currentWindow.height;
+                                if (popupWindowsInfo.savedPositionAndSize) {
+                                    popupWindowsInfo.savedPositionAndSize.left = currentWindow.left;
+                                    popupWindowsInfo.savedPositionAndSize.top = currentWindow.top;
+                                    popupWindowsInfo.savedPositionAndSize.width = currentWindow.width;
+                                    popupWindowsInfo.savedPositionAndSize.height = currentWindow.height;
 
                                 } else {
-                                    popupWindowsInfo.savedSizeAndPosition = {
+                                    popupWindowsInfo.savedPositionAndSize = {
                                         top: currentWindow.top,
                                         left: currentWindow.left,
                                         width: currentWindow.width,
@@ -236,8 +223,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 }
 
                                 for (const originWindowId in popupWindowsInfo) {
-                                    if (originWindowId === 'savedSizeAndPosition') {
-                                        continue; // Skip the savedSizeAndPosition key
+                                    if (originWindowId === 'savedPositionAndSize') {
+                                        continue; // Skip the savedPositionAndSize key
                                     }
 
                                     if (popupWindowsInfo[originWindowId][currentWindow.id]) {
@@ -260,16 +247,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         // Handle domain-specific saving
                                         if (userConfigs.rememberPopupSizeAndPositionForDomain && sender && sender.tab && sender.tab.url) {
                                             try {
-                                                if (!popupWindowsInfo['savedSizeAndPosition']) {
-                                                    popupWindowsInfo['savedSizeAndPosition'] = {};
+                                                if (!popupWindowsInfo['savedPositionAndSize']) {
+                                                    popupWindowsInfo['savedPositionAndSize'] = {};
                                                 }
                                                 // Ensure domain-specific object exists
-                                                if (!popupWindowsInfo['savedSizeAndPosition'][domain]) {
-                                                    popupWindowsInfo['savedSizeAndPosition'][domain] = {};
+                                                if (!popupWindowsInfo['savedPositionAndSize'][domain]) {
+                                                    popupWindowsInfo['savedPositionAndSize'][domain] = {};
                                                 }
                                                 // Store the position and size under the domain
                                                 // Update or add the domain-specific position and size
-                                                popupWindowsInfo.savedSizeAndPosition[domain] = {
+                                                popupWindowsInfo.savedPositionAndSize[domain] = {
                                                     top: currentWindow.top,
                                                     left: currentWindow.left,
                                                     width: currentWindow.width,
@@ -302,7 +289,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             }
                             return acc;
                         }, {});
-                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 || (Object.keys(popupWindowsInfo).length === 1 && 'savedSizeAndPosition' in popupWindowsInfo) || Object.keys(popupWindowsInfo).some(windowId => {
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) || Object.keys(popupWindowsInfo).some(windowId => {
                             // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
                             return windowId &&
                                 parseInt(windowId) === currentWindow.id &&
@@ -321,8 +308,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                                     const keyAsInt = parseInt(key, 10);
 
                                                     // Check if key is a valid window ID and clean recursively
-                                                    if (key === 'savedSizeAndPosition' || existingWindowIds.includes(keyAsInt)) {
-                                                        acc[key] = (key === 'savedSizeAndPosition') ? info[key] : cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
+                                                    if (key === 'savedPositionAndSize' || existingWindowIds.includes(keyAsInt)) {
+                                                        acc[key] = (key === 'savedPositionAndSize') ? info[key] : cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
                                                     }
 
                                                     return acc;
@@ -686,9 +673,9 @@ function handleLinkInPopup(userConfigs, trigger, linkUrl, tab, currentWindow, re
     return new Promise((resolve, reject) => {
         if (rememberPopupSizeAndPosition) {
             const popupWindowsInfo = userConfigs.popupWindowsInfo;
-            const savedSizeAndPosition = popupWindowsInfo.savedSizeAndPosition || {};
-            if (Object.keys(savedSizeAndPosition).length > 0) {
-                ({ left: dx, top: dy, width, height } = savedSizeAndPosition);
+            const savedPositionAndSize = popupWindowsInfo.savedPositionAndSize || {};
+            if (Object.keys(savedPositionAndSize).length > 0) {
+                ({ left: dx, top: dy, width, height } = savedPositionAndSize);
 
                 createPopupWindow(userConfigs, trigger, linkUrl, tab, windowType, dx, dy, width, height, currentWindow.id, popupWindowsInfo, rememberPopupSizeAndPosition, resolve, reject);
             } else {
@@ -719,31 +706,31 @@ function createPopupWindow(userConfigs, trigger, linkUrl, tab, windowType, left,
             ? userConfigs.previewModePopupInBackground
             : false;
     }
-    let savedSizeAndPosition;
+    let savedPositionAndSize;
     const domain = new URL(linkUrl).hostname;
     // Safely access the saved position and size if `rememberPopupSizeAndPositionForDomain` is enabled
-    if (userConfigs.rememberPopupSizeAndPositionForDomain && popupWindowsInfo.savedSizeAndPosition) {
-        if (popupWindowsInfo.savedSizeAndPosition[domain]) {
-            savedSizeAndPosition = {
-                top: popupWindowsInfo.savedSizeAndPosition[domain].top,
-                left: popupWindowsInfo.savedSizeAndPosition[domain].left,
-                width: popupWindowsInfo.savedSizeAndPosition[domain].width,
-                height: popupWindowsInfo.savedSizeAndPosition[domain].height,
+    if (userConfigs.rememberPopupSizeAndPositionForDomain && popupWindowsInfo.savedPositionAndSize) {
+        if (popupWindowsInfo.savedPositionAndSize[domain]) {
+            savedPositionAndSize = {
+                top: popupWindowsInfo.savedPositionAndSize[domain].top,
+                left: popupWindowsInfo.savedPositionAndSize[domain].left,
+                width: popupWindowsInfo.savedPositionAndSize[domain].width,
+                height: popupWindowsInfo.savedPositionAndSize[domain].height,
 
             };
         }
     } else {
-        savedSizeAndPosition = false;
+        savedPositionAndSize = false;
     }
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.windows.create({
             url: linkUrl,
             type: windowType,
-            top: parseInt(savedSizeAndPosition ? savedSizeAndPosition.top : top),
-            left: parseInt(savedSizeAndPosition ? savedSizeAndPosition.left : left),
-            width: parseInt(savedSizeAndPosition ? savedSizeAndPosition.width : width),
-            height: parseInt(savedSizeAndPosition ? savedSizeAndPosition.height : height),
+            top: parseInt(savedPositionAndSize ? savedPositionAndSize.top : top),
+            left: parseInt(savedPositionAndSize ? savedPositionAndSize.left : left),
+            width: parseInt(savedPositionAndSize ? savedPositionAndSize.width : width),
+            height: parseInt(savedPositionAndSize ? savedPositionAndSize.height : height),
             focused: !popupInBackground,
             incognito: tab && tab.incognito !== undefined ? tab.incognito : false
         }, (newWindow) => {
@@ -823,11 +810,11 @@ function updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWi
     };
 
     if (rememberPopupSizeAndPosition) {
-        if (popupWindowsInfo.savedSizeAndPosition) {
-            popupWindowsInfo.savedSizeAndPosition.left = newWindow.left;
-            popupWindowsInfo.savedSizeAndPosition.top = newWindow.top;
-            popupWindowsInfo.savedSizeAndPosition.width = newWindow.width;
-            popupWindowsInfo.savedSizeAndPosition.height = newWindow.height;
+        if (popupWindowsInfo.savedPositionAndSize) {
+            popupWindowsInfo.savedPositionAndSize.left = newWindow.left;
+            popupWindowsInfo.savedPositionAndSize.top = newWindow.top;
+            popupWindowsInfo.savedPositionAndSize.width = newWindow.width;
+            popupWindowsInfo.savedPositionAndSize.height = newWindow.height;
         }
 
     }
@@ -836,16 +823,16 @@ function updatePopupInfoAndListeners(linkUrl, newWindow, originWindowId, popupWi
     // Handle domain-specific saving
     if (rememberPopupSizeAndPositionForDomain) {
         try {
-            if (!popupWindowsInfo.savedSizeAndPosition) {
-                popupWindowsInfo.savedSizeAndPosition = {};
+            if (!popupWindowsInfo.savedPositionAndSize) {
+                popupWindowsInfo.savedPositionAndSize = {};
             }
             // Ensure domain-specific object exists
-            if (!popupWindowsInfo.savedSizeAndPosition[domain]) {
-                popupWindowsInfo.savedSizeAndPosition[domain] = {};
+            if (!popupWindowsInfo.savedPositionAndSize[domain]) {
+                popupWindowsInfo.savedPositionAndSize[domain] = {};
             }
             // Store the position and size under the domain
             // Update or add the domain-specific position and size
-            popupWindowsInfo.savedSizeAndPosition[domain] = {
+            popupWindowsInfo.savedPositionAndSize[domain] = {
                 top: newWindow.top,
                 left: newWindow.left,
                 width: newWindow.width,
@@ -931,14 +918,14 @@ function addBoundsChangeListener(linkUrl, windowId, originWindowId) {
                         originDomain: domain
                     };
 
-                    if (popupWindowsInfo.savedSizeAndPosition) {
-                        popupWindowsInfo.savedSizeAndPosition.left = bounds.left;
-                        popupWindowsInfo.savedSizeAndPosition.top = bounds.top;
-                        popupWindowsInfo.savedSizeAndPosition.width = bounds.width;
-                        popupWindowsInfo.savedSizeAndPosition.height = bounds.height;
+                    if (popupWindowsInfo.savedPositionAndSize) {
+                        popupWindowsInfo.savedPositionAndSize.left = bounds.left;
+                        popupWindowsInfo.savedPositionAndSize.top = bounds.top;
+                        popupWindowsInfo.savedPositionAndSize.width = bounds.width;
+                        popupWindowsInfo.savedPositionAndSize.height = bounds.height;
 
                     } else {
-                        popupWindowsInfo.savedSizeAndPosition = {
+                        popupWindowsInfo.savedPositionAndSize = {
                             top: bounds.top,
                             left: bounds.left,
                             width: bounds.width,
@@ -951,16 +938,16 @@ function addBoundsChangeListener(linkUrl, windowId, originWindowId) {
                     if (result.rememberPopupSizeAndPositionForDomain) {
                         try {
                             const domain = new URL(linkUrl).hostname;
-                            if (!popupWindowsInfo.savedSizeAndPosition) {
-                                popupWindowsInfo.savedSizeAndPosition = {};
+                            if (!popupWindowsInfo.savedPositionAndSize) {
+                                popupWindowsInfo.savedPositionAndSize = {};
                             }
                             // Ensure domain-specific object exists
-                            if (!popupWindowsInfo.savedSizeAndPosition[domain]) {
-                                popupWindowsInfo.savedSizeAndPosition[domain] = {};
+                            if (!popupWindowsInfo.savedPositionAndSize[domain]) {
+                                popupWindowsInfo.savedPositionAndSize[domain] = {};
                             }
                             // Store the position and size under the domain
                             // Update or add the domain-specific position and size
-                            popupWindowsInfo.savedSizeAndPosition[domain] = {
+                            popupWindowsInfo.savedPositionAndSize[domain] = {
                                 top: bounds.top,
                                 left: bounds.left,
                                 width: bounds.width,
