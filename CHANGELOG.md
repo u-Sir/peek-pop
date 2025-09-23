@@ -1,5 +1,5 @@
 0.0.58
-- Unify `popupWindowsInfo` format across Chromium and Firefox
+- Minor typo fixed
 
 0.0.57
 - Automatically close the popup options page after clicking the **Shortcuts** button in Firefox.
