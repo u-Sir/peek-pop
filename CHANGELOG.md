@@ -1,3 +1,6 @@
+0.0.58
+- Unify `popupWindowsInfo` format across Chromium and Firefox
+
 0.0.57
 - Disable text wrapping in textareas.
 - Clean up import/export settings information.
