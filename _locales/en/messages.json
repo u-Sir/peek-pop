@@ -192,10 +192,10 @@
         "message": "Dynamic Popup: remember the last popup window size and position for each domain."
     },
     "closeTrigger": {
-        "message": "The priority of size/position: domain-specific > non-domain-specific > scale > centered/near mouse."
+        "message": "Close trigger"
     },
     "button": {
-        "message": "The priority of size/position: domain-specific > non-domain-specific > scale > centered/near mouse."
+        "message": "Button for popup-type windows"
     },
     "note": {
         "message": "The priority of size/position: domain-specific > non-domain-specific > scale > centered/near mouse."
