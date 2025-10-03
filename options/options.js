@@ -140,13 +140,17 @@ function init() {
             // Firefox
             browser.commands.openShortcutSettings();
             window.close();
-            
+
         } else if (typeof chrome !== "undefined" && chrome.tabs?.create) {
             // Chrome
             chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
         } else {
             console.warn("Shortcut settings not supported here.");
         }
+    });
+
+    document.getElementById("githubLink").addEventListener("click", () => {
+        setTimeout(() => window.close(), 100); // closes the popup
     });
 
     // Check if the current context is the popup
