@@ -438,11 +438,15 @@ function changeCursorOnHover(e, anchorElement) {
         (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
     if (linkElement) {
 
-
         const linkUrl = linkElement ?
             (linkElement.getAttribute('data-url') ||
-                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                (linkElement.href.startsWith('/')
+                    ? window.location.protocol + linkElement.href
+                    : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                        ? decodeURIComponent(linkElement.searchParams.get("u"))
+                        : linkElement.href)))
             : null;
+
 
         if (!linkUrl) return;
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
@@ -668,9 +672,12 @@ function handleMouseDown(e) {
 
     const linkUrl = linkElement ?
         (linkElement.getAttribute('data-url') ||
-            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            (linkElement.href.startsWith('/')
+                ? window.location.protocol + linkElement.href
+                : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                    ? decodeURIComponent(linkElement.searchParams.get("u"))
+                    : linkElement.href)))
         : null;
-
 
     if (
         sendBackByMiddleClickEnable &&
@@ -730,8 +737,13 @@ function handleMouseDown(e) {
 
         const linkUrl = linkElement ?
             (linkElement.getAttribute('data-url') ||
-                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                (linkElement.href.startsWith('/')
+                    ? window.location.protocol + linkElement.href
+                    : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                        ? decodeURIComponent(linkElement.searchParams.get("u"))
+                        : linkElement.href)))
             : null;
+
 
         // Check if the URL is valid and not a JavaScript link
         if (!linkUrl || (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))) {
@@ -834,8 +846,13 @@ function handleHoldLink(e, anchorElement = null) {
 
     const linkUrl = linkElement ?
         (linkElement.getAttribute('data-url') ||
-            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            (linkElement.href.startsWith('/')
+                ? window.location.protocol + linkElement.href
+                : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                    ? decodeURIComponent(linkElement.searchParams.get("u"))
+                    : linkElement.href)))
         : null;
+
 
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -916,8 +933,13 @@ function handleDoubleClick(e) {
 
     const linkUrl = linkElement ?
         (linkElement.getAttribute('data-url') ||
-            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            (linkElement.href.startsWith('/')
+                ? window.location.protocol + linkElement.href
+                : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                    ? decodeURIComponent(linkElement.searchParams.get("u"))
+                    : linkElement.href)))
         : null;
+
 
     if (!previewModeEnable || clickModifiedKey !== 'None') return;
 
@@ -1027,8 +1049,13 @@ function handleEvent(e) {
 
             const linkUrl = linkElement ?
                 (linkElement.getAttribute('data-url') ||
-                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                    (linkElement.href.startsWith('/')
+                        ? window.location.protocol + linkElement.href
+                        : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                            ? decodeURIComponent(linkElement.searchParams.get("u"))
+                            : linkElement.href)))
                 : null;
+
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -1084,8 +1111,13 @@ function handleEvent(e) {
 
         const linkUrl = linkElement ?
             (linkElement.getAttribute('data-url') ||
-                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                (linkElement.href.startsWith('/')
+                    ? window.location.protocol + linkElement.href
+                    : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                        ? decodeURIComponent(linkElement.searchParams.get("u"))
+                        : linkElement.href)))
             : null;
+
 
         // Check if the focused element is an input or textarea
         const activeEl = document.activeElement;
@@ -1382,8 +1414,13 @@ async function handleDragStart(e, anchorElement) {
 
             const linkUrl = linkElement ?
                 (linkElement.getAttribute('data-url') ||
-                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                    (linkElement.href.startsWith('/')
+                        ? window.location.protocol + linkElement.href
+                        : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                            ? decodeURIComponent(linkElement.searchParams.get("u"))
+                            : linkElement.href)))
                 : null;
+
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
 
@@ -1615,8 +1652,13 @@ async function handleDragStart(e, anchorElement) {
 
         const linkUrl = linkElement ?
             (linkElement.getAttribute('data-url') ||
-                (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                (linkElement.href.startsWith('/')
+                    ? window.location.protocol + linkElement.href
+                    : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                        ? decodeURIComponent(linkElement.searchParams.get("u"))
+                        : linkElement.href)))
             : null;
+
 
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
         const imageElement = e.target instanceof HTMLElement && (e.target.tagName === 'IMG' ? e.target : e.target.closest('img'));
@@ -2235,7 +2277,11 @@ function addLinkToCollection(e) {
 
     const linkUrl = linkElement ?
         (linkElement.getAttribute('data-url') ||
-            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            (linkElement.href.startsWith('/')
+                ? window.location.protocol + linkElement.href
+                : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                    ? decodeURIComponent(linkElement.searchParams.get("u"))
+                    : linkElement.href)))
         : window.location.href;
 
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
@@ -2602,8 +2648,13 @@ async function handleMouseOver(e) {
 
     const linkUrl = linkElement ?
         (linkElement.getAttribute('data-url') ||
-            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+            (linkElement.href.startsWith('/')
+                ? window.location.protocol + linkElement.href
+                : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                    ? decodeURIComponent(linkElement.searchParams.get("u"))
+                    : linkElement.href)))
         : null;
+
 
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -2625,8 +2676,13 @@ async function handleMouseOver(e) {
 
             const linkUrl = linkElement ?
                 (linkElement.getAttribute('data-url') ||
-                    (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+                    (linkElement.href.startsWith('/')
+                        ? window.location.protocol + linkElement.href
+                        : (linkElement.hostname.includes("bing.com") && linkElement.searchParams?.get("u")
+                            ? decodeURIComponent(linkElement.searchParams.get("u"))
+                            : linkElement.href)))
                 : null;
+
 
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
 
