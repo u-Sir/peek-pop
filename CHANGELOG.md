@@ -1,3 +1,6 @@
+0.0.61
+- Add special handling for Bing search redirect links.
+
 0.0.59
 - Minor typo fixed
 
