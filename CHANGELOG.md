@@ -1,4 +1,4 @@
-0.0.61
+0.0.62
 - Special handling: decode and replace Bing redirect links on Bing search pages only.
 
 0.0.58
