@@ -2396,6 +2396,27 @@ new MutationObserver(() => {
         chrome.storage.local.set({ lastUrl: url });
         checkUrlAndToggleListeners();
     }
+    
+    (function replaceBingRedirectLinks() {
+        if (!location.href.startsWith('https://www.bing.com/search?q=')) return;
+
+        const links = Array.from(document.querySelectorAll('a[href^="https://www.bing.com/ck/a?"]'));
+
+        links.forEach(a => {
+            try {
+                const url = new URL(a.href);
+                const uParam = url.searchParams.get('u');
+                if (!uParam) return;
+
+                if (uParam.startsWith('a1')) {
+                    const decoded = atob(uParam.slice(2));
+                    a.href = decoded.startsWith('http') ? decoded : 'https://www.bing.com' + decoded;
+                }
+            } catch (e) {
+                console.warn('Failed to decode Bing redirect link:', a.href, e);
+            }
+        });
+    })();
 
 }).observe(document, { subtree: true, childList: true });
 
