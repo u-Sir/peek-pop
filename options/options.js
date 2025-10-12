@@ -270,6 +270,23 @@ function init() {
         }
     });
 
+    document.getElementById('dragStartEnable').addEventListener('change', function () {
+        const isCheck = this.checked;
+        document.querySelectorAll('input[name="dragDirections"]').forEach(checkbox => {
+            if (isCheck) {
+                // set all checkboxes greyed out
+                checkbox.disabled = true;
+                addGreenDot("drag_settings");
+            } else {
+                checkbox.disabled = false;
+                if (!isAnyDirectionChecked()) {
+                    removeGreenDot("drag_settings");
+                }
+
+            }
+        });
+    });
+
     document.querySelectorAll('input[name="dragDirections"]').forEach(checkbox => {
         checkbox.addEventListener('change', function () {
             if (isAnyDirectionChecked()) {
