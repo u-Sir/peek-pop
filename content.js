@@ -1051,6 +1051,7 @@ function handleEvent(e) {
             if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
             if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
             if (previewMode &&
+                e.isTrusted &&
                 linkUrl &&
                 !isDoubleClick &&
                 !linkElement.closest("[hx-on\\:click]") &&
