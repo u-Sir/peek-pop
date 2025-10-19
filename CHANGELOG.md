@@ -1,5 +1,6 @@
 0.0.62
-- Special handling: decode and replace Bing redirect links on Bing search pages only.
+- Special handling: decode and replace Bing redirect links on Bing search pages only.(Firefox only)
+- Refine hold-to-preview logic
 
 0.0.58
 - Minor typo fixed

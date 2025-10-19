@@ -777,8 +777,11 @@ function handleMouseDown(e) {
             // Set a timeout for the hold-to-preview action
             holdTimeout = setTimeout(() => {
                 if (!isMouseDownOnLink) return; // Ensure the mouse is still down
+                const now = Date.now();
                 clearTimeoutsAndProgressBars(); // Cleanup any progress bar
-                handleHoldLink(e, anchorElement); // Trigger the hold-to-preview action
+                if (e.button !== 0 || isDoubleClick) return;
+                if (!firstDownOnLinkAt) return;
+                handleHoldLink(e, linkUrl, now); // Trigger the hold-to-preview action
             }, holdToPreviewTimeout ?? 1500);
 
             // Check the initial mouse down time
@@ -825,23 +828,10 @@ function cancelHoldToPreviewOnDrag() {
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
 
-function handleHoldLink(e, anchorElement = null) {
-    if (e.button !== 0 || isDoubleClick) return;
-    if (!firstDownOnLinkAt) return;
-    const linkElement = anchorElement || e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
-        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
-    if (!linkElement) return; // Ensure linkElement and linkUrl are valid
-
-    const linkUrl = linkElement ?
-        (linkElement.getAttribute('data-url') ||
-            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
-        : null;
-
-    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
-    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+function handleHoldLink(e, linkUrl, now) {
 
     isMouseDownOnLink = true;
-    if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
+    if (firstDownOnLinkAt && now - firstDownOnLinkAt >= (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
         hasPopupTriggered = true;
         // handlePreviewMode(e);
 
@@ -2396,7 +2386,7 @@ new MutationObserver(() => {
         chrome.storage.local.set({ lastUrl: url });
         checkUrlAndToggleListeners();
     }
-    
+
     (function replaceBingRedirectLinks() {
         if (!location.href.startsWith('https://www.bing.com/search?q=')) return;
 
