@@ -792,8 +792,9 @@ function handleMouseDown(e) {
             // Set a timeout for the hold-to-preview action
             holdTimeout = setTimeout(() => {
                 if (!isMouseDownOnLink) return; // Ensure the mouse is still down
+                const now = Date.now();
                 clearTimeoutsAndProgressBars(); // Cleanup any progress bar
-                handleHoldLink(e, anchorElement); // Trigger the hold-to-preview action
+                handleHoldLink(e, anchorElement, now); // Trigger the hold-to-preview action
             }, holdToPreviewTimeout ?? 1500);
 
             // Check the initial mouse down time
@@ -854,7 +855,7 @@ function cancelHoldToPreviewOnDrag() {
     document.removeEventListener('dragstart', cancelHoldToPreviewOnDrag, true);
 }
 
-function handleHoldLink(e, anchorElement = null) {
+function handleHoldLink(e, anchorElement = null, now) {
     if (e.button !== 0 || isDoubleClick) return;
     if (!firstDownOnLinkAt) return;
     const linkElement = anchorElement || e.composedPath().find(node => node instanceof HTMLAnchorElement) ||
@@ -870,7 +871,7 @@ function handleHoldLink(e, anchorElement = null) {
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
     isMouseDownOnLink = true;
-    if (firstDownOnLinkAt && Date.now() - firstDownOnLinkAt > (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
+    if (firstDownOnLinkAt && now - firstDownOnLinkAt >= (holdToPreviewTimeout ?? 1500) && isMouseDownOnLink) {
         hasPopupTriggered = true;
         // handlePreviewMode(e);
         if (linkUrl) {

@@ -1,3 +1,6 @@
+0.0.62
+- Refine hold-to-preview logic
+
 0.0.59
 - Minor typo fixed
 
