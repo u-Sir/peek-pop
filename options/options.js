@@ -391,10 +391,10 @@ function setupPage(userConfigs) {
     initializeDragDirectionCheckboxes(userConfigs.dragDirections || configs.dragDirections);
 
     // Set modified key
-    setupModifiedKeySelection(userConfigs.modifiedKey);
-    setupHoverModifiedKeySelection(userConfigs.hoverModifiedKey);
-    setupClickModifiedKeySelection(userConfigs.clickModifiedKey);
-    setupDoubleTapKeyToSendPageBackSelection(userConfigs.doubleTapKeyToSendPageBack);
+    setupModifiedKeySelection("modifiedKey", userConfigs.modifiedKey);
+    setupModifiedKeySelection("hoverModifiedKey", userConfigs.hoverModifiedKey);
+    setupModifiedKeySelection("clickModifiedKey", userConfigs.clickModifiedKey);
+    setupModifiedKeySelection("doubleTapKeyToSendPageBack", userConfigs.doubleTapKeyToSendPageBack);
 
 
     setupCountdownStyleSelection(userConfigs.countdownStyle);
@@ -404,10 +404,10 @@ function setupPage(userConfigs) {
     setupHoverSearchEngineSelection(userConfigs.hoverSearchEngine);
 
     // Setup window type selection
-    setupWindowTypeSelection(userConfigs.windowType);
-    setupHoverWindowTypeSelection(userConfigs.hoverWindowType);
-    setupPreviewModeWindowTypeSelection(userConfigs.previewModeWindowType);
-    setupSearchWindowTypeSelection(userConfigs.searchWindowType);
+    setupWindowTypeSelection("windowType", userConfigs.windowType);
+    setupWindowTypeSelection("hoverWindowType", userConfigs.hoverWindowType);
+    setupWindowTypeSelection("previewModeWindowType", userConfigs.previewModeWindowType);
+    setupWindowTypeSelection("searchWindowType", userConfigs.searchWindowType);
 
     const holdToPreviewCheckbox = document.getElementById('holdToPreview');
     const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
@@ -702,114 +702,37 @@ function setupHoverSearchEngineSelection(searchEngine) {
 
 
 
-function setupWindowTypeSelection(windowType) {
-    windowType = windowType ?? 'popup';
-    document.querySelector(`input[name="windowType"][value="${windowType}"]`).checked = true;
 
-    document.querySelectorAll('input[name="windowType"]').forEach(input => {
+
+function setupWindowTypeSelection(name, windowType = 'popup') {
+    // Set the default checked value based on the passed windowType
+    document.querySelector(`input[name="${name}"][value="${windowType}"]`).checked = true;
+
+    // Add event listeners to all inputs with the given name
+    document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
         input.addEventListener('change', event => {
             const newWindowType = event.target.value;
-            chrome.storage.local.set({ windowType: newWindowType }, () => {
-                configs.windowType = newWindowType;
+
+            // Store the selected value in chrome.storage.local
+            chrome.storage.local.set({ [name]: newWindowType }, () => {
+                configs[name] = newWindowType;
             });
         });
     });
 }
 
-function setupHoverWindowTypeSelection(windowType) {
-    windowType = windowType ?? 'popup';
-    document.querySelector(`input[name="hoverWindowType"][value="${windowType}"]`).checked = true;
+function setupModifiedKeySelection(name, modifiedKey = 'None') {
+    // Set the default checked value based on the passed modifiedKey
+    document.querySelector(`input[name="${name}"][value="${modifiedKey}"]`).checked = true;
 
-    document.querySelectorAll('input[name="hoverWindowType"]').forEach(input => {
-        input.addEventListener('change', event => {
-            const newWindowType = event.target.value;
-            chrome.storage.local.set({ hoverWindowType: newWindowType }, () => {
-                configs.hoverWindowType = newWindowType;
-            });
-        });
-    });
-}
-
-function setupPreviewModeWindowTypeSelection(windowType) {
-    windowType = windowType ?? 'popup';
-    document.querySelector(`input[name="previewModeWindowType"][value="${windowType}"]`).checked = true;
-
-    document.querySelectorAll('input[name="previewModeWindowType"]').forEach(input => {
-        input.addEventListener('change', event => {
-            const newPreviewModeWindowType = event.target.value;
-            chrome.storage.local.set({ previewModeWindowType: newPreviewModeWindowType }, () => {
-                configs.previewModeWindowType = newPreviewModeWindowType;
-            });
-        });
-    });
-}
-
-function setupSearchWindowTypeSelection(windowType) {
-    windowType = windowType ?? 'popup';
-    document.querySelector(`input[name="searchWindowType"][value="${windowType}"]`).checked = true;
-
-    document.querySelectorAll('input[name="searchWindowType"]').forEach(input => {
-        input.addEventListener('change', event => {
-            const newSearchWindowType = event.target.value;
-            chrome.storage.local.set({ searchWindowType: newSearchWindowType }, () => {
-                configs.searchWindowType = newSearchWindowType;
-            });
-        });
-    });
-}
-
-function setupModifiedKeySelection(modifiedKey) {
-    modifiedKey = modifiedKey ?? 'None';
-    document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
-
-    document.querySelectorAll('input[name="modifiedKey"]').forEach(input => {
+    // Add event listeners to all inputs with the given name
+    document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
         input.addEventListener('change', event => {
             const newModifiedKey = event.target.value;
-            chrome.storage.local.set({ modifiedKey: newModifiedKey }, () => {
-                configs.modifiedKey = newModifiedKey;
-            });
-        });
-    });
-}
 
-function setupHoverModifiedKeySelection(hoverModifiedKey) {
-    hoverModifiedKey = hoverModifiedKey ?? 'None';
-    document.querySelector(`input[name="hoverModifiedKey"][value="${hoverModifiedKey}"]`).checked = true;
-
-    document.querySelectorAll('input[name="hoverModifiedKey"]').forEach(input => {
-        input.addEventListener('change', event => {
-            const newHoverModifiedKey = event.target.value;
-            chrome.storage.local.set({ hoverModifiedKey: newHoverModifiedKey }, () => {
-                configs.hoverModifiedKey = newHoverModifiedKey;
-            });
-        });
-    });
-}
-
-
-function setupClickModifiedKeySelection(clickModifiedKey) {
-    clickModifiedKey = clickModifiedKey ?? 'None';
-    document.querySelector(`input[name="clickModifiedKey"][value="${clickModifiedKey}"]`).checked = true;
-
-    document.querySelectorAll('input[name="clickModifiedKey"]').forEach(input => {
-        input.addEventListener('change', event => {
-            const newClickModifiedKey = event.target.value;
-            chrome.storage.local.set({ clickModifiedKey: newClickModifiedKey }, () => {
-                configs.clickModifiedKey = newClickModifiedKey;
-            });
-        });
-    });
-}
-
-function setupDoubleTapKeyToSendPageBackSelection(doubleTapKeyToSendPageBack) {
-    doubleTapKeyToSendPageBack = doubleTapKeyToSendPageBack ?? 'None';
-    document.querySelector(`input[name="doubleTapKeyToSendPageBack"][value="${doubleTapKeyToSendPageBack}"]`).checked = true;
-
-    document.querySelectorAll('input[name="doubleTapKeyToSendPageBack"]').forEach(input => {
-        input.addEventListener('change', event => {
-            const newDoubleTapKeyToSendPageBack = event.target.value;
-            chrome.storage.local.set({ doubleTapKeyToSendPageBack: newDoubleTapKeyToSendPageBack }, () => {
-                configs.doubleTapKeyToSendPageBack = newDoubleTapKeyToSendPageBack;
+            // Store the selected value in chrome.storage.local
+            chrome.storage.local.set({ [name]: newModifiedKey }, () => {
+                configs[name] = newModifiedKey;
             });
         });
     });
