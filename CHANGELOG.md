@@ -1,4 +1,7 @@
-0.0.62
+0.0.63
+- New option: window-type for search tooltips.
+
+00.0.62
 - Refine hold-to-preview logic
 
 0.0.59
