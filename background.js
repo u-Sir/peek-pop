@@ -65,7 +65,7 @@ const configs = {
     'collection': [],
     'collectionEnable': false,
 
-
+    'searchWindowType': 'normal',
     'searchTooltipsEnable': false,
     'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
@@ -635,7 +635,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     return Promise.all(saveConfigPromises);
                 }).then(() => {
                     return loadUserConfigs().then(userConfigs => {
-                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
+                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, searchWindowType,lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
                         let typeToSend;
                         let urls;
 
@@ -645,7 +645,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             typeToSend = hoverWindowType || 'popup';
                         } else if (request.trigger === 'click') {
                             typeToSend = previewModeWindowType || 'popup';
-                        } else if (request.action === 'group' && request.links && request.links.length > 0) {
+                        } else if (request.trigger === 'tooltips') {
+                            typeToSend = searchWindowType || 'normal';
+                        }  else if (request.action === 'group' && request.links && request.links.length > 0) {
                             // Extract URLs from the message
                             urls = request.links.map(link => link.url);
                             typeToSend = 'normal';

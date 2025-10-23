@@ -64,6 +64,7 @@ const configs = {
     'collection': [],
     'collectionEnable': false,
 
+    'searchWindowType': 'normal',
     'searchTooltipsEnable': false,
     'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
@@ -392,6 +393,7 @@ function setupPage(userConfigs) {
     setInputLabel('windowType', 'windowType');
     setInputLabel('hoverWindowType', 'windowType');
     setInputLabel('previewModeWindowType', 'windowType');
+    setInputLabel('searchWindowType', 'windowType');
 
     setInputLabel('modifiedKey', 'modifiedKey');
     setInputLabel('hoverModifiedKey', 'modifiedKey');
@@ -452,6 +454,7 @@ function setupPage(userConfigs) {
     setupWindowTypeSelection(userConfigs.windowType);
     setupHoverWindowTypeSelection(userConfigs.hoverWindowType);
     setupPreviewModeWindowTypeSelection(userConfigs.previewModeWindowType);
+    setupSearchWindowTypeSelection(userConfigs.searchWindowType);
 
     const holdToPreviewCheckbox = document.getElementById('holdToPreview');
     const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
@@ -793,6 +796,20 @@ function setupPreviewModeWindowTypeSelection(windowType) {
     });
 }
 
+function setupSearchWindowTypeSelection(windowType) {
+    windowType = windowType ?? 'popup';
+    document.querySelector(`input[name="searchWindowType"][value="${windowType}"]`).checked = true;
+
+    document.querySelectorAll('input[name="searchWindowType"]').forEach(input => {
+        input.addEventListener('change', event => {
+            const newSearchWindowType = event.target.value;
+            chrome.storage.local.set({ searchWindowType: newSearchWindowType }, () => {
+                configs.searchWindowType = newSearchWindowType;
+            });
+        });
+    });
+}
+
 function setupModifiedKeySelection(modifiedKey) {
     modifiedKey = modifiedKey ?? 'None';
     document.querySelector(`input[name="modifiedKey"][value="${modifiedKey}"]`).checked = true;
@@ -1025,6 +1042,8 @@ function loadUserConfigs(callback) {
         userConfigs.hoverWindowType = userConfigs.hoverWindowType ?? configs.hoverWindowType;
 
         userConfigs.previewModeWindowType = userConfigs.previewModeWindowType ?? configs.previewModeWindowType;
+
+        userConfigs.searchWindowType = userConfigs.searchWindowType ?? configs.searchWindowType;
 
         keys.forEach(key => {
             if (userConfigs[key] !== null && userConfigs[key] !== undefined) {
