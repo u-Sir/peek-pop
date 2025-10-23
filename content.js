@@ -159,6 +159,7 @@ const configs = {
     'collection': [],
     'collectionEnable': false,
 
+    'searchWindowType': 'normal',
     'searchTooltipsEnable': false,
     'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
 Bing=>https://www.bing.com/search?q=%s
