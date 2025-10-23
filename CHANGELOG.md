@@ -1,3 +1,6 @@
+0.0.63
+- New option: window-type for search tooltips.
+
 0.0.62
 - Special handling: decode and replace Bing redirect links on Bing search pages only.(Firefox only)
 - Refine hold-to-preview logic
