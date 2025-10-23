@@ -388,6 +388,7 @@ function setupPage(userConfigs) {
     setInputLabel('normal', 'normal');
     setInputLabel('hoverNormal', 'normal');
     setInputLabel('previewModeNormal', 'normal');
+    setInputLabel('searchNormal', 'normal');
 
 
     setInputLabel('windowType', 'windowType');
