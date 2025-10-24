@@ -23,13 +23,13 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 
 ### Triggers
 
-| Trigger                | Supported? | optional modifier key support | optional image search support |
+| Trigger                | Supported? | Modifier key  | Image search  |
 |--------------------------|------------|--------------------------|------------|
-| Drag(default)             | ✅ Yes | ✅ Yes | ✅ Yes |
-| Click        | ✅ Yes | ✅ Yes | ❌ No |
+| Drag(default)             | ✅ Yes | ✅ Optional | ✅ Optional |
+| Click        | ✅ Yes | ✅ Optional | ❌ No |
 | Double Click        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hold        | ✅ Yes     | ❌ No   | ❌ No   |
-| Hover | ✅ Yes | ✅ Yes | ✅ Yes |
+| Hover | ✅ Yes | ✅ Optional | ✅ Optional |
 
 👉 Supports enabling multiple trigger methods simultaneously.
 
