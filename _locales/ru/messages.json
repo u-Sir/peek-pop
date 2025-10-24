@@ -245,6 +245,15 @@
     "holdToPreviewSettings": {
         "message": "Удерживать"
     },
+    "dbclickToPreview": {
+        "message": "Дважды щёлкните по ссылке, чтобы просмотреть"
+    },
+    "dbclickToPreviewTimeout": {
+        "message": "Максимальный интервал между щелчками (мс):"
+    },
+    "dbclickToPreviewSettings": {
+        "message": "Двойной щелчок"
+    },
     "linkDisabledUrls": {
         "message": "Запретить всплывающие окна для следующих URL, одна строка на правило, поддерживаются регулярные выражения, шаблоны и обычный текст."
     },

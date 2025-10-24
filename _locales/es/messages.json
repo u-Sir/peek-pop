@@ -245,6 +245,15 @@
     "holdToPreviewSettings": {
         "message": "Mantener"
     },
+    "dbclickToPreview": {
+        "message": "Haz doble clic en el enlace para obtener una vista previa"
+    },
+    "dbclickToPreviewTimeout": {
+        "message": "Intervalo máximo entre clics (ms):"
+    },
+    "dbclickToPreviewSettings": {
+        "message": "Doble clic"
+    },
     "linkDisabledUrls": {
         "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano."
     },

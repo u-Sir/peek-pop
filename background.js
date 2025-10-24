@@ -52,6 +52,9 @@ const configs = {
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
 
+    'dbclickToPreview': false,
+    'dbclickToPreviewTimeout': 250,
+
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
 

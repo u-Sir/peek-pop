@@ -53,6 +53,9 @@ const configs = {
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
 
+    'dbclickToPreview': false,
+    'dbclickToPreviewTimeout': 250,
+
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
 
@@ -204,11 +207,16 @@ function init() {
 
 
     document.getElementById('previewModeEnable').addEventListener('change', function () {
+        const dbclickToPreviewCheckbox = document.getElementById('dbclickToPreview');
         const holdToPreviewCheckbox = document.getElementById('holdToPreview');
         const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
         const doubleClickAsClickCheckbox = document.getElementById('doubleClickAsClick');
 
         if (this.checked) {
+            dbclickToPreviewCheckbox.checked = false;
+            dbclickToPreviewCheckbox.disabled = true;  // Gray out the checkbox
+            saveConfig('dbclickToPreview', false);
+
             holdToPreviewCheckbox.checked = false;
             holdToPreviewCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('holdToPreview', false);
@@ -218,6 +226,8 @@ function init() {
 
             addGreenDot("previewMode_settings")
         } else {
+            dbclickToPreviewCheckbox.disabled = false;
+            
             holdToPreviewCheckbox.disabled = false;  // reset the checkbox
 
             doubleClickToSwitchCheckbox.checked = false;
@@ -228,6 +238,14 @@ function init() {
             doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
             saveConfig('doubleClickAsClick', false);
 
+            removeGreenDot("previewMode_settings")
+        }
+    });
+
+    document.getElementById('dbclickToPreview').addEventListener('change', function () {
+        if (this.checked) {
+            addGreenDot("previewMode_settings")
+        } else {
             removeGreenDot("previewMode_settings")
         }
     });
@@ -310,6 +328,7 @@ function setupPage(userConfigs) {
         { id: 'previewModeSettings', messageId: 'previewModeSettings' },
         { id: 'searchSettings', messageId: 'searchSettings' },
         { id: 'holdToPreviewSettings', messageId: 'holdToPreviewSettings' },
+        { id: 'dbclickToPreviewSettings', messageId: 'dbclickToPreviewSettings' },
 
         { id: 'dragSettingsTab', messageId: 'dragSettings' },
         { id: 'hoverSettingsTab', messageId: 'hoverSettings' },
@@ -386,6 +405,7 @@ function setupPage(userConfigs) {
     initializeSlider('dragPx', userConfigs.dragPx || 0);
     initializeSlider('hoverTimeout', userConfigs.hoverTimeout || 0);
     initializeSlider('holdToPreviewTimeout', userConfigs.holdToPreviewTimeout || 1500);
+    initializeSlider('dbclickToPreviewTimeout', userConfigs.dbclickToPreviewTimeout || 250);
 
     // Initialize drag direction checkboxes
     initializeDragDirectionCheckboxes(userConfigs.dragDirections || configs.dragDirections);
@@ -409,10 +429,15 @@ function setupPage(userConfigs) {
     setupWindowTypeSelection("previewModeWindowType", userConfigs.previewModeWindowType);
     setupWindowTypeSelection("searchWindowType", userConfigs.searchWindowType);
 
+    const dbclickToPreviewCheckbox = document.getElementById('dbclickToPreview');
     const holdToPreviewCheckbox = document.getElementById('holdToPreview');
     const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
     const doubleClickAsClickCheckbox = document.getElementById('doubleClickAsClick');
     if (userConfigs.previewModeEnable) {
+        dbclickToPreviewCheckbox.checked = false;
+        dbclickToPreviewCheckbox.disabled = true;  // Gray out the checkbox
+        saveConfig('dbclickToPreview', false);
+
         holdToPreviewCheckbox.checked = false;
         holdToPreviewCheckbox.disabled = true;  // Gray out the checkbox
         saveConfig('holdToPreview', false);
@@ -420,6 +445,8 @@ function setupPage(userConfigs) {
         doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
         doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
     } else {
+        dbclickToPreviewCheckbox.disabled = false;
+
         holdToPreviewCheckbox.disabled = false;  // reset the checkbox
 
         doubleClickToSwitchCheckbox.checked = false;
@@ -437,7 +464,7 @@ function setupPage(userConfigs) {
         removeGreenDot("hover_settings");
     }
 
-    if (userConfigs.previewModeEnable || userConfigs.holdToPreview) {
+    if (userConfigs.previewModeEnable || userConfigs.holdToPreview || userConfigs.dbclickToPreview) {
         addGreenDot("previewMode_settings");
     } else {
         removeGreenDot("previewMode_settings");
