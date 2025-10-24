@@ -899,6 +899,17 @@
     </main>
 
     <script>
+        // Detect language (e.g., "zh-CN", "en-US")
+        const lang = navigator.language || navigator.userLanguage;
+
+        // Check if it’s Simplified Chinese
+        if (lang && lang.toLowerCase().startsWith('zh')) {
+            // Redirect to Chinese page if not already there
+            if (!location.pathname.includes('index-chs.html')) {
+                location.href = 'index-chs.html';
+            }
+        }
+
         // FAQ Toggle
         function toggleFAQ(button) {
             const answer = button.nextElementSibling;
