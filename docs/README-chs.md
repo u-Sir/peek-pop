@@ -23,7 +23,7 @@
 <a href="https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh"><img src="https://user-images.githubusercontent.com/72879799/229783871-ec49dba0-5c17-411b-892a-6ba0abee3fe7.svg" alt="Add to Chrome" height="64px"/></a> <a href="https://addons.mozilla.org/firefox/addon/peek_pop"><img src="https://user-images.githubusercontent.com/72879799/229780855-df16725a-f232-478d-99c2-052344601626.svg" alt="Add to Firefox" height="64px"/></a> <a href="https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop"><img src="https://user-images.githubusercontent.com/72879799/229780863-e60a44cd-a768-47d8-9755-c46075c3751b.svg" alt="Add to Microsoft Edge" height="64px"/></a>
 </div>
 
-**安装后建议打开选项页，根据需要自定义设置，让插件更符合你的使用习惯。**
+**👉 安装后建议打开选项页，根据需要自定义设置，让插件更符合你的使用习惯。**
 
 ### 触发方式
 
