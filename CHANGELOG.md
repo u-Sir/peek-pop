@@ -1,5 +1,5 @@
 0.0.64
-- New trigger: double click on the link to prview.
+- New trigger: double click on the link to preview.
 
 0.0.63
 - New option: window-type for search tooltips.
