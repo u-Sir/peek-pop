@@ -15,6 +15,7 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 <a href="https://github.com/u-Sir/peek-pop">English</a> |
 <a href="https://github.com/u-Sir/peek-pop/blob/main/docs/README-chs.md">简体中文</a> 
 </p>
+
 # Usage
 
 ### Installation
