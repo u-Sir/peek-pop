@@ -1,5 +1,3 @@
-const { use } = require("react");
-
 const configs = {
     'closeWhenFocusedInitialWindow': true,
     'closeWhenScrollingInitialWindow': false,
