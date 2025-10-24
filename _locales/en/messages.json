@@ -246,7 +246,7 @@
         "message": "Hold"
     },
     "dbclickToPreview": {
-        "message": "Double click on link to preview"
+        "message": "Double click on the link to preview"
     },
     "dbclickToPreviewTimeout": {
         "message": "Maximum time gap between clicks (ms):"
