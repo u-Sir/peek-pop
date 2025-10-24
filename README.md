@@ -25,7 +25,7 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 
 | Trigger                | Supported? | optional modifier key support | optional image search support |
 |--------------------------|------------|--------------------------|------------|
-| Drag             | ✅ Yes | ✅ Yes | ✅ Yes |
+| Drag(default)             | ✅ Yes | ✅ Yes | ✅ Yes |
 | Click        | ✅ Yes | ✅ Yes | ❌ No |
 | Double Click        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hold        | ✅ Yes     | ❌ No   | ❌ No   |
