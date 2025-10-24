@@ -17,7 +17,8 @@
 
         <div id="general_settings" class="tab-content active">
 
-            <a id="githubLink" href="https://github.com/u-Sir/peek-pop" target="_blank" title="Github" style="text-decoration: none;">
+            <a id="githubLink" href="https://github.com/u-Sir/peek-pop" target="_blank" title="Github"
+                style="text-decoration: none;">
                 <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -58,7 +59,7 @@
                 <label for="searchTooltipsEngines"></label>
                 <textarea id="searchTooltipsEngines" rows="5" cols="1" wrap="off"></textarea>
             </div>
-            
+
 
             <p>
             <div class="window-type">
@@ -535,6 +536,19 @@
                 <label for="clickNoneKey">None</label>
                 <br>
             </div>
+
+            <h4 id="dbclickToPreviewSettings"></h4>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="dbclickToPreview"></label>
+            </div>
+
+            <div class='option'>
+                <label for="dbclickToPreviewTimeout" class="align-label"></label><output for="dbclickToPreviewTimeout"
+                    id="dbclickToPreviewTimeoutOutput"></output>
+                <br>
+                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="250" max="2000" step="5">
+            </div>
+
 
             <h4 id="holdToPreviewSettings"></h4>
             <div class='option' id="option">

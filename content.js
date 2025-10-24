@@ -30,6 +30,8 @@ let linkIndicator,
     doubleClickAsClick,
     previewModeEnable,
     clickModifiedKey,
+    dbclickToPreview,
+    dbclickToPreviewTimeout,
 
     holdTimeout,
     holdToPreview,
@@ -148,6 +150,8 @@ const configs = {
     'previewModeEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
+    'dbclickToPreview': false,
+    'dbclickToPreviewTimeout': 250,
 
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
@@ -1774,6 +1778,8 @@ async function checkUrlAndToggleListeners() {
         'clickModifiedKey',
         'doubleClickToSwitch',
         'doubleClickAsClick',
+        'dbclickToPreview',
+        'dbclickToPreviewTimeout',
 
         'holdToPreview',
         'holdToPreviewTimeout',
@@ -1876,6 +1882,8 @@ async function checkUrlAndToggleListeners() {
     clickModifiedKey = data.clickModifiedKey || 'None';
     doubleClickToSwitch = data.doubleClickToSwitch;
     doubleClickAsClick = data.doubleClickAsClick;
+    dbclickToPreview = data.dbclickToPreview;
+    dbclickToPreviewTimeout = data.dbclickToPreviewTimeout || 250;
 
     if (isUrlDisabled(currentUrl, disabledUrls)) {
         removeListeners();
@@ -2208,7 +2216,62 @@ async function checkUrlAndToggleListeners() {
         events.forEach(event => window.addEventListener(event, handleEvent, true));
     }
 
+
+    document.removeEventListener('click', handledbclickToPreview);
+    if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && dbclickToPreview) {
+        document.addEventListener('click', handledbclickToPreview);
+    }
+
     document.addEventListener(['contextmenu'], addLinkToCollection, true);
+}
+
+async function handledbclickToPreview(e) {
+    // Only handle user-initiated clicks
+    if (!e.isTrusted) return;
+
+    const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
+    const linkElement = anchorElement ||
+        (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+
+    const linkUrl = linkElement ?
+        (linkElement.getAttribute('data-url') ||
+            (linkElement.href.startsWith('/') ? window.location.protocol + linkElement.href : linkElement.href))
+        : window.location.href;
+
+    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+    if (!linkUrl) return; // not a link
+
+    // Stop normal click behavior
+    e.preventDefault();
+    e.stopPropagation();
+
+    // If there's already a pending click, treat this as the second click
+    if (linkElement.dataset._clicking === 'true') {
+        // Clear state
+        delete linkElement.dataset._clicking;
+        handlePreviewMode(e, linkUrl);
+        return;
+    }
+
+    // Mark as waiting for double click
+    linkElement.dataset._clicking = 'true';
+
+    // Wait 250ms
+    await new Promise(res => setTimeout(res, dbclickToPreviewTimeout));
+
+    // Still pending -> single click only
+    if (linkElement.dataset._clicking === 'true') {
+        delete linkElement.dataset._clicking;
+
+        // Simulate original click (trusted=false)
+        const simulated = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+        });
+        linkElement.dispatchEvent(simulated);
+    }
 }
 
 // Function to add a link to the collection
@@ -2333,6 +2396,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.clickModifiedKey ||
         changes.doubleClickAsClick ||
         changes.doubleClickToSwitch ||
+        changes.dbclickToPreview ||
+        changes.dbclickToPreviewTimeout ||
 
         changes.searchTooltipsEnable ||
         changes.searchTooltipsEngines ||

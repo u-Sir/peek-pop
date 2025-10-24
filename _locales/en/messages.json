@@ -242,6 +242,15 @@
     "holdToPreviewSettings": {
         "message": "Hold"
     },
+    "dbclickToPreview": {
+        "message": "Double click on link to preview"
+    },
+    "dbclickToPreviewTimeout": {
+        "message": "Maximum time gap between clicks (ms):"
+    },
+    "dbclickToPreviewSettings": {
+        "message": "Double click"
+    },
     "linkDisabledUrls": {
         "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
     },

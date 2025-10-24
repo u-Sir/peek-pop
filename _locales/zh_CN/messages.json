@@ -242,6 +242,15 @@
     "holdToPreviewSettings": {
         "message": "长按"
     },
+    "dbclickToPreview": {
+        "message": "双击链接预览"
+    },
+    "dbclickToPreviewTimeout": {
+        "message": "两次点击之间最大间隔(ms):"
+    },
+    "dbclickToPreviewSettings": {
+        "message": "双击"
+    },
     "linkDisabledUrls": {
         "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
     },
