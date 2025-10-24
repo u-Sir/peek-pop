@@ -757,7 +757,7 @@
 
                         <strong>图片:</strong><br>
                         <code>/\.(jpg|jpeg|avif|png|svg|ico|webp|gif)(\?.*)?$/</code><br><br>
-                        
+
                         <strong>视频:</strong><br>
                         <code>/\.(mp4|mkv|rmvb|rm|avi|ts|mov|flv)(\?.*)?$/</code><br><br>
 
@@ -879,7 +879,7 @@
                 <div class="card fade-in">
                     <h3><i class="fab fa-apple"></i> 在 macOS 上</h3>
                     <p>预览弹出窗口在全屏模式下无法正常工作。为了获得最佳效果，请在非全屏模式下使用该窗口。</p>
-                        window in non-fullscreen mode.</p>
+                    window in non-fullscreen mode.</p>
                 </div>
 
                 <div class="card fade-in">
@@ -890,6 +890,17 @@
     </main>
 
     <script>
+        // Detect language (e.g., "zh-CN", "en-US")
+        const lang = navigator.language || navigator.userLanguage;
+
+        // Check if it’s Simplified Chinese
+        if (lang && lang.toLowerCase().startsWith('zh')) {
+            // Redirect to Chinese page if not already there
+            if (!location.pathname.includes('index_chs.html')) {
+                location.href = 'index_chs.html';
+            }
+        }
+        
         // FAQ Toggle
         function toggleFAQ(button) {
             const answer = button.nextElementSibling;
