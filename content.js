@@ -2217,9 +2217,9 @@ async function checkUrlAndToggleListeners() {
     }
 
 
-    document.removeEventListener('click', handledbclickToPreview);
+    document.removeEventListener('mousedown', handledbclickToPreview);
     if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && dbclickToPreview) {
-        document.addEventListener('click', handledbclickToPreview);
+        document.addEventListener('mousedown', handledbclickToPreview);
     }
 
     document.addEventListener(['contextmenu'], addLinkToCollection, true);
@@ -2246,6 +2246,20 @@ async function handledbclickToPreview(e) {
     // Stop normal click behavior
     e.preventDefault();
     e.stopPropagation();
+
+
+    document.addEventListener('mouseup', (e) => {
+        // Stop all navigation
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    }, { once: true, capture: true });
+
+    document.addEventListener('click', (e) => {
+        // Stop all navigation
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    }, { once: true, capture: true });
+
 
     // If there's already a pending click, treat this as the second click
     if (linkElement.dataset._clicking === 'true') {
