@@ -2232,6 +2232,7 @@ async function handledbclickToPreview(e) {
     const anchorElement = e.composedPath().find(node => node instanceof HTMLAnchorElement);
     const linkElement = anchorElement ||
         (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
+    if (!linkElement) return;
 
     const linkUrl = linkElement ?
         (linkElement.getAttribute('data-url') ||
