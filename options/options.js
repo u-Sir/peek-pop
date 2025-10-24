@@ -477,34 +477,7 @@ function setupPage(userConfigs) {
     setupWindowTypeSelection("previewModeWindowType", userConfigs.previewModeWindowType);
     setupWindowTypeSelection("searchWindowType", userConfigs.searchWindowType);
 
-    const dbclickToPreviewCheckbox = document.getElementById('dbclickToPreview');
-    const holdToPreviewCheckbox = document.getElementById('holdToPreview');
-    const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
-    const doubleClickAsClickCheckbox = document.getElementById('doubleClickAsClick');
-    if (userConfigs.previewModeEnable) {
-        dbclickToPreviewCheckbox.checked = false;
-        dbclickToPreviewCheckbox.disabled = true;  // Gray out the checkbox
-        saveConfig('dbclickToPreview', false);
-
-        holdToPreviewCheckbox.checked = false;
-        holdToPreviewCheckbox.disabled = true;  // Gray out the checkbox
-        saveConfig('holdToPreview', false);
-
-        doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
-        doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
-    } else {
-        dbclickToPreviewCheckbox.disabled = false;  // reset the checkbox
-
-        holdToPreviewCheckbox.disabled = false;  // reset the checkbox
-
-        doubleClickToSwitchCheckbox.checked = false;
-        doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
-        saveConfig('doubleClickToSwitch', false);
-
-        doubleClickAsClickCheckbox.checked = false;
-        doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
-        saveConfig('doubleClickAsClick', false);
-    }
+    updatePreviewCheckboxes(userConfigs);
 
     if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) {
         addGreenDot("hover_settings");
@@ -522,6 +495,41 @@ function setupPage(userConfigs) {
         addGreenDot("drag_settings");
     } else {
         removeGreenDot("drag_settings");
+    }
+}
+
+function updatePreviewCheckboxes(userConfigs) {
+    const checkboxes = {
+        dbclickToPreview: document.getElementById('dbclickToPreview'),
+        holdToPreview: document.getElementById('holdToPreview'),
+        doubleClickToSwitch: document.getElementById('doubleClickToSwitch'),
+        doubleClickAsClick: document.getElementById('doubleClickAsClick')
+    };
+
+    const setState = (id, { checked, disabled, save = true }) => {
+        const el = checkboxes[id];
+        if (!el) return;
+        el.checked = checked;
+        el.disabled = disabled;
+        if (save) saveConfig(id, checked);
+    };
+
+    if (userConfigs.previewModeEnable) {
+        // Disable drag/hold preview options
+        setState('dbclickToPreview', { checked: false, disabled: true });
+        setState('holdToPreview', { checked: false, disabled: true });
+
+        // Enable double-click options
+        setState('doubleClickToSwitch', { checked: checkboxes.doubleClickToSwitch.checked, disabled: false, save: false });
+        setState('doubleClickAsClick', { checked: checkboxes.doubleClickAsClick.checked, disabled: false, save: false });
+    } else {
+        // Enable drag/hold preview options
+        setState('dbclickToPreview', { checked: checkboxes.dbclickToPreview.checked, disabled: false, save: false });
+        setState('holdToPreview', { checked: checkboxes.holdToPreview.checked, disabled: false, save: false });
+
+        // Disable double-click options
+        setState('doubleClickToSwitch', { checked: false, disabled: true });
+        setState('doubleClickAsClick', { checked: false, disabled: true });
     }
 }
 
