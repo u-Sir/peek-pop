@@ -1,3 +1,5 @@
+const { use } = require("react");
+
 const configs = {
     'closeWhenFocusedInitialWindow': true,
     'closeWhenScrollingInitialWindow': false,
@@ -207,39 +209,15 @@ function init() {
 
 
     document.getElementById('previewModeEnable').addEventListener('change', function () {
-        const dbclickToPreviewCheckbox = document.getElementById('dbclickToPreview');
-        const holdToPreviewCheckbox = document.getElementById('holdToPreview');
-        const doubleClickToSwitchCheckbox = document.getElementById('doubleClickToSwitch');
-        const doubleClickAsClickCheckbox = document.getElementById('doubleClickAsClick');
 
         if (this.checked) {
-            dbclickToPreviewCheckbox.checked = false;
-            dbclickToPreviewCheckbox.disabled = true;  // Gray out the checkbox
-            saveConfig('dbclickToPreview', false);
-
-            holdToPreviewCheckbox.checked = false;
-            holdToPreviewCheckbox.disabled = true;  // Gray out the checkbox
-            saveConfig('holdToPreview', false);
-
-            doubleClickToSwitchCheckbox.disabled = false;  // reset the checkbox
-            doubleClickAsClickCheckbox.disabled = false;  // reset the checkbox
 
             addGreenDot("previewMode_settings")
         } else {
-            dbclickToPreviewCheckbox.disabled = false;
-
-            holdToPreviewCheckbox.disabled = false;  // reset the checkbox
-
-            doubleClickToSwitchCheckbox.checked = false;
-            doubleClickToSwitchCheckbox.disabled = true;  // Gray out the checkbox
-            saveConfig('doubleClickToSwitch', false);
-
-            doubleClickAsClickCheckbox.checked = false;
-            doubleClickAsClickCheckbox.disabled = true;  // Gray out the checkbox
-            saveConfig('doubleClickAsClick', false);
 
             removeGreenDot("previewMode_settings")
         }
+        updatePreviewCheckboxes(this.checked);
     });
 
     document.getElementById('dbclickToPreview').addEventListener('change', function () {
@@ -429,7 +407,7 @@ function setupPage(userConfigs) {
     setupWindowTypeSelection("previewModeWindowType", userConfigs.previewModeWindowType);
     setupWindowTypeSelection("searchWindowType", userConfigs.searchWindowType);
 
-    updatePreviewCheckboxes(userConfigs);
+    updatePreviewCheckboxes(userConfigs.previewModeEnable);
 
     if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) {
         addGreenDot("hover_settings");
@@ -451,7 +429,7 @@ function setupPage(userConfigs) {
 }
 
 
-function updatePreviewCheckboxes(userConfigs) {
+function updatePreviewCheckboxes(isPreviewModeEnabled) {
     const checkboxes = {
         dbclickToPreview: document.getElementById('dbclickToPreview'),
         holdToPreview: document.getElementById('holdToPreview'),
@@ -467,7 +445,7 @@ function updatePreviewCheckboxes(userConfigs) {
         if (save) saveConfig(id, checked);
     };
 
-    if (userConfigs.previewModeEnable) {
+    if (isPreviewModeEnabled) {
         // Disable drag/hold preview options
         setState('dbclickToPreview', { checked: false, disabled: true });
         setState('holdToPreview', { checked: false, disabled: true });
