@@ -896,11 +896,11 @@
         // Check if it’s Simplified Chinese
         if (lang && lang.toLowerCase().startsWith('zh')) {
             // Redirect to Chinese page if not already there
-            if (!location.pathname.includes('index_chs.html')) {
-                location.href = 'index_chs.html';
+            if (!location.pathname.includes('index-chs.html')) {
+                location.href = 'index-chs.html';
             }
         }
-        
+
         // FAQ Toggle
         function toggleFAQ(button) {
             const answer = button.nextElementSibling;
