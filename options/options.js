@@ -227,7 +227,7 @@ function init() {
             addGreenDot("previewMode_settings")
         } else {
             dbclickToPreviewCheckbox.disabled = false;
-            
+
             holdToPreviewCheckbox.disabled = false;  // reset the checkbox
 
             doubleClickToSwitchCheckbox.checked = false;
@@ -421,7 +421,7 @@ function setupPage(userConfigs) {
 
     // Setup search engine selection
     setupSearchEngineSelection(userConfigs.searchEngine);
-    setupHoverSearchEngineSelection(userConfigs.hoverSearchEngine);
+    setupSearchEngineSelection(userConfigs.hoverSearchEngine, true);
 
     // Setup window type selection
     setupWindowTypeSelection("windowType", userConfigs.windowType);
@@ -645,87 +645,51 @@ function initializeSlider(id, defaultValue) {
 }
 
 
-function setupSearchEngineSelection(searchEngine) {
-    const customInput = document.getElementById('customSearchEngine');
-    const searchEngines = ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable', 'wiki', 'yandex'];
+function setupSearchEngineSelection(searchEngine, isHover = false) {
+
+    const customSearchEngineId = isHover ? 'hoverCustomSearchEngine' : 'customSearchEngine';
+    const customInput = document.getElementById(customSearchEngineId);
+    const searchEngines = isHover ? ['hoverGoogle', 'hoverBing', 'hoverBaidu', 'hoverDuckduckgo', 'hoverCustom', 'hoverSearchDisable', 'hoverWiki', 'hoverYandex']
+        : ['google', 'bing', 'baidu', 'duckduckgo', 'custom', 'searchDisable', 'wiki', 'yandex'];
 
     // Ensure the custom input event listener is set up properly
     customInput.addEventListener('input', () => {
-        chrome.storage.local.set({ searchEngine: customInput.value });
+        // ishover is true the use hoverSearchEngine key,else use searchEngine key
+        chrome.storage.local.set({ [isHover ? 'hoverSearchEngine' : 'searchEngine']: customInput.value });
     });
-
+    const customID = isHover ? 'hoverCustom' : 'custom';
     searchEngines.forEach(engine => {
         const radio = document.getElementById(engine);
         radio.addEventListener('change', () => {
             if (radio.checked) {
                 let searchEngineValue;
-                if (engine === 'custom') {
+                if (engine === customID) {
                     customInput.style.display = 'block';
                     searchEngineValue = customInput.value;
                 } else {
                     customInput.style.display = 'none';
                     searchEngineValue = radio.value;
                 }
-                chrome.storage.local.set({ searchEngine: searchEngineValue });
+                chrome.storage.local.set({ [isHover ? 'hoverSearchEngine' : 'searchEngine']: searchEngineValue });
             }
         });
 
         // Restore saved value on load
         if (searchEngine === radio.value) {
             radio.checked = true;
-            customInput.style.display = engine === 'custom' ? 'block' : 'none';
+            customInput.style.display = engine === customID ? 'block' : 'none';
         }
     });
 
     // Special handling for initial load if 'custom' is selected
     if (!searchEngines.some(engine => searchEngine === document.getElementById(engine)?.value)) {
-        const customRadio = document.getElementById('custom');
+        const customRadio = document.getElementById(customID);
         customRadio.checked = true;
         customInput.style.display = 'block';
         customInput.value = searchEngine;
     }
 }
 
-function setupHoverSearchEngineSelection(searchEngine) {
-    const customInput = document.getElementById('hoverCustomSearchEngine');
-    const searchEngines = ['hoverGoogle', 'hoverBing', 'hoverBaidu', 'hoverDuckduckgo', 'hoverCustom', 'hoverSearchDisable', 'hoverWiki', 'hoverYandex'];
-
-    // Ensure the custom input event listener is set up properly
-    customInput.addEventListener('input', () => {
-        chrome.storage.local.set({ hoverSearchEngine: customInput.value });
-    });
-
-    searchEngines.forEach(engine => {
-        const radio = document.getElementById(engine);
-        radio.addEventListener('change', () => {
-            if (radio.checked) {
-                let searchEngineValue;
-                if (engine === 'hoverCustom') {
-                    customInput.style.display = 'block';
-                    searchEngineValue = customInput.value;
-                } else {
-                    customInput.style.display = 'none';
-                    searchEngineValue = radio.value;
-                }
-                chrome.storage.local.set({ hoverSearchEngine: searchEngineValue });
-            }
-        });
-
-        // Restore saved value on load
-        if (searchEngine === radio.value) {
-            radio.checked = true;
-            customInput.style.display = engine === 'hoverCustom' ? 'block' : 'none';
-        }
-    });
-
-    // Special handling for initial load if 'custom' is selected
-    if (!searchEngines.some(engine => searchEngine === document.getElementById(engine)?.value)) {
-        const customRadio = document.getElementById('hoverCustom');
-        customRadio.checked = true;
-        customInput.style.display = 'block';
-        customInput.value = searchEngine;
-    }
-}
 
 
 
@@ -803,7 +767,7 @@ async function exportSettings() {
                 delete allItems[key];
             }
         }
-        
+
         // If popupWindowsInfo has more than just savedPositionAndSize, keep only that
         if (allItems.popupWindowsInfo
             && typeof allItems.popupWindowsInfo === "object"
