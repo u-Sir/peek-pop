@@ -21,6 +21,30 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 
 **It's recommended to visit the options page after installation to customize the settings and tailor the plugin to your needs.**
 
+### Triggers
+
+| Trigger                | Supported? |
+|--------------------------|------------|
+| Drag             | ✅ Yes (optional modifier key support)      |
+| Click        | ✅ Yes (optional modifier key support)     |
+| Double Click        | ✅ Yes     |
+| Hold        | ✅ Yes     |
+| Hover | ✅ Yes (optional modifier key support)  |
+
+👉 Supports enabling multiple trigger methods simultaneously.
+
+
+### Links supported
+
+| Location                | Supported? |
+|--------------------------|------------|
+| Normal page             | ✅ Yes     |
+| Inside an iframe        | ✅ Yes     |
+| Inside an open shadow root | ✅ Yes  |
+| Inside a closed shadow root | ❌ No   |
+
+👉 Currently, all links are supported except those inside **closed shadow roots**.
+
 ### Blacklist Format Examples
 
 - **Regex format**: `/^https:\/\/example\.com\/.*$/`
@@ -62,16 +86,6 @@ The preview window is based on the native browser window, so customization is no
 ### Is it possible to retain the page's original drag functionality while using drag-to-preview?  
 You can enable the **"Only respond when dragging to empty areas"** option in the settings to preserve the page's native drag behavior.
 
-### Where links are supported?
-
-| Location                | Supported? |
-|--------------------------|------------|
-| Normal page             | ✅ Yes     |
-| Inside an iframe        | ✅ Yes     |
-| Inside an open shadow root | ✅ Yes  |
-| Inside a closed shadow root | ❌ No   |
-
-👉 Currently, all links are supported except those inside **closed shadow roots**.
 
 # Known Issues
 
