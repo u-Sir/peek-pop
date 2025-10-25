@@ -1,3 +1,6 @@
+0.0.65
+- Fixed issue where single click didn't work in certain cases when double-click preview was enabled.
+
 0.0.64
 - New trigger: double click on the link to preview.
 
