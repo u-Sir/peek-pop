@@ -2279,13 +2279,20 @@ async function handledbclickToPreview(e) {
     if (linkElement.dataset._clicking === 'true') {
         delete linkElement.dataset._clicking;
 
-        // Simulate original click (trusted=false)
-        const simulated = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-        });
-        linkElement.dispatchEvent(simulated);
+        if (e.target.shadowRoot) {
+            linkElement.click();
+        } else {
+            try {
+                const clickEvent = new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                e.target.dispatchEvent(clickEvent);
+            } catch (error) {
+                e.target.closest('a').click();
+            }
+        }
     }
 }
 
