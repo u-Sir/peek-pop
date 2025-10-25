@@ -48,8 +48,6 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 | Inside an open shadow root | ✅ Yes  |
 | Inside a closed shadow root | ❌ No   |
 
-👉 Currently, all links are supported except those inside **closed shadow roots**.
-
 ### Blacklist Format Examples
 
 - **Regex format**: `/^https:\/\/example\.com\/.*$/`
