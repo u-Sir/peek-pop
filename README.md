@@ -28,7 +28,7 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 
 ### Triggers
 
-| Trigger                | Supported? | Modifier key  | Image search  |
+| Trigger                | Supported? | Modifier key  | Search or Image search  |
 |--------------------------|------------|--------------------------|------------|
 | Drag(default)             | ✅ Yes | ✅ Optional | ✅ Optional |
 | Click        | ✅ Yes | ✅ Optional | ❌ No |
