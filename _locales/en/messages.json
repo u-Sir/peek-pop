@@ -207,7 +207,7 @@
         "message": "Link Indicator: displays a hint on hover for supported links"
     },
     "searchTooltipsEnable": {
-        "message": "Tooltips for selected text."
+        "message": "Search Tooltips for selected text."
     },
     "collectionEnable": {
         "message": "Read later: Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon."
