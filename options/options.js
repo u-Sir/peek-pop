@@ -443,10 +443,8 @@ function setupPage(userConfigs) {
             grp.style.display = cb.checked ? "block" : "none";
         }
 
-        // 页面加载时初始化
         update();
 
-        // 监听勾选变化
         cb.addEventListener("change", update);
     });
 }
