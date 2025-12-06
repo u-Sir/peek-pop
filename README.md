@@ -30,9 +30,9 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 
 | Trigger                | Supported? | Modifier key  | Search or Image search  |
 |--------------------------|------------|--------------------------|------------|
-| Drag(default)             | ✅ Yes | ✅ Optional | ✅ Optional |
+| Double Click (default)       | ✅ Yes     | ❌ No   | ❌ No   |
+| Drag             | ✅ Yes | ✅ Optional | ✅ Optional |
 | Click        | ✅ Yes | ✅ Optional | ❌ No |
-| Double Click        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hold        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hover | ✅ Yes | ✅ Optional | ✅ Optional |
 
