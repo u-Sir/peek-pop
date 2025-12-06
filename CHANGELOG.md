@@ -1,6 +1,6 @@
 0.0.66
 - Refine double click to preview logic.
-- Rerange options page layout.
+- Rearrange options page layout.
 
 0.0.65
 - Fixed issue where single click didn't work in certain cases when double-click preview was enabled.
