@@ -26,7 +26,7 @@ const configs = {
     'blurRemoval': true,
 
     'modifiedKey': 'None',
-    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragDirections': [],
     'dragPx': 0,
     'searchEngine': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],
@@ -52,7 +52,7 @@ const configs = {
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
 
-    'dbclickToPreview': false,
+    'dbclickToPreview': true,
     'dbclickToPreviewTimeout': 250,
 
     'holdToPreview': false,

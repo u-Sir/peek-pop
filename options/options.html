@@ -10,8 +10,8 @@
     <div class="options-page">
         <ul class="tabs">
             <li class="tab-link active" data-tab="general_settings" id="generalSettingsTab"></li>
-            <li class="tab-link" data-tab="drag_settings" id="dragSettingsTab"></li>
             <li class="tab-link" data-tab="previewMode_settings" id="previewModeSettingsTab"></li>
+            <li class="tab-link" data-tab="drag_settings" id="dragSettingsTab"></li>
             <li class="tab-link" data-tab="hover_settings" id="hoverSettingsTab"></li>
         </ul>
 
@@ -45,7 +45,7 @@
             </a>
             &nbsp;
 
-            <h4 id="toolsSettings"></h4>
+            <h3 id="toolsSettings"></h3>
 
             <div class='option' id="option">
                 <label><input type="checkbox" id="linkHint"></label>
@@ -82,7 +82,7 @@
                 </p>
             </div>
 
-            <h4 id="styleSettings"></h4>
+            <h3 id="styleSettings"></h3>
 
             <p>
             <div class="keySelection">
@@ -132,13 +132,13 @@
             </p>
 
 
-            <h4 id="popupSettings"></h4>
+            <h3 id="popupSettings"></h3>
             <div class='option' id="option">
                 <label><input type="checkbox" id="enableContainerIdentify"></label>
             </div>
             <p>
 
-            <h5 id="sendBackTrigger"></h5>
+            <h4 id="sendBackTrigger"></h4>
             <div class="keySelection">
                 <label for="doubleTapKeyToSendPageBack" class="align-label"></label>
                 <br>
@@ -165,7 +165,7 @@
                 <label><input type="checkbox" id="sendBackByMiddleClickEnable"></label>
             </div>
 
-            <h5 id="closeTrigger"></h5>
+            <h4 id="closeTrigger"></h4>
             <div class='option' id="option">
                 <label><input type="checkbox" id="closedByEsc"></label>
             </div>
@@ -178,7 +178,7 @@
                 <label><input type="checkbox" id="closeWhenScrollingInitialWindow"></label>
             </div>
 
-            <h5 id="button"></h5>
+            <h4 id="button"></h4>
             <div class='option' id="option">
                 <label><input type="checkbox" id="copyButtonEnable"></label>
             </div>
@@ -187,7 +187,7 @@
                 <label><input type="checkbox" id="sendBackButtonEnable"></label>
             </div>
 
-            <h5 id="note"></h5>
+            <h4 id="note"></h4>
 
             <div class='option' id="option">
                 <label><input type="checkbox" id="rememberPopupSizeAndPosition"></label>
@@ -205,7 +205,7 @@
 
             <div class='row'>
                 <div class='block'>
-                    <h5 id="staticSize"></h5>
+                    <h4 id="staticSize"></h4>
 
                     <div class='option'>
                         <label><input type="number" max="10000" min="100" step="50" id="popupHeight"> </label>
@@ -217,7 +217,7 @@
                 </div>
 
                 <div class='block'>
-                    <h5 id="percentageSize"></h5>
+                    <h4 id="percentageSize"></h4>
 
                     <div class='option'>
                         <label><input type="number" max="100" min="0" step="1" id="popupHeightInPercentage"> </label>
@@ -230,7 +230,7 @@
             </div>
             </p>
 
-            <h4 id="linkSettings"></h4>
+            <h3 id="linkSettings"></h3>
             <p>
             <div class='option'>
                 <label for="linkDisabledUrls"></label>
@@ -240,7 +240,7 @@
 
 
 
-            <h4 id="exportImportSettings"></h4>
+            <h3 id="exportImportSettings"></h3>
             <input type="file" id="importFile" accept=".json" style="display: none;" />
             <button id="importButton">Import Settings</button>
             <button id="exportButton">Export Settings</button>
@@ -253,7 +253,7 @@
 
         <div id="drag_settings" class="tab-content">
 
-            <h4 id="dragSettings"></h4>
+            <h3 id="dragSettings"></h3>
             <p>
             <div class="keySelection">
                 <label for="modifiedKey" class="align-label"></label>
@@ -316,7 +316,7 @@
 
             </p>
 
-            <h4 id="searchEngineSelection">Select Search Engine</h4>
+            <h3 id="searchEngineSelection">Select Search Engine</h3>
             <p>
                 <span class="searchOptions">
                     <input type="radio" id="google" name="searchEngine" value="https://www.google.com/search?q=%s" />
@@ -365,7 +365,7 @@
             </p>
 
 
-            <h4 id="dragPopupSettings"></h4>
+            <h3 id="dragPopupSettings"></h3>
             <p>
             <div class="window-type">
                 <label for="windowType" class="align-label-1">Popup window type</label>
@@ -377,7 +377,7 @@
             </div>
             </p>
 
-            <h4 id="blacklist"></h4>
+            <h3 id="blacklist"></h3>
             <p>
             <div class='option'>
                 <label for="disabledUrls"></label>
@@ -390,7 +390,7 @@
 
         <!-- hover settings -->
         <div id="hover_settings" class="tab-content">
-            <h4 id="hoverSettings"></h4>
+            <h3 id="hoverSettings"></h3>
 
             <div class='option'>
                 <label for="hoverTimeout" class="align-label"></label><output for="hoverTimeout"
@@ -431,7 +431,7 @@
 
 
 
-            <h4 id="hoverSearchEngineSelection">Select Search Engine</h4>
+            <h3 id="hoverSearchEngineSelection">Select Search Engine</h3>
             <p>
                 <span class="searchOptions">
                     <input type="radio" id="hoverGoogle" name="hoverSearchEngine"
@@ -486,7 +486,7 @@
             </div>
             </p>
 
-            <h4 id="hoverPopupSettings"></h4>
+            <h3 id="hoverPopupSettings"></h3>
             <p>
             <div class="window-type">
                 <label for="hoverWindowType" class="align-label-1"></label>
@@ -499,7 +499,7 @@
 
             </p>
 
-            <h4 id="hoverBlacklist"></h4>
+            <h3 id="hoverBlacklist"></h3>
             <p>
             <div class='option'>
                 <label for="hoverDisabledUrls"></label>
@@ -512,7 +512,21 @@
         <!-- preview mode settings -->
 
         <div id="previewMode_settings" class="tab-content">
-            <h4 id="previewModeSettings"></h4>
+
+            <h3 id="dbclickToPreviewSettings"></h3>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="dbclickToPreview"></label>
+            </div>
+
+            <div class='option'>
+                <label for="dbclickToPreviewTimeout" class="align-label"></label><output for="dbclickToPreviewTimeout"
+                    id="dbclickToPreviewTimeoutOutput"></output>
+                <br>
+                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150" max="1500"
+                    step="5">
+            </div>
+
+            <h3 id="previewModeSettings"></h3>
 
             <div class='option' id="option">
                 <label><input type="checkbox" id="previewModeEnable"></label>
@@ -546,21 +560,9 @@
                 <br>
             </div>
 
-            <h4 id="dbclickToPreviewSettings"></h4>
-            <div class='option' id="option">
-                <label><input type="checkbox" id="dbclickToPreview"></label>
-            </div>
-
-            <div class='option'>
-                <label for="dbclickToPreviewTimeout" class="align-label"></label><output for="dbclickToPreviewTimeout"
-                    id="dbclickToPreviewTimeoutOutput"></output>
-                <br>
-                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150" max="1500"
-                    step="5">
-            </div>
 
 
-            <h4 id="holdToPreviewSettings"></h4>
+            <h3 id="holdToPreviewSettings"></h3>
             <div class='option' id="option">
                 <label><input type="checkbox" id="holdToPreview"></label>
             </div>
@@ -573,7 +575,7 @@
                     step="50">
             </div>
 
-            <h4 id="previewModePopupSettings"></h4>
+            <h3 id="previewModePopupSettings"></h3>
             <p>
             <div class="window-type">
                 <label for="previewModeWindowType" class="align-label-1"></label>
@@ -585,7 +587,7 @@
             </div>
             </p>
 
-            <h4 id="previewModeBlacklist"></h4>
+            <h3 id="previewModeBlacklist"></h3>
             <p>
             <div class='option'>
                 <label for="previewModeDisabledUrls"></label>

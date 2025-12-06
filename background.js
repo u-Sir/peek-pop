@@ -28,7 +28,7 @@ const configs = {
     'blurRemoval': true,
 
     'modifiedKey': 'None',
-    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragDirections': [],
     'dragPx': 0,
     'imgSupport': false,
     'imgSearchEnable': false,
@@ -51,7 +51,8 @@ const configs = {
     'previewModeEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
-    'dbclickToPreview': false,
+
+    'dbclickToPreview': true,
     'dbclickToPreviewTimeout': 250,
 
     'holdToPreview': false,
@@ -109,7 +110,7 @@ async function saveConfig(key, value) {
 
 
 // Initialize the extension
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async (details) => {
     try {
         const storedConfigs = await browser.storage.local.get(Object.keys(configs));
         const mergedConfigs = { ...configs, ...storedConfigs };
@@ -134,6 +135,10 @@ chrome.runtime.onInstalled.addListener(async () => {
             const defaultsToSave = {};
             for (const key of keysToSave) defaultsToSave[key] = configs[key];
             await browser.storage.local.set(defaultsToSave);
+        }
+
+        if (details.reason === 'install') {
+            chrome.tabs.create({ url: chrome.runtime.getURL('options/options.html') });
         }
 
     } catch (err) {

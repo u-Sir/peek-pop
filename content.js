@@ -127,7 +127,7 @@ const configs = {
 
     'modifiedKey': 'None',
     'dropInEmptyOnly': false,
-    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragDirections': [],
     'dragPx': 0,
     'imgSupport': false,
     'searchEngine': 'https://www.google.com/search?q=%s',
@@ -150,7 +150,8 @@ const configs = {
     'previewModeEnable': false,
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
-    'dbclickToPreview': false,
+
+    'dbclickToPreview': true,
     'dbclickToPreviewTimeout': 250,
 
     'holdToPreview': false,
