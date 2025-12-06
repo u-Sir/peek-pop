@@ -204,7 +204,7 @@
         "message": "Indicador de enlace: muestra una pista al pasar el cursor sobre los enlaces compatibles."
     },
     "searchTooltipsEnable": {
-        "message": "Tooltips para el texto seleccionado."
+        "message": "Buscar información emergente para el texto seleccionado."
     },
     "collectionEnable": {
         "message": "Leer más tarde: Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión."
