@@ -124,7 +124,7 @@ const configs = {
     'blurRemoval': true,
 
     'modifiedKey': 'None',
-    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragDirections': [],
     'dragPx': 0,
     'imgSupport': false,
     'dropInEmptyOnly': false,
@@ -147,7 +147,7 @@ const configs = {
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
 
-    'dbclickToPreview': false,
+    'dbclickToPreview': true,
     'dbclickToPreviewTimeout': 250,
 
     'holdToPreview': false,

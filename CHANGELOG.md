@@ -1,3 +1,6 @@
+0.0.67
+- Double-click is now the default preview action for newly installed users.
+
 0.0.66
 - Refine double click to preview logic.
 - Rearrange options page layout.

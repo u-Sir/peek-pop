@@ -24,7 +24,7 @@ const configs = {
     'rememberPopupSizeAndPositionForDomain': false,
 
     'modifiedKey': 'None',
-    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragDirections': [],
     'dragPx': 0,
     'imgSupport': false,
     'imgSearchEnable': false,
@@ -52,7 +52,7 @@ const configs = {
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
 
-    'dbclickToPreview': false,
+    'dbclickToPreview': true,
     'dbclickToPreviewTimeout': 250,
 
     'holdToPreview': false,
@@ -109,7 +109,7 @@ async function saveConfig(key, value) {
 
 
 // Initialize the extension
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async (details) => {
     try {
         const storedConfigs = await chrome.storage.local.get(Object.keys(configs));
         const mergedConfigs = { ...configs, ...storedConfigs };
@@ -135,6 +135,11 @@ chrome.runtime.onInstalled.addListener(async () => {
             for (const key of keysToSave) defaultsToSave[key] = configs[key];
             await chrome.storage.local.set(defaultsToSave);
         }
+
+        if (details.reason === 'install') {
+            chrome.tabs.create({ url: 'options/options.html' });
+        }
+        
 
     } catch (err) {
         console.error("Error during installation setup:", err);

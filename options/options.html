@@ -10,8 +10,8 @@
     <div class="options-page">
         <ul class="tabs">
             <li class="tab-link active" data-tab="general_settings" id="generalSettingsTab"></li>
-            <li class="tab-link" data-tab="drag_settings" id="dragSettingsTab"></li>
             <li class="tab-link" data-tab="previewMode_settings" id="previewModeSettingsTab"></li>
+            <li class="tab-link" data-tab="drag_settings" id="dragSettingsTab"></li>
             <li class="tab-link" data-tab="hover_settings" id="hoverSettingsTab"></li>
         </ul>
 
@@ -515,6 +515,20 @@
         <!-- preview mode settings -->
 
         <div id="previewMode_settings" class="tab-content">
+
+            <h3 id="dbclickToPreviewSettings"></h3>
+            <div class='option' id="option">
+                <label><input type="checkbox" id="dbclickToPreview"></label>
+            </div>
+
+            <div class='option'>
+                <label for="dbclickToPreviewTimeout" class="align-label"></label><output for="dbclickToPreviewTimeout"
+                    id="dbclickToPreviewTimeoutOutput"></output>
+                <br>
+                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150" max="1500"
+                    step="5">
+            </div>
+
             <h3 id="previewModeSettings"></h3>
 
             <div class='option' id="option">
@@ -549,18 +563,6 @@
                 <br>
             </div>
 
-            <h4 id="dbclickToPreviewSettings"></h4>
-            <div class='option' id="option">
-                <label><input type="checkbox" id="dbclickToPreview"></label>
-            </div>
-
-            <div class='option'>
-                <label for="dbclickToPreviewTimeout" class="align-label"></label><output for="dbclickToPreviewTimeout"
-                    id="dbclickToPreviewTimeoutOutput"></output>
-                <br>
-                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150" max="1500"
-                    step="5">
-            </div>
 
             <h3 id="holdToPreviewSettings"></h3>
             <div class='option' id="option">

@@ -16,7 +16,7 @@ const configs = {
     'modifiedKey': 'None',
     'searchEngine': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],
-    'dragDirections': ['up', 'down', 'right', 'left'],
+    'dragDirections': [],
     'dragPx': 0,
     'imgSupport': false,
     'imgSearchEnable': false,
@@ -53,7 +53,7 @@ const configs = {
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
 
-    'dbclickToPreview': false,
+    'dbclickToPreview': true,
     'dbclickToPreviewTimeout': 250,
 
     'holdToPreview': false,
