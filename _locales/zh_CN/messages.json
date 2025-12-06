@@ -83,9 +83,6 @@
     "bar": {
         "message": "条状"
     },
-    "blurEffectSettings": {
-        "message": "背景模糊"
-    },
     "popupSettings": {
         "message": "弹窗"
     },
@@ -149,9 +146,6 @@
     "hoverDisabledUrls": {
         "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
     },
-    "searchSettings": {
-        "message": "搜索"
-    },
     "generalSettingsTab": {
         "message": "通用"
     },
@@ -194,6 +188,9 @@
     "closeTrigger": {
         "message": "关闭方式"
     },
+    "sendBackTrigger": {
+        "message": "发送回原窗口的触发方式"
+    },
     "button": {
         "message": "添加按钮到 'popup' 类型窗口"
     },
@@ -216,7 +213,13 @@
         "message": "稍后阅读：通过 Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表。"
     },
     "linkSettings": {
-        "message": "链接"
+        "message": "链接黑名单"
+    },
+    "toolsSettings": {
+        "message": "工具"
+    },
+    "styleSettings": {
+        "message": "样式"
     },
     "empty": {
         "message": "这什么也没有"

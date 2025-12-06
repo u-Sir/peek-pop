@@ -83,9 +83,6 @@
     "bar": {
         "message": "Bar"
     },
-    "blurEffectSettings": {
-        "message": "Blur Effect"
-    },
     "popupSettings": {
         "message": "Popup Window"
     },
@@ -149,9 +146,6 @@
     "hoverDisabledUrls": {
         "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
     },
-    "searchSettings": {
-        "message": "Search"
-    },
     "generalSettingsTab": {
         "message": "General"
     },
@@ -194,6 +188,9 @@
     "closeTrigger": {
         "message": "Close trigger"
     },
+    "sendBackTrigger": {
+        "message": "Send back trigger"
+    },
     "button": {
         "message": "Button for popup-type windows"
     },
@@ -216,7 +213,13 @@
         "message": "Read later: Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon."
     },
     "linkSettings": {
-        "message": "Link"
+        "message": "Link Blacklist"
+    },
+    "toolsSettings": {
+        "message": "Tools"
+    },
+    "styleSettings": {
+        "message": "Style"
     },
     "empty": {
         "message": "Nothing here."
