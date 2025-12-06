@@ -2246,14 +2246,7 @@ async function handledbclickToPreview(e) {
     // Stop normal click behavior
     e.preventDefault();
     e.stopPropagation();
-
-
-    document.addEventListener('mouseup', (e) => {
-        // Stop all navigation
-        e.preventDefault();
-        e.stopImmediatePropagation();
-    }, { once: true, capture: true });
-
+    
     document.addEventListener('click', (e) => {
         // Stop all navigation
         e.preventDefault();
