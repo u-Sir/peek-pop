@@ -77,9 +77,6 @@
     "bar": {
         "message": "Barra"
     },
-    "blurEffectSettings": {
-        "message": "Efecto de desenfoque"
-    },
     "popupSettings": {
         "message": "Ventana emergente"
     },
@@ -143,9 +140,6 @@
     "hoverDisabledUrls": {
         "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
     },
-    "searchSettings": {
-        "message": "Buscar"
-    },
     "generalSettingsTab": {
         "message": "General"
     },
@@ -191,6 +185,9 @@
     "closeTrigger": {
         "message": "Disparador de cierre"
     },
+    "sendBackTrigger": {
+        "message": "Disparador de envío de vuelta"
+    },
     "button": {
         "message": "Botones para ventanas tipo popup"
     },
@@ -213,7 +210,13 @@
         "message": "Leer más tarde: Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión."
     },
     "linkSettings": {
-        "message": "Enlace"
+        "message": "Lista negra de enlaces"
+    },
+    "toolsSettings": {
+        "message": "Herramientas"
+    },
+    "styleSettings": {
+        "message": "Estilo"
     },
     "empty": {
         "message": "No hay nada aquí."

@@ -45,59 +45,87 @@
             </a>
             &nbsp;
 
-            <h4 id="searchSettings"></h4>
+            <h4 id="toolsSettings"></h4>
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="linkHint"></label>
+            </div>
+
+            <div class='option' id="option">
+                <label><input type="checkbox" id="collectionEnable"></label>
+            </div>
 
             <div class='option' id="option">
                 <label><input type="checkbox" id="searchTooltipsEnable"></label>
             </div>
+            <div id="searchTooltipsGroup">
 
-            <div class='option' id="option">
-                <label><input type="checkbox" id="urlCheck"></label>
+                <div class='option' id="option">
+                    <label><input type="checkbox" id="urlCheck"></label>
+                </div>
+
+                <div class='option'>
+                    <label for="searchTooltipsEngines"></label>
+                    <textarea id="searchTooltipsEngines" rows="5" cols="1" wrap="off"></textarea>
+                </div>
+
+
+                <p>
+                <div class="window-type">
+                    <label for="searchWindowType" class="align-label-1"></label>
+                    <input type="radio" id="searchNormal" name="searchWindowType" value="normal" />
+                    <label for="searchNormal">Normal</label>
+
+                    <input type="radio" id="searchPopup" name="searchWindowType" value="popup" />
+                    <label for="searchPopup">Popup</label>
+                </div>
+                </p>
             </div>
 
-            <div class='option'>
-                <label for="searchTooltipsEngines"></label>
-                <textarea id="searchTooltipsEngines" rows="5" cols="1" wrap="off"></textarea>
-            </div>
-
+            <h4 id="styleSettings"></h4>
 
             <p>
-            <div class="window-type">
-                <label for="searchWindowType" class="align-label-1"></label>
-                <input type="radio" id="searchNormal" name="searchWindowType" value="normal" />
-                <label for="searchNormal">Normal</label>
+            <div class="keySelection">
+                <label for="countdownStyle" class="align-label"></label>
+                <br>
+                <input type="radio" id="circle" name="countdownStyle" value="circle" />
+                <label for="circle">Circle</label>
 
-                <input type="radio" id="searchPopup" name="searchWindowType" value="popup" />
-                <label for="searchPopup">Popup</label>
+                <input type="radio" id="bar" name="countdownStyle" value="bar" />
+                <label for="bar">Bar</label>
+                <br>
+
             </div>
             </p>
 
-            <h4 id="blurEffectSettings"></h4>
             <p>
             <div class='option' id="option">
                 <label><input type="checkbox" id="blurEnabled"></label>
             </div>
 
-            <div class='option' id="option">
-                <label><input type="checkbox" id="blurRemoval"></label>
-            </div>
-
-            <div class='row'>
-                <div class='block'>
-                    <div class='option'>
-                        <label for="blurPx" class="align-label"></label><output for="blurPx" id="blurPxOutput"></output>
-                        <br>
-                        <input type="range" id="blurPx" name="blurPx" min="0" max="20" step="0.1">
-                    </div>
+            <div id="blurEffectGroup">
+                <div class='option' id="option">
+                    <label><input type="checkbox" id="blurRemoval"></label>
                 </div>
 
+                <div class='row'>
+                    <div class='block'>
+                        <div class='option'>
+                            <label for="blurPx" class="align-label"></label><output for="blurPx"
+                                id="blurPxOutput"></output>
+                            <br>
+                            <input type="range" id="blurPx" name="blurPx" min="0" max="20" step="0.1">
+                        </div>
+                    </div>
 
-                <div class='block'>
-                    <div class='option'>
-                        <label for="blurTime" class="align-label"></label><output for="blurTime"
-                            id="blurTimeOutput"></output>
-                        <br>
-                        <input type="range" id="blurTime" name="blurTime" min="0" max="2" step="0.1">
+
+                    <div class='block'>
+                        <div class='option'>
+                            <label for="blurTime" class="align-label"></label><output for="blurTime"
+                                id="blurTimeOutput"></output>
+                            <br>
+                            <input type="range" id="blurTime" name="blurTime" min="0" max="2" step="0.1">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -106,6 +134,8 @@
 
             <h4 id="popupSettings"></h4>
             <p>
+
+            <h4 id="sendBackTrigger"></h4>
             <div class="keySelection">
                 <label for="doubleTapKeyToSendPageBack" class="align-label"></label>
                 <br>
@@ -203,27 +233,6 @@
 
             <h4 id="linkSettings"></h4>
             <p>
-            <div class="keySelection">
-                <label for="countdownStyle" class="align-label"></label>
-                <br>
-                <input type="radio" id="circle" name="countdownStyle" value="circle" />
-                <label for="circle">Circle</label>
-
-                <input type="radio" id="bar" name="countdownStyle" value="bar" />
-                <label for="bar">Bar</label>
-                <br>
-
-            </div>
-            </p>
-            <div class='option' id="option">
-                <label><input type="checkbox" id="linkHint"></label>
-            </div>
-
-            <div class='option' id="option">
-                <label><input type="checkbox" id="collectionEnable"></label>
-            </div>
-
-            <p>
             <div class='option'>
                 <label for="linkDisabledUrls"></label>
                 <textarea id="linkDisabledUrls" rows="5" cols="1"></textarea>
@@ -231,13 +240,14 @@
             </p>
 
 
-            <button id="shortcuts">shortcuts</button>
 
             <h4 id="exportImportSettings"></h4>
             <input type="file" id="importFile" accept=".json" style="display: none;" />
             <button id="importButton">Import Settings</button>
             <button id="exportButton">Export Settings</button>
-
+            <br>
+            <br>
+            <button id="shortcuts">shortcuts</button>
 
 
         </div>
@@ -546,7 +556,8 @@
                 <label for="dbclickToPreviewTimeout" class="align-label"></label><output for="dbclickToPreviewTimeout"
                     id="dbclickToPreviewTimeoutOutput"></output>
                 <br>
-                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150" max="1500" step="5">
+                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150" max="1500"
+                    step="5">
             </div>
 
 

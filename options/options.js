@@ -327,19 +327,20 @@ function setupPage(userConfigs) {
         { id: 'searchEngineSelection', messageId: 'searchEngineSelection' },
         { id: 'hoverSearchEngineSelection', messageId: 'searchEngineSelection' },
 
+        { id: 'styleSettings', messageId: 'styleSettings' },
+        { id: 'toolsSettings', messageId: 'toolsSettings' },
         { id: 'linkSettings', messageId: 'linkSettings' },
         { id: 'dragPopupSettings', messageId: 'popupSettings' },
         { id: 'hoverPopupSettings', messageId: 'popupSettings' },
         { id: 'previewModePopupSettings', messageId: 'popupSettings' },
         { id: 'popupSettings', messageId: 'popupSettings' },
 
+        { id: 'sendBackTrigger', messageId: 'sendBackTrigger' },
         { id: 'closeTrigger', messageId: 'closeTrigger' },
         { id: 'button', messageId: 'button' },
         { id: 'note', messageId: 'note' },
         { id: 'staticSize', messageId: 'staticSize' },
         { id: 'percentageSize', messageId: 'percentageSize' },
-
-        { id: 'blurEffectSettings', messageId: 'blurEffectSettings' },
 
         { id: 'blacklist', messageId: 'blacklist' },
         { id: 'hoverBlacklist', messageId: 'blacklist' },
@@ -348,7 +349,6 @@ function setupPage(userConfigs) {
         { id: 'dragSettings', messageId: 'dragSettings' },
         { id: 'hoverSettings', messageId: 'hoverSettings' },
         { id: 'previewModeSettings', messageId: 'previewModeSettings' },
-        { id: 'searchSettings', messageId: 'searchSettings' },
         { id: 'holdToPreviewSettings', messageId: 'holdToPreviewSettings' },
         { id: 'dbclickToPreviewSettings', messageId: 'dbclickToPreviewSettings' },
 
@@ -470,6 +470,23 @@ function setupPage(userConfigs) {
     } else {
         removeGreenDot("drag_settings");
     }
+    const groups = [
+        { checkbox: "searchTooltipsEnable", group: "searchTooltipsGroup" },
+        { checkbox: "blurEnabled", group: "blurEffectGroup" }
+    ];
+
+    groups.forEach(({ checkbox, group }) => {
+        const cb = document.getElementById(checkbox);
+        const grp = document.getElementById(group);
+
+        function update() {
+            grp.style.display = cb.checked ? "block" : "none";
+        }
+
+        update();
+
+        cb.addEventListener("change", update);
+    });
 }
 
 function updatePreviewCheckboxes(isPreviewModeEnabled) {
@@ -582,6 +599,7 @@ function removeGreenDot(dataTab) {
 
 
 function setTextContent(elementId, messageId) {
+    console.log(`Setting text content for elementId: ${elementId} with messageId: ${messageId}`);
     document.getElementById(elementId).textContent = chrome.i18n.getMessage(messageId);
 }
 
