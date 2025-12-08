@@ -47,6 +47,7 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 | Inside an iframe        | ✅ Yes     |
 | Inside an open shadow root | ✅ Yes  |
 | Inside a closed shadow root | ❌ No   |
+| Inside a canvas | ❌ No   |
 
 ### Blacklist Format Examples
 
