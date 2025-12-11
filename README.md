@@ -39,16 +39,6 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 👉 Supports enabling multiple trigger methods simultaneously.
 
 
-### Links supported
-
-| Location                | Supported? |
-|--------------------------|------------|
-| Normal page             | ✅ Yes     |
-| Inside an iframe        | ✅ Yes     |
-| Inside an open shadow root | ✅ Yes  |
-| Inside a closed shadow root | ❌ No   |
-| Inside a canvas | ❌ No   |
-
 ### Blacklist Format Examples
 
 - **Regex format**: `/^https:\/\/example\.com\/.*$/`
@@ -90,6 +80,15 @@ The preview window is based on the native browser window, so customization is no
 ### Is it possible to retain the page's original drag functionality while using drag-to-preview?  
 You can enable the **"Only respond when dragging to empty areas"** option in the settings to preserve the page's native drag behavior.
 
+### Links supported status
+
+| Location                | Supported? |
+|--------------------------|------------|
+| Normal page             | ✅ Yes     |
+| Inside an iframe        | ✅ Yes     |
+| Inside an open shadow root | ✅ Yes  |
+| Inside a closed shadow root | ❌ No   |
+| Inside a canvas | ❌ No   |
 
 # Known Issues
 
