@@ -2182,10 +2182,6 @@ async function handledbclickToPreview(e) {
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
     if (!linkUrl) return; // not a link
 
-    // Stop normal click behavior
-    e.preventDefault();
-    e.stopPropagation();
-
     document.addEventListener('click', (e) => {
         // Stop all navigation
         e.preventDefault();

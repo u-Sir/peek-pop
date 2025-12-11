@@ -12,7 +12,7 @@
         "message": "Open add-on icon popup"
     },
     "extensionName": {
-        "message": "Peek Pop - Link Preview | Search | Read Later"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
         "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later."
@@ -36,7 +36,7 @@
         "message": "Scroll on original window"
     },
     "sendBackByMiddleClickEnable": {
-        "message": "Middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window."
+        "message": "Middle mouse button (scroll wheel) click on a blank area of the page."
     },
     "tryOpenAtMousePosition": {
         "message": "Try to open at mouse position"
@@ -132,7 +132,7 @@
         "message": "Only display the open button if the selected content is a URL"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "Double tap on specific key to send page back to original window (Please check if it works as expected.)"
+        "message": "Double tap on selected key (Please check if it works as expected.)"
     },
     "countdownStyle": {
         "message": "Countdown style"

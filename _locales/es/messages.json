@@ -12,7 +12,7 @@
         "message": "Abrir el icono emergente del complemento"
     },
     "extensionName": {
-        "message": "Peek Pop - Vista previa de enlaces | Búsqueda | Leer más tarde"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
         "message": "Una extensión de navegador ligera y de código abierto permite previsualizar, buscar y guardar páginas para leerlas más tarde."
@@ -36,7 +36,7 @@
         "message": "Desplazar la ventana original"
     },
     "sendBackByMiddleClickEnable": {
-        "message": "Al hacer clic con el botón central del ratón (rueda de desplazamiento) en un área en blanco de la página, se envía la página actual a la ventana original."
+        "message": "Haz clic con el botón central del ratón (la rueda) en un área vacía de la página."
     },
     "tryOpenAtMousePosition": {
         "message": "Intente abrir en la posición del mouse"
@@ -132,7 +132,7 @@
         "message": "Mostrar el botón de abrir solo si el contenido seleccionado es una URL"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "Doble toque en una tecla específica para enviar la página a la ventana original (Por favor, verifica si funciona correctamente.)"
+        "message": "Toca dos veces la tecla seleccionada (comprueba si funciona como esperas)."
     },
     "countdownStyle": {
         "message": "Estilo de cuenta regresiva"

@@ -12,7 +12,7 @@
         "message": "弹出插件图标的页面"
     },
     "extensionName": {
-        "message": "Peek Pop - 链接预览｜搜索｜稍后阅读"
+        "message": "Peek Pop"
     },
     "extensionDescription": {
         "message": "集预览、搜索、稍后阅读于一体的轻量级开源浏览器插件。"
@@ -36,7 +36,7 @@
         "message": "原窗口上滚动"
     },
     "sendBackByMiddleClickEnable": {
-        "message": "鼠标中键（滚轮）单击页面空白处将当前页面发送回原窗口"
+        "message": "鼠标中键（滚轮）单击页面空白处"
     },
     "tryOpenAtMousePosition": {
         "message": "尝试在鼠标附近弹出"
@@ -132,7 +132,7 @@
         "message": "当选中 URL 文本时，仅显示打开按钮"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "双击所选键时发送当前弹窗页面回原窗口（请检查它是否按预期工作）"
+        "message": "双击所选键（请检查它是否按预期工作）"
     },
     "countdownStyle": {
         "message": "倒计时样式"
@@ -183,7 +183,7 @@
         "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "动态弹窗：记住每个域名最后的窗口大小和位置"
+        "message": "动态弹窗：按域名记住最后的窗口大小和位置"
     },
     "closeTrigger": {
         "message": "关闭方式"

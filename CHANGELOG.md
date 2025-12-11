@@ -1,3 +1,6 @@
+0.0.68
+- Refine double click to preview logic.
+
 0.0.67
 - Double-click is now the default preview action for newly installed users.
 
