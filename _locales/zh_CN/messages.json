@@ -90,7 +90,7 @@
         "message": "黑名单"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "记住最后弹出窗口的大小、位置"
+        "message": "记住最后弹出窗口的大小和位置"
     },
     "normal": {
         "message": "普通"
@@ -195,7 +195,7 @@
         "message": "添加按钮到 'popup' 类型窗口"
     },
     "note": {
-        "message": "窗口大小、位置应用优先级：基于域名的 > 不基于域名的 > 按比例缩小的 >  居中/鼠标附近"
+        "message": "窗口大小和位置（应用优先级：基于域名的 > 不基于域名的 > 按比例缩小的 >  居中/鼠标附近）"
     },
     "staticSize": {
         "message": "固定窗口大小"
