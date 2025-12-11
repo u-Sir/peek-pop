@@ -24,15 +24,15 @@
 <a href="https://chrome.google.com/webstore/detail/fjllepdpgikphekgbinhpdkalliiejdh"><img src="https://user-images.githubusercontent.com/72879799/229783871-ec49dba0-5c17-411b-892a-6ba0abee3fe7.svg" alt="Add to Chrome" height="64px"/></a> <a href="https://addons.mozilla.org/firefox/addon/peek_pop"><img src="https://user-images.githubusercontent.com/72879799/229780855-df16725a-f232-478d-99c2-052344601626.svg" alt="Add to Firefox" height="64px"/></a> <a href="https://microsoftedge.microsoft.com/addons/detail/ecpgdeolbpelhdjcplojlpdmfppjljop"><img src="https://user-images.githubusercontent.com/72879799/229780863-e60a44cd-a768-47d8-9755-c46075c3751b.svg" alt="Add to Microsoft Edge" height="64px"/></a>
 </div>
 
-**👉 安装后建议打开选项页，根据需要自定义设置，让插件更符合你的使用习惯。**
+**👉 建议安装后打开设置页面，根据需要自定义设置，让插件更符合你的使用习惯。**
 
 ### 触发方式
 
 | 触发方式                | 状态 | 修饰键 | 搜索或以图搜图 |
 |--------------------------|------------|------------|------------|
-| 拖拽（默认）             | ✅ 支持 | ✅ 可选 | ✅ 可选 |
+| 双击（默认）       | ✅ 支持 | ❌ 不支持 | ❌ 不支持 |
+| 拖拽             | ✅ 支持 | ✅ 可选 | ✅ 可选 |
 | 单击        | ✅ 支持 | ✅ 可选 | ❌ 不支持 |
-| 双击        | ✅ 支持 | ❌ 不支持 | ❌ 不支持 |
 | 长按        | ✅ 支持 | ❌ 不支持 | ❌ 不支持 |
 | 悬停 | ✅ 支持 | ✅ 可选 | ✅ 可选 |
 
@@ -46,6 +46,7 @@
 | iframe 内部        | ✅ 支持     |
 | 开放的 shadow root 内部 | ✅ 支持  |
 | 关闭的 shadow root 内部 | ❌ 不支持   |
+| canvas 内部 | ❌ 不支持   |
 
 ### 黑名单格式示例
 
