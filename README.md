@@ -65,6 +65,9 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 
 # FAQ
 
+### Will double-click preview interfere with the webpage’s original single-click or drag actions?
+No.
+
 ### Is it possible to set a popup always on top?  
 Due to browser add-on limitations, this can't be done directly by the add-on. However, you can use third-party software like **PowerToys - Always On Top** to achieve this. Don't forget to uncheck **"Close popup when origin window is focused"** on the settings page.
 
