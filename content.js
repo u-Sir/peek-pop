@@ -1653,6 +1653,10 @@ function blockOver(e) {
     }
 }
 function isUrlDisabled(url, disabledUrls) {
+    if (!url || !Array.isArray(disabledUrls) || disabledUrls.length === 0) {
+        return false;
+    }
+    
     return disabledUrls.some(disabledUrl => {
         // Check if the pattern is a regex
         if (disabledUrl.startsWith('/') && disabledUrl.endsWith('/')) {
