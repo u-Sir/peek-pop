@@ -1,3 +1,6 @@
+0.0.69
+- Minor typo fixed
+
 0.0.68
 - Refine double click to preview logic.
 

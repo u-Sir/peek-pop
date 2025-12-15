@@ -134,6 +134,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         if (keysToSave.length > 0) {
             const defaultsToSave = {};
             for (const key of keysToSave) defaultsToSave[key] = configs[key];
+
+            if (keysToSave.includes('dbclickToPreview') && details.reason === 'update') {
+                defaultsToSave['dbclickToPreview'] = false;
+            }
+
             await browser.storage.local.set(defaultsToSave);
         }
 
