@@ -133,13 +133,17 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         if (keysToSave.length > 0) {
             const defaultsToSave = {};
             for (const key of keysToSave) defaultsToSave[key] = configs[key];
+
+            if (keysToSave.includes('dbclickToPreview') && details.reason === 'update') {
+                defaultsToSave['dbclickToPreview'] = false;
+            }
+
             await chrome.storage.local.set(defaultsToSave);
         }
 
         if (details.reason === 'install') {
             chrome.tabs.create({ url: 'options/options.html' });
         }
-        
 
     } catch (err) {
         console.error("Error during installation setup:", err);

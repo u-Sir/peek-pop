@@ -1,3 +1,6 @@
+0.0.69
+- Minor typo fixed.
+
 0.0.68
 - Refine double click to preview logic.
 
@@ -21,7 +24,7 @@
 - Refine hold-to-preview logic
 
 0.0.59
-- Minor typo fixed
+- Minor typo fixed.
 
 0.0.57
 - Disable text wrapping in textareas.
