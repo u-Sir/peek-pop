@@ -1900,7 +1900,7 @@ async function checkUrlAndToggleListeners() {
         chrome.storage.local.set({ hoverSearchEngine: 'https://www.google.com/search?q=%s' });
     }
 
-    if (!previewModeEnable || data.previewMode === undefined) {
+    if (!previewModeEnable || (clickModifiedKey !== 'None' && data.previewMode === undefined)) {
         previewMode = false;
 
     } else {
