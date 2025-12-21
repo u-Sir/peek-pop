@@ -302,15 +302,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             }
                             return acc;
                         }, {});
-                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 
-                        || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) 
-                        || !(currentWindow.id in popupWindowsInfo)
-                        || Object.keys(popupWindowsInfo).some(windowId => {
-                            // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
-                            return windowId &&
-                                parseInt(windowId) === currentWindow.id &&
-                                Object.keys(popupWindowsInfo[windowId]).length === 0;
-                        });
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0
+                            || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo)
+                            || !(currentWindow.id in popupWindowsInfo)
+                            || Object.keys(popupWindowsInfo).some(windowId => {
+                                // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
+                                return windowId &&
+                                    parseInt(windowId) === currentWindow.id &&
+                                    Object.keys(popupWindowsInfo[windowId]).length === 0;
+                            });
                         if (!isCurrentWindowOriginal) {
                             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                                 if (tabs.length > 0) {
@@ -571,7 +571,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         saveConfig(key, value).then(() => userConfigs[key] = value)
                     )
                 ).then(() => {
-                    const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, searchWindowType,lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
+                    const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, searchWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
                     let typeToSend;
                     let urls;
 
