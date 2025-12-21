@@ -562,7 +562,7 @@ async function handleKeyDown(e) {
                             previewMode = false;
                         }
 
-                        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+                        updateIcon();
 
                     }, { once: true })
                 } else {
@@ -574,8 +574,7 @@ async function handleKeyDown(e) {
                 previewMode = false;
             }
 
-
-            handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+            updateIcon();
 
         } catch (error) {
             console.error('Error loading user configs:', error);
@@ -726,7 +725,7 @@ function handleMouseDown(e) {
             theme = 'light';
         }
 
-        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+        updateIcon();
     }
 
     if (holdToPreview && e.button === 0 && !e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
@@ -929,14 +928,7 @@ function handleDoubleClick(e) {
         previewMode = !previewMode;
 
 
-        // In popup.js or content.js
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            theme = 'dark';
-        } else {
-            theme = 'light';
-        }
-
-        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme }, resetClickState);
+        updateIcon(resetClickState);
 
     } else if (linkUrl) {
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
@@ -966,22 +958,22 @@ function handleDoubleClick(e) {
 
     // Remove the event listener after it triggers once
     document.removeEventListener('dblclick', handleDoubleClick, true);
-    // isDoubleClick = false;
-
-
-    // In popup.js or content.js
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        theme = 'dark';
-    } else {
-        theme = 'light';
-    }
-
-    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    updateIcon();
     setTimeout(() => {
         isDoubleClick = false;
     }, 250);
 
 }
+
+function updateIcon(resetClickState = null) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        theme = 'dark';
+    } else {
+        theme = 'light';
+    }
+    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme }, resetClickState);
+}
+
 function resetClickState() {
     // Reset variables after click or double-click
     isDoubleClick = false;
@@ -1042,25 +1034,11 @@ function handleEvent(e) {
             }
 
 
-            // In popup.js or content.js
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                theme = 'dark';
-            } else {
-                theme = 'light';
-            }
-
-            handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+            updateIcon();
         }
 
 
-        // In popup.js or content.js
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            theme = 'dark';
-        } else {
-            theme = 'light';
-        }
-
-        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+        updateIcon();
 
 
     } else if (e.type === 'mouseup' && isDragging && e.button === 0) {
@@ -1104,15 +1082,7 @@ function handleEvent(e) {
 
     }
 
-
-    // In popup.js or content.js
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        theme = 'dark';
-    } else {
-        theme = 'light';
-    }
-
-    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    updateIcon();
 }
 
 function handlePreviewMode(e, linkUrl) {
@@ -2193,14 +2163,7 @@ async function checkUrlAndToggleListeners() {
 
     }
 
-    // In popup.js or content.js
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        theme = 'dark';
-    } else {
-        theme = 'light';
-    }
-
-    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    updateIcon();
     previewModeDisabledUrls = data.previewModeDisabledUrls || [];
 
     if (!(isUrlDisabled(window.location.href, previewModeDisabledUrls)) && previewModeEnable) {
@@ -2237,7 +2200,7 @@ async function handledbclickToPreview(e) {
     if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
     if (!linkUrl) return; // not a link
-    
+
     document.addEventListener('click', (e) => {
         // Stop all navigation
         e.preventDefault();
@@ -2516,14 +2479,7 @@ window.addEventListener('focus', async () => {
     try {
 
 
-        // In popup.js or content.js
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            theme = 'dark';
-        } else {
-            theme = 'light';
-        }
-
-        handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+        updateIcon();
         document.addEventListener('mouseover', handleMouseOver, true);
         const message = closeWhenFocusedInitialWindow
             ? { action: 'windowRegainedFocus', addContextMenuItem: contextMenuEnabled }
