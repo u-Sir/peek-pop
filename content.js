@@ -955,7 +955,7 @@ function handleDoubleClick(e) {
 
         previewMode = !previewMode;
 
-        updateIcon();
+        updateIcon(resetClickState);
 
     } else if (linkUrl) {
         if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
@@ -2398,13 +2398,14 @@ window.addEventListener('focus', async () => {
     }, 50);
 });
 
-function updateIcon() {
+
+function updateIcon(resetClickState = null) {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         theme = 'dark';
     } else {
         theme = 'light';
     }
-    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
+    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme }, resetClickState);
 }
 
 // Create candle-like progress bar element
