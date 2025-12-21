@@ -2493,6 +2493,7 @@ window.addEventListener('focus', async () => {
     focusAt = Date.now();
     isDoubleClick = false;
     firstDownOnLinkAt = null;
+    hasPopupTriggered = false;
     if (linkIndicator) {
         linkIndicator.remove();
     }
