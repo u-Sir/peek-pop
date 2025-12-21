@@ -2361,6 +2361,7 @@ window.addEventListener('focus', async () => {
     isDoubleClick = false;
     firstDownOnLinkAt = null;
     hasPopupTriggered = false;
+
     if (linkIndicator) {
         linkIndicator.remove();
     }
@@ -2381,6 +2382,12 @@ window.addEventListener('focus', async () => {
         window.parent.postMessage({ action: 'removeParentBlur' }, '*');
     }
     try {
+        if (!previewModeEnable || (clickModifiedKey !== 'None' && previewMode === undefined)) {
+            previewMode = false;
+
+        } else {
+            previewMode = data.previewMode;
+        }
         updateIcon();
         document.addEventListener('mouseover', handleMouseOver, true);
         const message = closeWhenFocusedInitialWindow
