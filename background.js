@@ -302,7 +302,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             }
                             return acc;
                         }, {});
-                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) || Object.keys(popupWindowsInfo).some(windowId => {
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 
+                        || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) 
+                        || !(currentWindow.id in popupWindowsInfo)
+                        || Object.keys(popupWindowsInfo).some(windowId => {
                             // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
                             return windowId &&
                                 parseInt(windowId) === currentWindow.id &&

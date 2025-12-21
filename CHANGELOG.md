@@ -1,3 +1,6 @@
+0.0.71
+- Improved the Esc to close logic.
+
 0.0.70
 - Fixed an issue where click-to-preview didn’t work correctly in certain cases.
 - Improved the update icon logic.
