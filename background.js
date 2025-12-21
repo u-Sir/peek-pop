@@ -309,12 +309,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             }
                             return acc;
                         }, {});
-                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) || Object.keys(popupWindowsInfo).some(windowId => {
-                            // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
-                            return windowId &&
-                                parseInt(windowId) === currentWindow.id &&
-                                Object.keys(popupWindowsInfo[windowId]).length === 0;
-                        });
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0
+                            || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo)
+                            || !(currentWindow.id in popupWindowsInfo)
+                            || Object.keys(popupWindowsInfo).some(windowId => {
+                                // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
+                                return windowId &&
+                                    parseInt(windowId) === currentWindow.id &&
+                                    Object.keys(popupWindowsInfo[windowId]).length === 0;
+                            });
                         if (!isCurrentWindowOriginal) {
                             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                                 if (tabs.length > 0) {
@@ -647,7 +650,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     return Promise.all(saveConfigPromises);
                 }).then(() => {
                     return loadUserConfigs().then(userConfigs => {
-                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, searchWindowType,lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
+                        const { disabledUrls, rememberPopupSizeAndPosition, windowType, hoverWindowType, previewModeWindowType, searchWindowType, lastClientX, lastClientY, lastScreenTop, lastScreenLeft, lastScreenWidth, lastScreenHeight } = userConfigs;
                         let typeToSend;
                         let urls;
 
@@ -659,7 +662,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             typeToSend = previewModeWindowType || 'popup';
                         } else if (request.trigger === 'tooltips') {
                             typeToSend = searchWindowType || 'normal';
-                        }  else if (request.action === 'group' && request.links && request.links.length > 0) {
+                        } else if (request.action === 'group' && request.links && request.links.length > 0) {
                             // Extract URLs from the message
                             urls = request.links.map(link => link.url);
                             typeToSend = 'normal';
