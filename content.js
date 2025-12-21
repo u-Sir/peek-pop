@@ -2382,11 +2382,8 @@ window.addEventListener('focus', async () => {
         window.parent.postMessage({ action: 'removeParentBlur' }, '*');
     }
     try {
-        if (!previewModeEnable || (clickModifiedKey !== 'None' && previewMode === undefined)) {
+        if (previewMode && previewModeEnable && clickModifiedKey !== 'None') {
             previewMode = false;
-
-        } else {
-            previewMode = data.previewMode;
         }
         updateIcon();
         document.addEventListener('mouseover', handleMouseOver, true);
