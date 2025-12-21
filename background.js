@@ -309,24 +309,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             }
                             return acc;
                         }, {});
-                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0
-                            || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo)
-                            || (!(currentWindow.id in popupWindowsInfo) &&
-                                !Object.values(popupWindowsInfo).some(value =>
-                                    value &&
-                                    typeof value === 'object' &&
-                                    Object.keys(value).some(key =>
-                                        parseInt(key, 10) === currentWindow.id ||
-                                        (typeof value[key] === 'object' &&
-                                            existsUnderOtherIds(value[key], currentWindow.id))
-                                    )
-                                ))
-                            || Object.keys(popupWindowsInfo).some(windowId => {
-                                // Check if windowId exists and popupWindowsInfo[windowId] is empty (no popups)
+
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 // no records
+                            || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) // savedPositionAndSize only
+                            || (() => { // not under any other IDs
+                                const existsUnderOtherIds = (info, targetId, excludeTopLevel = true) =>
+                                    Object.entries(info).some(([key, value]) => {
+                                        if (key === 'savedPositionAndSize') return false;
+                                        if (excludeTopLevel && parseInt(key, 10) === targetId) return false;
+                                        if (parseInt(key, 10) === targetId) return true;
+                                        return value && typeof value === 'object' && existsUnderOtherIds(value, targetId, false);
+                                    });
+
+                                // Check if currentWindow.id exists under any other IDs
+                                if (existsUnderOtherIds(popupWindowsInfo, currentWindow.id)) return false;
+
+                                return true;
+                            })()
+                            || Object.keys(popupWindowsInfo).some(windowId => { // under currentWindow.id but empty
                                 return windowId &&
                                     parseInt(windowId) === currentWindow.id &&
                                     Object.keys(popupWindowsInfo[windowId]).length === 0;
                             });
+
                         if (!isCurrentWindowOriginal) {
                             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                                 if (tabs.length > 0) {
