@@ -1,4 +1,4 @@
-0.0.71
+0.0.72
 - Improved the Esc to close logic.
 
 0.0.70
