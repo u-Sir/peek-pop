@@ -1034,7 +1034,7 @@ function handleEvent(e) {
                 !(e.target.closest("button") && e.target.closest("button").getAttribute("aria-haspopup") === "menu")) {
                 e.preventDefault();
                 e.stopPropagation();
-
+                isMouseDown = true;
                 clickTimeout = setTimeout(() => {
                     handlePreviewMode(e, linkUrl);
 
@@ -1757,15 +1757,6 @@ function isUrlDisabled(url, disabledUrls) {
 async function checkUrlAndToggleListeners() {
     hasPopupTriggered = false;
 
-
-    // In popup.js or content.js
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        theme = 'dark';
-    } else {
-        theme = 'light';
-    }
-
-    handleMessageRequest({ action: 'updateIcon', previewMode: previewMode, theme: theme });
     const data = await loadUserConfigs([
         'isFirefox',
         'isMac',
@@ -1909,7 +1900,7 @@ async function checkUrlAndToggleListeners() {
         chrome.storage.local.set({ hoverSearchEngine: 'https://www.google.com/search?q=%s' });
     }
 
-    if (!previewModeEnable) {
+    if (!previewModeEnable || data.previewMode === undefined) {
         previewMode = false;
 
     } else {
