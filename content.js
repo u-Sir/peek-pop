@@ -2478,6 +2478,9 @@ window.addEventListener('focus', async () => {
     }
     try {
 
+        if (previewMode && previewModeEnable && clickModifiedKey !== 'None') {
+            previewMode = false;
+        }
 
         updateIcon();
         document.addEventListener('mouseover', handleMouseOver, true);
