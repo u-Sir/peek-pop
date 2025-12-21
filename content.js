@@ -1064,8 +1064,9 @@ function handleEvent(e) {
                 !(e.target.closest("button") && e.target.closest("button").getAttribute("aria-haspopup") === "menu")) {
                 e.preventDefault();
                 e.stopPropagation();
-                            console.log('click event detected. ', isMouseDown, hasPopupTriggered, isDoubleClick);
+
                 isMouseDown = true;
+
                 clickTimeout = setTimeout(() => {
                     handlePreviewMode(e, linkUrl);
 
@@ -2412,6 +2413,7 @@ window.addEventListener('focus', async () => {
     focusAt = Date.now();
     isDoubleClick = false;
     firstDownOnLinkAt = null;
+    hasPopupTriggered = false;
     if (linkIndicator) {
         linkIndicator.remove();
     }
