@@ -2445,66 +2445,73 @@ function addLinkToCollection(e) {
     firstDownOnLinkAt = null;
 }
 
+
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-    if (namespace === 'local' && (
-        changes.linkHint ||
-        changes.disabledUrls ||
+    if (namespace !== 'local') return;
 
-        changes.dragDirections ||
-        changes.dragPx ||
-        changes.dropInEmptyOnly ||
-        changes.searchEngine ||
-        changes.imgSearchEnable ||
-        changes.imgSupport ||
-        changes.modifiedKey ||
+    const keysToWatch = new Set([
+        'linkHint', 
+        'linkDisabledUrls',
 
-        changes.previewModeDisabledUrls ||
-        changes.previewModeEnable ||
-        changes.clickModifiedKey ||
-        changes.doubleClickAsClick ||
-        changes.doubleClickToSwitch ||
-        changes.dbclickToPreview ||
-        changes.dbclickToPreviewTimeout ||
+        'clickModifiedKey', 
+        'previewModeDisabledUrls', 
+        'previewModeEnable',
 
-        changes.searchTooltipsEnable ||
-        changes.searchTooltipsEngines ||
+        'doubleClickAsClick', 
+        'doubleClickToSwitch',
+        'dbclickToPreview', 
+        'dbclickToPreviewTimeout',
 
-        changes.collection ||
-        changes.collectionEnable ||
+        'holdToPreview', 
+        'holdToPreviewTimeout',
+        'searchTooltipsEnable', 
+        'searchTooltipsEngines',
 
-        changes.holdToPreview ||
-        changes.holdToPreviewTimeout ||
+        'collection', 
+        'collectionEnable',
 
-        changes.hoverTimeout ||
-        changes.hoverDisabledUrls ||
-        changes.hoverSearchEngine ||
-        changes.hoverModifiedKey ||
-        changes.hoverImgSearchEnable ||
-        changes.hoverImgSupport ||
+        'copyButtonPosition', 
+        'copyButtonEnable',
+        'sendBackButtonPosition', 
+        'sendBackButtonEnable',
 
-        changes.hoverSpaceEnabled ||
+        'blurEnabled', 
+        'blurPx', 
+        'blurTime', 
+        'blurRemoval',
 
-        changes.linkDisabledUrls ||
+        'urlCheck',
 
-        changes.copyButtonPosition ||
-        changes.copyButtonEnable ||
-        changes.sendBackButtonPosition ||
-        changes.sendBackButtonEnable ||
+        'countdownStyle',
 
-        changes.blurEnabled ||
-        changes.blurPx ||
-        changes.blurTime ||
-        changes.blurRemoval ||
+        'closeWhenFocusedInitialWindow', 
+        'closeWhenScrollingInitialWindow',
 
-        changes.countdownStyle ||
+        'sendBackByMiddleClickEnable', 
+        'doubleTapKeyToSendPageBack', 
+        
+        'closedByEsc',
 
-        changes.urlCheck ||
-        changes.closeWhenFocusedInitialWindow ||
-        changes.closeWhenScrollingInitialWindow ||
-        changes.sendBackByMiddleClickEnable ||
-        changes.doubleTapKeyToSendPageBack ||
-        changes.closedByEsc
-    )) {
+        'hoverTimeout', 
+        'hoverModifiedKey', 
+        'hoverImgSearchEnable', 
+        'hoverImgSupport',
+        'hoverDisabledUrls', 
+        'hoverSearchEngine',
+
+        'hoverSpaceEnabled',
+
+        'modifiedKey', 
+        'disabledUrls', 
+        'searchEngine', 
+        'dragDirections', 
+        'dragPx',
+        'dropInEmptyOnly', 
+        'imgSearchEnable', 
+        'imgSupport'
+    ]);
+
+    if (Object.keys(changes).some(key => keysToWatch.has(key))) {
         await checkUrlAndToggleListeners();
     }
 });
