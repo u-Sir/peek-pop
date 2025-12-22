@@ -44,6 +44,9 @@ const configs = {
     'hoverWindowType': 'popup',
     'hoverImgSearchEnable': false,
 
+    'hoverSpaceEnabled': false,
+
+
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
     'previewModePopupInBackground': false,
