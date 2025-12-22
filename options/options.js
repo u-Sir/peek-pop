@@ -622,7 +622,6 @@ function removeGreenDot(dataTab) {
 
 
 function setTextContent(elementId, messageId) {
-    console.log(`Setting text content for elementId: ${elementId} with messageId: ${messageId}`);
     document.getElementById(elementId).textContent = chrome.i18n.getMessage(messageId);
 }
 
