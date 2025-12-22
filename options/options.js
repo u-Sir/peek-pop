@@ -45,6 +45,8 @@ const configs = {
     'hoverWindowType': 'popup',
     'hoverImgSearchEnable': false,
 
+    'hoverSpaceEnabled': false,
+
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
     'previewModeWindowType': 'popup',
@@ -192,6 +194,15 @@ function init() {
 
     });
 
+    document.getElementById('hoverSpaceEnabled').addEventListener('change', function () {
+        const hoverSpaceEnabledCheckbox = document.getElementById('hoverSpaceEnabled');
+        if (this.checked) {
+            hoverSpaceEnabledCheckbox.checked = this.checked;
+            saveConfig('hoverSpaceEnabled', this.checked);
+
+        }
+    });
+
     document.getElementById('hoverImgSearchEnable').addEventListener('change', function () {
         const hoverImgSupportCheckbox = document.getElementById('hoverImgSupport');
         if (this.checked) {
@@ -231,11 +242,23 @@ function init() {
             addGreenDot("hover_settings")
         } else {
             linkHintCheckbox.disabled = false;  // reset the checkbox
-            removeGreenDot("hover_settings")
-
+            const hoverSpaceEnabledCheckbox = document.getElementById('hoverSpaceEnabled');
+            if (!hoverSpaceEnabledCheckbox.checked) {
+                removeGreenDot("hover_settings")
+            }
         }
     });
 
+    document.getElementById('hoverSpaceEnabled').addEventListener('change', function () {
+        if (this.checked) {
+            addGreenDot("hover_settings")
+        } else {
+            const hoverTimeout = document.getElementById('hoverTimeout');
+            if (parseInt(hoverTimeout.value, 10) === 0) {
+            removeGreenDot("hover_settings")
+            }
+        }
+    });
 
     document.getElementById('previewModeEnable').addEventListener('change', function () {
         if (this.checked) {

@@ -1,3 +1,6 @@
+0.0.74
+- New trigger: Hover + Space to preview the link.
+
 0.0.73
 - Improved the Esc to close logic.
 

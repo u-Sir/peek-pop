@@ -11,6 +11,9 @@ const moveThreshold = 15;
 let hoverlinkOrText = false;
 let isMouseDownOnLink = false;
 
+let lastMouseEvent = null;
+let rafId = null;
+
 
 let linkIndicator,
     tooltip,
@@ -143,6 +146,8 @@ const configs = {
     'hoverModifiedKey': 'None',
     'hoverWindowType': 'popup',
     'hoverImgSearchEnable': false,
+
+    'hoverSpaceEnabled': false,
 
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
@@ -895,6 +900,128 @@ function handleHoldLink(e, linkUrl, now) {
     }
 }
 
+
+
+function isEditableTarget(target) {
+    if (!target) return false;
+
+    return (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+    );
+}
+
+function getDeepElementFromPoint(x, y) {
+    let el = document.elementFromPoint(x, y);
+    let last = el;
+
+    while (el) {
+        if (el.shadowRoot && el.shadowRoot.mode === 'open') {
+            const shadowEl = el.shadowRoot.elementFromPoint(x, y);
+            if (!shadowEl || shadowEl === last) break;
+            last = el;
+            el = shadowEl;
+        } else {
+            break;
+        }
+    }
+
+    return el || last;
+}
+
+function findAnchorAcrossShadow(el) {
+    let node = el;
+
+    while (node) {
+        if (node instanceof HTMLAnchorElement && node.href) {
+            return node;
+        }
+
+        if (node.parentNode) {
+            node = node.parentNode;
+            continue;
+        }
+
+        if (node instanceof ShadowRoot) {
+            node = node.host;
+            continue;
+        }
+
+        break;
+    }
+
+    return null;
+}
+
+function handleSpace(e) {
+    if (e.code !== 'Space') return;
+    if (e.repeat) return;
+
+    if (isEditableTarget(document.activeElement)) return;
+    if (!lastMouseEvent) return;
+
+    const { clientX, clientY, screenX, screenY } = lastMouseEvent;
+
+    const hitEl = getDeepElementFromPoint(clientX, clientY);
+    if (!hitEl) return;
+
+    const linkElement = findAnchorAcrossShadow(hitEl);
+    if (!linkElement) return;
+
+    let linkUrl =
+        linkElement.getAttribute('data-url') ||
+        linkElement.getAttribute('href');
+
+    if (!linkUrl) return;
+
+    if (linkUrl.startsWith('/')) {
+        linkUrl = new URL(linkUrl, location.href).href;
+    }
+
+    if (/^(mailto|tel|javascript):/i.test(linkUrl.trim())) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+
+    e.preventDefault();
+
+    if (linkIndicator) {
+        linkIndicator.remove();
+    }
+    linkIndicator = null;
+
+    if (searchTooltips) searchTooltips.remove();
+    searchTooltips = null;
+
+    if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
+        // Inside the iframe content script
+        window.parent.postMessage({ action: 'blurParent' }, '*');
+    } else {
+        if (blurEnabled) {
+            addBlurOverlay(blurPx, blurTime);
+        }
+        addClickMask();
+    }
+
+    chrome.runtime.sendMessage({
+        linkUrl: linkUrl,
+        lastClientX: screenX,
+        lastClientY: screenY,
+        width: window.screen.availWidth,
+        height: window.screen.availHeight,
+        top: window.screen.availTop,
+        left: window.screen.availLeft,
+        trigger: 'hover'
+    }, () => {
+        isMouseDownOnLink = false;
+        clearTimeoutsAndProgressBars();
+        if (linkIndicator) linkIndicator.remove();
+        linkIndicator = null;
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
+        hasPopupTriggered = true;
+        finalLinkUrl = null;
+    });
+}
 
 
 function handleDoubleClick(e) {
@@ -1738,6 +1865,8 @@ async function checkUrlAndToggleListeners() {
         'hoverModifiedKey',
         'hoverDisabledUrls',
 
+        'hoverSpaceEnabled',
+
         'previewModeDisabledUrls',
         'previewModeEnable',
         'clickModifiedKey',
@@ -1860,6 +1989,19 @@ async function checkUrlAndToggleListeners() {
         document.addEventListener('mouseup', handleEvent)
     }
 
+
+    hoverSpaceEnabled = data.hoverSpaceEnabled || false;
+    if (hoverSpaceEnabled) {
+        document.addEventListener('keydown', handleSpace);
+        document.addEventListener('mousemove', (e) => {
+            lastMouseEvent = e;
+
+            if (rafId) return;
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+            });
+        });
+    }
 
     if (typeof data.searchEngine === 'undefined') {
         searchEngine = 'https://www.google.com/search?q=%s';
@@ -2383,6 +2525,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         changes.hoverModifiedKey ||
         changes.hoverImgSearchEnable ||
         changes.hoverImgSupport ||
+
+        changes.hoverSpaceEnabled ||
 
         changes.linkDisabledUrls ||
 
