@@ -890,15 +890,7 @@ function handleHoldLink(e, linkUrl, now) {
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
 
-            if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
-                // Inside the iframe content script
-                window.parent.postMessage({ action: 'blurParent' }, '*');
-            } else {
-                if (blurEnabled) {
-                    addBlurOverlay(blurPx, blurTime);
-                }
-                addClickMask();
-            }
+            setBlur();
 
             chrome.runtime.sendMessage({
                 linkUrl: finalLinkUrl,
@@ -1134,15 +1126,8 @@ function handlePreviewMode(e, linkUrl) {
 
         if (searchTooltips) searchTooltips.remove();
         searchTooltips = null;
-        if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
-            // Inside the iframe content script
-            window.parent.postMessage({ action: 'blurParent' }, '*');
-        } else {
-            if (blurEnabled) {
-                addBlurOverlay(blurPx, blurTime);
-            }
-            addClickMask();
-        }
+
+        setBlur();
 
         chrome.runtime.sendMessage({
             linkUrl: finalLinkUrl,
@@ -1447,15 +1432,8 @@ async function handleDragStart(e) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
 
-                        if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
-                            // Inside the iframe content script
-                            window.parent.postMessage({ action: 'blurParent' }, '*');
-                        } else {
-                            if (blurEnabled) {
-                                addBlurOverlay(blurPx, blurTime);
-                            }
-                            addClickMask();
-                        }
+
+                        setBlur();
                         chrome.runtime.sendMessage({
                             linkUrl: finalLinkUrl,
                             lastClientX: e.screenX,
@@ -1509,15 +1487,8 @@ async function handleDragStart(e) {
                     if (searchTooltips) searchTooltips.remove();
                     searchTooltips = null;
 
-                    if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
-                        // Inside the iframe content script
-                        window.parent.postMessage({ action: 'blurParent' }, '*');
-                    } else {
-                        if (blurEnabled) {
-                            addBlurOverlay(blurPx, blurTime);
-                        }
-                        addClickMask();
-                    }
+
+                    setBlur();
 
                     chrome.runtime.sendMessage({
                         linkUrl: finalLinkUrl,
@@ -2215,15 +2186,8 @@ function handleSpace(e) {
     if (searchTooltips) searchTooltips.remove();
     searchTooltips = null;
 
-    if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
-        // Inside the iframe content script
-        window.parent.postMessage({ action: 'blurParent' }, '*');
-    } else {
-        if (blurEnabled) {
-            addBlurOverlay(blurPx, blurTime);
-        }
-        addClickMask();
-    }
+
+    setBlur();
 
     chrome.runtime.sendMessage({
         linkUrl: linkUrl,
@@ -2886,15 +2850,8 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
         if (searchTooltips) searchTooltips.remove();
         searchTooltips = null;
 
-        if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
-            // Inside the iframe content script
-            window.parent.postMessage({ action: 'blurParent' }, '*');
-        } else {
-            if (blurEnabled) {
-                addBlurOverlay(blurPx, blurTime);
-            }
-            addClickMask();
-        }
+
+        setBlur();
         chrome.runtime.sendMessage({
             linkUrl: finalLinkUrl,
             lastClientX: e.screenX,
@@ -2923,6 +2880,18 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
 
 }
 
+function setBlur() {
+    if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
+        // Inside the iframe content script
+        window.parent.postMessage({ action: 'blurParent' }, '*');
+    } else {
+        if (blurEnabled) {
+            addBlurOverlay(blurPx, blurTime);
+        }
+        addClickMask();
+    }
+}
+
 // Trigger the popup logic
 function triggerLinkPopup(e, link) {
 
@@ -2933,16 +2902,8 @@ function triggerLinkPopup(e, link) {
     if (searchTooltips) searchTooltips.remove();
     searchTooltips = null;
 
+    setBlur();
 
-    if (window.self !== window.top && window.origin !== 'https://viewscreen.githubusercontent.com') {
-        // Inside the iframe content script
-        window.parent.postMessage({ action: 'blurParent' }, '*');
-    } else {
-        if (blurEnabled) {
-            addBlurOverlay(blurPx, blurTime);
-        }
-        addClickMask();
-    }
     chrome.runtime.sendMessage({
         linkUrl: link,
         lastClientX: e.screenX,
