@@ -2379,70 +2379,75 @@ function addLinkToCollection(e) {
 }
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-    if (namespace === 'local' && (
+    if (namespace !== 'local') return;
 
-        changes.linkHint ||
-        changes.linkDisabledUrls ||
+    const keysToWatch = new Set([
+        'linkHint', 
+        'linkDisabledUrls',
 
-        changes.clickModifiedKey ||
-        changes.previewModeDisabledUrls ||
-        changes.previewModeEnable ||
-        changes.doubleClickAsClick ||
-        changes.doubleClickToSwitch ||
+        'clickModifiedKey', 
+        'previewModeDisabledUrls', 
+        'previewModeEnable',
 
-        changes.dbclickToPreview ||
-        changes.dbclickToPreviewTimeout ||
+        'doubleClickAsClick', 
+        'doubleClickToSwitch',
+        'dbclickToPreview', 
+        'dbclickToPreviewTimeout',
 
-        changes.holdToPreview ||
-        changes.holdToPreviewTimeout ||
+        'holdToPreview', 
+        'holdToPreviewTimeout',
+        'searchTooltipsEnable', 
+        'searchTooltipsEngines',
 
-        changes.searchTooltipsEnable ||
-        changes.searchTooltipsEngines ||
+        'collection', 
+        'collectionEnable',
 
-        changes.collection ||
-        changes.collectionEnable ||
+        'copyButtonPosition', 
+        'copyButtonEnable',
+        'sendBackButtonPosition', 
+        'sendBackButtonEnable',
 
-        changes.copyButtonPosition ||
-        changes.copyButtonEnable ||
-        changes.sendBackButtonPosition ||
-        changes.sendBackButtonEnable ||
+        'blurEnabled', 
+        'blurPx', 
+        'blurTime', 
+        'blurRemoval',
 
-        changes.blurEnabled ||
-        changes.blurPx ||
-        changes.blurTime ||
-        changes.blurRemoval ||
+        'urlCheck',
 
-        changes.urlCheck ||
+        'countdownStyle',
 
-        changes.countdownStyle ||
+        'closeWhenFocusedInitialWindow', 
+        'closeWhenScrollingInitialWindow',
 
-        changes.closeWhenFocusedInitialWindow ||
-        changes.closeWhenScrollingInitialWindow ||
-        changes.sendBackByMiddleClickEnable ||
-        changes.doubleTapKeyToSendPageBack ||
-        changes.closedByEsc ||
+        'sendBackByMiddleClickEnable', 
+        'doubleTapKeyToSendPageBack', 
+        
+        'closedByEsc',
 
-        changes.hoverTimeout ||
-        changes.hoverModifiedKey ||
-        changes.hoverImgSearchEnable ||
-        changes.hoverImgSupport ||
-        changes.hoverDisabledUrls ||
-        changes.hoverSearchEngine ||
+        'hoverTimeout', 
+        'hoverModifiedKey', 
+        'hoverImgSearchEnable', 
+        'hoverImgSupport',
+        'hoverDisabledUrls', 
+        'hoverSearchEngine',
 
-        changes.hoverSpaceEnabled ||
+        'hoverSpaceEnabled',
 
-        changes.modifiedKey ||
-        changes.disabledUrls ||
-        changes.searchEngine ||
-        changes.dragDirections ||
-        changes.dragPx ||
-        changes.dropInEmptyOnly ||
-        changes.imgSearchEnable ||
-        changes.imgSupport
-    )) {
+        'modifiedKey', 
+        'disabledUrls', 
+        'searchEngine', 
+        'dragDirections', 
+        'dragPx',
+        'dropInEmptyOnly', 
+        'imgSearchEnable', 
+        'imgSupport'
+    ]);
+
+    if (Object.keys(changes).some(key => keysToWatch.has(key))) {
         await checkUrlAndToggleListeners();
     }
 });
+
 
 checkUrlAndToggleListeners();
 
