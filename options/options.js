@@ -438,7 +438,7 @@ function setupPage(userConfigs) {
 
     updatePreviewCheckboxes(userConfigs.previewModeEnable);
 
-    if (userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) {
+    if ((userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) || userConfigs.hoverSpaceEnabled) {
         addGreenDot("hover_settings");
     } else {
         removeGreenDot("hover_settings");

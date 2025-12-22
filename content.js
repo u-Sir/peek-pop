@@ -1794,6 +1794,14 @@ async function checkUrlAndToggleListeners() {
     hoverSpaceEnabled = data.hoverSpaceEnabled || false;
     if (hoverSpaceEnabled) {
         document.addEventListener('keydown', handleSpace);
+        document.addEventListener('mousemove', (e) => {
+            lastMouseEvent = e;
+
+            if (rafId) return;
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+            });
+        });
     }
 
     if (typeof data.searchEngine === 'undefined') {
@@ -2116,16 +2124,6 @@ async function checkUrlAndToggleListeners() {
 
     document.addEventListener(['contextmenu'], addLinkToCollection, true);
 }
-
-
-document.addEventListener('mousemove', (e) => {
-    lastMouseEvent = e;
-
-    if (rafId) return;
-    rafId = requestAnimationFrame(() => {
-        rafId = null;
-    });
-});
 
 function isEditableTarget(target) {
     if (!target) return false;
