@@ -34,6 +34,7 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 | Drag             | ✅ Yes | ✅ Optional | ✅ Optional |
 | Click        | ✅ Yes | ✅ Optional | ❌ No |
 | Hold        | ✅ Yes     | ❌ No   | ❌ No   |
+| Hover + Space        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hover | ✅ Yes | ✅ Optional | ✅ Optional |
 
 👉 Supports enabling multiple trigger methods simultaneously.
