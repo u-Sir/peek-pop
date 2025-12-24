@@ -490,13 +490,21 @@ function showPreviewIconOnHover(e, anchorElement) {
     const placeOnRight =
         rect.right + GAP + DOT_SIZE <= viewportWidth;
 
-    const dotLeft = placeOnRight
-        ? rect.right + GAP
-        : rect.left - GAP - DOT_SIZE;
+    let dotTop = rect.top + rect.height / 2 - DOT_SIZE / 2;
 
-    const dotTop =
-        rect.top + rect.height / 2 - DOT_SIZE / 2;
+    if (dotLeft < 0) dotLeft = 0;
+    if (dotLeft + DOT_SIZE > window.innerWidth) dotLeft = window.innerWidth - DOT_SIZE;
 
+    if (dotTop < 0) {
+        dotTop = rect.bottom + GAP;
+        if (dotTop + DOT_SIZE > window.innerHeight) {
+            dotTop = window.innerHeight - DOT_SIZE;
+        }
+    } else if (dotTop + DOT_SIZE > window.innerHeight) {
+        dotTop = rect.top - GAP - DOT_SIZE;
+        if (dotTop < 0) dotTop = 0;
+    }
+    
     const dot = document.createElement('div');
     Object.assign(dot.style, {
         position: 'fixed',
