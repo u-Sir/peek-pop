@@ -14,6 +14,8 @@ let isMouseDownOnLink = false;
 let lastMouseEvent = null;
 let rafId = null;
 
+showPreviewIconOnHover._lastLink = null;
+
 let linkIndicator,
     tooltip,
     progressBar,
@@ -454,6 +456,24 @@ function isLinkInCollection(url) {
 }
 
 
+function bindScrollHandlers() {
+    if (bindScrollHandlers._bound) return;
+    bindScrollHandlers._bound = true;
+
+    window.addEventListener('scroll', () => {
+
+        showPreviewIconOnHover._dot?.remove();
+        showPreviewIconOnHover._bridge?.remove();
+    }, { passive: true });
+
+    window.addEventListener('scrollend', () => {
+
+        if (showPreviewIconOnHover._lastLink) {
+            showPreviewIconOnHover({ target: showPreviewIconOnHover._lastLink }, showPreviewIconOnHover._lastLink);
+        }
+    });
+}
+
 function showPreviewIconOnHover(e, anchorElement) {
 
     function findLinkFromEvent(e) {
@@ -479,16 +499,23 @@ function showPreviewIconOnHover(e, anchorElement) {
     showPreviewIconOnHover._bridge?.remove();
     clearTimeout(showPreviewIconOnHover._removeTimer);
 
+    showPreviewIconOnHover._lastLink = linkElement;
+
     const DOT_SIZE = 16;
     const GAP = 10;
     const REMOVE_DELAY = 200;
-    const DOT_HOVER_DELAY = 200; 
+    const DOT_HOVER_DELAY = 200;
 
     const rect = linkElement.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
 
     const placeOnRight =
         rect.right + GAP + DOT_SIZE <= viewportWidth;
+
+    let dotLeft = placeOnRight
+        ? rect.right + GAP
+        : rect.left - GAP - DOT_SIZE;
+
 
     let dotTop = rect.top + rect.height / 2 - DOT_SIZE / 2;
 
@@ -504,7 +531,7 @@ function showPreviewIconOnHover(e, anchorElement) {
         dotTop = rect.top - GAP - DOT_SIZE;
         if (dotTop < 0) dotTop = 0;
     }
-    
+
     const dot = document.createElement('div');
     Object.assign(dot.style, {
         position: 'fixed',
@@ -2545,66 +2572,66 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
     if (namespace !== 'local') return;
 
     const keysToWatch = new Set([
-        'linkHint', 
+        'linkHint',
         'linkDisabledUrls',
 
-        'clickModifiedKey', 
-        'previewModeDisabledUrls', 
+        'clickModifiedKey',
+        'previewModeDisabledUrls',
         'previewModeEnable',
 
-        'doubleClickAsClick', 
+        'doubleClickAsClick',
         'doubleClickToSwitch',
-        'dbclickToPreview', 
+        'dbclickToPreview',
         'dbclickToPreviewTimeout',
 
-        'holdToPreview', 
+        'holdToPreview',
         'holdToPreviewTimeout',
-        'searchTooltipsEnable', 
+        'searchTooltipsEnable',
         'searchTooltipsEngines',
 
-        'collection', 
+        'collection',
         'collectionEnable',
 
-        'copyButtonPosition', 
+        'copyButtonPosition',
         'copyButtonEnable',
-        'sendBackButtonPosition', 
+        'sendBackButtonPosition',
         'sendBackButtonEnable',
 
-        'blurEnabled', 
-        'blurPx', 
-        'blurTime', 
+        'blurEnabled',
+        'blurPx',
+        'blurTime',
         'blurRemoval',
 
         'urlCheck',
 
         'countdownStyle',
 
-        'closeWhenFocusedInitialWindow', 
+        'closeWhenFocusedInitialWindow',
         'closeWhenScrollingInitialWindow',
 
-        'sendBackByMiddleClickEnable', 
-        'doubleTapKeyToSendPageBack', 
-        
+        'sendBackByMiddleClickEnable',
+        'doubleTapKeyToSendPageBack',
+
         'closedByEsc',
 
-        'hoverTimeout', 
-        'hoverModifiedKey', 
-        'hoverImgSearchEnable', 
+        'hoverTimeout',
+        'hoverModifiedKey',
+        'hoverImgSearchEnable',
         'hoverImgSupport',
-        'hoverDisabledUrls', 
+        'hoverDisabledUrls',
         'hoverSearchEngine',
 
         'hoverSpaceEnabled',
 
         'showPreviewIconOnHoverEnabled',
 
-        'modifiedKey', 
-        'disabledUrls', 
-        'searchEngine', 
-        'dragDirections', 
+        'modifiedKey',
+        'disabledUrls',
+        'searchEngine',
+        'dragDirections',
         'dragPx',
-        'dropInEmptyOnly', 
-        'imgSearchEnable', 
+        'dropInEmptyOnly',
+        'imgSearchEnable',
         'imgSupport'
     ]);
 
@@ -2843,6 +2870,7 @@ async function handleMouseOver(e) {
     }
 
     if (showPreviewIconOnHoverEnabled) {
+        bindScrollHandlers();
         showPreviewIconOnHover(e, anchorElement);
     }
 
