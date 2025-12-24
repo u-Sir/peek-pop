@@ -1,3 +1,6 @@
+0.0.75
+- New trigger: Show preview icon on hover, hover on the icon to preview.
+
 0.0.74
 - New trigger: Hover + Space to preview the link.
 

@@ -6,7 +6,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "Una extensión de navegador ligera y de código abierto permite previsualizar, buscar y guardar páginas para leerlas más tarde."
+        "message": "Una extensión de navegador ligera y de código abierto permite previsualizar, buscar y guardar páginas para leerlas más tarde"
     },
     "popupHeight": {
         "message": "Altura (px)"
@@ -27,13 +27,13 @@
         "message": "Desplazar la ventana original"
     },
     "sendBackByMiddleClickEnable": {
-        "message": "Haz clic con el botón central del ratón (la rueda) en un área vacía de la página."
+        "message": "Haz clic con el botón central del ratón (la rueda) en un área vacía de la página"
     },
     "tryOpenAtMousePosition": {
         "message": "Intente abrir en la posición del mouse"
     },
     "disabledUrls": {
-        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano"
     },
     "openLinkInMainWindow": {
         "message": "Abrir página en la ventana principal"
@@ -84,7 +84,7 @@
         "message": "Lista negra"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "Recuerda el tamaño y la posición de la última ventana emergente. Es necesario desplazarse o hacer clic en la página."
+        "message": "Recuerda el tamaño y la posición de la última ventana emergente. Es necesario desplazarse o hacer clic en la página"
     },
     "normal": {
         "message": "normal"
@@ -126,7 +126,7 @@
         "message": "Mostrar el botón de abrir solo si el contenido seleccionado es una URL"
     },
     "doubleTapKeyToSendPageBack": {
-        "message": "Toca dos veces la tecla seleccionada (comprueba si funciona como esperas)."
+        "message": "Toca dos veces la tecla seleccionada (comprueba si funciona como esperas)"
     },
     "countdownStyle": {
         "message": "Estilo de cuenta regresiva"
@@ -138,7 +138,7 @@
         "message": "Soporte de imagen"
     },
     "hoverDisabledUrls": {
-        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano"
     },
     "generalSettingsTab": {
         "message": "General"
@@ -162,25 +162,25 @@
         "message": "Hacer clic"
     },
     "previewModeDisabledUrls": {
-        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano."
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano"
     },
     "previewModeEnable": {
         "message": "Hacer clic en el enlace para previsualizar"
     },
     "imgSearchEnable": {
-        "message": "Reemplazar Previsualización con Búsqueda de Imágenes."
+        "message": "Reemplazar Previsualización con Búsqueda de Imágenes"
     },
     "hoverImgSearchEnable": {
-        "message": "Reemplazar Previsualización con Búsqueda de Imágenes."
+        "message": "Reemplazar Previsualización con Búsqueda de Imágenes"
     },
     "doubleClickToSwitch": {
-        "message": "Doble clic fuera de imágenes/enlaces para alternar. El estado se muestra en el ícono de la extensión en la barra de herramientas."
+        "message": "Doble clic fuera de imágenes/enlaces para alternar. El estado se muestra en el ícono de la extensión en la barra de herramientas"
     },
     "doubleClickAsClick": {
-        "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces."
+        "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces"
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "Ventanas emergentes dinámicas: recuerda el último tamaño y posición de la ventana para cada dominio. Es necesario desplazarse o hacer clic en la página."
+        "message": "Ventanas emergentes dinámicas: recuerda el último tamaño y posición de la ventana para cada dominio. Es necesario desplazarse o hacer clic en la página"
     },
     "closeTrigger": {
         "message": "Disparador de cierre"
@@ -192,7 +192,7 @@
         "message": "Botones para ventanas tipo popup"
     },
     "note": {
-        "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón."
+        "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón"
     },
     "staticSize": {
         "message": "Tamaño de ventana fijo"
@@ -201,13 +201,13 @@
         "message": "Tamaño de ventana por porcentaje de la última ventana"
     },
     "linkHint": {
-        "message": "Indicador de enlace: muestra una pista al pasar el cursor sobre los enlaces compatibles."
+        "message": "Indicador de enlace: muestra una pista al pasar el cursor sobre los enlaces compatibles"
     },
     "searchTooltipsEnable": {
-        "message": "Buscar información emergente para el texto seleccionado."
+        "message": "Buscar información emergente para el texto seleccionado"
     },
     "collectionEnable": {
-        "message": "Leer más tarde: Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión."
+        "message": "Leer más tarde: Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión"
     },
     "linkSettings": {
         "message": "Lista negra de enlaces"
@@ -219,7 +219,7 @@
         "message": "Estilo"
     },
     "empty": {
-        "message": "No hay nada aquí."
+        "message": "No hay nada aquí"
     },
     "openAll": {
         "message": "Abrir todos los enlaces"
@@ -255,7 +255,7 @@
         "message": "Doble clic"
     },
     "linkDisabledUrls": {
-        "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano."
+        "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano"
     },
     "copyButtonEnable": {
         "message": "Copiar URL"
@@ -264,15 +264,19 @@
         "message": "Motores de búsqueda en la barra de búsqueda, uno por línea, formato: Nombre a mostrar=>Enlace de búsqueda con %s"
     },
     "dropInEmptyOnly": {
-        "message": "Solo responde cuando se suelta en un área vacía."
+        "message": "Solo responde cuando se suelta en un área vacía"
     },
     "sendBackButtonEnable": {
         "message": "Enviar de vuelta"
     },
     "confirm": {
-        "message": "Haga clic en 'Aceptar' para mantener el tamaño y la posición de la ventana emergente, o en 'Cancelar' para omitirlos."
+        "message": "Haga clic en 'Aceptar' para mantener el tamaño y la posición de la ventana emergente, o en 'Cancelar' para omitirlos"
     },
     "hoverSpaceEnabled": {
         "message": "Flotar + Barra espaciadora para previsualizar el enlace"
+    },
+    "showPreviewIconOnHoverEnabled": {
+        "message": "Mostrar icono de vista previa al pasar el cursor, pasar el cursor sobre el icono para previsualizar"
     }
+
 }

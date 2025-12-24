@@ -84,7 +84,7 @@
         "message": "黑名单"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "记住最后弹出窗口的大小和位置。需要滑动或点击页面。"
+        "message": "记住最后弹出窗口的大小和位置。需要滑动或点击页面"
     },
     "normal": {
         "message": "普通"
@@ -180,7 +180,7 @@
         "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "动态弹窗：按域名记住最后的窗口大小和位置，需要滑动或点击页面。"
+        "message": "动态弹窗：按域名记住最后的窗口大小和位置，需要滑动或点击页面"
     },
     "closeTrigger": {
         "message": "关闭方式"
@@ -207,7 +207,7 @@
         "message": "启用划词搜索条"
     },
     "collectionEnable": {
-        "message": "稍后阅读：通过 Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表。"
+        "message": "稍后阅读：通过 Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表"
     },
     "linkSettings": {
         "message": "链接黑名单"
@@ -270,10 +270,13 @@
         "message": "页面返回"
     },
     "confirm": {
-        "message": "点击确定保留弹窗的大小和位置信息，点击取消则忽略它。"
+        "message": "点击确定保留弹窗的大小和位置信息，点击取消则忽略它"
     },
     "hoverSpaceEnabled": {
         "message": "悬停 + 空格键预览链接"
+    },
+    "showPreviewIconOnHoverEnabled": {
+        "message": "悬停时显示预览图标，将鼠标悬停在图标上以预览"
     }
 
 }

@@ -6,7 +6,7 @@
         "message": "Peek Pop"
     },
     "extensionDescription": {
-        "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later."
+        "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later"
     },
     "popupHeight": {
         "message": "Height (px)"
@@ -27,13 +27,13 @@
         "message": "Scroll on original window"
     },
     "sendBackByMiddleClickEnable": {
-        "message": "Middle mouse button (scroll wheel) click on a blank area of the page."
+        "message": "Middle mouse button (scroll wheel) click on a blank area of the page"
     },
     "tryOpenAtMousePosition": {
         "message": "Try to open at mouse position"
     },
     "disabledUrls": {
-        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text"
     },
     "openPageInMainWindow": {
         "message": "Open page in main window"
@@ -84,7 +84,7 @@
         "message": "Blacklist"
     },
     "rememberPopupSizeAndPosition": {
-        "message": "Remember the last popup window's size and position. Scrolling or clicking the page is required."
+        "message": "Remember the last popup window's size and position. Scrolling or clicking the page is required"
     },
     "normal": {
         "message": "Normal"
@@ -138,7 +138,7 @@
         "message": "Image support"
     },
     "hoverDisabledUrls": {
-        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text"
     },
     "generalSettingsTab": {
         "message": "General"
@@ -162,25 +162,25 @@
         "message": "Click"
     },
     "previewModeDisabledUrls": {
-        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text."
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text"
     },
     "previewModeEnable": {
         "message": "Clicking on the link to preview"
     },
     "imgSearchEnable": {
-        "message": "Replace Preview with Image Search."
+        "message": "Replace Preview with Image Search"
     },
     "hoverImgSearchEnable": {
-        "message": "Replace Preview with Image Search."
+        "message": "Replace Preview with Image Search"
     },
     "doubleClickToSwitch": {
-        "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar."
+        "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar"
     },
     "doubleClickAsClick": {
-        "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links."
+        "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links"
     },
     "rememberPopupSizeAndPositionForDomain": {
-        "message": "Dynamic popups: Remember the last window size and position for each domain. Scrolling or clicking the page is required."
+        "message": "Dynamic popups: Remember the last window size and position for each domain. Scrolling or clicking the page is required"
     },
     "closeTrigger": {
         "message": "Close Trigger"
@@ -192,7 +192,7 @@
         "message": "Buttons for popup-type windows"
     },
     "note": {
-        "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse."
+        "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse"
     },
     "staticSize": {
         "message": "Static window size"
@@ -201,13 +201,13 @@
         "message": "Window size by percentage of last window"
     },
     "linkHint": {
-        "message": "Link Indicator: displays a hint on hover for supported links."
+        "message": "Link Indicator: displays a hint on hover for supported links"
     },
     "searchTooltipsEnable": {
-        "message": "Search Tooltips for selected text."
+        "message": "Search Tooltips for selected text"
     },
     "collectionEnable": {
-        "message": "Read later: Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon."
+        "message": "Read later: Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon"
     },
     "linkSettings": {
         "message": "Link Blacklist"
@@ -219,7 +219,7 @@
         "message": "Style"
     },
     "empty": {
-        "message": "Nothing here."
+        "message": "Nothing here"
     },
     "openAll": {
         "message": "Open all"
@@ -255,7 +255,7 @@
         "message": "Double click"
     },
     "linkDisabledUrls": {
-        "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text."
+        "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text"
     },
     "copyButtonEnable": {
         "message": "Copy URL"
@@ -264,15 +264,18 @@
         "message": "Search engines in the search bar, one per line, format: Display Name=>Search link with %s"
     },
     "dropInEmptyOnly": {
-        "message": "Only respose when drop in empty area."
+        "message": "Only respose when drop in empty area"
     },
     "sendBackButtonEnable": {
         "message": "Send Back"
     },
     "confirm": {
-        "message": "Click 'OK' to keep the popup window size and position, or 'Cancel' to skip them."
+        "message": "Click 'OK' to keep the popup window size and position, or 'Cancel' to skip them"
     },
     "hoverSpaceEnabled": {
         "message": "Hover + Spacebar to preview the link"
+    },
+    "showPreviewIconOnHoverEnabled": {
+        "message": "Show preview icon on hover, hover on the icon to preview"
     }
 }
