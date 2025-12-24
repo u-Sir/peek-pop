@@ -56,6 +56,8 @@ let linkIndicator,
 
     hoverSpaceEnabled,
 
+    showPreviewIconOnHoverEnabled,
+
     linkDisabledUrls,
     closeWhenFocusedInitialWindow,
     closeWhenScrollingInitialWindow,
@@ -145,6 +147,8 @@ const configs = {
     'hoverImgSearchEnable': false,
 
     'hoverSpaceEnabled': false,
+
+    'showPreviewIconOnHoverEnabled': false,
 
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
@@ -447,6 +451,153 @@ function isLinkInCollection(url) {
         return collection[1].links.some(item => item.url === url);
     }
     return false; // If links array doesn't exist, return false
+}
+
+
+function showPreviewIconOnHover(e, anchorElement) {
+
+    function findLinkFromEvent(e) {
+        const path = e.composedPath?.() || [];
+        return path.find(el => el instanceof HTMLElement && el.tagName === 'A');
+    }
+
+    const linkElement = anchorElement || findLinkFromEvent(e);
+    if (!linkElement || !linkElement.isConnected) return;
+
+    const linkUrl =
+        linkElement.getAttribute('data-url') ||
+        (linkElement.href && linkElement.href.startsWith('/')
+            ? window.location.protocol + linkElement.href
+            : linkElement.href);
+
+    if (!linkUrl) return;
+    if (/^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+    if (linkElement.getAttribute('role') === 'button' && linkElement.hasAttribute('aria-expanded')) return;
+
+    showPreviewIconOnHover._dot?.remove();
+    showPreviewIconOnHover._bridge?.remove();
+    clearTimeout(showPreviewIconOnHover._removeTimer);
+
+    const DOT_SIZE = 16;
+    const GAP = 10;
+    const REMOVE_DELAY = 200;
+    const DOT_HOVER_DELAY = 200; 
+
+    const rect = linkElement.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+
+    const placeOnRight =
+        rect.right + GAP + DOT_SIZE <= viewportWidth;
+
+    const dotLeft = placeOnRight
+        ? rect.right + GAP
+        : rect.left - GAP - DOT_SIZE;
+
+    const dotTop =
+        rect.top + rect.height / 2 - DOT_SIZE / 2;
+
+    const dot = document.createElement('div');
+    Object.assign(dot.style, {
+        position: 'fixed',
+        left: `${dotLeft}px`,
+        top: `${dotTop}px`,
+        width: `${DOT_SIZE}px`,
+        height: `${DOT_SIZE}px`,
+        borderRadius: '50%',
+        background: '#ffa742',
+        zIndex: 2147483647,
+        cursor: 'pointer'
+    });
+
+    let dotHoverTimer = null;
+    let dotTriggered = false;
+
+    dot.addEventListener('mouseenter', () => {
+        dotTriggered = false;
+        clearTimeout(dotHoverTimer);
+
+        dotHoverTimer = setTimeout(() => {
+            dotTriggered = true;
+
+            if (linkIndicator) {
+                linkIndicator.remove();
+            }
+            linkIndicator = null;
+
+            if (searchTooltips) searchTooltips.remove();
+            searchTooltips = null;
+
+
+            setBlur();
+
+            chrome.runtime.sendMessage({
+                linkUrl: linkUrl,
+                lastClientX: screenX,
+                lastClientY: screenY,
+                width: window.screen.availWidth,
+                height: window.screen.availHeight,
+                top: window.screen.availTop,
+                left: window.screen.availLeft,
+                trigger: 'hover'
+            }, () => {
+                isMouseDownOnLink = false;
+                clearTimeoutsAndProgressBars();
+                if (linkIndicator) linkIndicator.remove();
+                linkIndicator = null;
+                if (searchTooltips) searchTooltips.remove();
+                searchTooltips = null;
+                hasPopupTriggered = true;
+                finalLinkUrl = null;
+            });
+        }, DOT_HOVER_DELAY);
+    });
+
+    dot.addEventListener('mouseleave', () => {
+        clearTimeout(dotHoverTimer);
+        dotHoverTimer = null;
+    });
+
+
+    const bridge = document.createElement('div');
+
+    const bridgeLeft = placeOnRight ? rect.right : dotLeft + DOT_SIZE;
+    const bridgeWidth = Math.abs(dotLeft - rect.right);
+
+    Object.assign(bridge.style, {
+        position: 'fixed',
+        left: `${bridgeLeft}px`,
+        top: `${rect.top}px`,
+        width: `${bridgeWidth}px`,
+        height: `${rect.height}px`,
+        background: 'transparent',
+        zIndex: 2147483646
+    });
+
+    document.body.appendChild(bridge);
+    document.body.appendChild(dot);
+
+    function scheduleRemove() {
+        clearTimeout(showPreviewIconOnHover._removeTimer);
+        showPreviewIconOnHover._removeTimer = setTimeout(() => {
+            dot.remove();
+            bridge.remove();
+            showPreviewIconOnHover._dot = null;
+            showPreviewIconOnHover._bridge = null;
+        }, REMOVE_DELAY);
+    }
+
+    function cancelRemove() {
+        clearTimeout(showPreviewIconOnHover._removeTimer);
+    }
+
+    [linkElement, bridge, dot].forEach(el => {
+        el.addEventListener('mouseenter', cancelRemove);
+        el.addEventListener('mouseleave', scheduleRemove);
+    });
+
+    showPreviewIconOnHover._dot = dot;
+    showPreviewIconOnHover._bridge = bridge;
 }
 
 // Function to add link indicator when hovering over a link
@@ -1683,6 +1834,8 @@ async function checkUrlAndToggleListeners() {
 
         'hoverSpaceEnabled',
 
+        'showPreviewIconOnHoverEnabled',
+
         'disabledUrls',
         'searchEngine',
         'modifiedKey',
@@ -1774,6 +1927,8 @@ async function checkUrlAndToggleListeners() {
             });
         });
     }
+
+    showPreviewIconOnHoverEnabled = data.showPreviewIconOnHoverEnabled || false;
 
     if (typeof data.searchEngine === 'undefined') {
         searchEngine = 'https://www.google.com/search?q=%s';
@@ -2433,6 +2588,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
         'hoverSpaceEnabled',
 
+        'showPreviewIconOnHoverEnabled',
+
         'modifiedKey', 
         'disabledUrls', 
         'searchEngine', 
@@ -2675,6 +2832,10 @@ async function handleMouseOver(e) {
     if (linkHint && parseInt(hoverTimeout, 10) === 0) {
         changeCursorOnHover(e, anchorElement);
 
+    }
+
+    if (showPreviewIconOnHoverEnabled) {
+        showPreviewIconOnHover(e, anchorElement);
     }
 
 

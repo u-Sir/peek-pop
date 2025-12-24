@@ -46,6 +46,7 @@ const configs = {
 
     'hoverSpaceEnabled': false,
 
+    'showPreviewIconOnHoverEnabled': false,
 
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],

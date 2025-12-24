@@ -1,3 +1,6 @@
+0.0.75
+- New trigger: Show preview icon on hover, hover on the icon to preview.
+
 0.0.74
 - New trigger: Hover + Space to preview the link.
 
@@ -31,7 +34,7 @@
 - New option: window-type for search tooltips.
 
 00.0.62
-- Refine hold-to-preview logic
+- Refine hold-to-preview logic.
 
 0.0.59
 - Minor typo fixed.
@@ -71,7 +74,7 @@
 0.0.48  
 - Fixed search tooltip position in certain cases.  
 - Updated the InClickMode icon.
-- Refined click mask logic
+- Refined click mask logic.
 
 0.0.47
 - Removed the blur effect when the mouse enters the original window.  
@@ -110,7 +113,7 @@
 - New option to  show link indicator when hovering.
 
 0.0.26
-- new options page
+- new options page.
 - now supports hover to preview.
 - now supports export/import configurations.
 - added an option to open selected url directly.
@@ -122,19 +125,19 @@
 - added an option to support image.
 - added an option to set )at least dragging distance in px.
 - option to choose dragging direction to response.(experimental)
-- ensure that response only dragging released inside in the current page area
+- ensure that response only dragging released inside in the current page area.
 - rearrange options page.
 
 0.0.24
 - improved dragging logic on Chromium. ***Now only trigger after dragging  is released*** .
 - improved modified key related logic.
-- ensure only response on links or selected text
+- ensure only response on links or selected text.
 - added option to remember the popup window position and size.***(Need to click/scroll on popup page on Firefox)***
 - added option to choose popup window type. ***Now you can do anything when set it to 'Normal'.***
 
 0.0.22
 - added drag settings.
-- ensure only response on links or selected text
+- ensure only response on links or selected text.
 
 0.0.21
 - ensure that popup window centered based on current screen when tryOpenAtMousePosition is false.
@@ -164,7 +167,7 @@
 - ensured popup window open in the same container/private-mode as original page on Firefox.
 
 0.0.10
-- support disable in specific URLs via regex, wildcard, plain text
+- support disable in specific URLs via regex, wildcard, plain text.
 
 0.0.4
 - fixed a bug that "Option to search selection in popup enabled" can't be disabled.
