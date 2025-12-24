@@ -14,6 +14,7 @@ let isMouseDownOnLink = false;
 let lastMouseEvent = null;
 let rafId = null;
 
+showPreviewIconOnHover._lastLink = null;
 
 let linkIndicator,
     tooltip,
@@ -443,22 +444,20 @@ function isLinkInCollection(url) {
     }
     return false; // If links array doesn't exist, return false
 }
-// 保存最后 hover 的 link
-showPreviewIconOnHover._lastLink = null;
 
-// 绑定一次 scroll / scrollend
+
 function bindScrollHandlers() {
     if (bindScrollHandlers._bound) return;
     bindScrollHandlers._bound = true;
 
     window.addEventListener('scroll', () => {
-        // 滚动时直接移除 dot/bridge
+
         showPreviewIconOnHover._dot?.remove();
         showPreviewIconOnHover._bridge?.remove();
     }, { passive: true });
 
     window.addEventListener('scrollend', () => {
-        // 滚动结束，重新生成 dot
+
         if (showPreviewIconOnHover._lastLink) {
             showPreviewIconOnHover({ target: showPreviewIconOnHover._lastLink }, showPreviewIconOnHover._lastLink);
         }
