@@ -443,6 +443,27 @@ function isLinkInCollection(url) {
     }
     return false; // If links array doesn't exist, return false
 }
+// 保存最后 hover 的 link
+showPreviewIconOnHover._lastLink = null;
+
+// 绑定一次 scroll / scrollend
+function bindScrollHandlers() {
+    if (bindScrollHandlers._bound) return;
+    bindScrollHandlers._bound = true;
+
+    window.addEventListener('scroll', () => {
+        // 滚动时直接移除 dot/bridge
+        showPreviewIconOnHover._dot?.remove();
+        showPreviewIconOnHover._bridge?.remove();
+    }, { passive: true });
+
+    window.addEventListener('scrollend', () => {
+        // 滚动结束，重新生成 dot
+        if (showPreviewIconOnHover._lastLink) {
+            showPreviewIconOnHover({ target: showPreviewIconOnHover._lastLink }, showPreviewIconOnHover._lastLink);
+        }
+    });
+}
 
 function showPreviewIconOnHover(e, anchorElement) {
 
@@ -468,6 +489,8 @@ function showPreviewIconOnHover(e, anchorElement) {
     showPreviewIconOnHover._dot?.remove();
     showPreviewIconOnHover._bridge?.remove();
     clearTimeout(showPreviewIconOnHover._removeTimer);
+
+    showPreviewIconOnHover._lastLink = linkElement;
 
     const DOT_SIZE = 16;
     const GAP = 10;
@@ -2930,6 +2953,8 @@ async function handleMouseOver(e) {
     }
 
     if (showPreviewIconOnHoverEnabled) {
+
+        bindScrollHandlers();
         showPreviewIconOnHover(e, anchorElement);
     }
 
