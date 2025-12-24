@@ -31,9 +31,9 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 | Trigger                | Supported? | Modifier key  | Search or Image search  |
 |--------------------------|------------|--------------------------|------------|
 | Double Click (default)       | ✅ Yes     | ❌ No   | ❌ No   |
-| Drag             | ✅ Yes | ✅ Optional | ✅ Optional |
 | Click        | ✅ Yes | ✅ Optional | ❌ No |
 | Hold        | ✅ Yes     | ❌ No   | ❌ No   |
+| Drag             | ✅ Yes | ✅ Optional | ✅ Optional |
 | Hover on Preview Icon        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hover + Space        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hover | ✅ Yes | ✅ Optional | ✅ Optional |
