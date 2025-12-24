@@ -480,7 +480,7 @@ function showPreviewIconOnHover(e, anchorElement) {
     const placeOnRight =
         rect.right + GAP + DOT_SIZE <= viewportWidth;
 
-        let dotLeft = placeOnRight
+    let dotLeft = placeOnRight
         ? rect.right + GAP
         : rect.left - GAP - DOT_SIZE;
 
