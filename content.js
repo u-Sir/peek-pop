@@ -473,18 +473,16 @@ function bindScrollHandlers() {
 
     const observer = new MutationObserver(() => {
         const link = showPreviewIconOnHover._lastLink;
-
         if (link && !link.isConnected) {
             cleanup();
             showPreviewIconOnHover._lastLink = null;
         }
     });
-    const root = link.getRootNode();
-    observer.observe(
-        root instanceof ShadowRoot ? root : document,
-        { childList: true, subtree: true }
-    );
 
+    observer.observe(document, {
+        childList: true,
+        subtree: true
+    });
 
     bindScrollHandlers._observer = observer;
 
@@ -495,6 +493,7 @@ function bindScrollHandlers() {
         showPreviewIconOnHover._bridge = null;
     }
 }
+
 
 function showPreviewIconOnHover(e, anchorElement) {
 
