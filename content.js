@@ -871,7 +871,10 @@ function handleMouseDown(e) {
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
 
-
+    if (showPreviewIconOnHover && showPreviewIconOnHover._dot) {
+        showPreviewIconOnHover._dot?.remove();
+        showPreviewIconOnHover._bridge?.remove();
+    }
 
     const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
     const linkElement = anchorElement ||
