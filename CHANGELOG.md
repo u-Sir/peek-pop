@@ -1,3 +1,6 @@
+0.0.76
+- Minor bug fixed.
+
 0.0.75
 - New trigger: Show preview icon on hover, hover on the icon to preview.
 
