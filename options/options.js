@@ -503,7 +503,7 @@ function setupPage(userConfigs) {
 
     updatePreviewCheckboxes(userConfigs.previewModeEnable);
 
-    if ((userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) || userConfigs.hoverSpaceEnabled) {
+    if ((userConfigs.hoverTimeout !== undefined && userConfigs.hoverTimeout !== "0" && userConfigs.hoverTimeout !== 0) || userConfigs.hoverSpaceEnabled || userConfigs.showPreviewIconOnHoverEnabled) {
         addGreenDot("hover_settings");
     } else {
         removeGreenDot("hover_settings");
