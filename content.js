@@ -451,18 +451,41 @@ function bindScrollHandlers() {
     bindScrollHandlers._bound = true;
 
     window.addEventListener('scroll', () => {
-
-        showPreviewIconOnHover._dot?.remove();
-        showPreviewIconOnHover._bridge?.remove();
+        cleanup();
     }, { passive: true });
 
     window.addEventListener('scrollend', () => {
-
-        if (showPreviewIconOnHover._lastLink) {
-            showPreviewIconOnHover({ target: showPreviewIconOnHover._lastLink }, showPreviewIconOnHover._lastLink);
+        const link = showPreviewIconOnHover._lastLink;
+        if (link && link.isConnected) {
+            showPreviewIconOnHover({ target: link }, link);
         }
     });
+
+    const observer = new MutationObserver(() => {
+        const link = showPreviewIconOnHover._lastLink;
+
+        if (link && !link.isConnected) {
+            cleanup();
+            showPreviewIconOnHover._lastLink = null;
+        }
+    });
+    const root = link.getRootNode();
+    observer.observe(
+        root instanceof ShadowRoot ? root : document,
+        { childList: true, subtree: true }
+    );
+
+
+    bindScrollHandlers._observer = observer;
+
+    function cleanup() {
+        showPreviewIconOnHover._dot?.remove();
+        showPreviewIconOnHover._bridge?.remove();
+        showPreviewIconOnHover._dot = null;
+        showPreviewIconOnHover._bridge = null;
+    }
 }
+
 
 function showPreviewIconOnHover(e, anchorElement) {
 
@@ -857,7 +880,7 @@ function handleMouseDown(e) {
         showPreviewIconOnHover._dot?.remove();
         showPreviewIconOnHover._bridge?.remove();
     }
-    
+
     const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
     const linkElement = anchorElement ||
         (e.target instanceof HTMLElement && (e.target.tagName === 'A' ? e.target : e.target.closest('a')));
