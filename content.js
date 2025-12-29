@@ -1977,7 +1977,7 @@ async function checkUrlAndToggleListeners() {
     hoverSpaceEnabled = data.hoverSpaceEnabled || false;
     if (hoverSpaceEnabled) {
         document.addEventListener('keydown', handleSpace);
-        document.addEventListener('mousemove', (e) => {
+        document.addEventListener(['mousemove'], (e) => {
             lastMouseEvent = e;
 
             if (rafId) return;
@@ -2421,6 +2421,8 @@ function handleSpace(e) {
         searchTooltips = null;
         hasPopupTriggered = true;
         finalLinkUrl = null;
+        rafId = null;
+        lastMouseEvent = null;
     });
 }
 
