@@ -541,6 +541,8 @@ function showPreviewIconOnHover(e, anchorElement) {
         dotTop = rect.top - GAP - DOT_SIZE;
         if (dotTop < 0) dotTop = 0;
     }
+    
+    ({ x: dotLeft, y: dotTop } = clampToViewport(dotLeft, dotTop, DOT_SIZE));
 
     const dot = document.createElement('div');
     Object.assign(dot.style, {
@@ -647,6 +649,16 @@ function showPreviewIconOnHover(e, anchorElement) {
 
     showPreviewIconOnHover._dot = dot;
     showPreviewIconOnHover._bridge = bridge;
+}
+
+function clampToViewport(x, y, size) {
+    const vw = window.visualViewport?.width ?? window.innerWidth;
+    const vh = window.visualViewport?.height ?? window.innerHeight;
+
+    return {
+        x: Math.max(0, Math.min(x, vw - size)),
+        y: Math.max(0, Math.min(y, vh - size))
+    };
 }
 
 // Function to add link indicator when hovering over a link
