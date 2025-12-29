@@ -618,6 +618,10 @@ function showPreviewIconOnHover(e, anchorElement) {
         background: 'transparent',
         zIndex: 2147483646
     });
+    
+    if (!placeOnRight) {
+        bridge.style.pointerEvents = 'none';
+    }
 
     document.body.appendChild(bridge);
     document.body.appendChild(dot);
