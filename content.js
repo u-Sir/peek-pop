@@ -607,6 +607,8 @@ function showPreviewIconOnHover(e, anchorElement) {
                 searchTooltips = null;
                 hasPopupTriggered = true;
                 finalLinkUrl = null;
+                showPreviewIconOnHover._lastLink = null;
+
             });
         }, DOT_HOVER_DELAY);
     });
