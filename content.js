@@ -1212,6 +1212,8 @@ function handleSpace(e) {
         searchTooltips = null;
         hasPopupTriggered = true;
         finalLinkUrl = null;
+        rafId = null;
+        lastMouseEvent = null;
     });
 }
 
