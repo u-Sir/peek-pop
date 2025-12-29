@@ -1,3 +1,7 @@
+0.0.77
+- Ensure the preview icon always stays within the viewport.
+- Prevent triggering the popup when pressing **Space** after closing a popup opened via hover + Space.
+
 0.0.76
 - Minor bug fixed.
 
