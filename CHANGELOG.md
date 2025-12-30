@@ -1,3 +1,6 @@
+0.0.78
+- Prevent video playback from pausing when triggering the preview popup via hover + Space by intercepting the Space key at the capture phase.
+
 0.0.77
 - Ensure the preview icon always stays within the viewport.
 - Prevent triggering the popup when pressing **Space** after closing a popup opened via hover + Space.

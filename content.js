@@ -2409,6 +2409,7 @@ function handleSpace(e) {
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
     e.preventDefault();
+    e.stopPropagation();
 
     if (linkIndicator) {
         linkIndicator.remove();
