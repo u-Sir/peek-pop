@@ -59,6 +59,9 @@ let linkIndicator,
     hoverSpaceEnabled,
 
     showPreviewIconOnHoverEnabled,
+    dotSize,
+    dotRemoveDelay,
+    dotHoverDelay,
 
     linkDisabledUrls,
     closeWhenFocusedInitialWindow,
@@ -151,6 +154,9 @@ const configs = {
     'hoverSpaceEnabled': false,
 
     'showPreviewIconOnHoverEnabled': false,
+    'dotSize': 16,
+    'dotRemoveDelay': 500,
+    'dotHoverDelay': 300,
 
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
@@ -488,9 +494,7 @@ function bindScrollHandlers() {
 
     function cleanup() {
         showPreviewIconOnHover._dot?.remove();
-        showPreviewIconOnHover._bridge?.remove();
         showPreviewIconOnHover._dot = null;
-        showPreviewIconOnHover._bridge = null;
     }
 }
 
@@ -517,43 +521,25 @@ function showPreviewIconOnHover(e, anchorElement) {
     if (linkElement.getAttribute('role') === 'button' && linkElement.hasAttribute('aria-expanded')) return;
 
     showPreviewIconOnHover._dot?.remove();
-    showPreviewIconOnHover._bridge?.remove();
     clearTimeout(showPreviewIconOnHover._removeTimer);
 
     showPreviewIconOnHover._lastLink = linkElement;
 
-    const DOT_SIZE = 16;
-    const GAP = 10;
-    const REMOVE_DELAY = 200;
-    const DOT_HOVER_DELAY = 200;
+    const DOT_SIZE = dotSize;
+    const REMOVE_DELAY = dotRemoveDelay;
+    const DOT_HOVER_DELAY = dotHoverDelay;
 
     const rect = linkElement.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
 
-    const placeOnRight =
-        rect.right + GAP + DOT_SIZE <= viewportWidth;
+    let dotLeft = rect.left;
+    let dotTop = rect.top;
 
-    let dotLeft = placeOnRight
-        ? rect.right + GAP
-        : rect.left - GAP - DOT_SIZE;
+    dotLeft = Math.max(0, Math.min(dotLeft, window.innerWidth - DOT_SIZE));
+    dotTop = Math.max(0, Math.min(dotTop, window.innerHeight - DOT_SIZE)) - DOT_SIZE;
 
 
-    let dotTop = rect.top + rect.height / 2 - DOT_SIZE / 2;
-
-    if (dotLeft < 0) dotLeft = 0;
-    if (dotLeft + DOT_SIZE > window.innerWidth) dotLeft = window.innerWidth - DOT_SIZE;
-
-    if (dotTop < 0) {
-        dotTop = rect.bottom + GAP;
-        if (dotTop + DOT_SIZE > window.innerHeight) {
-            dotTop = window.innerHeight - DOT_SIZE;
-        }
-    } else if (dotTop + DOT_SIZE > window.innerHeight) {
-        dotTop = rect.top - GAP - DOT_SIZE;
-        if (dotTop < 0) dotTop = 0;
-    }
-    
     ({ x: dotLeft, y: dotTop } = clampToViewport(dotLeft, dotTop, DOT_SIZE));
+
 
     const dot = document.createElement('div');
     Object.assign(dot.style, {
@@ -562,8 +548,8 @@ function showPreviewIconOnHover(e, anchorElement) {
         top: `${dotTop}px`,
         width: `${DOT_SIZE}px`,
         height: `${DOT_SIZE}px`,
-        borderRadius: '50%',
         background: '#ffa742',
+        borderRadius: '50%',
         zIndex: 2147483647,
         cursor: 'pointer'
     });
@@ -618,36 +604,13 @@ function showPreviewIconOnHover(e, anchorElement) {
         dotHoverTimer = null;
     });
 
-
-    const bridge = document.createElement('div');
-
-    const bridgeLeft = placeOnRight ? rect.right : dotLeft + DOT_SIZE;
-    const bridgeWidth = Math.abs(dotLeft - rect.right);
-
-    Object.assign(bridge.style, {
-        position: 'fixed',
-        left: `${bridgeLeft}px`,
-        top: `${rect.top}px`,
-        width: `${bridgeWidth}px`,
-        height: `${rect.height}px`,
-        background: 'transparent',
-        zIndex: 2147483646
-    });
-
-    if (!placeOnRight) {
-        bridge.style.pointerEvents = 'none';
-    }
-
-    document.body.appendChild(bridge);
     document.body.appendChild(dot);
 
     function scheduleRemove() {
         clearTimeout(showPreviewIconOnHover._removeTimer);
         showPreviewIconOnHover._removeTimer = setTimeout(() => {
             dot.remove();
-            bridge.remove();
             showPreviewIconOnHover._dot = null;
-            showPreviewIconOnHover._bridge = null;
         }, REMOVE_DELAY);
     }
 
@@ -655,13 +618,12 @@ function showPreviewIconOnHover(e, anchorElement) {
         clearTimeout(showPreviewIconOnHover._removeTimer);
     }
 
-    [linkElement, bridge, dot].forEach(el => {
+    [linkElement, dot].forEach(el => {
         el.addEventListener('mouseenter', cancelRemove);
         el.addEventListener('mouseleave', scheduleRemove);
     });
 
     showPreviewIconOnHover._dot = dot;
-    showPreviewIconOnHover._bridge = bridge;
 }
 
 function clampToViewport(x, y, size) {
@@ -912,7 +874,6 @@ function handleMouseDown(e) {
 
     if (showPreviewIconOnHover && showPreviewIconOnHover._dot) {
         showPreviewIconOnHover._dot?.remove();
-        showPreviewIconOnHover._bridge?.remove();
     }
 
     const keyMap = { 'Ctrl': e.ctrlKey, 'Alt': e.altKey, 'Shift': e.shiftKey, 'Meta': e.metaKey };
@@ -1912,6 +1873,9 @@ async function checkUrlAndToggleListeners() {
         'hoverSpaceEnabled',
 
         'showPreviewIconOnHoverEnabled',
+        'dotSize',
+        'dotRemoveDelay',
+        'dotHoverDelay',
 
         'disabledUrls',
         'searchEngine',
@@ -2006,6 +1970,9 @@ async function checkUrlAndToggleListeners() {
     }
 
     showPreviewIconOnHoverEnabled = data.showPreviewIconOnHoverEnabled || false;
+    dotSize = data.dotSize || 16;
+    dotRemoveDelay = data.dotRemoveDelay || 500;
+    dotHoverDelay = data.dotHoverDelay || 300;
 
     if (typeof data.searchEngine === 'undefined') {
         searchEngine = 'https://www.google.com/search?q=%s';
@@ -2669,6 +2636,9 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
         'hoverSpaceEnabled',
 
         'showPreviewIconOnHoverEnabled',
+        'dotSize',
+        'dotHoverDelay',
+        'dotRemoveDelay',
 
         'modifiedKey',
         'disabledUrls',
