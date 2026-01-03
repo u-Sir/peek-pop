@@ -277,6 +277,15 @@
     },
     "showPreviewIconOnHoverEnabled": {
         "message": "悬停时显示预览图标，将鼠标悬停在图标上以预览"
+    },
+    "dotSize": {
+        "message": "预览图标大小（px）： "
+    },
+    "dotRemoveDelay": {
+        "message": "预览图标移除延迟（ms）： "
+    },
+    "dotHoverDelay": {
+        "message": "预览图标悬停延迟（ms）： "
     }
 
 }

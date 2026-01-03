@@ -1,5 +1,6 @@
 0.0.78
 - Prevent video playback from pausing when triggering the preview popup via hover + Space by intercepting the Space key at the capture phase.
+- Added options to customize preview icon size, hover delay, and removal delay.
 
 0.0.77
 - Ensure the preview icon always stays within the viewport.

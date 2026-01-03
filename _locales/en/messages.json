@@ -277,5 +277,14 @@
     },
     "showPreviewIconOnHoverEnabled": {
         "message": "Show preview icon on hover, hover on the icon to preview"
+    },
+    "dotSize": {
+        "message": "Preview icon size (px): "
+    },
+    "dotRemoveDelay": {
+        "message": "Preview icon remove delay (ms): "
+    },
+    "dotHoverDelay": {
+        "message": "Preview icon hover delay (ms): "
     }
 }

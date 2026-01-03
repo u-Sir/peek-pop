@@ -48,6 +48,9 @@ const configs = {
     'hoverSpaceEnabled': false,
 
     'showPreviewIconOnHoverEnabled': false,
+    'dotSize': 16,
+    'dotRemoveDelay': 500,
+    'dotHoverDelay': 300,
 
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
@@ -478,6 +481,9 @@ function setupPage(userConfigs) {
     initializeSlider('hoverTimeout', userConfigs.hoverTimeout || 0);
     initializeSlider('holdToPreviewTimeout', userConfigs.holdToPreviewTimeout || 1500);
     initializeSlider('dbclickToPreviewTimeout', userConfigs.dbclickToPreviewTimeout || 250);
+    initializeSlider('dotSize', userConfigs.dotSize || 16);
+    initializeSlider('dotRemoveDelay', userConfigs.dotRemoveDelay || 500);
+    initializeSlider('dotHoverDelay', userConfigs.dotHoverDelay || 300);
 
     // Initialize drag direction checkboxes
     initializeDragDirectionCheckboxes(userConfigs.dragDirections || configs.dragDirections);
@@ -522,7 +528,8 @@ function setupPage(userConfigs) {
     }
     const groups = [
         { checkbox: "searchTooltipsEnable", group: "searchTooltipsGroup" },
-        { checkbox: "blurEnabled", group: "blurEffectGroup" }
+        { checkbox: "blurEnabled", group: "blurEffectGroup" },
+        { checkbox: "showPreviewIconOnHoverEnabled", group: "previewIconGroup" }
     ];
 
     groups.forEach(({ checkbox, group }) => {

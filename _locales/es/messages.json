@@ -277,6 +277,15 @@
     },
     "showPreviewIconOnHoverEnabled": {
         "message": "Mostrar icono de vista previa al pasar el cursor, pasar el cursor sobre el icono para previsualizar"
+    },
+    "dotSize": {
+        "message": "Tamaño del icono de vista previa (px): "
+    },
+    "dotRemoveDelay": {
+        "message": "Retardo de eliminación del icono (ms): "
+    },
+    "dotHoverDelay": {
+        "message": "Retardo de desplazamiento del icono (ms): "
     }
 
 }
