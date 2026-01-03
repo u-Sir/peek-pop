@@ -47,6 +47,9 @@ const configs = {
     'hoverSpaceEnabled': false,
 
     'showPreviewIconOnHoverEnabled': false,
+    'dotSize': 16,
+    'dotRemoveDelay': 500,
+    'dotHoverDelay': 300,
 
     'clickModifiedKey': 'None',
     'previewModeDisabledUrls': [],
