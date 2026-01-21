@@ -24,10 +24,10 @@
         "message": "宽度 (px)"
     },
     "popupHeightInPercentage": {
-        "message": "高度（%）：0=关闭"
+        "message": "高度（%）：0=禁用"
     },
     "popupWidthInPercentage": {
-        "message": "宽度（%）：0=关闭"
+        "message": "宽度（%）：0=禁用"
     },
     "closeWhenFocusedInitialWindow": {
         "message": "焦点回到原窗口"
