@@ -365,6 +365,7 @@ function addSearchTooltipsOnHover(e) {
         if (tooltip) tooltip.remove();
         // if (searchTooltips) searchTooltips.remove();
         setTimeout(() => {
+            if (!selection || selection.rangeCount === 0) return;
             if (typeof searchTooltipsEnable === 'undefined' || !searchTooltipsEnable) return;
             // Regular expression to match URLs including IP addresses
             const urlPattern = /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
