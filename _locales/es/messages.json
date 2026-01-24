@@ -288,7 +288,7 @@
         "message": "Retardo de desplazamiento del icono (ms): "
     },
     "showContextMenuItem": {
-        "message": "Mostrar elemento del menú contextual: Previsualizar enlace"
+        "message": "Mostrar elemento del menú contextual: Previsualizar enlace. Puede configurar el tipo de ventana emergente en la pestaña de configuración 'Clic'."
     },
     "previewItem": {
         "message": "Previsualizar enlace"

@@ -288,7 +288,7 @@
         "message": "Preview icon hover delay (ms): "
     },
     "showContextMenuItem": {
-        "message": "Show context menu item: Preview link"
+        "message": "Show context menu item: Preview link.You can set the popup window type in the ‘Click’ settings tab."
     },
     "previewItem": {
         "message": "Preview link"
