@@ -234,7 +234,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                     if (!request.addContextMenuItem) {
                         chrome.contextMenus.remove('sendPageBack', () => {
-                            console.log('Removing context menu item if exists.');
                             if (chrome.runtime.lastError) {
                                 // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
                             } else {
@@ -247,7 +246,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             const popupWindowsInfo = result.popupWindowsInfo || {};
 
                             loadUserConfigs().then(userConfigs => {
-                                console.log('Creating context menu item for sending page back.');
                                 chrome.contextMenus.create({
                                     id: 'sendPageBack',
                                     title: chrome.i18n.getMessage('sendPageBack'),
@@ -598,10 +596,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }
 
                 if (request.action === 'addblur') {
-                    //console.log('forward')
                     activePopupCount++;
                     openPopups.forEach(tabId => {
-                        // 跳过最后一个 popup
                         if (tabId === openPopups[openPopups.length - 1]) return;
 
                         chrome.tabs.sendMessage(tabId, { action: 'ADD_BLUR' });
@@ -611,11 +607,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     sendResponse({ status: 'blur handled' });
                 }
                 if (request.action === 'removeblur') {
-                    //console.log('forward')
                     activePopupCount--;
                     if (activePopupCount <= 0) {
                         openPopups.forEach(tabId => {
-                            // 跳过最后一个 popup
                             if (tabId === openPopups[openPopups.length - 1]) return;
 
 
@@ -623,7 +617,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         });
 
                     }
-                    //chrome.tabs.sendMessage(request.originalTabId, { action: "REMOVE_BLUR" });
                     sendResponse({ status: 'blur handled' });
                 }
 
