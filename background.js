@@ -156,6 +156,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
             chrome.tabs.create({ url: chrome.runtime.getURL('options/options.html') });
         }
 
+        chrome.contextMenus.create({
+            id: 'showContextMenuItem',
+            title: chrome.i18n.getMessage('previewItem'),
+            contexts: ['link']
+        });
     } catch (err) {
         console.error("Error during installation setup:", err);
     }
@@ -181,7 +186,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 let popupWindowsInfo = userConfigs.popupWindowsInfo || {};
 
+                if (userConfigs.showContextMenuItem) {
+                    lastContextX = request.lastClientX;
+                    lastContextY = request.lastClientY;
+                }
 
+                chrome.contextMenus.update('showContextMenuItem', {
+                    visible: userConfigs.showContextMenuItem
+                });
+                
                 // Filter out the 'savedPositionAndSize' key
                 const filteredPopupWindowsInfo = Object.keys(popupWindowsInfo).reduce((acc, key) => {
                     if (key !== 'savedPositionAndSize') {
@@ -205,30 +218,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                 chrome.contextMenus.onClicked.addListener(onMenuItemClicked);
-
-                loadUserConfigs().then(userConfigs => {
-                    if (userConfigs.showContextMenuItem) {
-                        lastContextX = request.lastClientX;
-                        lastContextY = request.lastClientY;
-                        chrome.contextMenus.remove('showContextMenuItem', () => {
-                            if (chrome.runtime.lastError) {
-                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
-                            }
-                        });
-                        chrome.contextMenus.create({
-                            id: 'showContextMenuItem',
-                            title: chrome.i18n.getMessage('previewItem'),
-                            contexts: ['link']
-                        });
-                    }
-                    if (userConfigs.showContextMenuItem === false) {
-                        chrome.contextMenus.remove('showContextMenuItem', () => {
-                            if (chrome.runtime.lastError) {
-                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
-                            }
-                        });
-                    }
-                });
 
                 if (typeof request.addContextMenuItem !== "undefined") {
 
