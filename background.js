@@ -154,6 +154,13 @@ chrome.runtime.onInstalled.addListener(async (details) => {
             chrome.tabs.create({ url: 'options/options.html' });
         }
 
+        chrome.contextMenus.removeAll();
+        chrome.contextMenus.create({
+            id: 'showContextMenuItem',
+            title: chrome.i18n.getMessage('previewItem'),
+            contexts: ['link']
+        });
+
     } catch (err) {
         console.error("Error during installation setup:", err);
     }
@@ -208,24 +215,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     if (userConfigs.showContextMenuItem) {
                         lastContextX = request.lastClientX;
                         lastContextY = request.lastClientY;
-                        chrome.contextMenus.remove('showContextMenuItem', () => {
-                            if (chrome.runtime.lastError) {
-                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
-                            }
-                        });
-                        chrome.contextMenus.create({
-                            id: 'showContextMenuItem',
-                            title: chrome.i18n.getMessage('previewItem'),
-                            contexts: ['link']
-                        });
-                    } 
-                    if (userConfigs.showContextMenuItem === false) {
-                        chrome.contextMenus.remove('showContextMenuItem', () => {
-                            if (chrome.runtime.lastError) {
-                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
-                            }
-                        });
                     }
+                    chrome.contextMenus.update('showContextMenuItem', { visible: userConfigs.showContextMenuItem });
+
 
                     if (typeof request.addContextMenuItem !== "undefined") {
                         chrome.contextMenus.remove('sendPageBack', () => {
