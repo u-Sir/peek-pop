@@ -1,3 +1,6 @@
+0.0.79
+- Added an option to preview link via context menu item.
+
 0.0.78
 - Prevent video playback from pausing when triggering the preview popup via hover + Space by intercepting the Space key at the capture phase.
 - Added options to customize preview icon size, hover delay, and removal delay.

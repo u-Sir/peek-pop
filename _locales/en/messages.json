@@ -286,5 +286,12 @@
     },
     "dotHoverDelay": {
         "message": "Preview icon hover delay (ms): "
+    },
+    "showContextMenuItem": {
+        "message": "Show context menu item: Preview link"
+    },
+    "previewItem": {
+        "message": "Preview link"
     }
+
 }

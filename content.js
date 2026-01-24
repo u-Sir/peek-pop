@@ -98,6 +98,7 @@ let linkIndicator,
     lastMessage = null,
     shouldResetClickState = false,
 
+    showContextMenuItem,
     isFirefox,
     isMac,
     isInputboxFocused = false,
@@ -171,6 +172,7 @@ const configs = {
     'isFirefox': false,
     'isMac': false,
     'enableContainerIdentify': true,
+    'showContextMenuItem': false,
 
     'linkHint': false,
     'linkDisabledUrls': [],
@@ -712,8 +714,12 @@ function changeCursorOnHover(e, anchorElement) {
 
 
 
-function handleContextMenu() {
-    chrome.runtime.sendMessage({ addContextMenuItem: contextMenuEnabled }, (response) => {
+function handleContextMenu(e) {
+    chrome.runtime.sendMessage({
+        addContextMenuItem: contextMenuEnabled,
+        lastClientX: e.screenX,
+        lastClientY: e.screenY
+    }, (response) => {
         if (chrome.runtime.lastError) {
             console.error("Runtime error:", chrome.runtime.lastError);
         } else {
@@ -1394,9 +1400,11 @@ function handlePreviewMode(e, linkUrl) {
     }
 
     if (linkUrl) {
-        e.preventDefault();
-        e.stopPropagation();
-
+        try {
+            e.preventDefault();
+            e.stopPropagation();
+        } catch (error) {
+        }
         // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
         let finalLinkUrl = linkUrl;
 
@@ -2003,6 +2011,7 @@ async function checkUrlAndToggleListeners() {
     const data = await loadUserConfigs([
         'isFirefox',
         'isMac',
+        'showContextMenuItem',
 
         'hoverSearchEngine',
         'hoverImgSearchEnable',
@@ -2650,6 +2659,8 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
     if (namespace !== 'local') return;
 
     const keysToWatch = new Set([
+        'showContextMenuItem',
+
         'linkHint',
         'linkDisabledUrls',
 
@@ -3368,6 +3379,9 @@ chrome.runtime.onMessage.addListener((msg) => {
         chrome.runtime.sendMessage({ addContextMenuItem: true });
     }
 
+    if (msg.trigger === 'contextMenu') {
+        handlePreviewMode({ isTrusted: true, screenX: msg.x, screenY: msg.y }, msg.linkUrl);
+    }
     if (!isMac) return;
     if (!blurEnabled) return;
     if (window.self !== window.top) return;
