@@ -289,5 +289,11 @@
     },
     "dotHoverDelay": {
         "message": "Retardo de desplazamiento del icono (ms): "
+    },
+    "showContextMenuItem": {
+        "message": "Mostrar elemento del menú contextual: Previsualizar enlace"
+    },
+    "previewItem": {
+        "message": "Previsualizar"
     }
 }

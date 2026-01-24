@@ -67,6 +67,7 @@ const configs = {
 
     'isFirefox': false,
     'isMac': false,
+    'showContextMenuItem': false,
 
     'linkHint': false,
     'linkDisabledUrls': [],
@@ -91,6 +92,7 @@ Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
 
 let openPopups = [];
 let activePopupCount = 0;
+let lastContextX, lastContextY;
 
 // Load user configurations from storage
 async function loadUserConfigs() {
@@ -203,6 +205,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 chrome.contextMenus.onClicked.removeListener(onMenuItemClicked);
                 chrome.contextMenus.onClicked.addListener(onMenuItemClicked);
                 if (!request.linkUrl) {
+                    if (userConfigs.showContextMenuItem) {
+                        lastContextX = request.lastClientX;
+                        lastContextY = request.lastClientY;
+                        chrome.contextMenus.remove('showContextMenuItem', () => {
+                            if (chrome.runtime.lastError) {
+                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                            }
+                        });
+                        chrome.contextMenus.create({
+                            id: 'showContextMenuItem',
+                            title: chrome.i18n.getMessage('previewItem'),
+                            contexts: ['link']
+                        });
+                    } 
+                    if (userConfigs.showContextMenuItem === false) {
+                        chrome.contextMenus.remove('showContextMenuItem', () => {
+                            if (chrome.runtime.lastError) {
+                                // console.error("Error removing context menu: ", chrome.runtime.lastError.message);
+                            }
+                        });
+                    }
 
                     if (typeof request.addContextMenuItem !== "undefined") {
                         chrome.contextMenus.remove('sendPageBack', () => {
@@ -1054,6 +1077,11 @@ function onMenuItemClicked(info, tab) {
                 console.error('popupWindowsInfo is empty or not properly structured.');
             }
         });
+    }
+    if (info.menuItemId === 'showContextMenuItem') {
+
+        // Send message to content script to handle preview
+        chrome.tabs.sendMessage(tab.id, { linkUrl: info.linkUrl, trigger: 'contextMenu', x: lastContextX, y: lastContextY });
     }
 }
 

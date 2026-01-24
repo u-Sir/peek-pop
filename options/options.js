@@ -68,6 +68,8 @@ const configs = {
 
     'isFirefox': false,
 
+    'showContextMenuItem': false,
+
     'linkHint': false,
     'linkDisabledUrls': [],
 

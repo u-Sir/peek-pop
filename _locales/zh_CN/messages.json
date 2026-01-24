@@ -289,5 +289,11 @@
     },
     "dotHoverDelay": {
         "message": "预览图标悬停延迟（ms）： "
+    },
+    "showContextMenuItem": {
+        "message": "显示右键菜单项：预览链接"
+    },
+    "previewItem": {
+        "message": "预览"
     }
 }
