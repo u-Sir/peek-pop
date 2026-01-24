@@ -3365,6 +3365,7 @@ function removeBlurOverlay() {
 chrome.runtime.onMessage.addListener((msg) => {
     if (msg.enableContextMenu) {
         contextMenuEnabled = true;
+        chrome.runtime.sendMessage({ addContextMenuItem: true });
     }
 
     if (!isMac) return;
