@@ -3302,7 +3302,6 @@ chrome.runtime.onMessage.addListener((msg) => {
     }
 
     if (msg.trigger === 'contextMenu') {
-        console.log(msg);
         handlePreviewMode({ isTrusted: true, screenX: msg.x, screenY: msg.y }, msg.linkUrl);
     }
     if (!isMac) return;
