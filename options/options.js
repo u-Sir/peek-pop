@@ -147,6 +147,16 @@ function init() {
         }
     });
 
+    document.getElementById('removePopupSizeAndPositionInfo').addEventListener('click', () => {
+        chrome.storage.local.get(['popupWindowsInfo'], (data) => {
+            let popupWindowsInfo = data.popupWindowsInfo || {};
+            popupWindowsInfo = {};
+            chrome.storage.local.set({ popupWindowsInfo }, () => {
+                document.getElementById('removePopupSizeAndPositionInfo').style.backgroundColor = 'green';
+            });
+        });
+    });
+
     document.getElementById('exportButton').onclick = exportSettings;
 
     document.getElementById('importButton').onclick = () => {
@@ -377,7 +387,9 @@ function setupPage(userConfigs) {
         { id: 'importButton', messageId: 'importButton' },
         { id: 'exportButton', messageId: 'exportButton' },
 
-        { id: 'shortcuts', messageId: 'shortcuts' }
+        { id: 'shortcuts', messageId: 'shortcuts' },
+
+        { id: 'removePopupSizeAndPositionInfo', messageId: 'removePopupSizeAndPositionInfo' }
     ];
 
     elementsToTranslate.forEach(({ id, messageId }) => setTextContent(id, messageId));

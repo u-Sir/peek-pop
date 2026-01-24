@@ -295,5 +295,8 @@
     },
     "previewItem": {
         "message": "Preview link"
+    },
+    "removePopupSizeAndPositionInfo": {
+        "message": "Remove All Popup Size and Position Info"
     }
 }

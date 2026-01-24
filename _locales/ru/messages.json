@@ -295,5 +295,8 @@
     },
     "previewItem": {
         "message": "Предварительный просмотр ссылки"
+    },
+    "removePopupSizeAndPositionInfo": {
+        "message": "Удалить информацию о размере и положении всплывающего окна"
     }
 }

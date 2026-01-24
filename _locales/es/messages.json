@@ -295,5 +295,8 @@
     },
     "previewItem": {
         "message": "Previsualizar enlace"
+    },
+    "removePopupSizeAndPositionInfo": {
+        "message": "Eliminar información de tamaño y posición de la ventana emergente"
     }
 }

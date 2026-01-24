@@ -295,5 +295,8 @@
     },
     "previewItem": {
         "message": "预览链接"
+    },
+    "removePopupSizeAndPositionInfo": {
+        "message": "清除除所有弹出窗口大小和位置信息"
     }
 }
