@@ -1,5 +1,6 @@
 0.0.79
 - Added an option to preview link via context menu item.
+- Added a new button to remove all saved popup window size and position info.
 
 0.0.78
 - Prevent video playback from pausing when triggering the preview popup via hover + Space by intercepting the Space key at the capture phase.
