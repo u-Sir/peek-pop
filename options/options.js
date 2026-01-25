@@ -1,95 +1,4 @@
-const configs = {
-    'closeWhenFocusedInitialWindow': true,
-    'closeWhenScrollingInitialWindow': false,
-    'sendBackByMiddleClickEnable': false,
-    'closedByEsc': false,
-    'doubleTapKeyToSendPageBack': 'None',
-
-    'countdownStyle': 'bar',
-
-    'tryOpenAtMousePosition': false,
-    'popupHeight': 800,
-    'popupWidth': 1000,
-    'popupHeightInPercentage': 0,
-    'popupWidthInPercentage': 0,
-
-    'modifiedKey': 'None',
-    'searchEngine': 'https://www.google.com/search?q=%s',
-    'disabledUrls': [],
-    'dragDirections': [],
-    'dragPx': 0,
-    'imgSupport': false,
-    'imgSearchEnable': false,
-    'popupInBackground': false,
-    'dropInEmptyOnly': false,
-
-    'blurEnabled': true,
-    'blurPx': 3,
-    'blurTime': 1,
-    'blurRemoval': true,
-
-    'windowType': 'popup',
-    'originWindowId': '',
-    'rememberPopupSizeAndPosition': false,
-    'rememberPopupSizeAndPositionForDomain': false,
-    'popupWindowsInfo': {},
-
-    'urlCheck': true,
-
-    'hoverTimeout': 0,
-    'hoverDisabledUrls': [],
-    'hoverImgSupport': false,
-    'hoverImgSearchEnable': false,
-    'hoverPopupInBackground': false,
-    'hoverSearchEngine': 'https://www.google.com/search?q=%s',
-    'hoverModifiedKey': 'None',
-    'hoverWindowType': 'popup',
-
-    'hoverSpaceEnabled': false,
-
-    'showPreviewIconOnHoverEnabled': false,
-    'dotSize': 16,
-    'dotRemoveDelay': 500,
-    'dotHoverDelay': 300,
-
-    'clickModifiedKey': 'None',
-    'previewModeDisabledUrls': [],
-    'previewModePopupInBackground': false,
-    'previewModeWindowType': 'popup',
-    'previewModeEnable': false,
-    'doubleClickToSwitch': false,
-    'doubleClickAsClick': false,
-
-    'dbclickToPreview': true,
-    'dbclickToPreviewTimeout': 250,
-
-    'holdToPreview': false,
-    'holdToPreviewTimeout': 1500,
-
-    'isFirefox': false,
-
-    'showContextMenuItem': false,
-
-    'linkHint': false,
-    'linkDisabledUrls': [],
-
-    'collection': [],
-    'collectionEnable': false,
-
-    'searchWindowType': 'normal',
-    'searchTooltipsEnable': false,
-    'searchTooltipsEngines': `Google=>https://www.google.com/search?q=%s
-Bing=>https://www.bing.com/search?q=%s
-Baidu=>https://www.baidu.com/s?wd=%s
-Yandex=>https://yandex.com/search/?text=%s
-DuckduckGo=>https://duckduckgo.com/?q=%s
-Wikipedia=>https://wikipedia.org/w/index.php?title=Special:Search&search=%s`,
-
-    'copyButtonPosition': { leftPercent: 10, topPercent: 10 },
-    'sendBackButtonPosition': { leftPercent: 10, topPercent: 20 },
-    'copyButtonEnable': false,
-    'sendBackButtonEnable': false
-};
+import { configs } from '../configs.js';
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -672,7 +581,7 @@ function addInputListener(input, key) {
 function initializeTextarea(textareaId, userConfigs) {
     const textarea = document.getElementById(textareaId);
     if (textarea) {
-        lines = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
+        let lines = (userConfigs[textareaId] ?? configs[textareaId]).join('\n');
         textarea.value = (Array.isArray(lines) ? lines.join('\n') : lines).replace(/\n*$/, '') + '\n';
         textarea.addEventListener('input', () => {
             configs[textareaId] = textarea.value.split('\n').filter(line => line.trim());
@@ -685,7 +594,7 @@ function initializeTextareaForSearchTooltips(textareaId, userConfigs) {
     const textarea = document.getElementById(textareaId);
     if (textarea) {
         // Initialize with userConfigs or fallback to default configs
-        lines = userConfigs[textareaId] ?? configs[textareaId];
+        let lines = userConfigs[textareaId] ?? configs[textareaId];
         textarea.value = (Array.isArray(lines) ? lines.join('\n') : lines).replace(/\n*$/, '') + '\n';
         // Save changes on input
         textarea.addEventListener('input', () => {
