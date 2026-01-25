@@ -37,7 +37,7 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 | Hover | ✅ Yes | ✅ Optional | ✅ Optional |
 | Hover + Space        | ✅ Yes     | ❌ No   | ❌ No   |
 | Hover on Preview Icon        | ✅ Yes     | ❌ No   | ❌ No   |
-| Context Menu Item        | ✅ Yes     | ❌ No   | ❌ No   |
+| Context Menu - Preview link        | ✅ Yes     | ❌ No   | ❌ No   |
 
 👉 Supports enabling multiple trigger methods simultaneously.
 
@@ -93,7 +93,7 @@ You can enable the **"Only respond when dragging to empty areas"** option in the
 | Normal page             | ✅ Yes     |
 | Inside an iframe        | ✅ Yes     |
 | Inside an open shadow root | ✅ Yes  |
-| Inside a closed shadow root | ❌ No   |
+| Inside a closed shadow root | ⚠️ Only 'Preview Link' from the context menu is supported. |
 | Inside a canvas | ❌ No   |
 
 # Known Issues
