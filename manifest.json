@@ -11,7 +11,8 @@
   },
   "background": {
     "scripts": [ "background.js" ],
-    "persistent": false
+    "persistent": false,
+    "type": "module"
   },
   "content_scripts": [
     {
