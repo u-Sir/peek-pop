@@ -796,6 +796,14 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
                     chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
                         if (tabId === newWindow.tabs[0].id && info.status === "complete") {
                             chrome.tabs.sendMessage(newWindow.tabs[0].id, payload);
+                            // Add [Peek] prefix to title for window manager identification
+                            chrome.tabs.get(tabId, (tab) => {
+                                if (tab && tab.title && !tab.title.startsWith('[Peek] ')) {
+                                    chrome.tabs.executeScript(tabId, {
+                                        code: `document.title = '[Peek] ' + document.title;`
+                                    });
+                                }
+                            });
                             chrome.tabs.onUpdated.removeListener(listener);
                         }
                     });
