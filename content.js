@@ -2409,7 +2409,7 @@ async function checkUrlAndToggleListeners() {
   } else {
     previewMode = data.previewMode;
   }
-  
+
   const isLinux = /linux/i.test(navigator.userAgent);
   if (isLinux && window.self === window.top) {
     chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
@@ -3768,10 +3768,6 @@ function removeBlurOverlay() {
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.enableContextMenu) {
     contextMenuEnabled = true;
-    const isLinux = /linux/i.test(navigator.userAgent);
-    if (isLinux) {
-      document.title = "[Peek Pop] " + document.title;
-    }
     chrome.runtime.sendMessage({ addContextMenuItem: true });
   }
 
