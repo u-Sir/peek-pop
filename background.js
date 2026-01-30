@@ -794,22 +794,9 @@ function createPopupWindow(trigger, linkUrl, tab, windowType, left, top, width, 
                         };
                     }
                     chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-                        if (tabId === newWindow.tabs[0].id) {
-                            if (info.status === "complete") {
-                                chrome.tabs.sendMessage(newWindow.tabs[0].id, payload);
-                            }
-                            // Add [Peek] prefix to title for window manager identification
-                            if (info.title && !info.title.startsWith('[Peek] ')) {
-                                chrome.tabs.executeScript(tabId, {
-                                    code: `document.title = '[Peek] ' + document.title;`
-                                });
-                            }
-                        }
-                    });
-                    chrome.tabs.onRemoved.addListener(function removeListener(closedTabId) {
-                        if (closedTabId === newWindow.tabs[0].id) {
+                        if (tabId === newWindow.tabs[0].id && info.status === "complete") {
+                            chrome.tabs.sendMessage(newWindow.tabs[0].id, payload);
                             chrome.tabs.onUpdated.removeListener(listener);
-                            chrome.tabs.onRemoved.removeListener(removeListener);
                         }
                     });
 
