@@ -3686,10 +3686,6 @@ function removeBlurOverlay() {
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.enableContextMenu) {
     contextMenuEnabled = true;
-    const isLinux = /linux/i.test(navigator.userAgent);
-    if (isLinux) {
-      document.title = "[Peek Pop] " + document.title;
-    }
     chrome.runtime.sendMessage({ addContextMenuItem: true });
   }
 
