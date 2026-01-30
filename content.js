@@ -2409,6 +2409,35 @@ async function checkUrlAndToggleListeners() {
   } else {
     previewMode = data.previewMode;
   }
+  
+  const isLinux = /linux/i.test(navigator.userAgent);
+  if (isLinux && window.self === window.top) {
+    chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
+      if (
+        chrome.runtime.lastError ||
+        !response ||
+        response.windowType !== "popup"
+      )
+        return;
+
+      function ensurePrefix() {
+        if (!document.title.startsWith("[Peek Pop] ")) {
+          document.title = "[Peek Pop] " + document.title;
+        }
+      }
+
+      ensurePrefix();
+
+      const titleEl = document.querySelector("title");
+      if (titleEl) {
+        new MutationObserver(ensurePrefix).observe(titleEl, {
+          childList: true,
+          characterData: true,
+          subtree: true,
+        });
+      }
+    });
+  }
 
   if (
     !(
