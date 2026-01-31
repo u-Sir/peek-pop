@@ -1,8 +1,9 @@
 export const configs = {
     'closeWhenFocusedInitialWindow': true,
     'closeWhenScrollingInitialWindow': false,
-    'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
+
+    'sendBackByMiddleClickEnable': false,
     'doubleTapKeyToSendPageBack': 'None',
     'maximizeToSendPageBack': false,
 
@@ -56,9 +57,11 @@ export const configs = {
     'dotHoverDelay': 300,
 
     'clickModifiedKey': 'None',
+    
     'previewModeDisabledUrls': [],
     'previewModeWindowType': 'popup',
     'previewModeEnable': false,
+
     'doubleClickToSwitch': false,
     'doubleClickAsClick': false,
 
