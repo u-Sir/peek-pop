@@ -14,6 +14,8 @@ let isMouseDownOnLink = false;
 let lastMouseEvent = null;
 let rafId = null;
 
+let resizeTimer = null;
+
 showPreviewIconOnHover._lastLink = null;
 
 let linkIndicator,
@@ -21,28 +23,41 @@ let linkIndicator,
   progressBar,
   focusAt,
   theme,
+
   isDoubleClick,
+
   previewMode,
+
   firstDownOnLinkAt,
+
   previewModeDisabledUrls,
   previewProgressBar,
+
   doubleClickToSwitch,
   doubleClickAsClick,
+
   previewModeEnable,
+
   clickModifiedKey,
+
   dbclickToPreview,
   dbclickToPreviewTimeout,
+
   holdTimeout,
   holdToPreview,
   holdToPreviewTimeout,
+
   searchTooltipsEnable,
   searchTooltips,
   searchTooltipsEngines,
+
   hoverTimeoutId,
   hoverElement,
   hoverInitialMouseX,
   hoverInitialMouseY,
+
   mouseMoveCheckInterval,
+
   hoverImgSearchEnable,
   hoverTimeout,
   hoverImgSupport,
@@ -50,28 +65,40 @@ let linkIndicator,
   hoverDisabledUrls,
   hoverSearchEngine,
   hoverSpaceEnabled,
+
   showPreviewIconOnHoverEnabled,
   dotSize,
   dotRemoveDelay,
   dotHoverDelay,
+
   linkDisabledUrls,
+
+  closedByEsc,
   closeWhenFocusedInitialWindow,
   closeWhenScrollingInitialWindow,
+
+  doubleTapKeyToSendPageBack,
   sendBackByMiddleClickEnable,
+  maximizeToSendPageBack,
+
   collection,
   collectionEnable,
+
   urlCheck,
-  closedByEsc,
-  doubleTapKeyToSendPageBack,
+
   linkHint,
+
   countdownStyle,
+
   copyButtonPosition,
   sendBackButtonPosition,
+
   blurOverlay,
   blurEnabled,
   blurPx,
   blurTime,
   blurRemoval,
+
   modifiedKey,
   dragPx,
   dragDirections,
@@ -83,12 +110,17 @@ let linkIndicator,
   lastLeaveTimestamp,
   lastLeaveRelatedTarget,
   debounceTimer,
+
   lastMessage = null,
   shouldResetClickState = false,
-  showContextMenuItem = false,
+
+  addPrefixToTitle,
   isFirefox,
   isMac,
+
   isInputboxFocused = false,
+
+  showContextMenuItem = false,
   contextMenuEnabled = false;
 
 const configs = {
@@ -97,6 +129,7 @@ const configs = {
   sendBackByMiddleClickEnable: false,
   closedByEsc: false,
   doubleTapKeyToSendPageBack: "None",
+  maximizeToSendPageBack: false,
 
   countdownStyle: "bar",
 
@@ -159,6 +192,7 @@ const configs = {
   isFirefox: false,
   isMac: false,
   showContextMenuItem: false,
+  addPrefixToTitle: false,
 
   linkHint: false,
   linkDisabledUrls: [],
@@ -2038,6 +2072,7 @@ async function checkUrlAndToggleListeners() {
     "isFirefox",
     "isMac",
     "showContextMenuItem",
+    "addPrefixToTitle",
 
     "collection",
     "collectionEnable",
@@ -2073,6 +2108,7 @@ async function checkUrlAndToggleListeners() {
     "closeWhenScrollingInitialWindow",
     "sendBackByMiddleClickEnable",
     "doubleTapKeyToSendPageBack",
+    "maximizeToSendPageBack",
     "closedByEsc",
 
     "countdownStyle",
@@ -2148,6 +2184,9 @@ async function checkUrlAndToggleListeners() {
   doubleClickToSwitch = data.doubleClickToSwitch;
   doubleClickAsClick = data.doubleClickAsClick;
   doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || "None";
+  maximizeToSendPageBack = data.maximizeToSendPageBack || false;
+
+  addPrefixToTitle = data.addPrefixToTitle || false;
 
   countdownStyle = data.countdownStyle || "bar";
 
@@ -2215,31 +2254,48 @@ async function checkUrlAndToggleListeners() {
     previewMode = data.previewMode;
   }
 
-  const isLinux = /linux/i.test(navigator.userAgent);
-  if (isLinux && window.self === window.top) {
+  if (window.self === window.top) {
     chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
-      if (
-        chrome.runtime.lastError ||
-        !response ||
-        response.windowType !== "popup"
-      )
-        return;
+      if (chrome.runtime.lastError || !response) return;
 
-      function ensurePrefix() {
-        if (!document.title.startsWith("[Peek Pop] ")) {
-          document.title = "[Peek Pop] " + document.title;
+      if (response.isPreviewWindow) {
+        contextMenuEnabled = true;
+        chrome.runtime.sendMessage({ addContextMenuItem: contextMenuEnabled });
+
+        if (addPrefixToTitle) {
+          function ensurePrefix() {
+            if (!document.title.startsWith("[Peek Pop] ")) {
+              document.title = "[Peek Pop] " + document.title;
+            }
+          }
+
+          ensurePrefix();
+
+          const titleEl = document.querySelector("title");
+          if (titleEl) {
+            new MutationObserver(ensurePrefix).observe(titleEl, {
+              childList: true,
+              characterData: true,
+              subtree: true,
+            });
+          }
         }
-      }
 
-      ensurePrefix();
-
-      const titleEl = document.querySelector("title");
-      if (titleEl) {
-        new MutationObserver(ensurePrefix).observe(titleEl, {
-          childList: true,
-          characterData: true,
-          subtree: true,
-        });
+        if (maximizeToSendPageBack) {
+          window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+              chrome.runtime.sendMessage(
+                { action: "getWindowType" },
+                (window) => {
+                  if (window.isMaximize) {
+                    chrome.runtime.sendMessage({ action: "sendPageBack" });
+                  }
+                },
+              );
+            }, 100);
+          });
+        }
       }
     });
   }
@@ -2892,6 +2948,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
   const keysToWatch = new Set([
     "showContextMenuItem",
+    "addPrefixToTitle",
 
     "linkHint",
     "linkDisabledUrls",
@@ -2932,6 +2989,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
     "sendBackByMiddleClickEnable",
     "doubleTapKeyToSendPageBack",
+    "maximizeToSendPageBack",
 
     "closedByEsc",
 

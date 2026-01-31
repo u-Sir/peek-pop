@@ -2,7 +2,10 @@ export  const configs = {
     'closeWhenFocusedInitialWindow': true,
     'closeWhenScrollingInitialWindow': false,
     'closedByEsc': false,
+
+    'sendBackByMiddleClickEnable': false,
     'doubleTapKeyToSendPageBack': 'None',
+    'maximizeToSendPageBack': false,
 
     'countdownStyle': 'bar',
 
@@ -68,6 +71,7 @@ export  const configs = {
     'isFirefox': false,
     'isMac': false,
     'showContextMenuItem': false,
+    'addPrefixToTitle': false,
 
     'linkHint': false,
     'linkDisabledUrls': [],

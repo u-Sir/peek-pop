@@ -1,3 +1,8 @@
+0.0.80
+- Added an option to prefix preview window titles with **[Peek Pop]**.
+- Added an option to send the page back to the original window when the preview window is maximized.
+- Fixed an issue where the **Send Page Back to Original Window** context menu item was removed after a page refresh or redirect.
+
 0.0.79
 - Added an option to preview link via context menu item.
 - Added a new button to remove all saved popup window size and position info.
