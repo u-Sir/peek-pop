@@ -291,12 +291,18 @@
         "message": "Preview icon hover delay (ms): "
     },
     "showContextMenuItem": {
-        "message": "Show context menu item: Preview link.You can set the popup window type in the ‘Click’ settings tab."
+        "message": "Add 'Preview link' to context menu, its popup window type can be configured in the 'Click' tab of the settings"
     },
     "previewItem": {
         "message": "Preview link"
     },
     "removePopupSizeAndPositionInfo": {
         "message": "Remove All Popup Size and Position Info"
+    },
+    "maximizeToSendPageBack": {
+        "message": "When the preview window is maximized"
+    },
+    "addPrefixToTitle": {
+        "message": "Add '[Peek Pop]' prefix to the preview window title"
     }
 }

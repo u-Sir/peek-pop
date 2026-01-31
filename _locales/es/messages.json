@@ -291,12 +291,18 @@
         "message": "Retardo de desplazamiento del icono (ms): "
     },
     "showContextMenuItem": {
-        "message": "Mostrar elemento del menú contextual: Previsualizar enlace. Puede configurar el tipo de ventana emergente en la pestaña de configuración 'Clic'."
+        "message": "Agregar 'Previsualizar enlace' al menú contextual, su tipo de ventana emergente se puede configurar en la pestaña 'Clic' de la configuración"
     },
     "previewItem": {
         "message": "Previsualizar enlace"
     },
     "removePopupSizeAndPositionInfo": {
         "message": "Eliminar información de tamaño y posición de la ventana emergente"
+    },
+    "maximizeToSendPageBack": {
+        "message": "Cuando la ventana de vista previa está maximizada"
+    },
+    "addPrefixToTitle": {
+        "message": "Agregar prefijo '[Peek Pop]' al título de la ventana de vista previa"
     }
 }
