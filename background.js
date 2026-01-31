@@ -440,7 +440,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     })
                 }
 
-                if (request.action === 'getWindowType') {
+                if (request.action === 'getWindowState') {
                     chrome.windows.getCurrent({ populate: true }, (window) => {
 
                         const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 // no records

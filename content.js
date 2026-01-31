@@ -2236,7 +2236,9 @@ async function checkUrlAndToggleListeners() {
   const data = await loadUserConfigs([
     "isFirefox",
     "isMac",
+
     "showContextMenuItem",
+
     "addPrefixToTitle",
 
     "hoverSearchEngine",
@@ -2255,9 +2257,12 @@ async function checkUrlAndToggleListeners() {
 
     "previewModeDisabledUrls",
     "previewModeEnable",
+
     "clickModifiedKey",
+
     "doubleClickToSwitch",
     "doubleClickAsClick",
+
     "dbclickToPreview",
     "dbclickToPreviewTimeout",
 
@@ -2277,6 +2282,7 @@ async function checkUrlAndToggleListeners() {
 
     "copyButtonPosition",
     "copyButtonEnable",
+
     "sendBackButtonPosition",
     "sendBackButtonEnable",
 
@@ -2286,6 +2292,7 @@ async function checkUrlAndToggleListeners() {
     "closedByEsc",
     "closeWhenFocusedInitialWindow",
     "closeWhenScrollingInitialWindow",
+    
     "sendBackByMiddleClickEnable",
     "doubleTapKeyToSendPageBack",
     "maximizeToSendPageBack",
@@ -2421,7 +2428,7 @@ async function checkUrlAndToggleListeners() {
   }
 
   if (window.self === window.top) {
-    chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
+    chrome.runtime.sendMessage({ action: "getWindowState" }, (response) => {
       if (chrome.runtime.lastError || !response) return;
 
       if (response.isPreviewWindow) {
@@ -2452,7 +2459,7 @@ async function checkUrlAndToggleListeners() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => {
               chrome.runtime.sendMessage(
-                { action: "getWindowType" },
+                { action: "getWindowState" },
                 (window) => {
                   if (window.isMaximize) {
                     chrome.runtime.sendMessage({ action: "sendPageBack" });
@@ -2473,7 +2480,7 @@ async function checkUrlAndToggleListeners() {
     )
   ) {
     if (data.copyButtonEnable || data.sendBackButtonEnable) {
-      chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
+      chrome.runtime.sendMessage({ action: "getWindowState" }, (response) => {
         if (response.error) {
           console.error("Error:", response.error);
           return;
