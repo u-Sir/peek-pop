@@ -2278,7 +2278,7 @@ async function checkUrlAndToggleListeners() {
 
           const titleEl = document.querySelector("title");
           if (titleEl) {
-            new MutationObserver(ensurePrefix).observe(titleEl, {
+            new MutationObserver(ensurePrefix).observe(document.head, {
               childList: true,
               characterData: true,
               subtree: true,
