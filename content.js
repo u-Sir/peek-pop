@@ -10,9 +10,9 @@ let clickTimeout = null;
 const moveThreshold = 15;
 let hoverlinkOrText = false;
 let isMouseDownOnLink = false;
-
 let lastMouseEvent = null;
 let rafId = null;
+let resizeTimer = null;
 
 showPreviewIconOnHover._lastLink = null;
 
@@ -21,55 +21,79 @@ let linkIndicator,
   progressBar,
   focusAt,
   theme,
+
   urlCheck,
+
   enableContainerIdentify,
+
   isDoubleClick,
   previewMode,
   firstDownOnLinkAt,
   previewModeDisabledUrls,
+
   previewProgressBar,
+
   doubleClickToSwitch,
   doubleClickAsClick,
+
   previewModeEnable,
+
   clickModifiedKey,
+
   dbclickToPreview,
   dbclickToPreviewTimeout,
+
   holdTimeout,
   holdToPreview,
   holdToPreviewTimeout,
+
   searchTooltipsEnable,
   searchTooltips,
   searchTooltipsEngines,
+
+  mouseMoveCheckInterval,
+
   hoverTimeoutId,
   hoverElement,
   hoverInitialMouseX,
   hoverInitialMouseY,
-  mouseMoveCheckInterval,
+
   hoverImgSearchEnable,
   hoverTimeout,
   hoverImgSupport,
   hoverModifiedKey,
   hoverDisabledUrls,
   hoverSearchEngine,
+
   collection,
   collectionEnable,
+
   countdownStyle,
-  closedByEsc,
+
+  sendBackByMiddleClickEnable,
   doubleTapKeyToSendPageBack,
   maximizeToSendPageBack,
+
   addPrefixToTitle,
+
   closeWhenFocusedInitialWindow,
   closeWhenScrollingInitialWindow,
-  sendBackByMiddleClickEnable,
+  closedByEsc,
+
+
   linkHint,
+
   linkDisabledUrls,
+
   copyButtonPosition,
   sendBackButtonPosition,
+
   blurOverlay,
   blurEnabled,
   blurPx,
   blurTime,
   blurRemoval,
+
   modifiedKey,
   dragPx,
   dragDirections,
@@ -79,15 +103,22 @@ let linkIndicator,
   searchEngine,
   dragStartEnable,
   disabledUrls,
+
   lastLeaveTimestamp,
   lastLeaveRelatedTarget,
+
   debounceTimer,
+
   lastMessage = null,
+
   shouldResetClickState = false,
-  showContextMenuItem,
+
   isFirefox,
   isMac,
+
   isInputboxFocused = false,
+
+  showContextMenuItem,
   contextMenuEnabled = false;
 
 const configs = {
@@ -160,6 +191,7 @@ const configs = {
 
   isFirefox: false,
   isMac: false,
+
   enableContainerIdentify: true,
   showContextMenuItem: false,
 
@@ -2292,7 +2324,7 @@ async function checkUrlAndToggleListeners() {
     "closedByEsc",
     "closeWhenFocusedInitialWindow",
     "closeWhenScrollingInitialWindow",
-    
+
     "sendBackByMiddleClickEnable",
     "doubleTapKeyToSendPageBack",
     "maximizeToSendPageBack",
@@ -3801,7 +3833,6 @@ function removeBlurOverlay() {
   }
 }
 
-let resizeTimer = null;
 
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.enableContextMenu) {
