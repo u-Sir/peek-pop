@@ -2,6 +2,7 @@
 - Added an option to prefix preview window titles with **[Peek Pop]**.
 - Added an option to send the page back to the original window when the preview window is maximized.
 - Fixed an issue where the **Send Page Back to Original Window** context menu item was removed after a page refresh or redirect.
+- Firefox now automatically remembers the preview window size after resizing, when the related "Remember Popup Size and Position" options are enabled.
 
 0.0.79
 - Added an option to preview link via context menu item.

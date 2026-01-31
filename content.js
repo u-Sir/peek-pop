@@ -21,79 +21,55 @@ let linkIndicator,
   progressBar,
   focusAt,
   theme,
-
   urlCheck,
-
   enableContainerIdentify,
-
   isDoubleClick,
   previewMode,
   firstDownOnLinkAt,
   previewModeDisabledUrls,
-
   previewProgressBar,
-
   doubleClickToSwitch,
   doubleClickAsClick,
-
   previewModeEnable,
-
   clickModifiedKey,
-
   dbclickToPreview,
   dbclickToPreviewTimeout,
-
   holdTimeout,
   holdToPreview,
   holdToPreviewTimeout,
-
   searchTooltipsEnable,
   searchTooltips,
   searchTooltipsEngines,
-
   mouseMoveCheckInterval,
-
   hoverTimeoutId,
   hoverElement,
   hoverInitialMouseX,
   hoverInitialMouseY,
-
   hoverImgSearchEnable,
   hoverTimeout,
   hoverImgSupport,
   hoverModifiedKey,
   hoverDisabledUrls,
   hoverSearchEngine,
-
   collection,
   collectionEnable,
-
   countdownStyle,
-
   sendBackByMiddleClickEnable,
   doubleTapKeyToSendPageBack,
   maximizeToSendPageBack,
-
   addPrefixToTitle,
-
   closeWhenFocusedInitialWindow,
   closeWhenScrollingInitialWindow,
   closedByEsc,
-
-
   linkHint,
-
   linkDisabledUrls,
-
   copyButtonPosition,
   sendBackButtonPosition,
-
   blurOverlay,
   blurEnabled,
   blurPx,
   blurTime,
   blurRemoval,
-
   modifiedKey,
   dragPx,
   dragDirections,
@@ -103,21 +79,14 @@ let linkIndicator,
   searchEngine,
   dragStartEnable,
   disabledUrls,
-
   lastLeaveTimestamp,
   lastLeaveRelatedTarget,
-
   debounceTimer,
-
   lastMessage = null,
-
   shouldResetClickState = false,
-
   isFirefox,
   isMac,
-
   isInputboxFocused = false,
-
   showContextMenuItem,
   contextMenuEnabled = false;
 
@@ -2486,16 +2455,21 @@ async function checkUrlAndToggleListeners() {
           }
         }
 
-        if (maximizeToSendPageBack) {
+        if (maximizeToSendPageBack || isFirefox) {
           window.addEventListener("resize", () => {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => {
               chrome.runtime.sendMessage(
                 { action: "getWindowState" },
                 (window) => {
-                  if (window.isMaximize) {
-                    chrome.runtime.sendMessage({ action: "sendPageBack" });
+                  let message = null;
+                  if (isFirefox) {
+                    message = { addContextMenuItem: contextMenuEnabled };
+                  } 
+                  if (window.isMaximize && maximizeToSendPageBack) {
+                    message = { action: "sendPageBack" };
                   }
+                  if (message) {chrome.runtime.sendMessage(message)};
                 },
               );
             }, 100);
@@ -3832,7 +3806,6 @@ function removeBlurOverlay() {
     blurOverlay = null; // Clear the reference
   }
 }
-
 
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.enableContextMenu) {
