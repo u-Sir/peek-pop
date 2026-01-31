@@ -4,6 +4,9 @@ export const configs = {
     'sendBackByMiddleClickEnable': false,
     'closedByEsc': false,
     'doubleTapKeyToSendPageBack': 'None',
+    'maximizeToSendPageBack': false,
+
+    'addPrefixToTitle': false,
 
     'countdownStyle': 'bar',
 

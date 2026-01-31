@@ -103,6 +103,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     visible: userConfigs.showContextMenuItem
                 });
                 
+                
+
                 // Filter out the 'savedPositionAndSize' key
                 const filteredPopupWindowsInfo = Object.keys(popupWindowsInfo).reduce((acc, key) => {
                     if (key !== 'savedPositionAndSize') {
@@ -440,13 +442,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 if (request.action === 'getWindowType') {
                     chrome.windows.getCurrent({ populate: true }, (window) => {
-                        sendResponse({ status: 'Window type sent', windowType: window.type });
+
+                        const isCurrentWindowOriginal = Object.keys(popupWindowsInfo).length === 0 // no records
+                            || (Object.keys(popupWindowsInfo).length === 1 && 'savedPositionAndSize' in popupWindowsInfo) // savedPositionAndSize only
+                            || (() => { // not under any other IDs
+                                const existsUnderOtherIds = (info, targetId, excludeTopLevel = true) =>
+                                    Object.entries(info).some(([key, value]) => {
+                                        if (key === 'savedPositionAndSize') return false;
+                                        if (excludeTopLevel && parseInt(key, 10) === targetId) return false;
+                                        if (parseInt(key, 10) === targetId) return true;
+                                        return value && typeof value === 'object' && existsUnderOtherIds(value, targetId, false);
+                                    });
+
+                                // Check if window.id exists under any other IDs
+                                if (existsUnderOtherIds(popupWindowsInfo, window.id)) return false;
+
+                                return true;
+                            })()
+                            || Object.keys(popupWindowsInfo).some(windowId => { // under window.id but empty
+                                return windowId &&
+                                    parseInt(windowId) === window.id &&
+                                    Object.keys(popupWindowsInfo[windowId]).length === 0;
+                            });
+
+                        sendResponse({ status: 'Window type sent', windowType: window.type, isMaximize: window.state === "maximized", isPreviewWindow: !isCurrentWindowOriginal});
 
                     });
                 }
-
-
-
 
                 if (request.action === 'sendPageBack') {
                     loadUserConfigs().then(userConfigs => {

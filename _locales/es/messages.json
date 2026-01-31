@@ -295,6 +295,12 @@
     },
     "removePopupSizeAndPositionInfo": {
         "message": "Eliminar información de tamaño y posición de la ventana emergente"
+    },
+    "maximizeToSendPageBack": {
+        "message": "Cuando la ventana de vista previa está maximizada"
+    },
+    "addPrefixToTitle": {
+        "message": "Agregar prefijo '[Peek Pop]' al título de la ventana de vista previa"
     }
 
 }

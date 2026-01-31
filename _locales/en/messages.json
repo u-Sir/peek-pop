@@ -295,6 +295,12 @@
     },
     "removePopupSizeAndPositionInfo": {
         "message": "Remove All Popup Size and Position Info"
+    },
+    "maximizeToSendPageBack": {
+        "message": "When the preview window is maximized"
+    },
+    "addPrefixToTitle": {
+        "message": "Add '[Peek Pop]' prefix to the preview window title"
     }
 
 }

@@ -295,6 +295,12 @@
     },
     "removePopupSizeAndPositionInfo": {
         "message": "清除所有弹窗大小和位置信息"
+    },
+    "maximizeToSendPageBack": {
+        "message": "当预览窗口最大化时"
+    },
+    "addPrefixToTitle": {
+        "message": "为预览窗口标题添加 '[Peek Pop]' 前缀"
     }
 
 }

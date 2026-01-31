@@ -56,6 +56,8 @@ let linkIndicator,
   countdownStyle,
   closedByEsc,
   doubleTapKeyToSendPageBack,
+  maximizeToSendPageBack,
+  addPrefixToTitle,
   closeWhenFocusedInitialWindow,
   closeWhenScrollingInitialWindow,
   sendBackByMiddleClickEnable,
@@ -93,7 +95,11 @@ const configs = {
   closeWhenScrollingInitialWindow: false,
   sendBackByMiddleClickEnable: false,
   closedByEsc: false,
+
   doubleTapKeyToSendPageBack: "None",
+  maximizeToSendPageBack: false,
+
+  addPrefixToTitle: false,
 
   countdownStyle: "bar",
 
@@ -2231,6 +2237,7 @@ async function checkUrlAndToggleListeners() {
     "isFirefox",
     "isMac",
     "showContextMenuItem",
+    "addPrefixToTitle",
 
     "hoverSearchEngine",
     "hoverImgSearchEnable",
@@ -2281,6 +2288,7 @@ async function checkUrlAndToggleListeners() {
     "closeWhenScrollingInitialWindow",
     "sendBackByMiddleClickEnable",
     "doubleTapKeyToSendPageBack",
+    "maximizeToSendPageBack",
 
     "countdownStyle",
 
@@ -2327,6 +2335,8 @@ async function checkUrlAndToggleListeners() {
   closeWhenScrollingInitialWindow = data.closeWhenScrollingInitialWindow;
   sendBackByMiddleClickEnable = data.sendBackByMiddleClickEnable || false;
   doubleTapKeyToSendPageBack = data.doubleTapKeyToSendPageBack || "None";
+  maximizeToSendPageBack = data.maximizeToSendPageBack || false;
+  addPrefixToTitle = data.addPrefixToTitle || false;
   closedByEsc = data.closedByEsc;
   enableContainerIdentify = data.enableContainerIdentify;
 
@@ -2410,31 +2420,48 @@ async function checkUrlAndToggleListeners() {
     previewMode = data.previewMode;
   }
 
-  const isLinux = /linux/i.test(navigator.userAgent);
-  if (isLinux && window.self === window.top) {
+  if (window.self === window.top) {
     chrome.runtime.sendMessage({ action: "getWindowType" }, (response) => {
-      if (
-        chrome.runtime.lastError ||
-        !response ||
-        response.windowType !== "popup"
-      )
-        return;
+      if (chrome.runtime.lastError || !response) return;
 
-      function ensurePrefix() {
-        if (!document.title.startsWith("[Peek Pop] ")) {
-          document.title = "[Peek Pop] " + document.title;
+      if (response.isPreviewWindow) {
+        contextMenuEnabled = true;
+        chrome.runtime.sendMessage({ addContextMenuItem: contextMenuEnabled });
+
+        if (addPrefixToTitle) {
+          function ensurePrefix() {
+            if (!document.title.startsWith("[Peek Pop] ")) {
+              document.title = "[Peek Pop] " + document.title;
+            }
+          }
+
+          ensurePrefix();
+
+          const titleEl = document.querySelector("title");
+          if (titleEl) {
+            new MutationObserver(ensurePrefix).observe(titleEl, {
+              childList: true,
+              characterData: true,
+              subtree: true,
+            });
+          }
         }
-      }
 
-      ensurePrefix();
-
-      const titleEl = document.querySelector("title");
-      if (titleEl) {
-        new MutationObserver(ensurePrefix).observe(titleEl, {
-          childList: true,
-          characterData: true,
-          subtree: true,
-        });
+        if (maximizeToSendPageBack) {
+          window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+              chrome.runtime.sendMessage(
+                { action: "getWindowType" },
+                (window) => {
+                  if (window.isMaximize) {
+                    chrome.runtime.sendMessage({ action: "sendPageBack" });
+                  }
+                },
+              );
+            }, 100);
+          });
+        }
       }
     });
   }
@@ -2969,6 +2996,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
   const keysToWatch = new Set([
     "showContextMenuItem",
+    "addPrefixToTitle",
 
     "linkHint",
     "linkDisabledUrls",
@@ -3009,6 +3037,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
     "sendBackByMiddleClickEnable",
     "doubleTapKeyToSendPageBack",
+    "maximizeToSendPageBack",
 
     "closedByEsc",
 
@@ -3764,6 +3793,8 @@ function removeBlurOverlay() {
     blurOverlay = null; // Clear the reference
   }
 }
+
+let resizeTimer = null;
 
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.enableContextMenu) {

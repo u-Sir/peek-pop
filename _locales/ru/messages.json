@@ -295,5 +295,11 @@
     },
     "removePopupSizeAndPositionInfo": {
         "message": "Удалить информацию о размере и положении всплывающего окна"
+    },
+    "maximizeToSendPageBack": {
+        "message": "Когда окно предварительного просмотра развернуто"
+    },
+    "addPrefixToTitle": {
+        "message": "Добавить префикс '[Peek Pop]' к заголовку окна предварительного просмотра"
     }
 }
