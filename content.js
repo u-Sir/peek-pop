@@ -2413,22 +2413,25 @@ async function checkUrlAndToggleListeners() {
         chrome.runtime.sendMessage({ addContextMenuItem: contextMenuEnabled });
 
         if (addPrefixToTitle) {
+          let initialized = false;
+
           function ensurePrefix() {
+            if (!document.title) return;
+
+            if (!initialized) {
+              initialized = true;
+            }
+
             if (!document.title.startsWith("[Peek Pop] ")) {
               document.title = "[Peek Pop] " + document.title;
             }
           }
 
-          ensurePrefix();
-
-          const titleEl = document.querySelector("title");
-          if (titleEl) {
-            new MutationObserver(ensurePrefix).observe(document.head, {
-              childList: true,
-              characterData: true,
-              subtree: true,
-            });
-          }
+          new MutationObserver(ensurePrefix).observe(document.head, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+          });
         }
 
         if (maximizeToSendPageBack || isFirefox) {
