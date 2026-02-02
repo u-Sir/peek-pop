@@ -124,7 +124,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           if (Object.keys(filteredPopupWindowsInfo).length === 0) {
             popupWindowsInfo[currentWindow.id] = {}; // Set the current window ID as the original window ID
             return saveConfig("popupWindowsInfo", popupWindowsInfo).then(
-              () => popupWindowsInfo,
+              () => ({ popupWindowsInfo, userConfigs }),
             );
           }
 
