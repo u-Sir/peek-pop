@@ -1,3 +1,7 @@
+0.0.81
+- Refine title prefix handling.
+- Refine URL processing.
+
 0.0.80
 - Added an option to prefix preview window titles with **[Peek Pop]**.
 - Added an option to send the page back to the original window when the preview window is maximized.
