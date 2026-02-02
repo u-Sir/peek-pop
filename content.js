@@ -29,44 +29,30 @@ showPreviewIconOnHover._lastLink = null;
 let linkIndicator,
   tooltip,
   progressBar,
-  
   focusAt,
   theme,
-
   isDoubleClick,
-
   previewMode,
-
   firstDownOnLinkAt,
-
   previewModeDisabledUrls,
   previewProgressBar,
-
   doubleClickToSwitch,
   doubleClickAsClick,
-
   previewModeEnable,
-
   clickModifiedKey,
-
   dbclickToPreview,
   dbclickToPreviewTimeout,
-
   holdTimeout,
   holdToPreview,
   holdToPreviewTimeout,
-
   searchTooltipsEnable,
   searchTooltips,
   searchTooltipsEngines,
-
   hoverTimeoutId,
   hoverElement,
   hoverInitialMouseX,
   hoverInitialMouseY,
-
   mouseMoveCheckInterval,
-
   hoverImgSearchEnable,
   hoverTimeout,
   hoverImgSupport,
@@ -74,40 +60,29 @@ let linkIndicator,
   hoverDisabledUrls,
   hoverSearchEngine,
   hoverSpaceEnabled,
-
   showPreviewIconOnHoverEnabled,
   dotSize,
   dotRemoveDelay,
   dotHoverDelay,
-
   linkDisabledUrls,
-
   closedByEsc,
   closeWhenFocusedInitialWindow,
   closeWhenScrollingInitialWindow,
-
   doubleTapKeyToSendPageBack,
   sendBackByMiddleClickEnable,
   maximizeToSendPageBack,
-
   collection,
   collectionEnable,
-
   urlCheck,
-
   linkHint,
-
   countdownStyle,
-
   copyButtonPosition,
   sendBackButtonPosition,
-
   blurOverlay,
   blurEnabled,
   blurPx,
   blurTime,
   blurRemoval,
-
   modifiedKey,
   dragPx,
   dragDirections,
@@ -119,7 +94,6 @@ let linkIndicator,
   lastLeaveTimestamp,
   lastLeaveRelatedTarget,
   debounceTimer,
-
   addPrefixToTitle,
   isFirefox,
   isMac;
@@ -2224,22 +2198,25 @@ async function checkUrlAndToggleListeners() {
         chrome.runtime.sendMessage({ addContextMenuItem: contextMenuEnabled });
 
         if (addPrefixToTitle) {
+          let initialized = false;
+
           function ensurePrefix() {
+            if (!document.title) return;
+
+            if (!initialized) {
+              initialized = true;
+            }
+
             if (!document.title.startsWith("[Peek Pop] ")) {
               document.title = "[Peek Pop] " + document.title;
             }
           }
 
-          ensurePrefix();
-
-          const titleEl = document.querySelector("title");
-          if (titleEl) {
-            new MutationObserver(ensurePrefix).observe(document.head, {
-              childList: true,
-              characterData: true,
-              subtree: true,
-            });
-          }
+          new MutationObserver(ensurePrefix).observe(document.head, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+          });
         }
 
         if (maximizeToSendPageBack) {
@@ -2735,7 +2712,7 @@ async function handledbclickToPreview(e) {
       (e.target.tagName === "A" ? e.target : e.target.closest("a")));
   if (!linkElement) return;
 
-  const linkUrl = findUrl(linkElement) ||window.location.href;
+  const linkUrl = findUrl(linkElement) || window.location.href;
 
   if (!linkUrl) return; // not a link
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -3731,12 +3708,10 @@ window.addEventListener("blur", () => {
   }
 });
 
-
 function findUrl(linkElement) {
   try {
     const raw =
-      linkElement.getAttribute("data-url") ??
-      linkElement.getAttribute("href");
+      linkElement.getAttribute("data-url") ?? linkElement.getAttribute("href");
 
     if (!raw) return null;
 
@@ -3749,5 +3724,3 @@ function findUrl(linkElement) {
     return null;
   }
 }
-
-
