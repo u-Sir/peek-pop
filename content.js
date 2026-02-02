@@ -1,46 +1,66 @@
 let isDragging = false;
-let hasPopupTriggered = false;
 let isMouseDown = false;
+let isInputboxFocused = false;
+let isMouseDownOnLink = false;
+
 let initialMouseX = 0;
 let initialMouseY = 0;
+
 let lastKeyTime = 0;
 let lastClickTime = 0;
 let lastKey = "";
-let clickTimeout = null;
-const moveThreshold = 15;
-let hoverlinkOrText = false;
-let isMouseDownOnLink = false;
+let lastMessage = null;
 let lastMouseEvent = null;
+
 let rafId = null;
 let resizeTimer = null;
+let clickTimeout = null;
+let hoverlinkOrText = false;
+let shouldResetClickState = false;
+let contextMenuEnabled = false;
+let hasPopupTriggered = false;
 
+const moveThreshold = 15;
 showPreviewIconOnHover._lastLink = null;
 
 let linkIndicator,
   tooltip,
   progressBar,
+
   focusAt,
+
   theme,
+
   urlCheck,
+
   enableContainerIdentify,
+
   isDoubleClick,
   previewMode,
   firstDownOnLinkAt,
   previewModeDisabledUrls,
+
   previewProgressBar,
+
   doubleClickToSwitch,
   doubleClickAsClick,
+
   previewModeEnable,
   clickModifiedKey,
+
   dbclickToPreview,
   dbclickToPreviewTimeout,
+
   holdTimeout,
   holdToPreview,
   holdToPreviewTimeout,
+
   searchTooltipsEnable,
   searchTooltips,
   searchTooltipsEngines,
+
   mouseMoveCheckInterval,
+
   hoverTimeoutId,
   hoverElement,
   hoverInitialMouseX,
@@ -51,25 +71,34 @@ let linkIndicator,
   hoverModifiedKey,
   hoverDisabledUrls,
   hoverSearchEngine,
+
   collection,
   collectionEnable,
+
   countdownStyle,
+
   sendBackByMiddleClickEnable,
   doubleTapKeyToSendPageBack,
   maximizeToSendPageBack,
+
   addPrefixToTitle,
+
   closeWhenFocusedInitialWindow,
   closeWhenScrollingInitialWindow,
   closedByEsc,
+
   linkHint,
   linkDisabledUrls,
+
   copyButtonPosition,
   sendBackButtonPosition,
+
   blurOverlay,
   blurEnabled,
   blurPx,
   blurTime,
   blurRemoval,
+
   modifiedKey,
   dragPx,
   dragDirections,
@@ -79,16 +108,16 @@ let linkIndicator,
   searchEngine,
   dragStartEnable,
   disabledUrls,
+
   lastLeaveTimestamp,
   lastLeaveRelatedTarget,
+
   debounceTimer,
-  lastMessage = null,
-  shouldResetClickState = false,
+
   isFirefox,
   isMac,
-  isInputboxFocused = false,
-  showContextMenuItem,
-  contextMenuEnabled = false;
+
+  showContextMenuItem;
 
 const configs = {
   closeWhenFocusedInitialWindow: true,
