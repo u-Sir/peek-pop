@@ -504,14 +504,9 @@ function showPreviewIconOnHover(e, anchorElement) {
   const linkElement = anchorElement || findLinkFromEvent(e);
   if (!linkElement || !linkElement.isConnected) return;
 
-  const linkUrl =
-    linkElement.getAttribute("data-url") ||
-    (linkElement.href && linkElement.href.startsWith("/")
-      ? window.location.protocol + linkElement.href
-      : linkElement.href);
+  const linkUrl = findUrl(linkElement);
 
   if (!linkUrl) return;
-  if (/^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
   if (
     linkElement.getAttribute("role") === "button" &&
@@ -642,15 +637,9 @@ function changeCursorOnHover(e, anchorElement) {
     (e.target instanceof HTMLElement &&
       (e.target.tagName === "A" ? e.target : e.target.closest("a")));
   if (linkElement) {
-    const linkUrl = linkElement
-      ? linkElement.getAttribute("data-url") ||
-        (linkElement.href.startsWith("/")
-          ? window.location.protocol + linkElement.href
-          : linkElement.href)
-      : null;
+    const linkUrl = findUrl(linkElement);
 
     if (!linkUrl) return;
-    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
     if (
       linkElement &&
@@ -922,7 +911,7 @@ function handleMouseDown(e) {
     chrome.runtime.sendMessage({ action: "sendPageBack" });
   }
 
-  if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+  if (!linkUrl) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   if (modifiedKey === "None" || keyMap[modifiedKey]) {
@@ -981,18 +970,9 @@ function handleMouseDown(e) {
       (e.target instanceof HTMLElement &&
         (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-    const linkUrl = linkElement
-      ? linkElement.getAttribute("data-url") ||
-        (linkElement.href.startsWith("/")
-          ? window.location.protocol + linkElement.href
-          : linkElement.href)
-      : null;
+    const linkUrl = findUrl(linkElement);
 
-    // Check if the URL is valid and not a JavaScript link
-    if (
-      !linkUrl ||
-      (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim()))
-    ) {
+    if (!linkUrl) {
       isMouseDownOnLink = false;
       clearTimeoutsAndProgressBars();
       document.removeEventListener(
@@ -1237,16 +1217,9 @@ function handleSpace(e) {
   const linkElement = findAnchorAcrossShadow(hitEl);
   if (!linkElement) return;
 
-  let linkUrl =
-    linkElement.getAttribute("data-url") || linkElement.getAttribute("href");
+  let linkUrl = findUrl(linkElement);
 
   if (!linkUrl) return;
-
-  if (linkUrl.startsWith("/")) {
-    linkUrl = new URL(linkUrl, location.href).href;
-  }
-
-  if (/^(mailto|tel|javascript):/i.test(linkUrl.trim())) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   e.preventDefault();
@@ -1305,12 +1278,7 @@ function handleDoubleClick(e) {
     (e.target instanceof HTMLElement &&
       (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-  const linkUrl = linkElement
-    ? linkElement.getAttribute("data-url") ||
-      (linkElement.href.startsWith("/")
-        ? window.location.protocol + linkElement.href
-        : linkElement.href)
-    : null;
+  const linkUrl = findUrl(linkElement);
 
   if (!previewModeEnable || clickModifiedKey !== "None") return;
 
@@ -1329,7 +1297,6 @@ function handleDoubleClick(e) {
 
     updateIcon(resetClickState);
   } else if (linkUrl) {
-    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
     if (doubleClickAsClick) {
       e.preventDefault(); // Prevent the default double-click action
@@ -1423,14 +1390,9 @@ function handleEvent(e) {
         (e.target instanceof HTMLElement &&
           (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-      const linkUrl = linkElement
-        ? linkElement.getAttribute("data-url") ||
-          (linkElement.href.startsWith("/")
-            ? window.location.protocol + linkElement.href
-            : linkElement.href)
-        : null;
+      const linkUrl = findUrl(linkElement);
 
-      if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+      if (!linkUrl) return;
       if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
       if (
         previewMode &&
@@ -1469,12 +1431,7 @@ function handleEvent(e) {
       (e.target instanceof HTMLElement &&
         (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-    const linkUrl = linkElement
-      ? linkElement.getAttribute("data-url") ||
-        (linkElement.href.startsWith("/")
-          ? window.location.protocol + linkElement.href
-          : linkElement.href)
-      : null;
+    const linkUrl = findUrl(linkElement);
 
     // Check if the focused element is an input or textarea
     const activeEl = document.activeElement;
@@ -1487,7 +1444,7 @@ function handleEvent(e) {
       isInputboxFocused = false;
     }
 
-    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+    if (!linkUrl) return;
     if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
     isDragging = false;
 
@@ -1811,14 +1768,9 @@ async function handleDragStart(e, anchorElement) {
         (e.target instanceof HTMLElement &&
           (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-      const linkUrl = linkElement
-        ? linkElement.getAttribute("data-url") ||
-          (linkElement.href.startsWith("/")
-            ? window.location.protocol + linkElement.href
-            : linkElement.href)
-        : null;
+      const linkUrl = findUrl(linkElement);
 
-      if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+      if (!linkUrl) return;
 
       const imageElement =
         e.target instanceof HTMLElement &&
@@ -2081,14 +2033,9 @@ async function handleDragStart(e, anchorElement) {
       (e.target instanceof HTMLElement &&
         (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-    const linkUrl = linkElement
-      ? linkElement.getAttribute("data-url") ||
-        (linkElement.href.startsWith("/")
-          ? window.location.protocol + linkElement.href
-          : linkElement.href)
-      : null;
+    const linkUrl = findUrl(linkElement);
 
-    if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+    if (!linkUrl) return;
     const imageElement =
       e.target instanceof HTMLElement &&
       (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
@@ -2841,16 +2788,10 @@ async function handledbclickToPreview(e) {
       (e.target.tagName === "A" ? e.target : e.target.closest("a")));
   if (!linkElement) return;
 
-  const linkUrl = linkElement
-    ? linkElement.getAttribute("data-url") ||
-      (linkElement.href.startsWith("/")
-        ? window.location.protocol + linkElement.href
-        : linkElement.href)
-    : window.location.href;
+  const linkUrl = findUrl(linkElement) ||window.location.href;
 
-  if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
-  if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
   if (!linkUrl) return; // not a link
+  if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   document.addEventListener(
     "click",
@@ -2912,14 +2853,9 @@ function addLinkToCollection(e) {
 
   if (!collectionEnable) return;
 
-  const linkUrl = linkElement
-    ? linkElement.getAttribute("data-url") ||
-      (linkElement.href.startsWith("/")
-        ? window.location.protocol + linkElement.href
-        : linkElement.href)
-    : window.location.href;
+  const linkUrl = findUrl(linkElement) || window.location.href;
 
-  if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+  if (!linkUrl) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   // Initialize or load the collection
@@ -3340,14 +3276,9 @@ async function handleMouseOver(e) {
     (e.target instanceof HTMLElement &&
       (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-  const linkUrl = linkElement
-    ? linkElement.getAttribute("data-url") ||
-      (linkElement.href.startsWith("/")
-        ? window.location.protocol + linkElement.href
-        : linkElement.href)
-    : null;
+  const linkUrl = findUrl(linkElement);
 
-  if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+  if (!linkUrl) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   if (linkHint && parseInt(hoverTimeout, 10) === 0) {
@@ -3374,14 +3305,9 @@ async function handleMouseOver(e) {
         (e.target instanceof HTMLElement &&
           (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-      const linkUrl = linkElement
-        ? linkElement.getAttribute("data-url") ||
-          (linkElement.href.startsWith("/")
-            ? window.location.protocol + linkElement.href
-            : linkElement.href)
-        : null;
+      const linkUrl = findUrl(linkElement);
 
-      if (linkUrl && /^(mailto|tel|javascript):/.test(linkUrl.trim())) return;
+      if (!linkUrl) return;
 
       const imageElement =
         e.target instanceof HTMLElement &&
@@ -3863,3 +3789,21 @@ window.addEventListener("blur", () => {
     document.addEventListener("scrollend", onScrollEnd);
   }
 });
+
+function findUrl(linkElement) {
+  try {
+    const raw =
+      linkElement.getAttribute("data-url") ??
+      linkElement.getAttribute("href");
+
+    if (!raw) return null;
+
+    if (/^(javascript:|mailto:|tel:|data:)/i.test(raw)) {
+      return null;
+    }
+
+    return new URL(raw, location.href).href;
+  } catch {
+    return null;
+  }
+}
