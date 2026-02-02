@@ -1,26 +1,35 @@
 let isDragging = false;
-let hasPopupTriggered = false;
+let isMouseDownOnLink = false;
 let isMouseDown = false;
+let isInputboxFocused = false;
+
 let initialMouseX = 0;
 let initialMouseY = 0;
+
 let lastKeyTime = 0;
 let lastClickTime = 0;
 let lastKey = "";
-let clickTimeout = null;
-const moveThreshold = 15;
-let hoverlinkOrText = false;
-let isMouseDownOnLink = false;
-
 let lastMouseEvent = null;
+let lastMessage = null;
+
+let hasPopupTriggered = false;
+let hoverlinkOrText = false;
+let shouldResetClickState = false;
+
+let showContextMenuItem = false;
+let contextMenuEnabled = false;
+
 let rafId = null;
-
 let resizeTimer = null;
+let clickTimeout = null;
 
+const moveThreshold = 15;
 showPreviewIconOnHover._lastLink = null;
 
 let linkIndicator,
   tooltip,
   progressBar,
+  
   focusAt,
   theme,
 
@@ -111,17 +120,9 @@ let linkIndicator,
   lastLeaveRelatedTarget,
   debounceTimer,
 
-  lastMessage = null,
-  shouldResetClickState = false,
-
   addPrefixToTitle,
   isFirefox,
-  isMac,
-
-  isInputboxFocused = false,
-
-  showContextMenuItem = false,
-  contextMenuEnabled = false;
+  isMac;
 
 const configs = {
   closeWhenFocusedInitialWindow: true,
