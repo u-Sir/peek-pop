@@ -3818,17 +3818,17 @@ window.addEventListener("blur", () => {
 
 function findUrl(linkElement) {
   try {
-    const raw =
+    const url =
       linkElement.getAttribute("data-url") ??
-      linkElement.getAttribute("href");
+      linkElement.href
 
-    if (!raw) return null;
+    if (!url) return null;
 
-    if (/^(javascript:|mailto:|tel:|data:)/i.test(raw)) {
+    if (/^(javascript:|mailto:|tel:|data:)/i.test(url)) {
       return null;
     }
 
-    return new URL(raw, location.href).href;
+    return url;
   } catch {
     return null;
   }
