@@ -232,14 +232,14 @@ function createTooltip(x, y, actions, timeout = 2000) {
   tooltip.style.zIndex = "2147483647";
   tooltip.style.fontSize = "14px"; // Adjust font size for the text inside buttons
   tooltip.style.display = "inline-block";
-  tooltip.style.whiteSpace = "nowrap"; // Prevent text from wrapping
-  tooltip.style.maxWidth = "90vw"
-  tooltip.style.whiteSpace = "normal"; // Allow text to wrap within max width
+  tooltip.style.maxWidth = "90vw"; // Prevent tooltip from exceeding viewport width
+  tooltip.style.whiteSpace = "normal"; //
 
   // Container for all buttons
   const buttonContainer = document.createElement("div");
   buttonContainer.style.display = "flex";
   buttonContainer.style.gap = "5px";
+  buttonContainer.style.flexWrap = "wrap"; // Allow buttons to wrap to the next line
 
   // Add all buttons to the container
   actions.forEach((action) => {
@@ -255,6 +255,8 @@ function createTooltip(x, y, actions, timeout = 2000) {
     button.style.cursor = "pointer";
     button.style.fontSize = "12px"; // Adjust button text size
     button.style.width = "auto";
+    button.style.flex = "0 0 auto"; // Prevent buttons from stretching
+    button.style.boxSizing = "border-box";
 
     button.addEventListener("click", () => {
       action.handler(); // Trigger the corresponding action
@@ -1286,7 +1288,7 @@ function handleEvent(e) {
 
       const linkUrl = findUrl(linkElement);
 
-      if (linkUrl &&isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+      if (linkUrl && isUrlDisabled(linkUrl, linkDisabledUrls)) return;
       if (
         previewMode &&
         linkUrl &&
