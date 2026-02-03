@@ -1,6 +1,8 @@
-0.0.81
+0.0.82
 - Refine title prefix handling.
 - Refine URL processing.
+- Refine layout of search tooltips.
+- Cleanup preview icon on scroll.
 
 0.0.80
 - Added an option to prefix preview window titles with **[Peek Pop]**.
