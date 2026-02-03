@@ -233,6 +233,8 @@ function createTooltip(x, y, actions, timeout = 2000) {
   tooltip.style.fontSize = "14px"; // Adjust font size for the text inside buttons
   tooltip.style.display = "inline-block";
   tooltip.style.whiteSpace = "nowrap"; // Prevent text from wrapping
+  tooltip.style.maxWidth = "90vw"
+  tooltip.style.whiteSpace = "normal"; // Allow text to wrap within max width
 
   // Container for all buttons
   const buttonContainer = document.createElement("div");
@@ -915,8 +917,7 @@ function handleMouseDown(e) {
     chrome.runtime.sendMessage({ action: "sendPageBack" });
   }
 
-  if (!linkUrl) return;
-  if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+  if (linkUrl && isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   if (modifiedKey === "None" || keyMap[modifiedKey]) {
     const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
@@ -1285,8 +1286,7 @@ function handleEvent(e) {
 
       const linkUrl = findUrl(linkElement);
 
-      if (!linkUrl) return;
-      if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+      if (linkUrl &&isUrlDisabled(linkUrl, linkDisabledUrls)) return;
       if (
         previewMode &&
         linkUrl &&
@@ -1339,8 +1339,7 @@ function handleEvent(e) {
       isInputboxFocused = false;
     }
 
-    if (!linkUrl) return;
-    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+    if (linkUrl && isUrlDisabled(linkUrl, linkDisabledUrls)) return;
     isDragging = false;
 
     handleMouseUpWithProgressBar(e);
