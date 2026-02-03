@@ -1,4 +1,4 @@
-0.0.82
+0.0.83
 - Refine title prefix handling.
 - Refine URL processing.
 - Refine layout of search tooltips.
