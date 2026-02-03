@@ -481,18 +481,10 @@ function bindScrollHandlers() {
     { passive: true },
   );
 
-  window.addEventListener("scrollend", () => {
-    const link = showPreviewIconOnHover._lastLink;
-    if (link && link.isConnected) {
-      showPreviewIconOnHover({ target: link }, link);
-    }
-  });
-
   const observer = new MutationObserver(() => {
     const link = showPreviewIconOnHover._lastLink;
     if (link && !link.isConnected) {
       cleanup();
-      showPreviewIconOnHover._lastLink = null;
     }
   });
 
@@ -506,6 +498,7 @@ function bindScrollHandlers() {
   function cleanup() {
     showPreviewIconOnHover._dot?.remove();
     showPreviewIconOnHover._dot = null;
+    showPreviewIconOnHover._lastLink = null;
   }
 }
 
