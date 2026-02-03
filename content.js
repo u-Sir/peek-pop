@@ -2426,7 +2426,7 @@ async function checkUrlAndToggleListeners() {
               document.title = "[Peek Pop] " + document.title;
             }
           }
-
+          ensurePrefix();
           new MutationObserver(ensurePrefix).observe(document.head, {
             childList: true,
             subtree: true,
