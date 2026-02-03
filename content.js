@@ -933,8 +933,7 @@ function handleMouseDown(e) {
     chrome.runtime.sendMessage({ action: "sendPageBack" });
   }
 
-  if (!linkUrl) return;
-  if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+  if (linkUrl && isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   if (modifiedKey === "None" || keyMap[modifiedKey]) {
     const events = ["click", "dragstart", "dragover", "drop", "mouseup"];
@@ -1414,8 +1413,7 @@ function handleEvent(e) {
 
       const linkUrl = findUrl(linkElement);
 
-      if (!linkUrl) return;
-      if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+      if (linkUrl && isUrlDisabled(linkUrl, linkDisabledUrls)) return;
       if (
         previewMode &&
         linkUrl &&
@@ -1466,8 +1464,7 @@ function handleEvent(e) {
       isInputboxFocused = false;
     }
 
-    if (!linkUrl) return;
-    if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
+    if (linkUrl && isUrlDisabled(linkUrl, linkDisabledUrls)) return;
     isDragging = false;
 
     handleMouseUpWithProgressBar(e);
