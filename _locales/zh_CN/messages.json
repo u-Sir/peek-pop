@@ -3,7 +3,7 @@
         "message": "弹出插件图标的页面"
     },
     "extensionName": {
-        "message": "Peek Pop：链接预览"
+        "message": "Peek Pop：链接预览|搜索|稍后阅读"
     },
     "extensionDescription": {
         "message": "集预览、搜索、稍后阅读于一体的轻量级开源浏览器插件"
