@@ -182,109 +182,107 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             });
 
             if (!isCurrentWindowOriginal) {
-              if (typeof request.handlePopupSizeAndPosition !== "undefined") {
-                if (request.handlePopupSizeAndPosition) {
-                  if (
-                    userConfigs.rememberPopupSizeAndPosition ||
-                    userConfigs.rememberPopupSizeAndPositionForDomain
-                  ) {
-                    if (!popupWindowsInfo["savedPositionAndSize"]) {
-                      popupWindowsInfo["savedPositionAndSize"] = {};
+              if (request.handlePopupSizeAndPosition) {
+                if (
+                  userConfigs.rememberPopupSizeAndPosition ||
+                  userConfigs.rememberPopupSizeAndPositionForDomain
+                ) {
+                  if (!popupWindowsInfo["savedPositionAndSize"]) {
+                    popupWindowsInfo["savedPositionAndSize"] = {};
+                  }
+
+                  if (popupWindowsInfo.savedPositionAndSize) {
+                    popupWindowsInfo.savedPositionAndSize.left =
+                      currentWindow.left;
+                    popupWindowsInfo.savedPositionAndSize.top =
+                      currentWindow.top;
+                    popupWindowsInfo.savedPositionAndSize.width =
+                      currentWindow.width;
+                    popupWindowsInfo.savedPositionAndSize.height =
+                      currentWindow.height;
+                  } else {
+                    popupWindowsInfo.savedPositionAndSize = {
+                      top: currentWindow.top,
+                      left: currentWindow.left,
+                      width: currentWindow.width,
+                      height: currentWindow.height,
+                    };
+                  }
+
+                  for (const originWindowId in popupWindowsInfo) {
+                    if (originWindowId === "savedPositionAndSize") {
+                      continue; // Skip the savedPositionAndSize key
                     }
 
-                    if (popupWindowsInfo.savedPositionAndSize) {
-                      popupWindowsInfo.savedPositionAndSize.left =
-                        currentWindow.left;
-                      popupWindowsInfo.savedPositionAndSize.top =
-                        currentWindow.top;
-                      popupWindowsInfo.savedPositionAndSize.width =
-                        currentWindow.width;
-                      popupWindowsInfo.savedPositionAndSize.height =
-                        currentWindow.height;
-                    } else {
-                      popupWindowsInfo.savedPositionAndSize = {
+                    if (popupWindowsInfo[originWindowId][currentWindow.id]) {
+                      const domain =
+                        popupWindowsInfo[originWindowId][currentWindow.id]
+                          .originDomain !== new URL(sender.tab.url).hostname
+                          ? popupWindowsInfo[originWindowId][currentWindow.id]
+                              .originDomain
+                          : new URL(sender.tab.url).hostname;
+
+                      if (!popupWindowsInfo[originWindowId]) {
+                        popupWindowsInfo[originWindowId] = {};
+                      }
+                      popupWindowsInfo[originWindowId][currentWindow.id] = {
+                        windowType: currentWindow.type,
                         top: currentWindow.top,
                         left: currentWindow.left,
                         width: currentWindow.width,
                         height: currentWindow.height,
+                        originDomain: domain,
                       };
-                    }
 
-                    for (const originWindowId in popupWindowsInfo) {
-                      if (originWindowId === "savedPositionAndSize") {
-                        continue; // Skip the savedPositionAndSize key
-                      }
-
-                      if (popupWindowsInfo[originWindowId][currentWindow.id]) {
-                        const domain =
-                          popupWindowsInfo[originWindowId][currentWindow.id]
-                            .originDomain !== new URL(sender.tab.url).hostname
-                            ? popupWindowsInfo[originWindowId][currentWindow.id]
-                                .originDomain
-                            : new URL(sender.tab.url).hostname;
-
-                        if (!popupWindowsInfo[originWindowId]) {
-                          popupWindowsInfo[originWindowId] = {};
-                        }
-                        popupWindowsInfo[originWindowId][currentWindow.id] = {
-                          windowType: currentWindow.type,
-                          top: currentWindow.top,
-                          left: currentWindow.left,
-                          width: currentWindow.width,
-                          height: currentWindow.height,
-                          originDomain: domain,
-                        };
-
-                        // Handle domain-specific saving
-                        if (
-                          userConfigs.rememberPopupSizeAndPositionForDomain &&
-                          sender &&
-                          sender.tab &&
-                          sender.tab.url
-                        ) {
-                          try {
-                            if (!popupWindowsInfo["savedPositionAndSize"]) {
-                              popupWindowsInfo["savedPositionAndSize"] = {};
-                            }
-                            // Ensure domain-specific object exists
-                            if (
-                              !popupWindowsInfo["savedPositionAndSize"][domain]
-                            ) {
-                              popupWindowsInfo["savedPositionAndSize"][domain] =
-                                {};
-                            }
-                            // Store the position and size under the domain
-                            // Update or add the domain-specific position and size
-                            popupWindowsInfo.savedPositionAndSize[domain] = {
-                              top: currentWindow.top,
-                              left: currentWindow.left,
-                              width: currentWindow.width,
-                              height: currentWindow.height,
-                            };
-                          } catch (error) {
-                            console.error(
-                              "Invalid URL for domain extraction:",
-                              error,
-                            );
+                      // Handle domain-specific saving
+                      if (
+                        userConfigs.rememberPopupSizeAndPositionForDomain &&
+                        sender &&
+                        sender.tab &&
+                        sender.tab.url
+                      ) {
+                        try {
+                          if (!popupWindowsInfo["savedPositionAndSize"]) {
+                            popupWindowsInfo["savedPositionAndSize"] = {};
                           }
+                          // Ensure domain-specific object exists
+                          if (
+                            !popupWindowsInfo["savedPositionAndSize"][domain]
+                          ) {
+                            popupWindowsInfo["savedPositionAndSize"][domain] =
+                              {};
+                          }
+                          // Store the position and size under the domain
+                          // Update or add the domain-specific position and size
+                          popupWindowsInfo.savedPositionAndSize[domain] = {
+                            top: currentWindow.top,
+                            left: currentWindow.left,
+                            width: currentWindow.width,
+                            height: currentWindow.height,
+                          };
+                        } catch (error) {
+                          console.error(
+                            "Invalid URL for domain extraction:",
+                            error,
+                          );
                         }
-
-                        chrome.storage.local.set({ popupWindowsInfo }, () => {
-                          addBoundsChangeListener(
-                            sender.tab.url,
-                            currentWindow.id,
-                            originWindowId,
-                          );
-                          chrome.windows.onRemoved.addListener(
-                            windowRemovedListener,
-                          );
-                        });
                       }
+
+                      chrome.storage.local.set({ popupWindowsInfo }, () => {
+                        addBoundsChangeListener(
+                          sender.tab.url,
+                          currentWindow.id,
+                          originWindowId,
+                        );
+                        chrome.windows.onRemoved.addListener(
+                          windowRemovedListener,
+                        );
+                      });
                     }
                   }
-
-                  sendResponse({ status: "item added" });
                 }
+
+                sendResponse({ status: "item added" });
               }
 
               if (request.action === "closeCurrentTab") {
