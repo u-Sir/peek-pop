@@ -1,3 +1,6 @@
+0.0.84
+- Refine logic related to preview window.
+
 0.0.83
 - Refine title prefix handling.
 - Refine URL processing.
