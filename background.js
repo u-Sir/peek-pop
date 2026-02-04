@@ -965,7 +965,7 @@ function createPopupWindow(
                   openPopups.push(tabs[0].id);
                 if (!openPopups.includes(newWindow.tabs[0].id))
                   openPopups.push(newWindow.tabs[0].id);
-                payload = {
+                const payload = {
                   action: "INIT_POPUP_LISTENER",
                   originalTabId: tabs[0].id,
                 };
