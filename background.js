@@ -671,7 +671,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         let currentTab = tabs[0];
                         if (sender.tab) currentTab = sender.tab;
                         handleLinkInPopup(
-                          request.trigger,
                           request.linkUrl,
                           currentTab,
                           currentWindow,
@@ -704,7 +703,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         if (sender.tab) currentTab = sender.tab;
 
                         handleLinkInPopup(
-                          request.trigger,
                           urls,
                           currentTab,
                           currentWindow,
@@ -743,7 +741,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Handle link opening in a popup
 function handleLinkInPopup(
-  trigger,
   linkUrl,
   tab,
   currentWindow,
@@ -808,7 +805,6 @@ function handleLinkInPopup(
             ({ left: dx, top: dy, width, height } = savedPositionAndSize);
 
             createPopupWindow(
-              trigger,
               linkUrl,
               tab,
               windowType,
@@ -824,7 +820,6 @@ function handleLinkInPopup(
             );
           } else {
             defaultPopupCreation(
-              trigger,
               linkUrl,
               tab,
               currentWindow,
@@ -849,7 +844,6 @@ function handleLinkInPopup(
         chrome.storage.local.get(["popupWindowsInfo"], (result) => {
           const popupWindowsInfo = result.popupWindowsInfo || {};
           defaultPopupCreation(
-            trigger,
             linkUrl,
             tab,
             currentWindow,
@@ -876,7 +870,6 @@ function handleLinkInPopup(
 
 // Function to create a popup window
 function createPopupWindow(
-  trigger,
   linkUrl,
   tab,
   windowType,
@@ -1009,7 +1002,6 @@ function createPopupWindow(
 
 // Function to handle default popup creation
 function defaultPopupCreation(
-  trigger,
   linkUrl,
   tab,
   currentWindow,
@@ -1055,7 +1047,6 @@ function defaultPopupCreation(
   );
 
   createPopupWindow(
-    trigger,
     linkUrl,
     tab,
     windowType,
