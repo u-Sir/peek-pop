@@ -17,7 +17,6 @@ let hoverlinkOrText = false;
 let shouldResetClickState = false;
 
 let showContextMenuItem = false;
-let contextMenuEnabled = false;
 
 let rafId = null;
 let resizeTimer = null;
@@ -739,7 +738,7 @@ function changeCursorOnHover(e, anchorElement) {
 function handleContextMenu(e) {
   chrome.runtime.sendMessage(
     {
-      addContextMenuItem: contextMenuEnabled,
+      handlePopupSizeAndPosition: true,
       lastClientX: e.screenX,
       lastClientY: e.screenY,
     },
@@ -1074,9 +1073,9 @@ function handleMouseDown(e) {
     const message = closeWhenFocusedInitialWindow
       ? {
           action: "windowRegainedFocus",
-          addContextMenuItem: contextMenuEnabled,
+          handlePopupSizeAndPosition: true,
         }
-      : { addContextMenuItem: contextMenuEnabled };
+      : { handlePopupSizeAndPosition: true };
     chrome.runtime.sendMessage(message);
   } catch (error) {
     console.error("Error loading user configs:", error);
@@ -2188,8 +2187,7 @@ async function checkUrlAndToggleListeners() {
       if (chrome.runtime.lastError || !response) return;
 
       if (response.isPreviewWindow) {
-        contextMenuEnabled = true;
-        chrome.runtime.sendMessage({ addContextMenuItem: contextMenuEnabled });
+        chrome.runtime.sendMessage({ handlePopupSizeAndPosition: true });
 
         if (addPrefixToTitle) {
           let initialized = false;
@@ -2992,9 +2990,9 @@ window.addEventListener("focus", async () => {
     const message = closeWhenFocusedInitialWindow
       ? {
           action: "windowRegainedFocus",
-          addContextMenuItem: contextMenuEnabled,
+          handlePopupSizeAndPosition: true,
         }
-      : { addContextMenuItem: contextMenuEnabled };
+      : { handlePopupSizeAndPosition: true };
     chrome.runtime.sendMessage(message);
   } catch (error) {
     // console.error('Error loading user configs:', error);
@@ -3647,11 +3645,6 @@ function removeBlurOverlay() {
 }
 
 chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.enableContextMenu) {
-    contextMenuEnabled = true;
-    chrome.runtime.sendMessage({ addContextMenuItem: true });
-  }
-
   if (msg.trigger === "contextMenu") {
     handlePreviewMode(
       { isTrusted: true, screenX: msg.x, screenY: msg.y },
