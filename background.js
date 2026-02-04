@@ -69,7 +69,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         url: chrome.runtime.getURL("options/options.html"),
       });
     }
-
+    
+    chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
       id: "showContextMenuItem",
       title: chrome.i18n.getMessage("previewItem"),
