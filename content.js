@@ -1792,8 +1792,6 @@ async function handleDragStart(e, anchorElement) {
 
       const linkUrl = findUrl(linkElement);
 
-      if (!linkUrl) return;
-
       const imageElement =
         e.target instanceof HTMLElement &&
         (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
@@ -2057,7 +2055,6 @@ async function handleDragStart(e, anchorElement) {
 
     const linkUrl = findUrl(linkElement);
 
-    if (!linkUrl) return;
     const imageElement =
       e.target instanceof HTMLElement &&
       (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
@@ -3330,8 +3327,6 @@ async function handleMouseOver(e) {
           (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
       const linkUrl = findUrl(linkElement);
-
-      if (!linkUrl) return;
 
       const imageElement =
         e.target instanceof HTMLElement &&
