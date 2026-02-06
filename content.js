@@ -742,7 +742,7 @@ function handleContextMenu(e) {
       lastClientX: e.screenX,
       lastClientY: e.screenY,
     },
-    (response) => {
+    () => {
       if (chrome.runtime.lastError) {
         console.error("Runtime error:", chrome.runtime.lastError);
       } else {
@@ -1672,8 +1672,6 @@ async function handleDragStart(e) {
         (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
     const linkUrl = findUrl(linkElement);
-
-    if (!linkUrl) return;
 
     const imageElement =
       e.target instanceof HTMLElement &&
@@ -3210,9 +3208,7 @@ async function handleMouseOver(e) {
         (e.target instanceof HTMLElement &&
           (e.target.tagName === "A" ? e.target : e.target.closest("a")));
 
-      const linkUrl = lfindUrl(linkElement);
-
-      if (!linkUrl) return;
+      const linkUrl = findUrl(linkElement);
 
       const imageElement =
         e.target instanceof HTMLElement &&
