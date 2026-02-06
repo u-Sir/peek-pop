@@ -1,4 +1,4 @@
-0.0.84
+0.0.85
 - Fixed an issue where selecting text or images to search was not working.
 
 0.0.84
