@@ -1,4 +1,7 @@
 0.0.84
+- Fixed an issue where selecting text or images to search was not working.
+
+0.0.84
 - Refine logic related to preview window.
 
 0.0.83
