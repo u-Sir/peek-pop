@@ -3181,7 +3181,6 @@ async function handleMouseOver(e) {
 
   const linkUrl = findUrl(linkElement);
 
-  if (!linkUrl) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
   if (linkHint && parseInt(hoverTimeout, 10) === 0) {
