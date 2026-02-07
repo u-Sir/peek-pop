@@ -108,4 +108,4 @@ The preview popup window does not work properly in `fullscreen` mode.
 For best results, use the window in non-fullscreen mode.
 
 # Source
-Source code available in releases or branches.
+Source code available in releases or source_code.

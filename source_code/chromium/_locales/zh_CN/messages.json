@@ -1,0 +1,308 @@
+{
+    "popupInBackground": {
+        "message": "后台弹出"
+    },
+    "hoverPopupInBackground": {
+        "message": "后台弹出"
+    },
+    "previewModePopupInBackground": {
+        "message": "后台弹出"
+    },
+    "popAction": {
+        "message": "弹出插件图标的页面"
+    },
+    "extensionName": {
+        "message": "Peek Pop：链接预览&搜索&稍后阅读"
+    },
+    "extensionDescription": {
+        "message": "集预览、搜索、稍后阅读于一体的轻量级开源浏览器插件"
+    },
+    "popupHeight": {
+        "message": "高度 (px)"
+    },
+    "popupWidth": {
+        "message": "宽度 (px)"
+    },
+    "popupHeightInPercentage": {
+        "message": "高度（%）：0=禁用"
+    },
+    "popupWidthInPercentage": {
+        "message": "宽度（%）：0=禁用"
+    },
+    "closeWhenFocusedInitialWindow": {
+        "message": "焦点回到原窗口"
+    },
+    "closeWhenScrollingInitialWindow": {
+        "message": "原窗口上滚动"
+    },
+    "sendBackByMiddleClickEnable": {
+        "message": "鼠标中键（滚轮）单击页面空白处"
+    },
+    "tryOpenAtMousePosition": {
+        "message": "尝试在鼠标附近弹出"
+    },
+    "openPageInMainWindow": {
+        "message": "在主窗口中打开页面"
+    },
+    "disabledUrls": {
+        "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
+    },
+    "sendPageBack": {
+        "message": "发送当前页面到原窗口"
+    },
+    "blurEnabled": {
+        "message": "启用背景模糊"
+    },
+    "blurRemoval": {
+        "message": "启用自动消除模糊"
+    },
+    "blurPx": {
+        "message": "模糊程度："
+    },
+    "blurTime": {
+        "message": "模糊效果过渡时间（秒）："
+    },
+    "modifiedKey": {
+        "message": "按下所选键时响应（设置后请自行测试）"
+    },
+    "searchEngineSelection": {
+        "message": "搜索引擎"
+    },
+    "custom": {
+        "message": "自定义（选中文本：%s）"
+    },
+    "searchDisable": {
+        "message": "禁用"
+    },
+    "noneKey": {
+        "message": "无"
+    },
+    "circle": {
+        "message": "圆圈"
+    },
+    "bar": {
+        "message": "条状"
+    },
+    "popupSettings": {
+        "message": "弹窗"
+    },
+    "blacklist": {
+        "message": "黑名单"
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "记住最后弹出窗口的大小和位置"
+    },
+    "normal": {
+        "message": "普通"
+    },
+    "windowType": {
+        "message": "弹出窗口类型："
+    },
+    "closedByEsc": {
+        "message": "按 Esc（开启后会覆盖页面 Esc 原有行为）"
+    },
+    "dragSettings": {
+        "message": "拖拽"
+    },
+    "dragPx": {
+        "message": "至少移动 px （为 0 时不作检查）："
+    },
+    "dragDirections": {
+        "message": "仅对指定方向响应："
+    },
+    "dragUp": {
+        "message": "上"
+    },
+    "dragDown": {
+        "message": "下"
+    },
+    "dragRight": {
+        "message": "右"
+    },
+    "dragLeft": {
+        "message": "左"
+    },
+    "imgSupport": {
+        "message": "预览图片"
+    },
+    "hoverTimeout": {
+        "message": "悬停时长 ms（为 0 时禁用）"
+    },
+    "urlCheck": {
+        "message": "当选中 URL 文本时，仅显示打开按钮"
+    },
+    "doubleTapKeyToSendPageBack": {
+        "message": "双击所选键（请检查它是否按预期工作）"
+    },
+    "countdownStyle": {
+        "message": "倒计时样式"
+    },
+    "hoverSettings": {
+        "message": "悬停"
+    },
+    "hoverImgSupport": {
+        "message": "预览图片"
+    },
+    "hoverDisabledUrls": {
+        "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
+    },
+    "generalSettingsTab": {
+        "message": "通用"
+    },
+    "exportImportSettings": {
+        "message": "配置信息"
+    },
+    "importButton": {
+        "message": "导入"
+    },
+    "exportButton": {
+        "message": "导出"
+    },
+    "shortcuts": {
+        "message": "快捷键"
+    },
+    "previewModeSettings": {
+        "message": "点击"
+    },
+    "previewModeDisabledUrls": {
+        "message": "不对以下页面内的操作进行响应，每行一条规则，支持正则表达式、通配符、纯文本"
+    },
+    "previewModeEnable": {
+        "message": "点击链接预览"
+    },
+    "imgSearchEnable": {
+        "message": "以图搜图"
+    },
+    "hoverImgSearchEnable": {
+        "message": "以图搜图"
+    },
+    "doubleClickToSwitch": {
+        "message": "双击临时切换当前页面模式：需在非图片、链接上双击，工具栏的插件图标会显示当前状态"
+    },
+    "doubleClickAsClick": {
+        "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "动态弹窗：按域名记住最后的窗口大小和位置"
+    },
+    "closeTrigger": {
+        "message": "关闭方式"
+    },
+    "sendBackTrigger": {
+        "message": "发送回原窗口的触发方式"
+    },
+    "button": {
+        "message": "添加按钮到 'popup' 类型窗口"
+    },
+    "note": {
+        "message": "窗口大小和位置（应用优先级：基于域名的 > 不基于域名的 > 按比例缩小的 >  居中/鼠标附近）"
+    },
+    "staticSize": {
+        "message": "固定窗口大小"
+    },
+    "percentageSize": {
+        "message": "按比例缩小窗口"
+    },
+    "linkHint": {
+        "message": "链接指示器：当鼠标悬停在支持的链接上方时显示一个小图标"
+    },
+    "searchTooltipsEnable": {
+        "message": "启用划词搜索条"
+    },
+    "collectionEnable": {
+        "message": "稍后阅读：通过 Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表"
+    },
+    "linkSettings": {
+        "message": "链接黑名单"
+    },
+    "toolsSettings": {
+        "message": "工具"
+    },
+    "styleSettings": {
+        "message": "样式"
+    },
+    "empty": {
+        "message": "这什么也没有"
+    },
+    "openAll": {
+        "message": "打开全部"
+    },
+    "clearAll": {
+        "message": "清除全部"
+    },
+    "options": {
+        "message": "设置页面"
+    },
+    "clickModeToggle": {
+        "message": "切换点击链接预览模式"
+    },
+    "collectionTimeout": {
+        "message": "至少按住 ms: "
+    },
+    "holdToPreview": {
+        "message": "长按链接预览"
+    },
+    "holdToPreviewTimeout": {
+        "message": "至少按住 ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "长按"
+    },
+    "dbclickToPreview": {
+        "message": "双击链接预览"
+    },
+    "dbclickToPreviewTimeout": {
+        "message": "两次点击之间最大间隔(ms):"
+    },
+    "dbclickToPreviewSettings": {
+        "message": "双击"
+    },
+    "linkDisabledUrls": {
+        "message": "禁止弹出以下 URLs ，每行一条规则，支持正则表达式、通配符、纯文本"
+    },
+    "copyButtonEnable": {
+        "message": "复制页面链接"
+    },
+    "searchTooltipsEngines": {
+        "message": "搜索条内的搜索引擎，每行一个，格式：显示名称=>带有%s的搜索链接"
+    },
+    "dropInEmptyOnly": {
+        "message": "仅拖拽到空白处时才响应"
+    },
+    "sendBackButtonEnable": {
+        "message": "页面返回"
+    },
+    "confirm": {
+        "message": "点击确定保留弹出窗口的大小和位置信息，或点击取消忽略它"
+    },
+    "hoverSpaceEnabled": {
+        "message": "悬停 + 空格键预览链接"
+    },
+    "showPreviewIconOnHoverEnabled": {
+        "message": "悬停时显示预览图标，将鼠标悬停在图标上以预览"
+    },
+    "dotSize": {
+        "message": "预览图标大小（px）： "
+    },
+    "dotRemoveDelay": {
+        "message": "预览图标移除延迟（ms）： "
+    },
+    "dotHoverDelay": {
+        "message": "预览图标悬停延迟（ms）： "
+    },
+    "showContextMenuItem": {
+        "message": "添加「预览链接」到右键菜单，其弹出窗口类型可在「点击」设置选项卡中设置"
+    },
+    "previewItem": {
+        "message": "预览链接"
+    },
+    "removePopupSizeAndPositionInfo": {
+        "message": "清除所有弹窗大小和位置信息"
+    },
+    "maximizeToSendPageBack": {
+        "message": "当预览窗口最大化时"
+    },
+    "addPrefixToTitle": {
+        "message": "为预览窗口标题添加 '[Peek Pop]' 前缀"
+    }
+}

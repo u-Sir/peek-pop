@@ -1,0 +1,306 @@
+{
+    "popAction": {
+        "message": "Open add-on icon popup"
+    },
+    "extensionName": {
+        "message": "Peek Pop: Link Preview & Search & Read Later"
+    },
+    "extensionDescription": {
+        "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later"
+    },
+    "popupHeight": {
+        "message": "Height (px)"
+    },
+    "popupWidth": {
+        "message": "Width (px)"
+    },
+    "popupHeightInPercentage": {
+        "message": "Height (%): 0=off"
+    },
+    "popupWidthInPercentage": {
+        "message": "Width (%): 0=off"
+    },
+    "closeWhenFocusedInitialWindow": {
+        "message": "Focus on original window"
+    },
+    "closeWhenScrollingInitialWindow": {
+        "message": "Scroll on original window"
+    },
+    "sendBackByMiddleClickEnable": {
+        "message": "Middle mouse button (scroll wheel) click on a blank area of the page"
+    },
+    "tryOpenAtMousePosition": {
+        "message": "Try to open at mouse position"
+    },
+    "disabledUrls": {
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text"
+    },
+    "openPageInMainWindow": {
+        "message": "Open page in main window"
+    },
+    "sendPageBack": {
+        "message": "Send Page Back to Original Window"
+    },
+    "blurEnabled": {
+        "message": "Enable background blur"
+    },
+    "enableContainerIdentify": {
+        "message": "Keep open in the same container as original page"
+    },
+    "blurPx": {
+        "message": "Blur intensity: "
+    },
+    "blurTime": {
+        "message": "Blur duration (s): "
+    },
+    "blurRemoval": {
+        "message": "Enable automatic blur removal"
+    },
+    "modifiedKey": {
+        "message": "Response when selected key is pressing (Please test to ensure it meets expectations.)"
+    },
+    "searchEngineSelection": {
+        "message": "Search provider"
+    },
+    "custom": {
+        "message": "Custom (use %s as selected text)"
+    },
+    "searchDisable": {
+        "message": "Disable"
+    },
+    "noneKey": {
+        "message": "None"
+    },
+    "circle": {
+        "message": "Circle"
+    },
+    "bar": {
+        "message": "Bar"
+    },
+    "popupSettings": {
+        "message": "Popup Window"
+    },
+    "blacklist": {
+        "message": "Blacklist"
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "Remember the last popup window's size and position. Scrolling or clicking the page is required"
+    },
+    "normal": {
+        "message": "Normal"
+    },
+    "windowType": {
+        "message": "Popup window type:"
+    },
+    "closedByEsc": {
+        "message": "Press Esc (overrides page's default Esc behavior)"
+    },
+    "dragSettings": {
+        "message": "Drag"
+    },
+    "dragPx": {
+        "message": "At least move px (do not check if 0): "
+    },
+    "dragDirections": {
+        "message": "Response on specificed directions:"
+    },
+    "dragUp": {
+        "message": "Up"
+    },
+    "dragDown": {
+        "message": "Down"
+    },
+    "dragRight": {
+        "message": "Right"
+    },
+    "dragLeft": {
+        "message": "Left"
+    },
+    "imgSupport": {
+        "message": "Image support"
+    },
+    "hoverTimeout": {
+        "message": "hover (ms) to preview ( 0 to disabled )"
+    },
+    "urlCheck": {
+        "message": "Only display the open button if the selected content is a URL"
+    },
+    "doubleTapKeyToSendPageBack": {
+        "message": "Double tap on selected key (Please check if it works as expected.)"
+    },
+    "countdownStyle": {
+        "message": "Countdown style"
+    },
+    "hoverSettings": {
+        "message": "Hover"
+    },
+    "hoverImgSupport": {
+        "message": "Image support"
+    },
+    "hoverDisabledUrls": {
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text"
+    },
+    "generalSettingsTab": {
+        "message": "General"
+    },
+    "exportImportSettings": {
+        "message": "Configurations"
+    },
+    "importButton": {
+        "message": "Import"
+    },
+    "exportButton": {
+        "message": "Export"
+    },
+    "shortcuts": {
+        "message": "Shortcuts"
+    },
+    "dragStartEnable": {
+        "message": "Dragging triggers immediately, without waiting for release"
+    },
+    "previewModeSettings": {
+        "message": "Click"
+    },
+    "previewModeDisabledUrls": {
+        "message": "Do not respond to the following operations within the page. One rule per line, supports regular expressions, wildcards, and plain text"
+    },
+    "previewModeEnable": {
+        "message": "Clicking on the link to preview"
+    },
+    "imgSearchEnable": {
+        "message": "Replace Preview with Image Search"
+    },
+    "hoverImgSearchEnable": {
+        "message": "Replace Preview with Image Search"
+    },
+    "doubleClickToSwitch": {
+        "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar"
+    },
+    "doubleClickAsClick": {
+        "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links"
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "Dynamic popups: Remember the last window size and position for each domain. Scrolling or clicking the page is required"
+    },
+    "closeTrigger": {
+        "message": "Close Trigger"
+    },
+    "sendBackTrigger": {
+        "message": "Send back trigger"
+    },
+    "button": {
+        "message": "Buttons for popup-type windows"
+    },
+    "note": {
+        "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse"
+    },
+    "staticSize": {
+        "message": "Static window size"
+    },
+    "percentageSize": {
+        "message": "Window size by percentage of last window"
+    },
+    "linkHint": {
+        "message": "Link Indicator: displays a hint on hover for supported links"
+    },
+    "searchTooltipsEnable": {
+        "message": "Search Tooltips for selected text"
+    },
+    "collectionEnable": {
+        "message": "Read later: Ctrl + Right-click to add a link or the current page (if on a non-link) to the collection list. The list can be viewed using Alt + U (default) or by clicking the extension icon"
+    },
+    "linkSettings": {
+        "message": "Link Blacklist"
+    },
+    "toolsSettings": {
+        "message": "Tools"
+    },
+    "styleSettings": {
+        "message": "Style"
+    },
+    "empty": {
+        "message": "Nothing here"
+    },
+    "openAll": {
+        "message": "Open all"
+    },
+    "clearAll": {
+        "message": "Clear all"
+    },
+    "options": {
+        "message": "Options page"
+    },
+    "clickModeToggle": {
+        "message": "Toggle click mode"
+    },
+    "collectionTimeout": {
+        "message": "At least hold in ms: "
+    },
+    "holdToPreview": {
+        "message": "Hold the left mouse button to preview"
+    },
+    "holdToPreviewTimeout": {
+        "message": "At least hold in ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "Hold"
+    },
+    "dbclickToPreview": {
+        "message": "Double click on the link to preview"
+    },
+    "dbclickToPreviewTimeout": {
+        "message": "Maximum time gap between clicks (ms):"
+    },
+    "dbclickToPreviewSettings": {
+        "message": "Double click"
+    },
+    "linkDisabledUrls": {
+        "message": "Disable pop-ups for the following URLs, one rule per line, supports regular expressions, wildcards, and plain text"
+    },
+    "copyButtonEnable": {
+        "message": "Copy URL"
+    },
+    "searchTooltipsEngines": {
+        "message": "Search engines in the search bar, one per line, format: Display Name=>Search link with %s"
+    },
+    "dropInEmptyOnly": {
+        "message": "Only respose when drop in empty area"
+    },
+    "sendBackButtonEnable": {
+        "message": "Send Back"
+    },
+    "confirm": {
+        "message": "Click 'OK' to keep the popup window size and position, or 'Cancel' to skip them"
+    },
+    "hoverSpaceEnabled": {
+        "message": "Hover + Spacebar to preview the link"
+    },
+    "showPreviewIconOnHoverEnabled": {
+        "message": "Show preview icon on hover, hover on the icon to preview"
+    },
+    "dotSize": {
+        "message": "Preview icon size (px): "
+    },
+    "dotRemoveDelay": {
+        "message": "Preview icon remove delay (ms): "
+    },
+    "dotHoverDelay": {
+        "message": "Preview icon hover delay (ms): "
+    },
+    "showContextMenuItem": {
+        "message": "Add 'Preview link' to context menu, its popup window type can be configured in the 'Click' tab of the settings"
+    },
+    "previewItem": {
+        "message": "Preview link"
+    },
+    "removePopupSizeAndPositionInfo": {
+        "message": "Remove All Popup Size and Position Info"
+    },
+    "maximizeToSendPageBack": {
+        "message": "When the preview window is maximized"
+    },
+    "addPrefixToTitle": {
+        "message": "Add '[Peek Pop]' prefix to the preview window title"
+    }
+
+}

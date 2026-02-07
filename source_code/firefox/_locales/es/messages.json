@@ -1,0 +1,306 @@
+{
+    "popAction": {
+        "message": "Abrir el icono emergente del complemento"
+    },
+    "extensionName": {
+        "message": "Peek Pop: Vista previa del enlace & Buscar & Leer más tarde"
+    },
+    "extensionDescription": {
+        "message": "Una extensión de navegador ligera y de código abierto permite previsualizar, buscar y guardar páginas para leerlas más tarde"
+    },
+    "popupHeight": {
+        "message": "Altura (px)"
+    },
+    "popupWidth": {
+        "message": "Ancho (px)"
+    },
+    "popupHeightInPercentage": {
+        "message": "Altura (%): 0=desactivado"
+    },
+    "popupWidthInPercentage": {
+        "message": "Ancho (%): 0=desactivado"
+    },
+    "closeWhenFocusedInitialWindow": {
+        "message": "Enfocar la ventana original"
+    },
+    "closeWhenScrollingInitialWindow": {
+        "message": "Desplazar la ventana original"
+    },
+    "sendBackByMiddleClickEnable": {
+        "message": "Haz clic con el botón central del ratón (la rueda) en un área vacía de la página"
+    },
+    "tryOpenAtMousePosition": {
+        "message": "Intente abrir en la posición del mouse"
+    },
+    "disabledUrls": {
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano"
+    },
+    "openLinkInMainWindow": {
+        "message": "Abrir página en la ventana principal"
+    },
+    "sendPageBack": {
+        "message": "Enviar página de vuelta a la ventana original"
+    },
+    "blurEnabled": {
+        "message": "Habilitar desenfoque de fondo"
+    },
+    "enableContainerIdentify": {
+        "message": "Mantener abierto en el mismo contenedor que la página original"
+    },
+    "blurPx": {
+        "message": "Intensidad de desenfoque: "
+    },
+    "blurTime": {
+        "message": "Duración del desenfoque (s): "
+    },
+    "blurRemoval": {
+        "message": "Habilitar eliminación automática del desenfoque"
+    },
+    "modifiedKey": {
+        "message": "Respuesta cuando se presiona la tecla seleccionada (Por favor, prueba para asegurarte de que cumple con las expectativas.)"
+    },
+    "searchEngineSelection": {
+        "message": "Proveedor de búsqueda"
+    },
+    "custom": {
+        "message": "URL de búsqueda personalizada (usa %s como texto seleccionado)"
+    },
+    "searchDisable": {
+        "message": "Desactivar búsqueda en ventana emergente"
+    },
+    "noneKey": {
+        "message": "Ninguno"
+    },
+    "circle": {
+        "message": "Círculo"
+    },
+    "bar": {
+        "message": "Barra"
+    },
+    "popupSettings": {
+        "message": "Ventana emergente"
+    },
+    "blacklist": {
+        "message": "Lista negra"
+    },
+    "rememberPopupSizeAndPosition": {
+        "message": "Recuerda el tamaño y la posición de la última ventana emergente. Es necesario desplazarse o hacer clic en la página"
+    },
+    "normal": {
+        "message": "normal"
+    },
+    "windowType": {
+        "message": "Tipo de ventana emergente:"
+    },
+    "closedByEsc": {
+        "message": "Presiona Esc (anula el comportamiento predeterminado de Esc en la página)"
+    },
+    "dragSettings": {
+        "message": "Arrastrar"
+    },
+    "dragPx": {
+        "message": "Mover al menos px (no comprobar si es 0): "
+    },
+    "dragDirections": {
+        "message": "Responder en direcciones especificadas:"
+    },
+    "dragUp": {
+        "message": "Arriba"
+    },
+    "dragDown": {
+        "message": "Abajo"
+    },
+    "dragRight": {
+        "message": "Derecha"
+    },
+    "dragLeft": {
+        "message": "Izquierda"
+    },
+    "imgSupport": {
+        "message": "Soporte de imagen"
+    },
+    "hoverTimeout": {
+        "message": "hover to preview"
+    },
+    "urlCheck": {
+        "message": "Mostrar el botón de abrir solo si el contenido seleccionado es una URL"
+    },
+    "doubleTapKeyToSendPageBack": {
+        "message": "Toca dos veces la tecla seleccionada (comprueba si funciona como esperas)"
+    },
+    "countdownStyle": {
+        "message": "Estilo de cuenta regresiva"
+    },
+    "hoverSettings": {
+        "message": "Desplegar"
+    },
+    "hoverImgSupport": {
+        "message": "Soporte de imagen"
+    },
+    "hoverDisabledUrls": {
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano"
+    },
+    "generalSettingsTab": {
+        "message": "General"
+    },
+    "exportImportSettings": {
+        "message": "Configuraciones"
+    },
+    "importButton": {
+        "message": "Importar"
+    },
+    "exportButton": {
+        "message": "Exportar"
+    },
+    "shortcuts": {
+        "message": "Atajos"
+    },
+    "dragStartEnable": {
+        "message": "El arrastre se activa inmediatamente, sin esperar a soltar"
+    },
+    "previewModeSettings": {
+        "message": "Hacer clic"
+    },
+    "previewModeDisabledUrls": {
+        "message": "No responder a las siguientes operaciones dentro de la página. Una regla por línea, admite expresiones regulares, comodines y texto plano"
+    },
+    "previewModeEnable": {
+        "message": "Hacer clic en el enlace para previsualizar"
+    },
+    "imgSearchEnable": {
+        "message": "Reemplazar Previsualización con Búsqueda de Imágenes"
+    },
+    "hoverImgSearchEnable": {
+        "message": "Reemplazar Previsualización con Búsqueda de Imágenes"
+    },
+    "doubleClickToSwitch": {
+        "message": "Doble clic fuera de imágenes/enlaces para alternar. El estado se muestra en el ícono de la extensión en la barra de herramientas"
+    },
+    "doubleClickAsClick": {
+        "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces"
+    },
+    "rememberPopupSizeAndPositionForDomain": {
+        "message": "Ventanas emergentes dinámicas: recuerda el último tamaño y posición de la ventana para cada dominio. Es necesario desplazarse o hacer clic en la página"
+    },
+    "closeTrigger": {
+        "message": "Disparador de cierre"
+    },
+    "sendBackTrigger": {
+        "message": "Disparador de envío de vuelta"
+    },
+    "button": {
+        "message": "Botones para ventanas tipo popup"
+    },
+    "note": {
+        "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón"
+    },
+    "staticSize": {
+        "message": "Tamaño de ventana fijo"
+    },
+    "percentageSize": {
+        "message": "Tamaño de ventana por porcentaje de la última ventana"
+    },
+    "linkHint": {
+        "message": "Indicador de enlace: muestra una pista al pasar el cursor sobre los enlaces compatibles"
+    },
+    "searchTooltipsEnable": {
+        "message": "Buscar información emergente para el texto seleccionado"
+    },
+    "collectionEnable": {
+        "message": "Leer más tarde: Ctrl + clic derecho para agregar un enlace o la página actual (si no es un enlace) a la lista de colección. La lista se puede ver usando Alt + U (por defecto) o haciendo clic en el icono de la extensión"
+    },
+    "linkSettings": {
+        "message": "Lista negra de enlaces"
+    },
+    "toolsSettings": {
+        "message": "Herramientas"
+    },
+    "styleSettings": {
+        "message": "Estilo"
+    },
+    "empty": {
+        "message": "No hay nada aquí"
+    },
+    "openAll": {
+        "message": "Abrir todos los enlaces"
+    },
+    "clearAll": {
+        "message": "Eliminar todos los enlaces"
+    },
+    "options": {
+        "message": "Página de opciones"
+    },
+    "clickModeToggle": {
+        "message": "Alternar modo de clic"
+    },
+    "collectionTimeout": {
+        "message": "Tiempo mínimo en ms: "
+    },
+    "holdToPreview": {
+        "message": "Mantén presionado el botón izquierdo del mouse para previsualizar"
+    },
+    "holdToPreviewTimeout": {
+        "message": "Mantén presionado al menos en ms: "
+    },
+    "holdToPreviewSettings": {
+        "message": "Mantener"
+    },
+    "dbclickToPreview": {
+        "message": "Haz doble clic en el enlace para obtener una vista previa"
+    },
+    "dbclickToPreviewTimeout": {
+        "message": "Intervalo máximo entre clics (ms):"
+    },
+    "dbclickToPreviewSettings": {
+        "message": "Doble clic"
+    },
+    "linkDisabledUrls": {
+        "message": "Deshabilitar ventanas emergentes para las siguientes URLs, una regla por línea, admite expresiones regulares, comodines y texto plano"
+    },
+    "copyButtonEnable": {
+        "message": "Copiar URL"
+    },
+    "searchTooltipsEngines": {
+        "message": "Motores de búsqueda en la barra de búsqueda, uno por línea, formato: Nombre a mostrar=>Enlace de búsqueda con %s"
+    },
+    "dropInEmptyOnly": {
+        "message": "Solo responde cuando se suelta en un área vacía"
+    },
+    "sendBackButtonEnable": {
+        "message": "Enviar de vuelta"
+    },
+    "confirm": {
+        "message": "Haga clic en 'Aceptar' para mantener el tamaño y la posición de la ventana emergente, o en 'Cancelar' para omitirlos"
+    },
+    "hoverSpaceEnabled": {
+        "message": "Flotar + Barra espaciadora para previsualizar el enlace"
+    },
+    "showPreviewIconOnHoverEnabled": {
+        "message": "Mostrar icono de vista previa al pasar el cursor, pasar el cursor sobre el icono para previsualizar"
+    },
+    "dotSize": {
+        "message": "Tamaño del icono de vista previa (px): "
+    },
+    "dotRemoveDelay": {
+        "message": "Retardo de eliminación del icono (ms): "
+    },
+    "dotHoverDelay": {
+        "message": "Retardo de desplazamiento del icono (ms): "
+    },
+    "showContextMenuItem": {
+        "message": "Agregar 'Previsualizar enlace' al menú contextual, su tipo de ventana emergente se puede configurar en la pestaña 'Clic' de la configuración"
+    },
+    "previewItem": {
+        "message": "Previsualizar enlace"
+    },
+    "removePopupSizeAndPositionInfo": {
+        "message": "Eliminar información de tamaño y posición de la ventana emergente"
+    },
+    "maximizeToSendPageBack": {
+        "message": "Cuando la ventana de vista previa está maximizada"
+    },
+    "addPrefixToTitle": {
+        "message": "Agregar prefijo '[Peek Pop]' al título de la ventana de vista previa"
+    }
+
+}
