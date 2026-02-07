@@ -22,13 +22,13 @@ jobs:
         id: firefox_version
         run: |
           VERSION=$(jq -r '.version' source_code/firefox/manifest.json)
-          echo "FIREFOX_EXT_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Pack Firefox extension
         uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1.0.8
         with:
           extensionDir: 'source_code/firefox'
-          zipFilePath: build/firefox/Peek_Pop-firefox-${{ env.FIREFOX_EXT_VERSION }}.zip
+          zipFilePath: build/firefox/Peek_Pop-firefox-${{ steps.firefox_version.outputs.version }}.zip
           zipIgnore: 'CHANGELOG.md|LICENSE|manifest_for_v3.json'
 
       # ========== Chromium ==========
@@ -56,8 +56,8 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.FIREFOX_EXT_VERSION }}
-          name: ${{ env.FIREFOX_EXT_VERSION }}
+          tag_name: ${{ steps.firefox_version.outputs.version }}
+          name: ${{ steps.firefox_version.outputs.version }}
           body: |
             ${{ github.event.inputs.release_notes }}
           draft: false
