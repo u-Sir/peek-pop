@@ -156,7 +156,7 @@
         "message": "快捷键"
     },
     "dragStartEnable": {
-        "message": "拖拽立即触发，不等待释放。（无方向检测）"
+        "message": "拖拽立即触发，不等待释放"
     },
     "previewModeSettings": {
         "message": "点击"

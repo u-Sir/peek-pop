@@ -1,3 +1,6 @@
+0.0.87
+- Refine option logic related to dragging.
+
 0.0.86
 - Fixed an issue where selecting text or images to search was not working.
 

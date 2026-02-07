@@ -242,11 +242,27 @@ function init() {
         const isCheck = this.checked;
         document.querySelectorAll('input[name="dragDirections"]').forEach(checkbox => {
             if (isCheck) {
-                // set all checkboxes greyed out
+                checkbox.checked = true;
                 checkbox.disabled = true;
+
                 addGreenDot("drag_settings");
+
+                saveConfig('dragDirections', ['up', 'down', 'left', 'right']);
+                saveConfig('dragPx', 0);
+                saveConfig('dropInEmptyOnly', false);
+
+                document.getElementById('dragPx').value = 0;
+                document.getElementById('dragPxOutput').textContent = 0;
+                document.getElementById('dragPx').disabled = true;
+
+                document.getElementById('dropInEmptyOnly').disabled = true;
+                document.getElementById('dropInEmptyOnly').checked = false;
+
             } else {
                 checkbox.disabled = false;
+                document.getElementById('dragPx').disabled = false;        
+                document.getElementById('dropInEmptyOnly').disabled = false;
+
                 if (!isAnyDirectionChecked()) {
                     removeGreenDot("drag_settings");
                 }
@@ -450,6 +466,17 @@ function setupPage(userConfigs) {
     } else {
         removeGreenDot("drag_settings");
     }
+
+
+    if (userConfigs.dragStartEnable) {
+        document.querySelectorAll('input[name="dragDirections"]').forEach(checkbox => {
+            checkbox.disabled = true;
+        });
+        document.getElementById('dropInEmptyOnly').disabled = true;
+        document.getElementById('dropInEmptyOnly').checked = false;
+    }
+
+
     const groups = [
         { checkbox: "searchTooltipsEnable", group: "searchTooltipsGroup" },
         { checkbox: "blurEnabled", group: "blurEffectGroup" },
@@ -671,6 +698,17 @@ function initializeSlider(id, defaultValue) {
                 saveConfig('linkHint', false);
             } else {
                 linkHintCheckbox.disabled = false;  // Reset the checkbox
+            }
+        });
+    }
+
+    if (id === 'dragPx') {
+        chrome.storage.local.get('dragStartEnable', (data) => {
+            if (data.dragStartEnable) {
+                input.disabled = true;
+                input.value = 0;
+                output.textContent = 0;
+                saveConfig('dragPx', 0);
             }
         });
     }

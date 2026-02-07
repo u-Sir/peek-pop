@@ -156,7 +156,7 @@
         "message": "Shortcuts"
     },
     "dragStartEnable": {
-        "message": "Dragging triggers immediately, without waiting for release. (No direction detection)"
+        "message": "Dragging triggers immediately, without waiting for release"
     },
     "previewModeSettings": {
         "message": "Click"
