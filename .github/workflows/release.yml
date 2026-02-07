@@ -15,7 +15,7 @@ jobs:
     steps:
       # Checkout main 分支
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # ========== Firefox ==========
       - name: Get Firefox version
@@ -25,7 +25,7 @@ jobs:
           echo "FIREFOX_EXT_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Pack Firefox extension
-        uses: cardinalby/webext-buildtools-pack-extension-dir-action@1.0.8
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1.0.8
         with:
           extensionDir: 'source_code/firefox'
           zipFilePath: build/firefox/Peek_Pop-firefox-${{ env.FIREFOX_EXT_VERSION }}.zip
@@ -39,7 +39,7 @@ jobs:
           echo "CHROMIUM_EXT_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Pack Chromium extension
-        uses: cardinalby/webext-buildtools-pack-extension-dir-action@1.0.8
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1.0.8
         with:
           extensionDir: 'source_code/chromium'
           zipFilePath: build/chromium/Peek_Pop-chromium-${{ env.CHROMIUM_EXT_VERSION }}.zip
