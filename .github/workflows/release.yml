@@ -36,13 +36,13 @@ jobs:
         id: chromium_version
         run: |
           VERSION=$(jq -r '.version' source_code/chromium/manifest.json)
-          echo "CHROMIUM_EXT_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Pack Chromium extension
         uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
         with:
           extensionDir: 'source_code/chromium'
-          zipFilePath: build/chromium/Peek_Pop-chromium-${{ env.CHROMIUM_EXT_VERSION }}.zip
+          zipFilePath: build/chromium/Peek_Pop-chromium-${{ steps.chromium_version.outputs.version }}.zip
           zipIgnore: 'CHANGELOG.md|LICENSE'
 
       # ========== Artifacts ==========
