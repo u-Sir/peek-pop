@@ -25,7 +25,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Pack Firefox extension
-        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1.0.8
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
         with:
           extensionDir: 'source_code/firefox'
           zipFilePath: build/firefox/Peek_Pop-firefox-${{ steps.firefox_version.outputs.version }}.zip
@@ -39,7 +39,7 @@ jobs:
           echo "CHROMIUM_EXT_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Pack Chromium extension
-        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1.0.8
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
         with:
           extensionDir: 'source_code/chromium'
           zipFilePath: build/chromium/Peek_Pop-chromium-${{ env.CHROMIUM_EXT_VERSION }}.zip
