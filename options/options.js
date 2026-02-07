@@ -79,59 +79,36 @@ function init() {
         }
     };
 
-    document.getElementById('imgSearchEnable').addEventListener('change', function () {
-        const imgSupportCheckbox = document.getElementById('imgSupport');
-        if (this.checked) {
-            imgSupportCheckbox.checked = this.checked;
-            saveConfig('imgSupport', this.checked);
-        }
 
+    const controlPairs = [
+        { optionId: 'imgSearchEnable', relatedOptionId: 'imgSupport', positive: true, linkage: 'checkOnly' },
+        { optionId: 'hoverImgSearchEnable', relatedOptionId: 'hoverImgSupport', positive: true, linkage: 'checkOnly' },
+
+        { optionId: 'imgSupport', relatedOptionId: 'imgSearchEnable', positive: false, linkage: 'uncheckOnly' },
+        { optionId: 'hoverImgSupport', relatedOptionId: 'hoverImgSearchEnable', positive: false, linkage: 'uncheckOnly' },
+
+        { optionId: 'hoverSpaceEnabled', relatedOptionId: 'hoverSpaceEnabled', positive: true, linkage: 'both' },
+        { optionId: 'showPreviewIconOnHoverEnabled', relatedOptionId: 'showPreviewIconOnHoverEnabled', positive: true, linkage: 'both' }
+    ];
+
+    controlPairs.forEach(pair => {
+        document.getElementById(pair.optionId).addEventListener('change', function () {
+            const relatedOptionIdCheckbox = document.getElementById(pair.relatedOptionId);
+
+            if (pair.linkage === 'checkOnly' && this.checked) {
+                relatedOptionIdCheckbox.checked = true;
+                saveConfig(pair.relatedOptionId, true);
+            }
+            else if (pair.linkage === 'uncheckOnly' && !this.checked) {
+                relatedOptionIdCheckbox.checked = false;
+                saveConfig(pair.relatedOptionId, false);
+            }
+            else if (pair.linkage === 'both') {
+                saveConfig(pair.relatedOptionId, this.checked);
+            }
+        });
     });
 
-    document.getElementById('hoverSpaceEnabled').addEventListener('change', function () {
-        const hoverSpaceEnabledCheckbox = document.getElementById('hoverSpaceEnabled');
-        if (this.checked) {
-            hoverSpaceEnabledCheckbox.checked = this.checked;
-            saveConfig('hoverSpaceEnabled', this.checked);
-
-        }
-    });
-
-    document.getElementById('showPreviewIconOnHoverEnabled').addEventListener('change', function () {
-        const showPreviewIconOnHoverEnabledCheckbox = document.getElementById('showPreviewIconOnHoverEnabled');
-        if (this.checked) {
-            showPreviewIconOnHoverEnabledCheckbox.checked = this.checked;
-            saveConfig('showPreviewIconOnHoverEnabled', this.checked);
-
-        }
-    });
-
-    document.getElementById('hoverImgSearchEnable').addEventListener('change', function () {
-        const hoverImgSupportCheckbox = document.getElementById('hoverImgSupport');
-        if (this.checked) {
-            hoverImgSupportCheckbox.checked = this.checked;
-            saveConfig('hoverImgSupport', this.checked);
-
-        }
-    });
-
-    document.getElementById('imgSupport').addEventListener('change', function () {
-        const imgSearchEnableCheckbox = document.getElementById('imgSearchEnable');
-        if (!this.checked) {
-            imgSearchEnableCheckbox.checked = this.checked;
-            saveConfig('imgSearchEnable', this.checked);
-        }
-
-    });
-
-    document.getElementById('hoverImgSupport').addEventListener('change', function () {
-        const hoverImgSearchEnableCheckbox = document.getElementById('hoverImgSearchEnable');
-        if (!this.checked) {
-            hoverImgSearchEnableCheckbox.checked = this.checked;
-            saveConfig('hoverImgSearchEnable', this.checked);
-
-        }
-    });
 
 
 
