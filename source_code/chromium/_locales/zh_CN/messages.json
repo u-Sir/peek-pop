@@ -189,7 +189,7 @@
         "message": "关闭方式"
     },
     "sendBackTrigger": {
-        "message": "发送回原窗口的触发方式"
+        "message": "发送回原窗口方式"
     },
     "button": {
         "message": "添加按钮到 'popup' 类型窗口"
@@ -210,7 +210,7 @@
         "message": "启用划词搜索条"
     },
     "collectionEnable": {
-        "message": "稍后阅读：通过 Ctrl + 右键单击将链接添加到收藏列表（若点击的不是链接，则添加当前页面链接）。按 Alt + U（默认）或点击扩展图标可查看收藏列表"
+        "message": "稍后阅读：通过 Ctrl + 右键单击添加链接到收藏列表，若点击的不是链接，则添加当前页面链接。按 Alt + U（默认）或点击扩展图标可查看收藏列表"
     },
     "linkSettings": {
         "message": "链接黑名单"
@@ -270,7 +270,7 @@
         "message": "仅拖拽到空白处时才响应"
     },
     "sendBackButtonEnable": {
-        "message": "页面返回"
+        "message": "页面返回原窗口"
     },
     "confirm": {
         "message": "点击确定保留弹窗的大小和位置信息，或点击取消忽略它"
