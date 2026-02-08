@@ -1,5 +1,6 @@
 0.0.88
 - Refine scroll to close logic.
+- Fixed an issue where “Open All” in collections didn’t work.
 
 0.0.87
 - Refine option logic related to dragging.
