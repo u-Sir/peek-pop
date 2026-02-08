@@ -200,16 +200,29 @@ function init() {
     document.getElementById('dbclickToPreview').addEventListener('change', function () {
         if (this.checked) {
             addGreenDot("previewMode_settings")
+
+            document.getElementById('previewModeEnable').checked = false;
+            saveConfig('previewModeEnable', false);
+            updatePreviewCheckboxes(!this.checked);
         } else {
-            removeGreenDot("previewMode_settings")
+            if (document.getElementById('holdToPreview').checked === false) {
+                removeGreenDot("previewMode_settings")
+            }
         }
     });
 
+
     document.getElementById('holdToPreview').addEventListener('change', function () {
         if (this.checked) {
-            addGreenDot("previewMode_settings")
+            addGreenDot("previewMode_settings");
+
+            document.getElementById('previewModeEnable').checked = false;
+            saveConfig('previewModeEnable', false);
+            updatePreviewCheckboxes(!this.checked);
         } else {
-            removeGreenDot("previewMode_settings")
+            if (document.getElementById('dbclickToPreview').checked === false) {
+                removeGreenDot("previewMode_settings")
+            }
         }
     });
 
@@ -490,8 +503,8 @@ function updatePreviewCheckboxes(isPreviewModeEnabled) {
 
     if (isPreviewModeEnabled) {
         // Disable drag/hold preview options
-        setState('dbclickToPreview', { checked: false, disabled: true });
-        setState('holdToPreview', { checked: false, disabled: true });
+        setState('dbclickToPreview', { checked: false, disabled: false });
+        setState('holdToPreview', { checked: false, disabled: false });
 
         // Enable double-click options
         setState('doubleClickToSwitch', { checked: checkboxes.doubleClickToSwitch.checked, disabled: false, save: false });

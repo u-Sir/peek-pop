@@ -178,28 +178,35 @@
             </div>
 
 
-            <h4 id="closeTrigger"></h4>
-            <div class='option' id="option">
-                <label><input type="checkbox" id="closedByEsc"></label>
-            </div>
+            <div class="row">
+                <div class="block">
+                    <h4 id="closeTrigger"></h4>
+                    <div class='option' id="option">
+                        <label><input type="checkbox" id="closedByEsc"></label>
+                    </div>
 
-            <div class='option' id="option">
-                <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></label>
-            </div>
+                    <div class='option' id="option">
+                        <label><input type="checkbox" id="closeWhenFocusedInitialWindow"></label>
+                    </div>
 
-            <div class='option' id="option">
-                <label><input type="checkbox" id="closeWhenScrollingInitialWindow"></label>
-            </div>
+                    <div class='option' id="option">
+                        <label><input type="checkbox" id="closeWhenScrollingInitialWindow"></label>
+                    </div>
 
-            <h4 id="button"></h4>
-            <div class='option' id="option">
-                <label><input type="checkbox" id="copyButtonEnable"></label>
-            </div>
+                </div>
 
-            <div class='option' id="option">
-                <label><input type="checkbox" id="sendBackButtonEnable"></label>
-            </div>
+                <div class="block">
+                    <h4 id="button"></h4>
+                    <div class='option' id="option">
+                        <label><input type="checkbox" id="copyButtonEnable"></label>
+                    </div>
 
+                    <div class='option' id="option">
+                        <label><input type="checkbox" id="sendBackButtonEnable"></label>
+                    </div>
+                </div>
+
+            </div>
             <h4 id="note"></h4>
             <div class='option' id="option">
                 <label><input type="checkbox" id="rememberPopupSizeAndPosition"></label>
@@ -230,11 +237,13 @@
                 <div class="block">
                     <h6 id="percentageSize"></h6>
                     <div class='option'>
-                        <label><input type="number" max="100" min="0" step="1" id="popupHeightInPercentage"> </label>
+                        <label><input type="number" max="100" min="0" step="1" id="popupHeightInPercentage">
+                        </label>
                     </div>
 
                     <div class='option'>
-                        <label><input type="number" max="100" min="0" step="1" id="popupWidthInPercentage"> </label>
+                        <label><input type="number" max="100" min="0" step="1" id="popupWidthInPercentage">
+                        </label>
                     </div>
                 </div>
             </div>
@@ -574,17 +583,35 @@
         <!-- preview mode settings -->
 
         <div id="previewMode_settings" class="tab-content">
-            <h3 id="dbclickToPreviewSettings"></h3>
-            <div class='option' id="option">
-                <label><input type="checkbox" id="dbclickToPreview"></label>
-            </div>
+            <div class="row">
+                <div class="block">
+                    <h3 id="dbclickToPreviewSettings"></h3>
+                    <div class='option' id="option">
+                        <label><input type="checkbox" id="dbclickToPreview"></label>
+                    </div>
 
-            <div class='option'>
-                <label for="dbclickToPreviewTimeout" class="align-label"></label><output for="dbclickToPreviewTimeout"
-                    id="dbclickToPreviewTimeoutOutput"></output>
-                <br>
-                <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150" max="1500"
-                    step="5">
+                    <div class='option'>
+                        <label for="dbclickToPreviewTimeout" class="align-label"></label><output
+                            for="dbclickToPreviewTimeout" id="dbclickToPreviewTimeoutOutput"></output>
+                        <br>
+                        <input type="range" id="dbclickToPreviewTimeout" name="dbclickToPreviewTimeout" min="150"
+                            max="1500" step="5">
+                    </div>
+                </div>
+                <div class="block">
+                    <h3 id="holdToPreviewSettings"></h3>
+                    <div class='option' id="option">
+                        <label><input type="checkbox" id="holdToPreview"></label>
+                    </div>
+
+                    <div class='option'>
+                        <label for="holdToPreviewTimeout" class="align-label"></label><output for="holdToPreviewTimeout"
+                            id="holdToPreviewTimeoutOutput"></output>
+                        <br>
+                        <input type="range" id="holdToPreviewTimeout" name="holdToPreviewTimeout" min="250" max="2000"
+                            step="50">
+                    </div>
+                </div>
             </div>
 
             <h3 id="previewModeSettings"></h3>
@@ -622,18 +649,6 @@
             </div>
 
 
-            <h3 id="holdToPreviewSettings"></h3>
-            <div class='option' id="option">
-                <label><input type="checkbox" id="holdToPreview"></label>
-            </div>
-
-            <div class='option'>
-                <label for="holdToPreviewTimeout" class="align-label"></label><output for="holdToPreviewTimeout"
-                    id="holdToPreviewTimeoutOutput"></output>
-                <br>
-                <input type="range" id="holdToPreviewTimeout" name="holdToPreviewTimeout" min="250" max="2000"
-                    step="50">
-            </div>
 
             <h3 id="previewModePopupSettings"></h3>
             <p>
