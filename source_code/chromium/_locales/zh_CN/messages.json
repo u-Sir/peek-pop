@@ -99,7 +99,7 @@
         "message": "弹出窗口类型："
     },
     "closedByEsc": {
-        "message": "按 Esc（开启后会覆盖页面 Esc 原有行为）"
+        "message": "按 Esc"
     },
     "dragSettings": {
         "message": "拖拽"
@@ -177,10 +177,10 @@
         "message": "以图搜图"
     },
     "doubleClickToSwitch": {
-        "message": "双击临时切换当前页面模式：需在非图片、链接上双击，工具栏的插件图标会显示当前状态"
+        "message": "双击空白处开关当前页面的「点击预览」功能"
     },
     "doubleClickAsClick": {
-        "message": "双击变单击：常用于翻页、标签切换，配合链接指示效果更佳，仅对链接有效"
+        "message": "双击链接变单击"
     },
     "rememberPopupSizeAndPositionForDomain": {
         "message": "动态弹窗：按域名记住最后的窗口大小和位置"
@@ -195,7 +195,7 @@
         "message": "添加按钮到 'popup' 类型窗口"
     },
     "note": {
-        "message": "窗口大小和位置（应用优先级：基于域名的 > 不基于域名的 > 按比例缩小的 >  居中/鼠标附近）"
+        "message": "大小和位置（优先级：基于域名的 → 不基于域名的 → 按比例缩小的 →  居中/鼠标附近）"
     },
     "staticSize": {
         "message": "固定窗口大小"
@@ -204,7 +204,7 @@
         "message": "按比例缩小窗口"
     },
     "linkHint": {
-        "message": "链接指示器：当鼠标悬停在支持的链接上方时显示一个小图标"
+        "message": "链接指示器"
     },
     "searchTooltipsEnable": {
         "message": "启用划词搜索条"

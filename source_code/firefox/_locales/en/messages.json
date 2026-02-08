@@ -93,7 +93,7 @@
         "message": "Popup window type:"
     },
     "closedByEsc": {
-        "message": "Press Esc (overrides page's default Esc behavior)"
+        "message": "Press Esc"
     },
     "dragSettings": {
         "message": "Drag"
@@ -174,10 +174,10 @@
         "message": "Replace Preview with Image Search"
     },
     "doubleClickToSwitch": {
-        "message": "Double-click outside images/links to toggle. Status displays on add-on icon on toolbar"
+        "message": "Double-click empty space to toggle Click to Preview"
     },
     "doubleClickAsClick": {
-        "message": "Double-click to single-click: Often used for flipping pages, switching tags, and works better with link indicators. Applies only to links"
+        "message": "Double-click links as single-click"
     },
     "rememberPopupSizeAndPositionForDomain": {
         "message": "Dynamic popups: Remember the last window size and position for each domain. Scrolling or clicking the page is required"
@@ -192,7 +192,7 @@
         "message": "Buttons for popup-type windows"
     },
     "note": {
-        "message": "The priority of size/position: domain-specific > non-domain-specific > centered/near mouse"
+        "message": "Size & Position (priority: domain-specific → non-domain-specific → scale → centered/near mouse)"
     },
     "staticSize": {
         "message": "Static window size"
@@ -201,7 +201,7 @@
         "message": "Window size by percentage of last window"
     },
     "linkHint": {
-        "message": "Link Indicator: displays a hint on hover for supported links"
+        "message": "Link Indicator"
     },
     "searchTooltipsEnable": {
         "message": "Search Tooltips for selected text"

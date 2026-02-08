@@ -93,7 +93,7 @@
         "message": "Tipo de ventana emergente:"
     },
     "closedByEsc": {
-        "message": "Presiona Esc (anula el comportamiento predeterminado de Esc en la página)"
+        "message": "Presiona Esc"
     },
     "dragSettings": {
         "message": "Arrastrar"
@@ -174,10 +174,10 @@
         "message": "Reemplazar Previsualización con Búsqueda de Imágenes"
     },
     "doubleClickToSwitch": {
-        "message": "Doble clic fuera de imágenes/enlaces para alternar. El estado se muestra en el ícono de la extensión en la barra de herramientas"
+        "message": "Haz doble clic en un área vacía para activar o desactivar Clic para previsualizar"
     },
     "doubleClickAsClick": {
-        "message": "Doble clic para un solo clic: A menudo se usa para pasar páginas, cambiar etiquetas y funciona mejor con indicadores de enlaces. Solo se aplica a enlaces"
+        "message": "Doble clic en enlaces como clic único"
     },
     "rememberPopupSizeAndPositionForDomain": {
         "message": "Ventanas emergentes dinámicas: recuerda el último tamaño y posición de la ventana para cada dominio. Es necesario desplazarse o hacer clic en la página"
@@ -192,7 +192,7 @@
         "message": "Botones para ventanas tipo popup"
     },
     "note": {
-        "message": "La prioridad de tamaño/posición: específico del dominio > no específico del dominio > centrado/cerca del ratón"
+        "message": "Tamaño y posición (prioridad: específico de dominio → no específico de dominio → escala → centrado/cerca del cursor)"
     },
     "staticSize": {
         "message": "Tamaño de ventana fijo"
@@ -201,7 +201,7 @@
         "message": "Tamaño de ventana por porcentaje de la última ventana"
     },
     "linkHint": {
-        "message": "Indicador de enlace: muestra una pista al pasar el cursor sobre los enlaces compatibles"
+        "message": "Indicador de enlace"
     },
     "searchTooltipsEnable": {
         "message": "Buscar información emergente para el texto seleccionado"
