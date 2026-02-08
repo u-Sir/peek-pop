@@ -282,13 +282,13 @@
         "message": "Mostrar icono de vista previa al pasar el cursor, pasar el cursor sobre el icono para previsualizar"
     },
     "dotSize": {
-        "message": "Tamaño del icono de vista previa (px): "
+        "message": "Tamaño (px): "
     },
     "dotRemoveDelay": {
-        "message": "Retardo de eliminación del icono (ms): "
+        "message": "Eliminar retraso (ms): "
     },
     "dotHoverDelay": {
-        "message": "Retardo de desplazamiento del icono (ms): "
+        "message": "Retraso de vista previa (ms): "
     },
     "showContextMenuItem": {
         "message": "Agregar 'Previsualizar enlace' al menú contextual, su tipo de ventana emergente se puede configurar en la pestaña 'Clic' de la configuración"

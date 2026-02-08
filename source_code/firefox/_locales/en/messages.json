@@ -279,13 +279,13 @@
         "message": "Show preview icon on hover, hover on the icon to preview"
     },
     "dotSize": {
-        "message": "Preview icon size (px): "
+        "message": "Size (px): "
     },
     "dotRemoveDelay": {
-        "message": "Preview icon remove delay (ms): "
+        "message": "Remove delay (ms): "
     },
     "dotHoverDelay": {
-        "message": "Preview icon hover delay (ms): "
+        "message": "Preview delay (ms): "
     },
     "showContextMenuItem": {
         "message": "Add 'Preview link' to context menu, its popup window type can be configured in the 'Click' tab of the settings"
