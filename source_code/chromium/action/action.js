@@ -37,7 +37,7 @@ function openAllAndClearCollection(e) {
                 const group = {
                     action: 'group',
                     links: collection[1].links, // Get the links from the second item
-                    trigger: 'tooltips',
+                    trigger: 'group',
                     lastClientX: e.clientX,
                     lastClientY: e.clientY,
                     width: window.screen.availWidth,
