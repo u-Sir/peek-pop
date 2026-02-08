@@ -1,3 +1,6 @@
+0.0.88
+- Refine scroll to close logic.
+
 0.0.87
 - Refine option logic related to dragging.
 - Refine options page layout.

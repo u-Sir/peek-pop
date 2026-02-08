@@ -3676,17 +3676,15 @@ chrome.runtime.onMessage.addListener((msg) => {
 
 window.addEventListener("blur", () => {
   if (window.self !== window.top) return; // only run in top window
-
   if (closeWhenScrollingInitialWindow) {
-    const onScrollEnd = () => {
+    const onScroll = () => {
       if (document.hasFocus()) {
-        document.removeEventListener("scrollend", onScrollEnd);
+        document.removeEventListener("scroll", onScroll);
       } else {
-        // Do nothing if the document has regained focus
         chrome.runtime.sendMessage({ action: "closeCurrentTab" });
       }
     };
-    document.addEventListener("scrollend", onScrollEnd);
+    document.addEventListener("scroll", onScroll);
   }
 });
 
