@@ -905,7 +905,7 @@
         // Check if it’s Simplified Chinese
         if (lang && lang.toLowerCase().startsWith('zh')) {
             // Redirect to Chinese page if not already there
-            if (!location.pathname.includes('index-chs.html')) {
+            if (!location.pathname.includes('index-chs.html') && document.referrer !== 'https://u-sir.github.io/peek-pop/index-chs.html') {
                 location.href = 'index-chs.html';
             }
         }
