@@ -1,3 +1,6 @@
+0.0.89
+- Refine link element handling.
+
 0.0.88
 - Refine scroll to close logic.
 - Fixed an issue where “Open All” in collections didn’t work.

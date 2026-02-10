@@ -643,9 +643,7 @@ function clampToViewport(x, y, size) {
 // Function to add link indicator when hovering over a link
 function changeCursorOnHover(e, anchorElement) {
   const linkElement =
-    anchorElement ||
-    (e.target instanceof HTMLElement &&
-      (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+    anchorElement || getLinkElementFromEvent(e);
   if (linkElement) {
     const linkUrl = findUrl(linkElement);
 
@@ -871,9 +869,7 @@ async function handleKeyUp(e) {
 }
 
 function handleMouseDown(e) {
-  const anchorElement = e
-    .composedPath()
-    .find((node) => node instanceof HTMLAnchorElement);
+  const anchorElement = getAnchorElement(e)
 
   if (focusAt && Date.now() - focusAt < 50) {
     e.preventDefault();
@@ -897,9 +893,7 @@ function handleMouseDown(e) {
     Meta: e.metaKey,
   };
   const linkElement =
-    anchorElement ||
-    (e.target instanceof HTMLElement &&
-      (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+    anchorElement || getLinkElementFromEvent(e);
 
   const linkUrl = findUrl(linkElement);
 
@@ -962,9 +956,7 @@ function handleMouseDown(e) {
     !e.metaKey
   ) {
     const linkElement =
-      anchorElement ||
-      (e.target instanceof HTMLElement &&
-        (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+      anchorElement || getLinkElementFromEvent(e);
 
     const linkUrl = findUrl(linkElement);
 
@@ -1185,10 +1177,7 @@ function handleDoubleClick(e) {
   // Prevent the single-click action from triggering
   clearTimeout(clickTimeout);
 
-  const linkElement =
-    e.composedPath().find((node) => node instanceof HTMLAnchorElement) ||
-    (e.target instanceof HTMLElement &&
-      (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+  const linkElement = getLinkElementFromEvent(e);
 
   const linkUrl = findUrl(linkElement);
 
@@ -1280,10 +1269,7 @@ function handleEvent(e) {
       e.stopPropagation();
     } else {
       document.addEventListener("dblclick", handleDoubleClick, true);
-      const linkElement =
-        e.composedPath().find((node) => node instanceof HTMLAnchorElement) ||
-        (e.target instanceof HTMLElement &&
-          (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+      const linkElement = getLinkElementFromEvent(e);
 
       const linkUrl = findUrl(linkElement);
 
@@ -1322,10 +1308,7 @@ function handleEvent(e) {
 
     setTimeout(resetDraggingState, 0);
   } else if (e.type === "mouseup" && e.button === 0) {
-    const linkElement =
-      e.composedPath().find((node) => node instanceof HTMLAnchorElement) ||
-      (e.target instanceof HTMLElement &&
-        (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+    const linkElement = getLinkElementFromEvent(e);
 
     const linkUrl = findUrl(linkElement);
 
@@ -1666,10 +1649,7 @@ async function handleDragStart(e) {
     if (!isMouseDown || hasPopupTriggered) return;
     const selectionText = window.getSelection().toString();
     const linkElement =
-      (endInfo && endInfo.endElement) ||
-      e.composedPath().find((node) => node instanceof HTMLAnchorElement) ||
-      (e.target instanceof HTMLElement &&
-        (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+      (endInfo && endInfo.endElement) || getLinkElementFromEvent(e);
 
     const linkUrl = findUrl(linkElement);
 
@@ -1864,10 +1844,7 @@ async function handleDragStart(e) {
     window.addEventListener(
       "dragend",
       (e) => {
-        const endElement =
-          e.composedPath().find((node) => node instanceof HTMLAnchorElement) ||
-          (e.target instanceof HTMLElement &&
-            (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+        const endElement = getLinkElementFromEvent(e);
         const top = e.screenY - e.clientY;
         const left = e.screenX - e.clientX;
         const endX = e.screenX;
@@ -2693,13 +2670,9 @@ async function handledbclickToPreview(e) {
   // Only handle user-initiated clicks
   if (!e.isTrusted) return;
 
-  const anchorElement = e
-    .composedPath()
-    .find((node) => node instanceof HTMLAnchorElement);
+  const anchorElement = getAnchorElement(e)
   const linkElement =
-    anchorElement ||
-    (e.target instanceof HTMLElement &&
-      (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+    anchorElement || getLinkElementFromEvent(e);
   if (!linkElement) return;
 
   const linkUrl = findUrl(linkElement) || window.location.href;
@@ -2755,15 +2728,11 @@ async function handledbclickToPreview(e) {
 // Function to add a link to the collection
 function addLinkToCollection(e) {
   if (!e.ctrlKey) return;
-  const anchorElement = e
-    .composedPath()
-    .find((node) => node instanceof HTMLAnchorElement);
+  const anchorElement = getAnchorElement(e);
   e.preventDefault();
   e.stopPropagation();
   const linkElement =
-    anchorElement ||
-    (e.target instanceof HTMLElement &&
-      (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+    anchorElement || getLinkElementFromEvent(e);
 
   if (!collectionEnable) return;
 
@@ -3133,9 +3102,7 @@ async function handleMouseOver(e) {
       { once: true },
     );
   }
-  const anchorElement = e
-    .composedPath()
-    .find((node) => node instanceof HTMLAnchorElement);
+  const anchorElement = getAnchorElement(e);
 
   // Check if the document has focus
   if (!document.hasFocus()) {
@@ -3175,9 +3142,7 @@ async function handleMouseOver(e) {
   }
 
   const linkElement =
-    anchorElement ||
-    (e.target instanceof HTMLElement &&
-      (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+    anchorElement || getLinkElementFromEvent(e);
 
   const linkUrl = findUrl(linkElement);
 
@@ -3203,9 +3168,7 @@ async function handleMouseOver(e) {
       return;
     } else {
       const linkElement =
-        anchorElement ||
-        (e.target instanceof HTMLElement &&
-          (e.target.tagName === "A" ? e.target : e.target.closest("a")));
+        anchorElement || getLinkElementFromEvent(e);
 
       const linkUrl = findUrl(linkElement);
 
@@ -3704,4 +3667,24 @@ function findUrl(linkElement) {
   } catch {
     return null;
   }
+}
+
+function getAnchorElement(e) {
+  if (!e) return null;  
+  const anchorElement = e
+    .composedPath()
+    .find((node) => node instanceof HTMLAnchorElement);
+  return anchorElement;
+}
+
+function getLinkElementFromEvent(e) {
+  if (!e) return null;
+  const anchorElement = getAnchorElement(e);
+  if (anchorElement) return anchorElement;
+  if (e.target instanceof HTMLElement) {
+    return e.target.tagName === "A"
+      ? e.target
+      : e.target.closest("a");
+  } 
+  return null;
 }
