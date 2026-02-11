@@ -23,6 +23,11 @@ let resizeTimer = null;
 let clickTimeout = null;
 
 const moveThreshold = 15;
+
+// Regular expression to match URLs including IP addresses
+const urlPattern =
+  /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
+
 showPreviewIconOnHover._lastLink = null;
 
 let linkIndicator,
@@ -402,11 +407,11 @@ function addSearchTooltipsOnHover(e) {
 
       const actions = isURL
         ? [
-            {
-              label: "↗️",
-              handler: () => triggerLinkPopup(e, link),
-            },
-          ]
+          {
+            label: "↗️",
+            handler: () => triggerLinkPopup(e, link),
+          },
+        ]
         : searchEngines;
 
       const range = selection.getRangeAt(0).cloneRange();
@@ -865,7 +870,7 @@ async function handleKeyUp(e) {
       lastKeyTime = currentTime;
       lastKey = key;
     }
-  } catch (error) {}
+  } catch (error) { }
 }
 
 function handleMouseDown(e) {
@@ -1015,15 +1020,15 @@ function handleMouseDown(e) {
         previewProgressBar =
           countdownStyle === "circle"
             ? createCircleProgressBar(
-                e.clientX,
-                e.clientY - 30,
-                (holdToPreviewTimeout ?? 1500) - 100,
-              )
+              e.clientX,
+              e.clientY - 30,
+              (holdToPreviewTimeout ?? 1500) - 100,
+            )
             : createCandleProgressBar(
-                e.clientX - 20,
-                e.clientY - 50,
-                (holdToPreviewTimeout ?? 1500) - 100,
-              );
+              e.clientX - 20,
+              e.clientY - 50,
+              (holdToPreviewTimeout ?? 1500) - 100,
+            );
       }, 100);
 
       // Set a timeout for the hold-to-preview action
@@ -1064,9 +1069,9 @@ function handleMouseDown(e) {
   try {
     const message = closeWhenFocusedInitialWindow
       ? {
-          action: "windowRegainedFocus",
-          handlePopupSizeAndPosition: true,
-        }
+        action: "windowRegainedFocus",
+        handlePopupSizeAndPosition: true,
+      }
       : { handlePopupSizeAndPosition: true };
     chrome.runtime.sendMessage(message);
   } catch (error) {
@@ -1345,7 +1350,7 @@ function handlePreviewMode(e, linkUrl) {
     try {
       e.preventDefault();
       e.stopPropagation();
-    } catch (error) {}
+    } catch (error) { }
 
     // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
     let finalLinkUrl = linkUrl;
@@ -1442,9 +1447,9 @@ async function handleMouseUpWithProgressBar(e) {
           : "http://" + selectionText
         : finalHoverSearchEngine && selectionText !== ""
           ? finalHoverSearchEngine.replace(
-              "%s",
-              encodeURIComponent(selectionText),
-            )
+            "%s",
+            encodeURIComponent(selectionText),
+          )
           : null;
 
       if (!finalLinkUrl) return;
@@ -1463,15 +1468,15 @@ async function handleMouseUpWithProgressBar(e) {
       progressBar =
         countdownStyle === "circle"
           ? createCircleProgressBar(
-              hoverInitialMouseX,
-              hoverInitialMouseY,
-              hoverTimeoutDuration,
-            )
+            hoverInitialMouseX,
+            hoverInitialMouseY,
+            hoverTimeoutDuration,
+          )
           : createCandleProgressBar(
-              hoverInitialMouseX,
-              hoverInitialMouseY,
-              hoverTimeoutDuration,
-            );
+            hoverInitialMouseX,
+            hoverInitialMouseY,
+            hoverTimeoutDuration,
+          );
       const onMouseMove = (moveEvent) => {
         if (isDragging) {
           clearTimeoutsAndProgressBars();
@@ -1512,15 +1517,15 @@ async function handleMouseUpWithProgressBar(e) {
             progressBar =
               countdownStyle === "circle"
                 ? createCircleProgressBar(
-                    currentMouseX,
-                    currentMouseY,
-                    hoverTimeoutDuration,
-                  )
+                  currentMouseX,
+                  currentMouseY,
+                  hoverTimeoutDuration,
+                )
                 : createCandleProgressBar(
-                    currentMouseX,
-                    currentMouseY,
-                    hoverTimeoutDuration,
-                  );
+                  currentMouseX,
+                  currentMouseY,
+                  hoverTimeoutDuration,
+                );
             // Set the hover timeout to trigger the popup after the progress bar finishes animating
             hoverTimeoutId = setTimeout(() => {
               triggerPopup(e, null, null, selectionText); // Ensure this line triggers the popup correctly
@@ -1664,20 +1669,8 @@ async function handleDragStart(e) {
         searchEngine !== "None"
           ? searchEngine || "https://www.google.com/search?q=%s"
           : null;
-      // Regular expression to match URLs including IP addresses
-      const urlPattern =
-        /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
-      // Check if the selected text is a URL
-      const isURL = urlCheck ? urlPattern.test(selectionText) : false;
-
-      // Ensure that URLs without a protocol are handled
-      const processedLinkUrl = isURL
-        ? selectionText.startsWith("http://") ||
-          selectionText.startsWith("https://")
-          ? selectionText
-          : "http://" + selectionText
-        : null;
+      const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
       if (imgSearchEnable && imageUrl) {
         const imgSearchEngineMap = {
@@ -2746,14 +2739,14 @@ function addLinkToCollection(e) {
     Array.isArray(collection) && collection.length > 0
       ? collection
       : [
-          {
-            label: "+",
-          },
-          {
-            label: "↗️",
-            links: [],
-          },
-        ];
+        {
+          label: "+",
+        },
+        {
+          label: "↗️",
+          links: [],
+        },
+      ];
 
   // Ensure collection[1] and collection[1].links are initialized
   if (!collection[1]) {
@@ -2956,9 +2949,9 @@ window.addEventListener("focus", async () => {
     document.addEventListener("mouseover", handleMouseOver, true);
     const message = closeWhenFocusedInitialWindow
       ? {
-          action: "windowRegainedFocus",
-          handlePopupSizeAndPosition: true,
-        }
+        action: "windowRegainedFocus",
+        handlePopupSizeAndPosition: true,
+      }
       : { handlePopupSizeAndPosition: true };
     chrome.runtime.sendMessage(message);
   } catch (error) {
@@ -3199,15 +3192,15 @@ async function handleMouseOver(e) {
         progressBar =
           countdownStyle === "circle"
             ? createCircleProgressBar(
-                hoverInitialMouseX,
-                hoverInitialMouseY,
-                hoverTimeoutDuration,
-              )
+              hoverInitialMouseX,
+              hoverInitialMouseY,
+              hoverTimeoutDuration,
+            )
             : createCandleProgressBar(
-                hoverInitialMouseX,
-                hoverInitialMouseY,
-                hoverTimeoutDuration,
-              );
+              hoverInitialMouseX,
+              hoverInitialMouseY,
+              hoverTimeoutDuration,
+            );
         if (anchorElement) {
           anchorElement.addEventListener(
             "mouseleave",
@@ -3234,7 +3227,7 @@ async function handleMouseOver(e) {
             const currentMouseY = e.clientY;
             const distanceMoved = Math.sqrt(
               Math.pow(currentMouseX - hoverInitialMouseX, 2) +
-                Math.pow(currentMouseY - hoverInitialMouseY, 2),
+              Math.pow(currentMouseY - hoverInitialMouseY, 2),
             );
 
             // Update the progress bar position
@@ -3318,20 +3311,8 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
         ? hoverSearchEngine || "https://www.google.com/search?q=%s"
         : null;
 
-    // Regular expression to match URLs including IP addresses
-    const urlPattern =
-      /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
-
-    // Check if the selected text is a URL
-    const isURL = urlCheck ? urlPattern.test(selectionText) : false;
-
-    // Ensure that URLs without a protocol are handled
-    const processedLinkUrl = isURL
-      ? selectionText.startsWith("http://") ||
-        selectionText.startsWith("https://")
-        ? selectionText
-        : "http://" + selectionText
-      : null;
+        
+    const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
     let imageUrl = hoverImgSupport ? imageElement?.src : null;
     if (hoverImgSearchEnable && imageUrl) {
@@ -3360,9 +3341,9 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
       imageUrl ||
       (finalHoverSearchEngine && selectionText.trim() !== ""
         ? finalHoverSearchEngine.replace(
-            "%s",
-            encodeURIComponent(selectionText),
-          )
+          "%s",
+          encodeURIComponent(selectionText),
+        )
         : null);
 
     if (!finalLinkUrl) return;
@@ -3670,7 +3651,7 @@ function findUrl(linkElement) {
 }
 
 function getAnchorElement(e) {
-  if (!e) return null;  
+  if (!e) return null;
   const anchorElement = e
     .composedPath()
     .find((node) => node instanceof HTMLAnchorElement);
@@ -3685,6 +3666,21 @@ function getLinkElementFromEvent(e) {
     return e.target.tagName === "A"
       ? e.target
       : e.target.closest("a");
-  } 
+  }
   return null;
+}
+
+function getprocessedLinkUrl(selectionText) {
+  // Check if the selected text is a URL
+  const isURL = urlCheck ? urlPattern.test(selectionText) : false;
+
+  // Ensure that URLs without a protocol are handled
+  const processedLinkUrl = isURL
+    ? selectionText.startsWith("http://") ||
+      selectionText.startsWith("https://")
+      ? selectionText
+      : "http://" + selectionText
+    : null;
+
+  return processedLinkUrl;
 }
