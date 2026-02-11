@@ -383,19 +383,8 @@ function addSearchTooltipsOnHover(e) {
       if (!selection || selection.rangeCount === 0) return;
       if (typeof searchTooltipsEnable === "undefined" || !searchTooltipsEnable)
         return;
-      // Regular expression to match URLs including IP addresses
-      const urlPattern =
-        /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
-      // Check if the selected text is a URL
-      const isURL = urlCheck ? urlPattern.test(selectionText) : false;
-      // If the text is a URL and doesn't start with "http://" or "https://", prepend "http://"
-      const link = isURL
-        ? selectionText.startsWith("http://") ||
-          selectionText.startsWith("https://")
-          ? selectionText
-          : "http://" + selectionText
-        : null;
+      const link = getprocessedLinkUrl(selectionText);
 
       // Split the input text into lines
       const lines = searchTooltipsEngines.trim().split("\n");
@@ -1553,25 +1542,13 @@ async function handleMouseUpWithProgressBar(e) {
           ? hoverSearchEngine || "https://www.google.com/search?q=%s"
           : null;
 
-      // Regular expression to match URLs including IP addresses
-      const urlPattern =
-        /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
-
-      // Check if the selected text is a URL
-      const isURL = urlCheck ? urlPattern.test(selectionText) : false;
-
-      // If the text is a URL and doesn't start with "http://" or "https://", prepend "http://"
-      let finalLinkUrl = isURL
-        ? selectionText.startsWith("http://") ||
-          selectionText.startsWith("https://")
-          ? selectionText
-          : "http://" + selectionText
-        : finalHoverSearchEngine && selectionText !== ""
+      let finalLinkUrl = getprocessedLinkUrl(selectionText) ||
+        (finalHoverSearchEngine && selectionText !== ""
           ? finalHoverSearchEngine.replace(
             "%s",
             encodeURIComponent(selectionText),
           )
-          : null;
+          : null);
 
       if (!finalLinkUrl) return;
       if (isUrlDisabled(finalLinkUrl, linkDisabledUrls)) return;
@@ -1780,7 +1757,7 @@ async function handleDragStart(e, anchorElement) {
           searchEngine !== "None"
             ? searchEngine || "https://www.google.com/search?q=%s"
             : null;
-            
+
         // Ensure that URLs without a protocol are handled
         const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
@@ -2030,7 +2007,7 @@ async function handleDragStart(e, anchorElement) {
         searchEngine !== "None"
           ? searchEngine || "https://www.google.com/search?q=%s"
           : null;
-          
+
       const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
       if (imgSearchEnable && imageUrl) {
@@ -3408,7 +3385,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
       hoverSearchEngine !== "None"
         ? hoverSearchEngine || "https://www.google.com/search?q=%s"
         : null;
-        
+
     const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
     let imageUrl = hoverImgSupport ? imageElement?.src : null;
