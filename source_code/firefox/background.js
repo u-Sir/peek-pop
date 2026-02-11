@@ -1189,7 +1189,7 @@ function updateIcon() {
 
   const iconPath = getIconPath({ theme, previewModeEnable, previewMode });
 
-  chrome.action.setIcon({ path: { 128: iconPath } });
+  chrome.browserAction.setIcon({ path: { 128: iconPath } });
 }
 
 function getIconPath({ theme, previewModeEnable, previewMode }) {
@@ -1197,19 +1197,19 @@ function getIconPath({ theme, previewModeEnable, previewMode }) {
 
   if (!previewModeEnable) {
     return isDark
-      ? "action/icon-dark.png"
-      : "action/icon.png";
+      ? "action/icon-dark.svg"
+      : "action/icon.svg";
   }
 
   // previewModeEnable === true
   if (previewMode !== undefined && !previewMode) {
     return isDark
-      ? "action/non-inclickmode-dark.png"
-      : "action/non-inclickmode.png";
+      ? "action/non-inclickmode-dark.svg"
+      : "action/non-inclickmode.svg";
   }
 
   return isDark
-    ? "action/inclickmode-dark.png"
-    : "action/inclickmode.png";
+    ? "action/inclickmode-dark.svg"
+    : "action/inclickmode.svg";
 }
 
