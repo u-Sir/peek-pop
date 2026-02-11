@@ -25,6 +25,17 @@ const moveThreshold = 15;
 const urlPattern =
   /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?\.)+[a-zA-Z]{2,6})|(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(\[[0-9a-fA-F:.]+\]))(:\d+)?(\/[^\s]*)?$/;
 
+const imgSearchEngineMap = {
+  "https://www.google.com/search?q=%s":
+    "https://lens.google.com/uploadbyurl?url=%s",
+  "https://www.bing.com/search?q=%s":
+    "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
+  "https://www.baidu.com/s?wd=%s":
+    "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
+  "https://yandex.com/search/?text=%s":
+    "https://yandex.com/images/search?rpt=imageview&url=%s",
+};
+
 showPreviewIconOnHover._lastLink = null;
 
 let linkIndicator,
@@ -1762,16 +1773,6 @@ async function handleDragStart(e, anchorElement) {
         const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
         if (imgSearchEnable && imageUrl) {
-          const imgSearchEngineMap = {
-            "https://www.google.com/search?q=%s":
-              "https://lens.google.com/uploadbyurl?url=%s",
-            "https://www.bing.com/search?q=%s":
-              "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
-            "https://www.baidu.com/s?wd=%s":
-              "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
-            "https://yandex.com/search/?text=%s":
-              "https://yandex.com/images/search?rpt=imageview&url=%s",
-          };
           if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
             imageUrl = imgSearchEngineMap[finalSearchEngine].replace(
               "%s",
@@ -2011,16 +2012,6 @@ async function handleDragStart(e, anchorElement) {
       const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
       if (imgSearchEnable && imageUrl) {
-        const imgSearchEngineMap = {
-          "https://www.google.com/search?q=%s":
-            "https://lens.google.com/uploadbyurl?url=%s",
-          "https://www.bing.com/search?q=%s":
-            "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
-          "https://www.baidu.com/s?wd=%s":
-            "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
-          "https://yandex.com/search/?text=%s":
-            "https://yandex.com/images/search?rpt=imageview&url=%s",
-        };
         if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
           imageUrl = imgSearchEngineMap[finalSearchEngine].replace(
             "%s",
@@ -3390,16 +3381,6 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
 
     let imageUrl = hoverImgSupport ? imageElement?.src : null;
     if (hoverImgSearchEnable && imageUrl) {
-      const imgSearchEngineMap = {
-        "https://www.google.com/search?q=%s":
-          "https://lens.google.com/uploadbyurl?url=%s",
-        "https://www.bing.com/search?q=%s":
-          "https://www.bing.com/images/search?q=imgurl:%s&view=detailv2&iss=sbi",
-        "https://www.baidu.com/s?wd=%s":
-          "https://graph.baidu.com/details?isfromtusoupc=1&tn=pc&carousel=0&promotion_name=pc_image_shituindex&extUiData%5bisLogoShow%5d=1&image=%s",
-        "https://yandex.com/search/?text=%s":
-          "https://yandex.com/images/search?rpt=imageview&url=%s",
-      };
       if (imgSearchEngineMap.hasOwnProperty(finalHoverSearchEngine)) {
         imageUrl = imgSearchEngineMap[finalHoverSearchEngine].replace(
           "%s",
