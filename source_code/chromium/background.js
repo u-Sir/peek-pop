@@ -686,76 +686,60 @@ function handleLinkInPopup(
     height = defaultHeight;
 
   return new Promise((resolve, reject) => {
-    if (rememberPopupSizeAndPosition) {
-      const popupWindowsInfo = userConfigs.popupWindowsInfo;
-      const savedPositionAndSize = popupWindowsInfo.savedPositionAndSize || {};
-      if (Object.keys(savedPositionAndSize).length > 0) {
-        ({ left: dx, top: dy, width, height } = savedPositionAndSize);
+    const popupWindowsInfo = userConfigs.popupWindowsInfo || {};
+    const savedPositionAndSize =
+      popupWindowsInfo.savedPositionAndSize || {};
 
-        createPopupWindow(
-          userConfigs,
-          trigger,
-          linkUrl,
-          tab,
-          windowType,
-          dx,
-          dy,
-          width,
-          height,
-          currentWindow.id,
-          popupWindowsInfo,
-          rememberPopupSizeAndPosition,
-          resolve,
-          reject,
-        );
-      } else {
-        defaultPopupCreation(
-          userConfigs,
-          trigger,
-          linkUrl,
-          tab,
-          currentWindow,
-          defaultWidth,
-          defaultHeight,
-          tryOpenAtMousePosition,
-          lastClientX,
-          lastClientY,
-          lastScreenTop,
-          lastScreenLeft,
-          lastScreenWidth,
-          lastScreenHeight,
-          windowType,
-          popupWindowsInfo,
-          rememberPopupSizeAndPosition,
-          resolve,
-          reject,
-        );
-      }
-    } else {
-      const popupWindowsInfo = userConfigs.popupWindowsInfo || {};
-      defaultPopupCreation(
+    const hasSavedSize =
+      rememberPopupSizeAndPosition &&
+      Object.keys(savedPositionAndSize).length > 0;
+
+    if (hasSavedSize) {
+      ({ left: dx, top: dy, width, height } = savedPositionAndSize);
+
+      createPopupWindow(
         userConfigs,
         trigger,
         linkUrl,
         tab,
-        currentWindow,
-        defaultWidth,
-        defaultHeight,
-        tryOpenAtMousePosition,
-        lastClientX,
-        lastClientY,
-        lastScreenTop,
-        lastScreenLeft,
-        lastScreenWidth,
-        lastScreenHeight,
         windowType,
+        dx,
+        dy,
+        width,
+        height,
+        currentWindow.id,
         popupWindowsInfo,
         rememberPopupSizeAndPosition,
         resolve,
-        reject,
+        reject
       );
+
+      return;
     }
+
+    defaultPopupCreation(
+      userConfigs,
+      trigger,
+      linkUrl,
+      tab,
+      currentWindow,
+      defaultWidth,
+      defaultHeight,
+      tryOpenAtMousePosition,
+      lastClientX,
+      lastClientY,
+      lastScreenTop,
+      lastScreenLeft,
+      lastScreenWidth,
+      lastScreenHeight,
+      windowType,
+      popupWindowsInfo,
+      rememberPopupSizeAndPosition,
+      resolve,
+      reject
+    );
   });
+
 }
 
 // Function to create a popup window

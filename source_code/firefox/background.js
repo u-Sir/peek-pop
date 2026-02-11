@@ -756,74 +756,55 @@ function handleLinkInPopup(
       height = defaultHeight;
 
     return new Promise((resolve, reject) => {
-      if (rememberPopupSizeAndPosition) {
-        chrome.storage.local.get(["popupWindowsInfo"], (result) => {
-          const popupWindowsInfo = result.popupWindowsInfo;
-          const savedPositionAndSize =
-            popupWindowsInfo.savedPositionAndSize || {};
 
-          if (Object.keys(savedPositionAndSize).length > 0) {
-            ({ left: dx, top: dy, width, height } = savedPositionAndSize);
+      const popupWindowsInfo = userConfigs.popupWindowsInfo || {};
+      const savedPositionAndSize =
+        popupWindowsInfo.savedPositionAndSize || {};
 
-            createPopupWindow(
-              linkUrl,
-              tab,
-              windowType,
-              dx,
-              dy,
-              width,
-              height,
-              currentWindow.id,
-              popupWindowsInfo,
-              rememberPopupSizeAndPosition,
-              resolve,
-              reject,
-            );
-          } else {
-            defaultPopupCreation(
-              linkUrl,
-              tab,
-              currentWindow,
-              defaultWidth,
-              defaultHeight,
-              tryOpenAtMousePosition,
-              lastClientX,
-              lastClientY,
-              lastScreenTop,
-              lastScreenLeft,
-              lastScreenWidth,
-              lastScreenHeight,
-              windowType,
-              popupWindowsInfo,
-              rememberPopupSizeAndPosition,
-              resolve,
-              reject,
-            );
-          }
-        });
+      const hasSavedSize =
+        rememberPopupSizeAndPosition &&
+        Object.keys(savedPositionAndSize).length > 0;
+
+      if (hasSavedSize) {
+        ({ left: dx, top: dy, width, height } = savedPositionAndSize);
+
+        createPopupWindow(
+          linkUrl,
+          tab,
+          windowType,
+          dx,
+          dy,
+          width,
+          height,
+          currentWindow.id,
+          popupWindowsInfo,
+          rememberPopupSizeAndPosition,
+          resolve,
+          reject,
+        );
+        return;
+
       } else {
-        chrome.storage.local.get(["popupWindowsInfo"], (result) => {
-          const popupWindowsInfo = result.popupWindowsInfo || {};
-          defaultPopupCreation(
-            linkUrl,
-            tab,
-            currentWindow,
-            defaultWidth,
-            defaultHeight,
-            tryOpenAtMousePosition,
-            lastClientX,
-            lastClientY,
-            lastScreenTop,
-            lastScreenLeft,
-            lastScreenWidth,
-            lastScreenHeight,
-            windowType,
-            popupWindowsInfo,
-            rememberPopupSizeAndPosition,
-            resolve,
-            reject,
-          );
-        });
+        defaultPopupCreation(
+          linkUrl,
+          tab,
+          currentWindow,
+          defaultWidth,
+          defaultHeight,
+          tryOpenAtMousePosition,
+          lastClientX,
+          lastClientY,
+          lastScreenTop,
+          lastScreenLeft,
+          lastScreenWidth,
+          lastScreenHeight,
+          windowType,
+          popupWindowsInfo,
+          rememberPopupSizeAndPosition,
+          resolve,
+          reject,
+        );
+
       }
     });
   });
