@@ -1,5 +1,6 @@
 0.0.89
 - Refine link element handling.
+- Refine icon handling.
 
 0.0.88
 - Refine scroll to close logic.

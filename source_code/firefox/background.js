@@ -3,6 +3,7 @@ import { configs } from "./configs.js";
 let openPopups = [];
 let activePopupCount = 0;
 let lastContextX, lastContextY;
+let theme, previewMode, previewModeEnable;
 
 // Load user configurations from storage
 async function loadUserConfigs() {
@@ -69,7 +70,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         url: chrome.runtime.getURL("options/options.html"),
       });
     }
-    
+
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
       id: "showContextMenuItem",
@@ -222,7 +223,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                       popupWindowsInfo[originWindowId][currentWindow.id]
                         .originDomain !== new URL(sender.tab.url).hostname
                         ? popupWindowsInfo[originWindowId][currentWindow.id]
-                            .originDomain
+                          .originDomain
                         : new URL(sender.tab.url).hostname;
 
                     if (!popupWindowsInfo[originWindowId]) {
@@ -375,51 +376,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           }
 
           if (request.action === "updateIcon") {
-            if (request.theme === "dark") {
-              if (userConfigs.previewModeEnable) {
-                if (request.previewMode !== undefined && !request.previewMode) {
-                  chrome.browserAction.setIcon({
-                    path: {
-                      128: "action/non-inclickmode-dark.svg",
-                    },
-                  });
-                } else {
-                  chrome.browserAction.setIcon({
-                    path: {
-                      128: "action/inclickmode-dark.svg",
-                    },
-                  });
-                }
-              } else {
-                chrome.browserAction.setIcon({
-                  path: {
-                    128: "action/icon-dark.svg",
-                  },
-                });
-              }
-            } else {
-              if (userConfigs.previewModeEnable) {
-                if (request.previewMode !== undefined && !request.previewMode) {
-                  chrome.browserAction.setIcon({
-                    path: {
-                      128: "action/non-inclickmode.svg",
-                    },
-                  });
-                } else {
-                  chrome.browserAction.setIcon({
-                    path: {
-                      128: "action/inclickmode.svg",
-                    },
-                  });
-                }
-              } else {
-                chrome.browserAction.setIcon({
-                  path: {
-                    128: "action/icon.svg",
-                  },
-                });
-              }
-            }
+            theme = request.theme;
+            previewMode = request.previewMode;
+            previewModeEnable = userConfigs.previewModeEnable;
+            updateIcon();
 
             sendResponse({ status: "Icon update handled" });
           }
@@ -935,8 +895,8 @@ function createPopupWindow(
             incognito:
               tab && tab.incognito !== undefined ? tab.incognito : false,
             ...(enableContainerIdentify &&
-            tab.cookieStoreId &&
-            tab.cookieStoreId !== "firefox-default"
+              tab.cookieStoreId &&
+              tab.cookieStoreId !== "firefox-default"
               ? { cookieStoreId: tab.cookieStoreId }
               : {}),
           },
@@ -1235,38 +1195,40 @@ chrome.commands.onCommand.addListener((command) => {
     chrome.storage.local.get("previewModeEnable", (data) => {
       const currentValue = data.previewModeEnable;
       const newValue = !currentValue;
+      previewModeEnable = newValue;
 
       chrome.storage.local.set({ previewModeEnable: newValue }, () => {
-        if (request.theme === "dark") {
-          if (newValue) {
-            chrome.browserAction.setIcon({
-              path: {
-                128: "action/inclickmode-dark.svg",
-              },
-            });
-          } else {
-            chrome.browserAction.setIcon({
-              path: {
-                128: "action/icon-dark.svg",
-              },
-            });
-          }
-        } else {
-          if (newValue) {
-            chrome.browserAction.setIcon({
-              path: {
-                128: "action/inclickmode.svg",
-              },
-            });
-          } else {
-            chrome.browserAction.setIcon({
-              path: {
-                128: "action/icon.svg",
-              },
-            });
-          }
-        }
+        updateIcon();
       });
     });
   }
 });
+
+function updateIcon() {
+
+  const iconPath = getIconPath({ theme, previewModeEnable, previewMode });
+
+  chrome.action.setIcon({ path: { 128: iconPath } });
+}
+
+function getIconPath({ theme, previewModeEnable, previewMode }) {
+  const isDark = theme === "dark";
+
+  if (!previewModeEnable) {
+    return isDark
+      ? "action/icon-dark.png"
+      : "action/icon.png";
+  }
+
+  // previewModeEnable === true
+  if (previewMode !== undefined && !previewMode) {
+    return isDark
+      ? "action/non-inclickmode-dark.png"
+      : "action/non-inclickmode.png";
+  }
+
+  return isDark
+    ? "action/inclickmode-dark.png"
+    : "action/inclickmode.png";
+}
+
