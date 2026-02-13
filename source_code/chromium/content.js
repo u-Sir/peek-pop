@@ -2652,7 +2652,7 @@ async function handledbclickToPreview(e) {
   if (!linkUrl) return; // not a link
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
 
-  document.addEventListener(
+  window.addEventListener(
     "click",
     (e) => {
       // Stop all navigation
