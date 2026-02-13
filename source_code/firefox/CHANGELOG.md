@@ -1,4 +1,7 @@
 0.0.89
+- Fixed an issue where getting Image Url was not working.
+
+0.0.89
 - Refine link element handling.
 - Refine icon handling.
 - Refine popup logic.

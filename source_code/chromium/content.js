@@ -1500,7 +1500,7 @@ async function handleMouseUpWithProgressBar(e) {
                 );
             // Set the hover timeout to trigger the popup after the progress bar finishes animating
             hoverTimeoutId = setTimeout(() => {
-              triggerPopup(e, null, null, selectionText); // Ensure this line triggers the popup correctly
+              triggerPopup(e, null, selectionText); // Ensure this line triggers the popup correctly
 
               // Remove the progress bar when the popup is triggered
               clearTimeoutsAndProgressBars();
@@ -1521,7 +1521,7 @@ async function handleMouseUpWithProgressBar(e) {
 
       // Set the hover timeout to trigger the popup after the progress bar finishes animating
       hoverTimeoutId = setTimeout(() => {
-        triggerPopup(e, null, null, selectionText); // Ensure this line triggers the popup correctly
+        triggerPopup(e, null, selectionText); // Ensure this line triggers the popup correctly
 
         // Remove the progress bar when the popup is triggered
         clearTimeoutsAndProgressBars();
@@ -3105,7 +3105,7 @@ async function handleMouseOver(e) {
               // Mouse movement is minimal, proceed with the timer
               clearInterval(mouseMoveCheckInterval); // Stop checking for mouse movement
               hoverTimeoutId = setTimeout(() => {
-                triggerPopup(e, linkElement, imageElement, "");
+                triggerPopup(e, linkElement, "");
 
                 // Remove the progress bar when the popup is triggered
                 clearTimeoutsAndProgressBars();
@@ -3162,7 +3162,7 @@ function clearTimeoutsAndProgressBars() {
 }
 
 // Trigger the popup logic
-function triggerPopup(e, linkElement, imageElement, selectionText) {
+function triggerPopup(e, linkElement, selectionText) {
   const keyMap = createKeyMap(e);
 
   if (hoverModifiedKey === "None" || keyMap[hoverModifiedKey]) {
@@ -3174,7 +3174,7 @@ function triggerPopup(e, linkElement, imageElement, selectionText) {
 
     const processedLinkUrl = getprocessedLinkUrl(selectionText);
 
-    let imageUrl = hoverImgSupport ? imageElement?.src : null;
+    let imageUrl = hoverImgSupport ? getImageUrl(e) : null;
     if (hoverImgSearchEnable && imageUrl) {
       if (imgSearchEngineMap.hasOwnProperty(finalHoverSearchEngine)) {
         imageUrl = imgSearchEngineMap[finalHoverSearchEngine].replace(
