@@ -5,6 +5,7 @@
 - Refine selected text handling.
 - Refine image search handling.
 - Refine key map handling.
+- Refine get Image Url.
 
 0.0.88
 - Refine scroll to close logic.

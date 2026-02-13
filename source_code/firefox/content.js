@@ -1297,11 +1297,7 @@ function handleDoubleClick(e) {
 
   if (!previewModeEnable || clickModifiedKey !== "None") return;
 
-  // Check if the double-clicked element is a link
-  const imageElement =
-    e.target instanceof HTMLElement &&
-    (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
-  const imageUrl = imageElement ? imageElement.src : null;
+  const imageUrl = getImageUrl(e);
   if (doubleClickToSwitch && !imageUrl && !linkUrl) {
     e.preventDefault(); // Prevent the default double-click action
     e.stopPropagation(); // Stop the event from bubbling up
@@ -1740,10 +1736,7 @@ async function handleDragStart(e, anchorElement) {
 
       const linkUrl = findUrl(linkElement);
 
-      const imageElement =
-        e.target instanceof HTMLElement &&
-        (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
-      let imageUrl = imageElement ? imageElement.src : null;
+      let imageUrl = getImageUrl(e);
 
       if (linkUrl || selectionText || imageUrl) {
         const finalSearchEngine =
@@ -1975,10 +1968,7 @@ async function handleDragStart(e, anchorElement) {
 
     const linkUrl = findUrl(linkElement);
 
-    const imageElement =
-      e.target instanceof HTMLElement &&
-      (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
-    let imageUrl = imageElement ? imageElement.src : null;
+    let imageUrl = getImageUrl(e);
 
     if (linkUrl || selectionText || imageUrl) {
       const finalSearchEngine =
@@ -3206,10 +3196,7 @@ async function handleMouseOver(e) {
 
       const linkUrl = findUrl(linkElement);
 
-      const imageElement =
-        e.target instanceof HTMLElement &&
-        (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
-      const imageUrl = imageElement ? imageElement.src : null;
+      const imageUrl = getImageUrl(e);
 
       if (linkUrl || imageUrl) {
         if (hoverElement === e.target) {
@@ -3704,4 +3691,12 @@ function getprocessedLinkUrl(selectionText) {
     : null;
 
   return processedLinkUrl;
+}
+
+function getImageUrl(e) {
+  const imageElement =
+    e.target instanceof HTMLElement &&
+    (e.target.tagName === "IMG" ? e.target : e.target.closest("img"));
+  const imageUrl = imageElement ? imageElement.src : null;
+  return imageUrl;
 }
