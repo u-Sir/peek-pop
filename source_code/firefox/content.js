@@ -36,6 +36,13 @@ const imgSearchEngineMap = {
     "https://yandex.com/images/search?rpt=imageview&url=%s",
 };
 
+const createKeyMap = (source) => ({
+  Ctrl: source.ctrlKey,
+  Alt: source.altKey,
+  Shift: source.shiftKey,
+  Meta: source.metaKey,
+});
+
 showPreviewIconOnHover._lastLink = null;
 
 let linkIndicator,
@@ -904,12 +911,7 @@ function handleMouseDown(e) {
     showPreviewIconOnHover._dot?.remove();
   }
 
-  const keyMap = {
-    Ctrl: e.ctrlKey,
-    Alt: e.altKey,
-    Shift: e.shiftKey,
-    Meta: e.metaKey,
-  };
+  const keyMap = createKeyMap(e);
   const linkElement =
     anchorElement || getLinkElementFromEvent(e);
 
@@ -1368,12 +1370,7 @@ function handleEvent(e) {
   if (e.type === "dragstart") {
     isDragging = true;
     const anchorElement = getAnchorElement(e);
-    const keyMap = {
-      Ctrl: e.ctrlKey,
-      Alt: e.altKey,
-      Shift: e.shiftKey,
-      Meta: e.metaKey,
-    };
+    const keyMap = createKeyMap(e);
     if (modifiedKey === "None" || keyMap[modifiedKey]) {
       handleDragStart(e, anchorElement);
     } else {
@@ -1526,12 +1523,7 @@ async function handleMouseUpWithProgressBar(e) {
     return;
   }
 
-  const keyMap = {
-    Ctrl: e.ctrlKey,
-    Alt: e.altKey,
-    Shift: e.shiftKey,
-    Meta: e.metaKey,
-  };
+  const keyMap = createKeyMap(e);
   if (hoverModifiedKey === "None" || keyMap[hoverModifiedKey]) {
     if (hasPopupTriggered) return;
 
@@ -1612,12 +1604,7 @@ async function handleMouseUpWithProgressBar(e) {
           return;
         } else {
           clearTimeoutsAndProgressBars();
-          const keyMap = {
-            Ctrl: moveEvent.ctrlKey,
-            Alt: moveEvent.altKey,
-            Shift: moveEvent.shiftKey,
-            Meta: moveEvent.metaKey,
-          };
+          const keyMap = createKeyMap(moveEvent);
 
           if (hoverModifiedKey === "None" || keyMap[hoverModifiedKey]) {
             const selection = window.getSelection();
@@ -1706,12 +1693,7 @@ async function handleDragStart(e, anchorElement) {
       )
         return;
       if (!endInfo) {
-        const keyMap = {
-          Ctrl: e.ctrlKey,
-          Alt: e.altKey,
-          Shift: e.shiftKey,
-          Meta: e.metaKey,
-        };
+        const keyMap = createKeyMap(e);
         if (modifiedKey === "None") {
           if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
         } else {
@@ -1943,12 +1925,7 @@ async function handleDragStart(e, anchorElement) {
             endClientY: e.clientY,
             dropEffect: e.dataTransfer.dropEffect,
           };
-          const keyMap = {
-            Ctrl: e.ctrlKey,
-            Alt: e.altKey,
-            Shift: e.shiftKey,
-            Meta: e.metaKey,
-          };
+          const keyMap = createKeyMap(e);
           if (modifiedKey === "None") {
             if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
           } else {
@@ -3219,12 +3196,7 @@ async function handleMouseOver(e) {
     showPreviewIconOnHover(e, anchorElement);
   }
 
-  const keyMap = {
-    Ctrl: e.ctrlKey,
-    Alt: e.altKey,
-    Shift: e.shiftKey,
-    Meta: e.metaKey,
-  };
+  const keyMap = createKeyMap(e);
   if (hoverModifiedKey === "None" || keyMap[hoverModifiedKey]) {
     if (!hoverTimeout || parseInt(hoverTimeout, 10) === 0) {
       return;
@@ -3364,12 +3336,7 @@ function clearTimeoutsAndProgressBars() {
 
 // Trigger the popup logic
 function triggerPopup(e, linkElement, imageElement, selectionText) {
-  const keyMap = {
-    Ctrl: e.ctrlKey,
-    Alt: e.altKey,
-    Shift: e.shiftKey,
-    Meta: e.metaKey,
-  };
+  const keyMap = createKeyMap(e);
 
   if (hoverModifiedKey === "None" || keyMap[hoverModifiedKey]) {
     const finalHoverSearchEngine =

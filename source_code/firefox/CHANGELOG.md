@@ -4,6 +4,7 @@
 - Refine popup logic.
 - Refine selected text handling.
 - Refine image search handling.
+- Refine key map handling.
 
 0.0.88
 - Refine scroll to close logic.
