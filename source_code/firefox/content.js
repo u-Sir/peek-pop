@@ -172,6 +172,7 @@ const configs = {
 
   modifiedKey: "None",
   dropInEmptyOnly: false,
+  dragStartEnable: false,
   dragDirections: [],
   dragPx: 0,
   imgSupport: false,
