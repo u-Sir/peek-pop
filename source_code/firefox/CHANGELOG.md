@@ -1,4 +1,7 @@
-0.0.89
+0.0.91
+- Fixed an issue where 'Dragging triggers immediately' was not working.
+
+0.0.90
 - Fixed an issue where getting Image Url was not working.
 
 0.0.89
