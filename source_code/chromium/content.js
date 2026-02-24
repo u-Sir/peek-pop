@@ -774,7 +774,7 @@ async function handleKeyDown(e) {
   if (e.key === "Escape") {
     try {
       if (closedByEsc) {
-        chrome.runtime.sendMessage({ action: "closeCurrentTab" });
+        chrome.runtime.sendMessage({ action: "closeCurrentTab", isEscDown: true });
       }
     } catch (error) {
       console.error("Error loading user configs:", error);

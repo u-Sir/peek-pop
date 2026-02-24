@@ -285,44 +285,49 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 (tabs) => {
                   if (tabs.length > 0) {
                     const currentTab = tabs[0];
-                    chrome.tabs.remove(currentTab.id, () => {
-                      chrome.windows.getAll({ populate: false }, (windows) => {
-                        const existingWindowIds = windows.map((win) => win.id); // List of all current window IDs
-
-                        function cleanPopupInfo(info) {
-                          return Object.keys(info).reduce((acc, key) => {
-                            const keyAsInt = parseInt(key, 10);
-
-                            // Check if key is a valid window ID and clean recursively
-                            if (
-                              key === "savedPositionAndSize" ||
-                              existingWindowIds.includes(keyAsInt)
-                            ) {
-                              acc[key] =
-                                key === "savedPositionAndSize"
-                                  ? info[key]
-                                  : cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
-                            }
-
-                            return acc;
-                          }, {});
+                    const exists = !!userConfigs.popupWindowsInfo?.[sender.tab.windowId]?.[currentTab.windowId];
+                    if (exists || request.isEscDown) {
+                      chrome.tabs.remove(currentTab.id, () => {
+                        if (chrome.runtime.lastError) {
                         }
+                        chrome.windows.getAll({ populate: false }, (windows) => {
+                          const existingWindowIds = windows.map((win) => win.id); // List of all current window IDs
 
-                        const cleanedPopupWindowsInfo = cleanPopupInfo(
-                          userConfigs.popupWindowsInfo,
-                        );
+                          function cleanPopupInfo(info) {
+                            return Object.keys(info).reduce((acc, key) => {
+                              const keyAsInt = parseInt(key, 10);
 
-                        // Set the cleaned popupWindowsInfo back to storage
-                        chrome.storage.local.set({
-                          popupWindowsInfo: cleanedPopupWindowsInfo,
+                              // Check if key is a valid window ID and clean recursively
+                              if (
+                                key === "savedPositionAndSize" ||
+                                existingWindowIds.includes(keyAsInt)
+                              ) {
+                                acc[key] =
+                                  key === "savedPositionAndSize"
+                                    ? info[key]
+                                    : cleanPopupInfo(info[key]); // Recursive cleaning for nested popups
+                              }
+
+                              return acc;
+                            }, {});
+                          }
+
+                          const cleanedPopupWindowsInfo = cleanPopupInfo(
+                            userConfigs.popupWindowsInfo,
+                          );
+
+                          // Set the cleaned popupWindowsInfo back to storage
+                          chrome.storage.local.set({
+                            popupWindowsInfo: cleanedPopupWindowsInfo,
+                          });
                         });
                       });
-                    });
+                    }
                   }
                 },
               );
 
-              sendResponse({ status: "esc handled" });
+              sendResponse({ status: "close handled" });
             }
           }
 

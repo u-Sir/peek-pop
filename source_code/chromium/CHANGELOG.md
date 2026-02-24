@@ -1,3 +1,6 @@
+0.0.92
+- Fixed an issue where the original page could close unexpectedly on scroll.
+
 0.0.90
 - Fixed an issue where getting Image Url was not working.
 
