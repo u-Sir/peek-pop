@@ -1,3 +1,6 @@
+0.0.93
+- Fixed an issue where search tooltips was not working.
+
 0.0.92
 - Fixed an issue where the original page could close unexpectedly on scroll.
 
