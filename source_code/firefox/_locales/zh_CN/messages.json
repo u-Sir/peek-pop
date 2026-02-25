@@ -301,6 +301,8 @@
     },
     "addPrefixToTitle": {
         "message": "为预览窗口标题添加 '[Peek Pop]' 前缀"
+    },
+    "countdownInvisibleTime": {
+        "message": "延迟（ms）显示倒计时图标："
     }
-
 }

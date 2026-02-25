@@ -98,6 +98,7 @@ let linkIndicator,
   collectionEnable,
 
   countdownStyle,
+  countdownInvisibleTime,
 
   sendBackByMiddleClickEnable,
   doubleTapKeyToSendPageBack,
@@ -153,6 +154,7 @@ const configs = {
   addPrefixToTitle: false,
 
   countdownStyle: "bar",
+  countdownInvisibleTime: 0,
 
   popupWindowsInfo: {},
 
@@ -396,7 +398,7 @@ function addSearchTooltipsOnHover(e) {
     selection.rangeCount &&
     selection.rangeCount > 0
   ) {
-    const isURL = urlCheck ? urlPattern.test(selectionText) : false;  
+    const isURL = urlCheck ? urlPattern.test(selectionText) : false;
     if (tooltip) tooltip.remove();
     // if (searchTooltips) searchTooltips.remove();
     setTimeout(() => {
@@ -1040,14 +1042,14 @@ function handleMouseDown(e) {
             ? createCircleProgressBar(
               e.clientX,
               e.clientY - 30,
-              (holdToPreviewTimeout ?? 1500) - 100,
+              (holdToPreviewTimeout ?? 1500) - Math.max(countdownInvisibleTime, 100),
             )
             : createCandleProgressBar(
               e.clientX - 20,
               e.clientY - 50,
-              (holdToPreviewTimeout ?? 1500) - 100,
+              (holdToPreviewTimeout ?? 1500) - Math.max(countdownInvisibleTime, 100),
             );
-      }, 100);
+      }, Math.max(countdownInvisibleTime, 100));
 
       // Set a timeout for the hold-to-preview action
       holdTimeout = setTimeout(() => {
@@ -1561,22 +1563,23 @@ async function handleMouseUpWithProgressBar(e) {
       hoverInitialMouseX = e.clientX; // Store initial mouse position
       hoverInitialMouseY = e.clientY;
 
-      const hoverTimeoutDuration = parseInt(hoverTimeout, 10) || 0; // Default to disabled if not set
+      const hoverTimeoutDuration = parseInt(hoverTimeout - countdownInvisibleTime, 10) || 0; // Default to disabled if not set
 
-      // Create and display the progress bar immediately
-      progressBar =
-        countdownStyle === "circle"
-          ? createCircleProgressBar(
-            hoverInitialMouseX,
-            hoverInitialMouseY,
-            hoverTimeoutDuration,
-          )
-          : createCandleProgressBar(
-            hoverInitialMouseX,
-            hoverInitialMouseY,
-            hoverTimeoutDuration,
-          );
+      setTimeout(() => {
+        progressBar =
+          countdownStyle === "circle"
+            ? createCircleProgressBar(
+              hoverInitialMouseX,
+              hoverInitialMouseY,
+              hoverTimeoutDuration,
+            )
+            : createCandleProgressBar(
+              hoverInitialMouseX,
+              hoverInitialMouseY,
+              hoverTimeoutDuration,
+            );
 
+      }, countdownInvisibleTime);
       const onMouseMove = (moveEvent) => {
         if (isDragging) {
           clearTimeoutsAndProgressBars();
@@ -1609,18 +1612,22 @@ async function handleMouseUpWithProgressBar(e) {
             const selectionText = selection.toString().trim();
             if (selectionText === "") return;
 
-            progressBar =
-              countdownStyle === "circle"
-                ? createCircleProgressBar(
-                  currentMouseX,
-                  currentMouseY,
-                  hoverTimeoutDuration,
-                )
-                : createCandleProgressBar(
-                  currentMouseX,
-                  currentMouseY,
-                  hoverTimeoutDuration,
-                );
+            setTimeout(() => {
+              progressBar =
+                countdownStyle === "circle"
+                  ? createCircleProgressBar(
+                    currentMouseX,
+                    currentMouseY,
+                    hoverTimeoutDuration,
+                  )
+                  : createCandleProgressBar(
+                    currentMouseX,
+                    currentMouseY,
+                    hoverTimeoutDuration,
+                  );
+
+            }, countdownInvisibleTime);
+            
             // Set the hover timeout to trigger the popup after the progress bar finishes animating
             hoverTimeoutId = setTimeout(() => {
               triggerPopup(e, null, selectionText); // Ensure this line triggers the popup correctly
@@ -2127,6 +2134,7 @@ async function checkUrlAndToggleListeners() {
   enableContainerIdentify = data.enableContainerIdentify;
 
   countdownStyle = data.countdownStyle || "bar";
+  countdownInvisibleTime = data.countdownInvisibleTime || 0;
 
   hoverImgSearchEnable = data.hoverImgSearchEnable;
   hoverTimeout = data.hoverTimeout || 0;
@@ -2805,6 +2813,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
     "urlCheck",
 
     "countdownStyle",
+    "countdownInvisibleTime",
 
     "closeWhenFocusedInitialWindow",
     "closeWhenScrollingInitialWindow",
@@ -3138,22 +3147,22 @@ async function handleMouseOver(e) {
         hoverInitialMouseX = e.clientX; // Store initial mouse position
         hoverInitialMouseY = e.clientY;
 
-        const hoverTimeoutDuration = parseInt(hoverTimeout, 10) || 0; // Default to disabled if not set
+        const hoverTimeoutDuration = parseInt(hoverTimeout - countdownInvisibleTime, 10) || 0; // Default to disabled if not set
 
-        // Create and display the progress bar immediately
-        progressBar =
-          countdownStyle === "circle"
-            ? createCircleProgressBar(
-              hoverInitialMouseX,
-              hoverInitialMouseY,
-              hoverTimeoutDuration,
-            )
-            : createCandleProgressBar(
-              hoverInitialMouseX,
-              hoverInitialMouseY,
-              hoverTimeoutDuration,
-            );
-
+        setTimeout(() => {
+          progressBar =
+            countdownStyle === "circle"
+              ? createCircleProgressBar(
+                hoverInitialMouseX,
+                hoverInitialMouseY,
+                hoverTimeoutDuration,
+              )
+              : createCandleProgressBar(
+                hoverInitialMouseX,
+                hoverInitialMouseY,
+                hoverTimeoutDuration,
+              );
+        }, countdownInvisibleTime);
         if (anchorElement) {
           anchorElement.addEventListener(
             "mouseleave",

@@ -304,5 +304,8 @@
     },
     "addPrefixToTitle": {
         "message": "Add '[Peek Pop]' prefix to the preview window title"
+    },
+    "countdownInvisibleTime": {
+        "message": "Invisible time before showing countdown (ms): "
     }
 }

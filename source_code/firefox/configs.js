@@ -10,6 +10,7 @@ export const configs = {
     'addPrefixToTitle': false,
 
     'countdownStyle': 'bar',
+    'countdownInvisibleTime': 0,
 
     'windowType': 'popup',
     'popupWindowsInfo': {},

@@ -1,3 +1,6 @@
+0.0.94
+- Added an option to set Invisible time before showing countdown.
+
 0.0.93
 - Fixed an issue where search tooltips was not working.
 

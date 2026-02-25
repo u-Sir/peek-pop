@@ -301,6 +301,9 @@
     },
     "addPrefixToTitle": {
         "message": "Agregar prefijo '[Peek Pop]' al título de la ventana de vista previa"
+    },
+    "countdownInvisibleTime": {
+        "message": "Tiempo invisible antes de mostrar la cuenta regresiva (ms): "
     }
 
 }

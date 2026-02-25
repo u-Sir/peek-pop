@@ -8,6 +8,7 @@ export  const configs = {
     'maximizeToSendPageBack': false,
 
     'countdownStyle': 'bar',
+    'countdownInvisibleTime': 0,
 
     'tryOpenAtMousePosition': false,
     'popupHeight': 800,

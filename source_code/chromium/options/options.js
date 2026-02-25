@@ -348,6 +348,8 @@ function setupPage(userConfigs) {
     initializeTextarea('hoverDisabledUrls', userConfigs);
     initializeTextarea('previewModeDisabledUrls', userConfigs);
 
+    initializeSlider('countdownInvisibleTime', userConfigs.countdownInvisibleTime || 0);
+
     initializeSlider('blurPx', userConfigs.blurPx || 3);
     initializeSlider('blurTime', userConfigs.blurTime || 1);
     initializeSlider('dragPx', userConfigs.dragPx || 0);
