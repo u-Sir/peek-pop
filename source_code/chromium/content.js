@@ -380,6 +380,7 @@ function addSearchTooltipsOnHover(e) {
     selection.rangeCount &&
     selection.rangeCount > 0
   ) {
+    const isURL = urlCheck ? urlPattern.test(selectionText) : false;  
     if (tooltip) tooltip.remove();
     // if (searchTooltips) searchTooltips.remove();
     setTimeout(() => {
