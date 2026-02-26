@@ -2613,8 +2613,8 @@ async function checkUrlAndToggleListeners() {
 }
 
 async function handledbclickToPreview(e) {
-  // Only handle user-initiated clicks
-  if (!e.isTrusted) return;
+  // Only handle user-initiated clicks without modifier keys
+  if (!e.isTrusted || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
 
   const anchorElement = getAnchorElement(e);
   const linkElement =
