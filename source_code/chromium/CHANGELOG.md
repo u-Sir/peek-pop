@@ -1,3 +1,6 @@
+0.0.95
+- Fixed an issue where the countdown animation could be duplicated.
+
 0.0.94
 - Added an option to set Invisible time before showing countdown.
 
