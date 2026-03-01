@@ -585,6 +585,12 @@
 
 
     <main>
+
+        <div class="demo-video-container"
+            style="margin: 2rem auto; max-width: 100%; max-height: calc(100vh - 41px); margin-top: 41px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+            <video src="./demo.mp4" autoplay loop muted playsinline
+                style="width: 100%; height: auto; display: block;"></video>
+        </div>
         <!-- Hero Section -->
         <section class="hero">
             <div class="container">
@@ -642,6 +648,7 @@
                 </div>
             </div>
         </section>
+
 
         <!-- Installation Section -->
         <section id="installation" class="section">
@@ -757,20 +764,20 @@
                         <code>https://example.com/*</code><br><br>
                         <strong>Plain text format:</strong><br>
                         <code>https://example.com</code><br><br>
-                        
+
                         <strong>Common Pattern Examples</strong><br>
                         <strong>files:</strong><br>
                         <code>/\.(zip|rar|7z|exe|msi|md|pdf|docx?|xlsx?|pptx?|apk|dmg|iso)(\?.*)?$/</code><br><br>
 
                         <strong>images:</strong><br>
                         <code>/\.(jpg|jpeg|avif|png|svg|ico|webp|gif)(\?.*)?$/</code><br><br>
-                        
+
                         <strong>videos:</strong><br>
                         <code>/\.(mp4|mkv|rmvb|rm|avi|ts|mov|flv)(\?.*)?$/</code><br><br>
 
                         <strong>audio:</strong><br>
                         <code>/\.(mp3|flac|ogg|wav|aac)(\?.*)?$/</code><br><br>
-                        
+
                         <strong>download links:</strong><br>
                         <code>/^(magnet:\?xt=urn:[a-z0-9]+:[a-f0-9]{32,40}.*|https?:\/\/[^\s]+\/dl[a-zA-Z0-9\/%+=_-]+)$/</code>
                     </div>
@@ -800,7 +807,8 @@
                             </tr>
                             <tr>
                                 <td>Inside a closed shadow root</td>
-                                <td class="not-supported">⚠️ Only 'Preview Link' from the context menu is supported.</td>
+                                <td class="not-supported">⚠️ Only 'Preview Link' from the context menu is supported.
+                                </td>
                             </tr>
                             <tr>
                                 <td>Inside a canvas</td>
