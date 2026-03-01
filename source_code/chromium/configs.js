@@ -34,6 +34,7 @@ export  const configs = {
     'imgSearchEnable': false,
     'popupInBackground': false,
     'dropInEmptyOnly': false,
+    'dragStartEnable': false,
     'searchEngine': 'https://www.google.com/search?q=%s',
     'disabledUrls': [],
 

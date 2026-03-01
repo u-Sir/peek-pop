@@ -120,7 +120,7 @@
         "message": "Soporte de imagen"
     },
     "hoverTimeout": {
-        "message": "hover to preview"
+        "message": "Desplazamiento (ms) para previsualizar (0 para desactivar):"
     },
     "urlCheck": {
         "message": "Mostrar el botón de abrir solo si el contenido seleccionado es una URL"

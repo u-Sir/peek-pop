@@ -120,7 +120,7 @@
         "message": "预览图片"
     },
     "hoverTimeout": {
-        "message": "悬停时长 ms（为 0 时禁用）"
+        "message": "悬停时长 ms（为 0 时禁用）："
     },
     "urlCheck": {
         "message": "当选中 URL 文本时，仅显示打开按钮"

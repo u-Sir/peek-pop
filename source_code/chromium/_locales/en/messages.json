@@ -126,7 +126,7 @@
         "message": "Image support"
     },
     "hoverTimeout": {
-        "message": "hover (ms) to preview ( 0 to disabled )"
+        "message": "hover (ms) to preview ( 0 to disabled ):"
     },
     "urlCheck": {
         "message": "Only display the open button if the selected content is a URL"
@@ -307,5 +307,8 @@
     },
     "countdownInvisibleTime": {
         "message": "Invisible time before showing countdown (ms): "
+    },
+    "dragStartEnable": {
+        "message": "Dragging triggers immediately, without waiting for release"
     }
 }

@@ -1,5 +1,6 @@
 0.0.96
 - Ensure double-click preview does not trigger when a modifier key is pressed.
+- Updated translations.
 
 0.0.95
 - Fixed an issue where the countdown animation could be duplicated.

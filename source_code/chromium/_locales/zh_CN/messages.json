@@ -126,7 +126,7 @@
         "message": "预览图片"
     },
     "hoverTimeout": {
-        "message": "悬停时长 ms（为 0 时禁用）"
+        "message": "悬停时长 ms（为 0 时禁用）："
     },
     "urlCheck": {
         "message": "当选中 URL 文本时，仅显示打开按钮"
@@ -307,5 +307,8 @@
     },
     "countdownInvisibleTime": {
         "message": "延迟（ms）显示倒计时图标："
+    },
+    "dragStartEnable": {
+        "message": "拖拽立即触发，不等待释放"
     }
 }

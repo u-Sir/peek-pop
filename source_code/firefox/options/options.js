@@ -900,7 +900,6 @@ async function importSettings(file) {
             if (browserInfo.name !== 'Firefox') {
                 // Remove specific keys from the settings for Firefox
                 delete importData.settings.enableContainerIdentify;
-                delete importData.settings.dragStartEnable;
             }
         } catch (error) {
             // console.error('Error getting browser info:', error);

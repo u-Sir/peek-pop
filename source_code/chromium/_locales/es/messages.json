@@ -126,7 +126,7 @@
         "message": "Soporte de imagen"
     },
     "hoverTimeout": {
-        "message": "hover to preview"
+        "message": "Desplazamiento (ms) para previsualizar (0 para desactivar):"
     },
     "urlCheck": {
         "message": "Mostrar el botón de abrir solo si el contenido seleccionado es una URL"
@@ -307,5 +307,8 @@
     },
     "countdownInvisibleTime": {
         "message": "Tiempo invisible antes de mostrar la cuenta regresiva (ms): "
+    },
+    "dragStartEnable": {
+        "message": "El arrastre se activa inmediatamente, sin esperar a soltar"
     }
 }

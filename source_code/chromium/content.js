@@ -110,6 +110,7 @@ let linkIndicator,
   dragPx,
   dragDirections,
   dropInEmptyOnly,
+  dragStartEnable,
   imgSupport,
   imgSearchEnable,
   searchEngine,
@@ -153,6 +154,7 @@ const configs = {
   dragPx: 0,
   imgSupport: false,
   dropInEmptyOnly: false,
+  dragStartEnable: false,
   imgSearchEnable: false,
 
   urlCheck: true,
@@ -1247,9 +1249,10 @@ function resetClickState() {
 function handleEvent(e) {
   if (e.type === "dragstart") {
     isDragging = true;
+    const anchorElement = getAnchorElement(e);
     const keyMap = createKeyMap(e);
     if (modifiedKey === "None" || keyMap[modifiedKey]) {
-      handleDragStart(e);
+      handleDragStart(e, anchorElement);
     } else {
       isDragging = false;
     }
@@ -1534,137 +1537,197 @@ async function handleMouseUpWithProgressBar(e) {
   }
 }
 
-async function handleDragStart(e) {
+async function handleDragStart(e, anchorElement) {
   if (searchTooltips) searchTooltips.remove();
   searchTooltips = null;
 
-  const viewportTop = e.screenY - e.clientY;
-  const viewportBottom = e.screenY - e.clientY + window.innerHeight;
-  const viewportLeft = e.screenX - e.clientX;
-  const viewportRight = e.screenX - e.clientX + window.innerWidth;
+  if (!dragStartEnable) {
 
-  // Define lastKeys as a Set at the script/module level
-  let lastLeaveKeys = {
-    shiftKey: false,
-    metaKey: false,
-    ctrlKey: false,
-    altKey: false,
-  };
-  let lastLeaveTime = 0;
-  function updateLastLeaveTimestamp(e) {
-    const now = performance.now();
+    const viewportTop = e.screenY - e.clientY;
+    const viewportBottom = e.screenY - e.clientY + window.innerHeight;
+    const viewportLeft = e.screenX - e.clientX;
+    const viewportRight = e.screenX - e.clientX + window.innerWidth;
 
-    if (now - lastLeaveTime < 20) return; // Ignore events triggered too quickly
+    // Define lastKeys as a Set at the script/module level
+    let lastLeaveKeys = {
+      shiftKey: false,
+      metaKey: false,
+      ctrlKey: false,
+      altKey: false,
+    };
+    let lastLeaveTime = 0;
+    function updateLastLeaveTimestamp(e) {
+      const now = performance.now();
 
-    lastLeaveTime = now;
-    lastLeaveTimestamp = e.timeStamp;
-    lastLeaveRelatedTarget = e.relatedTarget;
-    lastLeaveKeys.shiftKey = e.shiftKey;
-    lastLeaveKeys.metaKey = e.metaKey;
-    lastLeaveKeys.ctrlKey = e.ctrlKey;
-    lastLeaveKeys.altKey = e.altKey;
-  }
+      if (now - lastLeaveTime < 20) return; // Ignore events triggered too quickly
 
-  if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
-    isDragging = false;
-    return;
-  }
-  function onDragend(e, endInfo = null) {
-    if (
-      dropInEmptyOnly &&
-      (endInfo ? endInfo.dropEffect : e.dataTransfer.dropEffect) !== "none"
-    )
+      lastLeaveTime = now;
+      lastLeaveTimestamp = e.timeStamp;
+      lastLeaveRelatedTarget = e.relatedTarget;
+      lastLeaveKeys.shiftKey = e.shiftKey;
+      lastLeaveKeys.metaKey = e.metaKey;
+      lastLeaveKeys.ctrlKey = e.ctrlKey;
+      lastLeaveKeys.altKey = e.altKey;
+    }
+
+    if (!Array.isArray(dragDirections) || dragDirections.length === 0) {
+      isDragging = false;
       return;
-    const lastKeys = lastLeaveKeys;
-    lastLeaveKeys = undefined;
-    const keyMap = createKeyMap(lastKeys);
-    document.removeEventListener("dragleave", updateLastLeaveTimestamp);
-    if (modifiedKey === "None") {
+    }
+    function onDragend(e, endInfo = null) {
       if (
-        lastKeys.altKey ||
-        lastKeys.ctrlKey ||
-        lastKeys.metaKey ||
-        lastKeys.shiftKey
+        dropInEmptyOnly &&
+        (endInfo ? endInfo.dropEffect : e.dataTransfer.dropEffect) !== "none"
       )
         return;
-    } else {
-      // Ensure only the specified modifiedKey is pressed
-      const isOnlyModifiedKeyDown =
-        keyMap[modifiedKey] &&
-        Object.keys(keyMap).every((key) => key === modifiedKey || !keyMap[key]);
-      if (!isOnlyModifiedKeyDown) {
-        return;
-      }
-    }
-
-    // Do nothing when dragging out of the current page
-    if (window.self === window.top) {
-      if (
-        !(
-          viewportLeft < e.screenX &&
-          e.screenX < viewportRight &&
-          viewportTop < e.screenY &&
-          e.screenY < viewportBottom
-        )
-      ) {
-        document.removeEventListener("dragend", onDragend, true);
-        resetDraggingState();
-        return;
-      }
-      if (
-        lastLeaveRelatedTarget === null &&
-        e.timeStamp - lastLeaveTimestamp > 600
-      ) {
-        lastLeaveTimestamp = undefined;
-        lastLeaveRelatedTarget = undefined;
-        return;
-      }
+      const lastKeys = lastLeaveKeys;
+      lastLeaveKeys = undefined;
+      const keyMap = createKeyMap(lastKeys);
       document.removeEventListener("dragleave", updateLastLeaveTimestamp);
-    }
-    if (!isMouseDown || hasPopupTriggered) return;
-    const selectionText = window.getSelection().toString();
-    const linkElement =
-      (endInfo && endInfo.endElement) || getLinkElementFromEvent(e);
-
-    const linkUrl = findUrl(linkElement);
-
-    let imageUrl = getImageUrl(e);
-
-    if (linkUrl || selectionText || imageUrl) {
-      const finalSearchEngine =
-        searchEngine !== "None"
-          ? searchEngine || "https://www.google.com/search?q=%s"
-          : null;
-
-      const processedLinkUrl = getprocessedLinkUrl(selectionText);
-
-      if (imgSearchEnable && imageUrl) {
-        if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
-          imageUrl = imgSearchEngineMap[finalSearchEngine].replace(
-            "%s",
-            encodeURIComponent(imageUrl),
-          );
+      if (modifiedKey === "None") {
+        if (
+          lastKeys.altKey ||
+          lastKeys.ctrlKey ||
+          lastKeys.metaKey ||
+          lastKeys.shiftKey
+        )
+          return;
+      } else {
+        // Ensure only the specified modifiedKey is pressed
+        const isOnlyModifiedKeyDown =
+          keyMap[modifiedKey] &&
+          Object.keys(keyMap).every((key) => key === modifiedKey || !keyMap[key]);
+        if (!isOnlyModifiedKeyDown) {
+          return;
         }
       }
 
-      // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
-      let finalLinkUrl =
-        processedLinkUrl ||
-        linkUrl ||
-        (imgSupport ? imageUrl : null) ||
-        (finalSearchEngine && selectionText.trim() !== ""
-          ? finalSearchEngine.replace("%s", encodeURIComponent(selectionText))
-          : null);
-      if (!finalLinkUrl) return;
-
-      const currentMouseX = e.clientX || (endInfo && endInfo.endClientX);
-      const currentMouseY = e.clientY || (endInfo && endInfo.endClientY);
-      let direction = "";
-      if (dragPx !== 0) {
+      // Do nothing when dragging out of the current page
+      if (window.self === window.top) {
         if (
-          Math.abs(currentMouseX - initialMouseX) > dragPx ||
-          Math.abs(currentMouseY - initialMouseY) > dragPx
+          !(
+            viewportLeft < e.screenX &&
+            e.screenX < viewportRight &&
+            viewportTop < e.screenY &&
+            e.screenY < viewportBottom
+          )
         ) {
+          document.removeEventListener("dragend", onDragend, true);
+          resetDraggingState();
+          return;
+        }
+        if (
+          lastLeaveRelatedTarget === null &&
+          e.timeStamp - lastLeaveTimestamp > 600
+        ) {
+          lastLeaveTimestamp = undefined;
+          lastLeaveRelatedTarget = undefined;
+          return;
+        }
+        document.removeEventListener("dragleave", updateLastLeaveTimestamp);
+      }
+      if (!isMouseDown || hasPopupTriggered) return;
+      const selectionText = window.getSelection().toString();
+      const linkElement =
+        (endInfo && endInfo.endElement) || getLinkElementFromEvent(e);
+
+      const linkUrl = findUrl(linkElement);
+
+      let imageUrl = getImageUrl(e);
+
+      if (linkUrl || selectionText || imageUrl) {
+        const finalSearchEngine =
+          searchEngine !== "None"
+            ? searchEngine || "https://www.google.com/search?q=%s"
+            : null;
+
+        const processedLinkUrl = getprocessedLinkUrl(selectionText);
+
+        if (imgSearchEnable && imageUrl) {
+          if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
+            imageUrl = imgSearchEngineMap[finalSearchEngine].replace(
+              "%s",
+              encodeURIComponent(imageUrl),
+            );
+          }
+        }
+
+        // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+        let finalLinkUrl =
+          processedLinkUrl ||
+          linkUrl ||
+          (imgSupport ? imageUrl : null) ||
+          (finalSearchEngine && selectionText.trim() !== ""
+            ? finalSearchEngine.replace("%s", encodeURIComponent(selectionText))
+            : null);
+        if (!finalLinkUrl) return;
+
+        const currentMouseX = e.clientX || (endInfo && endInfo.endClientX);
+        const currentMouseY = e.clientY || (endInfo && endInfo.endClientY);
+        let direction = "";
+        if (dragPx !== 0) {
+          if (
+            Math.abs(currentMouseX - initialMouseX) > dragPx ||
+            Math.abs(currentMouseY - initialMouseY) > dragPx
+          ) {
+            // identify drag directions
+            if (
+              Math.abs(currentMouseX - initialMouseX) >
+              Math.abs(currentMouseY - initialMouseY)
+            ) {
+              direction = currentMouseX > initialMouseX ? "right" : "left";
+            } else {
+              direction = currentMouseY > initialMouseY ? "down" : "up";
+            }
+
+            if (dragDirections.includes(direction)) {
+              isDragging = true;
+
+              if (linkIndicator) {
+                linkIndicator.remove();
+              }
+              linkIndicator = null;
+
+              if (searchTooltips) searchTooltips.remove();
+              searchTooltips = null;
+              e.preventDefault();
+              e.stopImmediatePropagation();
+
+              setBlur();
+              chrome.runtime.sendMessage(
+                {
+                  linkUrl: finalLinkUrl,
+                  lastClientX: e.screenX,
+                  lastClientY: e.screenY,
+                  width: window.screen.availWidth,
+                  height: window.screen.availHeight,
+                  top: window.screen.availTop,
+                  left: window.screen.availLeft,
+                  trigger: "drag",
+                },
+                () => {
+                  hasPopupTriggered = true;
+                  document.removeEventListener("dragend", onDragend, true);
+                  finalLinkUrl = null;
+                  imageUrl = null;
+                  if (linkIndicator) linkIndicator.remove();
+                  linkIndicator = null;
+                  if (searchTooltips) searchTooltips.remove();
+                  searchTooltips = null;
+                  isDragging = false;
+
+                  if (window.getSelection().toString()) {
+                    window.getSelection().removeAllRanges();
+                  }
+                },
+              );
+            } else {
+              isDragging = false;
+            }
+          } else {
+            isDragging = false;
+          }
+        } else {
           // identify drag directions
           if (
             Math.abs(currentMouseX - initialMouseX) >
@@ -1676,19 +1739,19 @@ async function handleDragStart(e) {
           }
 
           if (dragDirections.includes(direction)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
             isDragging = true;
 
             if (linkIndicator) {
               linkIndicator.remove();
             }
             linkIndicator = null;
-
             if (searchTooltips) searchTooltips.remove();
             searchTooltips = null;
-            e.preventDefault();
-            e.stopImmediatePropagation();
 
             setBlur();
+
             chrome.runtime.sendMessage(
               {
                 linkUrl: finalLinkUrl,
@@ -1719,147 +1782,170 @@ async function handleDragStart(e) {
           } else {
             isDragging = false;
           }
-        } else {
-          isDragging = false;
         }
       } else {
-        // identify drag directions
-        if (
-          Math.abs(currentMouseX - initialMouseX) >
-          Math.abs(currentMouseY - initialMouseY)
-        ) {
-          direction = currentMouseX > initialMouseX ? "right" : "left";
-        } else {
-          direction = currentMouseY > initialMouseY ? "down" : "up";
-        }
+        isDragging = false;
+      }
+    }
 
-        if (dragDirections.includes(direction)) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          isDragging = true;
+    document.addEventListener("dragleave", updateLastLeaveTimestamp);
+    if (
+      window.self !== window.top &&
+      window.origin !== "https://viewscreen.githubusercontent.com"
+    ) {
+      window.parent.postMessage({ action: "dragleaveUpdate" }, "*");
 
-          if (linkIndicator) {
-            linkIndicator.remove();
+      window.addEventListener(
+        "dragend",
+        (e) => {
+          const endElement = getLinkElementFromEvent(e);
+          const top = e.screenY - e.clientY;
+          const left = e.screenX - e.clientX;
+          const endX = e.screenX;
+          const endY = e.screenY;
+          const endTimestamp = e.timeStamp;
+          const endInfo = {
+            endElement,
+            endClientX: e.clientX,
+            endClientY: e.clientY,
+            dropEffect: e.dataTransfer.dropEffect,
+          };
+          document.removeEventListener("dragleave", updateLastLeaveTimestamp);
+          const lastKeys = lastLeaveKeys;
+          const keyMap = createKeyMap(lastKeys);
+          if (modifiedKey === "None") {
+            if (
+              lastKeys.altKey ||
+              lastKeys.ctrlKey ||
+              lastKeys.metaKey ||
+              lastKeys.shiftKey
+            )
+              return;
+          } else {
+            // Ensure only the specified modifiedKey is pressed
+            const isOnlyModifiedKeyDown =
+              keyMap[modifiedKey] &&
+              Object.keys(keyMap).every(
+                (key) => key === modifiedKey || !keyMap[key],
+              );
+            if (!isOnlyModifiedKeyDown) {
+              return;
+            }
           }
-          linkIndicator = null;
-          if (searchTooltips) searchTooltips.remove();
-          searchTooltips = null;
-
-          setBlur();
-
-          chrome.runtime.sendMessage(
-            {
-              linkUrl: finalLinkUrl,
-              lastClientX: e.screenX,
-              lastClientY: e.screenY,
-              width: window.screen.availWidth,
-              height: window.screen.availHeight,
-              top: window.screen.availTop,
-              left: window.screen.availLeft,
-              trigger: "drag",
-            },
-            () => {
-              hasPopupTriggered = true;
-              document.removeEventListener("dragend", onDragend, true);
-              finalLinkUrl = null;
-              imageUrl = null;
-              if (linkIndicator) linkIndicator.remove();
-              linkIndicator = null;
-              if (searchTooltips) searchTooltips.remove();
-              searchTooltips = null;
-              isDragging = false;
-
-              if (window.getSelection().toString()) {
-                window.getSelection().removeAllRanges();
+          window.addEventListener(
+            "message",
+            (e) => {
+              if (e.data && e.data.type === "RESULT") {
+                if (e.data.isOut) {
+                  // do nothing
+                } else {
+                  onDragend(e, endInfo);
+                }
               }
             },
+            { once: true },
           );
-        } else {
-          isDragging = false;
+          window.parent.postMessage(
+            {
+              action: "dragendCheck",
+              top,
+              left,
+              endY,
+              endX,
+              endTimestamp,
+              lastLeaveTimestampFromIframe: lastLeaveTimestamp,
+            },
+            "*",
+          );
+        },
+        { capture: true, once: true },
+      );
+    } else {
+      document.addEventListener("dragend", onDragend, {
+        capture: true,
+        once: true,
+      });
+    }
+  } else {
+    if (!isMouseDown || hasPopupTriggered) return;
+
+    const selectionText = window.getSelection().toString();
+    const linkElement =
+      anchorElement || getLinkElementFromEvent(e);
+
+    const linkUrl = findUrl(linkElement);
+
+    let imageUrl = getImageUrl(e);
+
+    if (linkUrl || selectionText || imageUrl) {
+      const finalSearchEngine =
+        searchEngine !== "None"
+          ? searchEngine || "https://www.google.com/search?q=%s"
+          : null;
+
+      const processedLinkUrl = getprocessedLinkUrl(selectionText);
+
+      if (imgSearchEnable && imageUrl) {
+        if (imgSearchEngineMap.hasOwnProperty(finalSearchEngine)) {
+          imageUrl = imgSearchEngineMap[finalSearchEngine].replace(
+            "%s",
+            encodeURIComponent(imageUrl),
+          );
         }
       }
-    } else {
-      isDragging = false;
-    }
-  }
 
-  document.addEventListener("dragleave", updateLastLeaveTimestamp);
-  if (
-    window.self !== window.top &&
-    window.origin !== "https://viewscreen.githubusercontent.com"
-  ) {
-    window.parent.postMessage({ action: "dragleaveUpdate" }, "*");
+      // Set finalLinkUrl based on linkUrl, imgSupport, and searchEngine
+      let finalLinkUrl =
+        processedLinkUrl ||
+        linkUrl ||
+        (imgSupport ? imageUrl : null) ||
+        (searchEngine && selectionText.trim() !== ""
+          ? searchEngine.replace("%s", encodeURIComponent(selectionText))
+          : null);
+      if (!finalLinkUrl) return;
 
-    window.addEventListener(
-      "dragend",
-      (e) => {
-        const endElement = getLinkElementFromEvent(e);
-        const top = e.screenY - e.clientY;
-        const left = e.screenX - e.clientX;
-        const endX = e.screenX;
-        const endY = e.screenY;
-        const endTimestamp = e.timeStamp;
-        const endInfo = {
-          endElement,
-          endClientX: e.clientX,
-          endClientY: e.clientY,
-          dropEffect: e.dataTransfer.dropEffect,
-        };
-        document.removeEventListener("dragleave", updateLastLeaveTimestamp);
-        const lastKeys = lastLeaveKeys;
-        const keyMap = createKeyMap(lastKeys);
-        if (modifiedKey === "None") {
-          if (
-            lastKeys.altKey ||
-            lastKeys.ctrlKey ||
-            lastKeys.metaKey ||
-            lastKeys.shiftKey
-          )
-            return;
-        } else {
-          // Ensure only the specified modifiedKey is pressed
-          const isOnlyModifiedKeyDown =
-            keyMap[modifiedKey] &&
-            Object.keys(keyMap).every(
-              (key) => key === modifiedKey || !keyMap[key],
-            );
-          if (!isOnlyModifiedKeyDown) {
-            return;
-          }
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      document.addEventListener("dragover", blockOver);
+
+      isDragging = true;
+
+      if (linkIndicator) {
+        linkIndicator.remove();
+      }
+      linkIndicator = null;
+      if (searchTooltips) searchTooltips.remove();
+      searchTooltips = null;
+
+      setBlur();
+      const message = {
+        linkUrl: finalLinkUrl,
+        lastClientX: e.screenX,
+        lastClientY: e.screenY,
+        width: window.screen.availWidth,
+        height: window.screen.availHeight,
+        top: window.screen.availTop,
+        left: window.screen.availLeft,
+        trigger: "drag",
+      };
+      chrome.runtime.sendMessage(message, () => {
+        hasPopupTriggered = true;
+        document.removeEventListener("dragend", onDragend, true);
+
+        finalLinkUrl = null;
+        imageUrl = null;
+        if (linkIndicator) linkIndicator.remove();
+        linkIndicator = null;
+        if (searchTooltips) searchTooltips.remove();
+        searchTooltips = null;
+        isDragging = false;
+
+        if (window.getSelection().toString()) {
+          window.getSelection().removeAllRanges();
         }
-        window.addEventListener(
-          "message",
-          (e) => {
-            if (e.data && e.data.type === "RESULT") {
-              if (e.data.isOut) {
-                // do nothing
-              } else {
-                onDragend(e, endInfo);
-              }
-            }
-          },
-          { once: true },
-        );
-        window.parent.postMessage(
-          {
-            action: "dragendCheck",
-            top,
-            left,
-            endY,
-            endX,
-            endTimestamp,
-            lastLeaveTimestampFromIframe: lastLeaveTimestamp,
-          },
-          "*",
-        );
-      },
-      { capture: true, once: true },
-    );
-  } else {
-    document.addEventListener("dragend", onDragend, {
-      capture: true,
-      once: true,
-    });
+      });
+    }
   }
 }
 function blockOver(e) {
@@ -1928,6 +2014,7 @@ async function checkUrlAndToggleListeners() {
     data.searchTooltipsEngines || configs.searchTooltipsEngines;
 
   dropInEmptyOnly = data.dropInEmptyOnly;
+  dragStartEnable = data.dragStartEnable;
   modifiedKey = data.modifiedKey || "None";
   dragPx = data.dragPx || 0;
   dragDirections = data.dragDirections || ["up", "down", "right", "left"];
@@ -2537,8 +2624,8 @@ function handleSpace(e) {
 }
 
 async function handledbclickToPreview(e) {
-  // Only handle user-initiated clicks without modifier keys
-  if (!e.isTrusted || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+  // Only handle user-initiated clicks
+  if (!e.isTrusted) return;
 
   const anchorElement = getAnchorElement(e)
   const linkElement =
@@ -2764,6 +2851,7 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
     "dragDirections",
     "dragPx",
     "dropInEmptyOnly",
+    "dragStartEnable",
     "imgSearchEnable",
     "imgSupport",
   ]);
@@ -2948,7 +3036,7 @@ function createCircleProgressBar(
     circle.style.transition = `stroke-dashoffset ${duration}ms linear`;
     circle.setAttribute("stroke-dashoffset", circumference);
   }, 20);
-  
+
   showProgressBar(container);
 
   // Remove after duration

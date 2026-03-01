@@ -1,3 +1,7 @@
+0.0.97
+- Added option to trigger immediately when dragging.
+- Updated translations.
+
 0.0.96
 - Ensure double-click preview does not trigger when a modifier key is pressed.
 

@@ -1661,12 +1661,8 @@ async function handleDragStart(e, anchorElement) {
   if (searchTooltips) searchTooltips.remove();
   searchTooltips = null;
 
-  const finalDragStartEnable =
-    dragStartEnable !== "undefined" ? dragStartEnable : false;
-  const finalDropInEmptyOnly =
-    dropInEmptyOnly !== "undefined" ? dropInEmptyOnly : false;
+  if (!dragStartEnable) {
 
-  if (!finalDragStartEnable) {
     const viewportTop = e.screenY - e.clientY;
     const viewportBottom = e.screenY - e.clientY + window.innerHeight;
     const viewportLeft = e.screenX - e.clientX;
@@ -1689,7 +1685,7 @@ async function handleDragStart(e, anchorElement) {
     }
     function onDragend(e, endInfo = null) {
       if (
-        finalDropInEmptyOnly &&
+        dropInEmptyOnly &&
         (endInfo ? endInfo.dropEffect : e.dataTransfer.dropEffect) !== "none"
       )
         return;
