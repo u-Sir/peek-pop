@@ -1,3 +1,6 @@
+0.0.97
+- Updated translations.
+
 0.0.96
 - Ensure double-click preview does not trigger when a modifier key is pressed.
 - Updated translations.
