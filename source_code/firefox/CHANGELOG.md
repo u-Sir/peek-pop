@@ -1,4 +1,4 @@
-0.0.98
+0.0.99
 - Fixed a Content Security Policy (CSP) warning that could occur when Peek Pop simulated a click on certain links.
 
 0.0.97

@@ -2632,7 +2632,7 @@ async function handledbclickToPreview(e) {
     anchorElement || getLinkElementFromEvent(e);
   if (!linkElement) return;
 
-  const linkUrl = findUrl(linkElement) || window.location.href;
+  const linkUrl = findUrl(linkElement) || findUrl(window.location);
 
   if (!linkUrl) return; // not a link
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -2667,8 +2667,6 @@ async function handledbclickToPreview(e) {
 
     if (e.target.shadowRoot) {
       linkElement.click();
-    } else if (linkElement.href && linkElement.href.startsWith("javascript:")) {
-      location.href = linkElement.href;
     } else {
       try {
         const clickEvent = new MouseEvent("click", {
@@ -2695,7 +2693,7 @@ function addLinkToCollection(e) {
 
   if (!collectionEnable) return;
 
-  const linkUrl = findUrl(linkElement) || window.location.href;
+  const linkUrl = findUrl(linkElement) || findUrl(window.location);
 
   if (!linkUrl) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
