@@ -1320,6 +1320,8 @@ function handleDoubleClick(e) {
       isDoubleClick = true;
       if (e.target.shadowRoot) {
         linkElement.click();
+      } else if (linkElement.href && linkElement.href.startsWith("javascript:")) {
+        location.href = linkElement.href;
       } else {
         try {
           const clickEvent = new MouseEvent("click", {
