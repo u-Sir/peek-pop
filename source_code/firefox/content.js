@@ -2619,7 +2619,7 @@ async function handledbclickToPreview(e) {
     anchorElement || getLinkElementFromEvent(e);
   if (!linkElement) return;
 
-  const linkUrl = findUrl(linkElement) || window.location.href;
+  const linkUrl = findUrl(linkElement) || findUrl(window.location);
 
   if (!linkUrl) return; // not a link
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
@@ -2680,7 +2680,7 @@ function addLinkToCollection(e) {
 
   if (!collectionEnable) return;
 
-  const linkUrl = findUrl(linkElement) || window.location.href;
+  const linkUrl = findUrl(linkElement) || findUrl(window.location);
 
   if (!linkUrl) return;
   if (isUrlDisabled(linkUrl, linkDisabledUrls)) return;
