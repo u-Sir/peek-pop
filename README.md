@@ -44,6 +44,7 @@ A lightweight, open-source browser extension lets you preview, search, and save 
 
 ### Blacklist Format Examples
 
+- **Negation format**: `NOT:https://example.com/*`
 - **Regex format**: `/^https:\/\/example\.com\/.*$/`
 - **Wildcard format**: `https://example.com/*`
 - **Plain text format**: `https://example.com`

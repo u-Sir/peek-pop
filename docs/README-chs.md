@@ -43,6 +43,7 @@
 
 ### 黑名单格式示例
 
+- **取反格式**: `NOT:https://example.com/*`
 - **正则格式**：`/^https:\/\/example\.com\/.*$/`
 - **通配符格式**：`https://example.com/*`
 - **纯文本格式**：`https://example.com`
