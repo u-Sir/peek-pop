@@ -1661,6 +1661,7 @@ async function handleDragStart(e, anchorElement) {
             ? finalSearchEngine.replace("%s", encodeURIComponent(selectionText))
             : null);
         if (!finalLinkUrl) return;
+        if (isUrlDisabled(finalLinkUrl, linkDisabledUrls)) return;
 
         const currentMouseX = e.clientX || (endInfo && endInfo.endClientX);
         const currentMouseY = e.clientY || (endInfo && endInfo.endClientY);
@@ -1903,6 +1904,7 @@ async function handleDragStart(e, anchorElement) {
           ? searchEngine.replace("%s", encodeURIComponent(selectionText))
           : null);
       if (!finalLinkUrl) return;
+      if (isUrlDisabled(finalLinkUrl, linkDisabledUrls)) return;
 
       e.preventDefault();
       e.stopImmediatePropagation();
