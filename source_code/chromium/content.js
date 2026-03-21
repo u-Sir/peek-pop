@@ -1962,27 +1962,29 @@ function isUrlDisabled(url, disabledUrls) {
   if (!url || !Array.isArray(disabledUrls) || disabledUrls.length === 0) {
     return false;
   }
-
   return disabledUrls.some((disabledUrl) => {
+    const isNegation = disabledUrl.startsWith("NOT:");
+    const finalDisabledUrl = isNegation ? disabledUrl.slice(4) : disabledUrl;
+
     // Check if the pattern is a regex
-    if (disabledUrl.startsWith("/") && disabledUrl.endsWith("/")) {
-      const regexPattern = disabledUrl.slice(1, -1); // Remove leading and trailing slashes
+    if (finalDisabledUrl.startsWith("/") && finalDisabledUrl.endsWith("/")) {
+      const regexPattern = finalDisabledUrl.slice(1, -1); // Remove leading and trailing slashes
       try {
         const regex = new RegExp(regexPattern);
-        return regex.test(url);
+        return regex.test(url) === !isNegation;
       } catch (e) {
         console.error("Invalid regex pattern:", regexPattern);
         return false;
       }
     }
     // Check if the pattern is a wildcard pattern
-    else if (disabledUrl.includes("*")) {
-      const regexPattern = disabledUrl
+    else if (finalDisabledUrl.includes("*")) {
+      const regexPattern = finalDisabledUrl
         .replace(/\\./g, "\\\\.") // Escape dots
         .replace(/\*/g, ".*"); // Replace wildcards with regex equivalent
       try {
         const regex = new RegExp(`^${regexPattern}$`);
-        return regex.test(url);
+        return regex.test(url) === !isNegation;
       } catch (e) {
         console.error("Invalid wildcard pattern:", regexPattern);
         return false;
@@ -1990,7 +1992,7 @@ function isUrlDisabled(url, disabledUrls) {
     }
     // Check if the pattern is plain text
     else {
-      return url === disabledUrl;
+      return (url === finalDisabledUrl) === !isNegation;
     }
   });
 }

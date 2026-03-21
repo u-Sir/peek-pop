@@ -1,5 +1,6 @@
 1.1.1
 - Fixed an issue where the link blacklist was not applied during drag-to-preview.
+- Added support for "NOT:" prefix in blacklist entries.
 
 0.1.0
 - Fixed a Content Security Policy (CSP) warning that could occur when Peek Pop simulated a click on certain links.
