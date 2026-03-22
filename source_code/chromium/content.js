@@ -965,7 +965,8 @@ function handleMouseDown(e) {
     !e.altKey &&
     !e.shiftKey &&
     !e.ctrlKey &&
-    !e.metaKey
+    !e.metaKey &&
+    !isUrlDisabled(window.location.href, previewModeDisabledUrls)
   ) {
     const linkElement =
       anchorElement || getLinkElementFromEvent(e);
