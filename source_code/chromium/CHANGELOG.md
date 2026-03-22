@@ -1,5 +1,5 @@
-1.2.4
-- Fixed an issue where the blacklist was not applied to `hover + space preview` and `hold-to-preview`.
+1.2.5
+- Fixed an issue where the blacklist was not applied to certain triggers.
 - Added support for multiple "NOT:" rules in blacklist entries.
 
 1.1.1

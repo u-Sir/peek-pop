@@ -1404,6 +1404,7 @@ function handleEvent(e) {
       if (linkUrl && isUrlDisabled(linkUrl, linkDisabledUrls)) return;
       if (
         previewMode &&
+        !isUrlDisabled(window.top.location.href, previewModeDisabledUrls) &&
         linkUrl &&
         !isDoubleClick &&
         !linkElement.closest("[hx-on\\:click]") &&
