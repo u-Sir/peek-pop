@@ -743,8 +743,8 @@
                     <h3><i class="fas fa-list"></i> 黑名单格式示例</h3>
                     <p>使用以下格式配置要排除在预览之外的网站：</p>
                     <div class="code-block">
-                        <strong>取反格式:</strong><br>
-                        <code>NOT:https://example.com</code><br><br>
+                        <strong>取反格式，添加后其它非 NOT: 开头的规则将会跳过:</strong><br>
+                        <code>NOT:https://example.com/*</code><br><br>
                         <strong>正则表达式格式:</strong><br>
                         <code>/^https:\/\/example\.com\/.*$/</code><br><br>
                         <strong>通配符格式:</strong><br>

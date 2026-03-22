@@ -751,8 +751,8 @@
                     <h3><i class="fas fa-list"></i> Blacklist Format Examples</h3>
                     <p>Configure which sites to exclude from preview using these formats:</p>
                     <div class="code-block">
-                        <strong>Negation format:</strong><br>
-                        <code>NOT:https://example.com</code><br><br>
+                        <strong>Negation Format, when added, all other non-NOT: rules will be ignored.</strong><br>
+                        <code>NOT:https://example.com/*</code><br><br>
                         <strong>Regex format:</strong><br>
                         <code>/^https:\/\/example\.com\/.*$/</code><br><br>
                         <strong>Wildcard format:</strong><br>
