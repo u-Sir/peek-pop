@@ -1374,7 +1374,7 @@ function handleEvent(e) {
     isDragging = true;
     const anchorElement = getAnchorElement(e);
     const keyMap = createKeyMap(e);
-    if (modifiedKey === "None" || keyMap[modifiedKey]) {
+    if ((modifiedKey === "None" || keyMap[modifiedKey]) && !isUrlDisabled(window.top.location.href, disabledUrls)) {
       handleDragStart(e, anchorElement);
     } else {
       isDragging = false;
