@@ -1226,6 +1226,7 @@ function findAnchorAcrossShadow(el) {
 }
 
 function handleSpace(e) {
+  if (isUrlDisabled(window.top.location.href, hoverDisabledUrls)) return;
   if (e.code !== "Space") return;
   if (e.repeat) return;
 
