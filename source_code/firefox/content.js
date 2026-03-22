@@ -2059,39 +2059,45 @@ function isUrlDisabled(url, disabledUrls) {
   if (!url || !Array.isArray(disabledUrls) || disabledUrls.length === 0) {
     return false;
   }
-  return disabledUrls.some((disabledUrl) => {
-    const isNegation = disabledUrl.startsWith("NOT:");
-    const finalDisabledUrl = isNegation ? disabledUrl.slice(4) : disabledUrl;
 
-    // Check if the pattern is a regex
-    if (finalDisabledUrl.startsWith("/") && finalDisabledUrl.endsWith("/")) {
-      const regexPattern = finalDisabledUrl.slice(1, -1); // Remove leading and trailing slashes
+  const match = (pattern, url) => {
+    // regex
+    if (pattern.startsWith("/") && pattern.endsWith("/")) {
       try {
-        const regex = new RegExp(regexPattern);
-        return regex.test(url) === !isNegation;
-      } catch (e) {
-        console.error("Invalid regex pattern:", regexPattern);
+        return new RegExp(pattern.slice(1, -1)).test(url);
+      } catch {
         return false;
       }
     }
-    // Check if the pattern is a wildcard pattern
-    else if (finalDisabledUrl.includes("*")) {
-      const regexPattern = finalDisabledUrl
-        .replace(/\\./g, "\\\\.") // Escape dots
-        .replace(/\*/g, ".*"); // Replace wildcards with regex equivalent
-      try {
-        const regex = new RegExp(`^${regexPattern}$`);
-        return regex.test(url) === !isNegation;
-      } catch (e) {
-        console.error("Invalid wildcard pattern:", regexPattern);
-        return false;
-      }
+
+    // wildcard
+    if (pattern.includes("*")) {
+      const regexPattern = pattern
+        .replace(/\./g, "\\.")
+        .replace(/\*/g, ".*");
+      return new RegExp(`^${regexPattern}$`).test(url);
     }
-    // Check if the pattern is plain text
-    else {
-      return (url === finalDisabledUrl) === !isNegation;
+
+    // plain
+    return url === pattern;
+  };
+
+  const whitelist = [];
+  const blacklist = [];
+
+  for (const rule of disabledUrls) {
+    if (rule.startsWith("NOT:")) {
+      whitelist.push(rule.slice(4));
+    } else {
+      blacklist.push(rule);
     }
-  });
+  }
+
+  if (whitelist.length > 0) {
+    return !whitelist.some(rule => match(rule, url));
+  }
+
+  return blacklist.some(rule => match(rule, url));
 }
 
 async function checkUrlAndToggleListeners() {
