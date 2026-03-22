@@ -8,16 +8,17 @@
 1.1.1
 - Fixed an issue where the link blacklist was not applied during drag-to-preview.
 - Added support for "NOT:" prefix in blacklist entries.
-- Added support for multiple "NOT:" rules in blacklist entries.
+
 0.1.0
 - Fixed a Content Security Policy (CSP) warning that could occur when Peek Pop simulated a click on certain links.
 
 0.0.97
-- Added option to trigger immediately when dragging.
+- Added option to trigger immediately when dragging.(for chromium)
 - Updated translations.
 
 0.0.96
 - Ensure double-click preview does not trigger when a modifier key is pressed.
+- Updated translations. (for firefox)
 
 0.0.95
 - Fixed an issue where the countdown animation could be duplicated.
@@ -30,6 +31,9 @@
 
 0.0.92
 - Fixed an issue where the original page could close unexpectedly on scroll.
+
+0.0.91
+- Fixed an issue where 'Dragging triggers immediately' was not working. (for firefox)
 
 0.0.90
 - Fixed an issue where getting Image Url was not working.
@@ -67,6 +71,7 @@
 - Added an option to prefix preview window titles with **[Peek Pop]**.
 - Added an option to send the page back to the original window when the preview window is maximized.
 - Fixed an issue where the **Send Page Back to Original Window** context menu item was removed after a page refresh or redirect.
+- Firefox now automatically remembers the preview window size after resizing, when the related "Remember Popup Size and Position" options are enabled.
 
 0.0.79
 - Added an option to preview link via context menu item.
@@ -119,12 +124,14 @@
 - New option: window-type for search tooltips.
 
 00.0.62
+- Special handling: decode and replace Bing redirect links on Bing search pages only.(for Firefox)
 - Refine hold-to-preview logic.
 
 0.0.59
 - Minor typo fixed.
 
 0.0.57
+- Automatically close the popup options page after clicking the **Shortcuts** button in Firefox.(for firefox)
 - Disable text wrapping in textareas.
 - Clean up import/export settings information.
 
@@ -157,11 +164,12 @@
 - Refined blur removal behavior on macOS.
 
 0.0.48  
-- Fixed search tooltip position in certain cases.  
+- Fixed search tooltip position in certain cases. (for chromium)
 - Updated the InClickMode icon.
 - Refined click mask logic.
 
 0.0.47
+- Fixed popup positioning on systems with scaling other than 100%. (for firefox)
 - Removed the blur effect when the mouse enters the original window.  
 - Improved the hold-to-preview functionality.  
 - Enhanced the handling of iframes.
@@ -192,10 +200,14 @@
 - Rebranded to "Peek Pop" with new logo.
 - New feature: collection.
 - New feature: show search tooltips for selected text.
-- New trigger: clicking on the link to preview.
+- New trigger:
+  - clicking on the link to preview.
+  - hold the left click to preview. (for firefox)
 - New option to search by picture (Google, Bing, Baidu, Yandex only)。
 - New option to remember popup window size and positon for each domain.
 - New option to  show link indicator when hovering.
+- New feature: Link blacklist. (for firefox)
+- Remove popup in background on Firefox. (for firefox)
 
 0.0.26
 - new options page.
@@ -204,9 +216,11 @@
 - added an option to open selected url directly.
 - added an option to set double tap specific key to send current popup page back to original window.
 - added an option to popup in background.
-- added an option to popup selected url in plain text
+- added an option to popup selected url in plain text.
+- action icon now follows with system theme. (for firefox)
 
-0.0.25
+
+0.0.25 for chromium
 - added an option to support image.
 - added an option to set at least dragging distance in px.
 - option to choose dragging direction to response.(experimental)
@@ -214,13 +228,13 @@
 - rearrange options page.
 
 0.0.24
-- improved dragging logic on Chromium. ***Now only trigger after dragging  is released*** .
+- improved dragging logic on Chromium. ***Now only trigger after dragging  is released*** . (for chromium)
 - improved modified key related logic.
-- ensure only response on links or selected text.
+- ensure only response on links or selected text. (for chromium)
 - added option to remember the popup window position and size.***(Need to click/scroll on popup page on Firefox)***
 - added option to choose popup window type. ***Now you can do anything when set it to 'Normal'.***
 
-0.0.22
+0.0.22 for chromium
 - added drag settings.
 - ensure only response on links or selected text.
 
