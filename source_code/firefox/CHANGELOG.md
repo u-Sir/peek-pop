@@ -1,3 +1,6 @@
+1.2.6
+- Fixed an issue where the drag blacklist was incorrectly applied to other triggers.
+
 1.2.5
 - Fixed an issue where the blacklist was not applied to certain triggers.
 - Added support for multiple "NOT:" rules in blacklist entries.

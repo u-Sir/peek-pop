@@ -624,7 +624,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                   typeof sender.tab !== "undefined"
                     ? sender.tab.url
                     : "https://www.example.com";
-                if (isUrlDisabled(currentUrl, disabledUrls)) {
+                if (isUrlDisabled(currentUrl, disabledUrls) && request.trigger === "drag") {
                   sendResponse({ status: "url disabled" });
                 } else if (request.linkUrl) {
                   chrome.tabs.query(
