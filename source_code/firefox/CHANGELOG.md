@@ -1,3 +1,7 @@
+1.2.4
+- Fixed an issue where the blacklist was not applied to `hover + space preview` and `hold-to-preview`.
+- Added support for multiple "NOT:" rules in blacklist entries.
+
 1.1.1
 - Fixed an issue where the link blacklist was not applied during drag-to-preview.
 - Added support for "NOT:" prefix in blacklist entries.
