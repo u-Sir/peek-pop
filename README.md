@@ -8,7 +8,7 @@
 </div>
 
 <p align="center"><i>
-A lightweight, open-source browser extension lets you preview, search, and save pages to read later.
+Instantly preview links with a simple double-click, without breaking your workflow.
 </i></p>
 
 <p align="center">
