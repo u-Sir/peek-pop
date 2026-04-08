@@ -116,6 +116,6 @@ Firefox 用户可尝试通过 `userChrome.css` 进行调整。
 
 # 致谢
 
-PeekPop 最初受到 [Open in Popup Window](https://github.com/emvaized/open-in-popup-window) 的启发，并基于其早期实现构建。
+PeekPop 最初受到 [Open in Popup Window](https://github.com/emvaized/open-in-popup-window-extension) 的启发，并基于其早期实现构建。
 
 此后，项目已经过大量重构与扩展，加入了新的功能、界面改进以及架构优化。
