@@ -114,7 +114,7 @@ Source code available in releases or source_code.
 # Acknowledgements
 
 This project was initially inspired by the concept and early implementation of 
-[Open in Popup Window](https://github.com/emvaized/open-in-popup-window) by emvaized.
+[Open in Popup Window](https://github.com/emvaized/open-in-popup-window-extension) by emvaized.
 
 While the codebase has since been largely rewritten and extended, 
 credit goes to the original project for the foundational idea.
