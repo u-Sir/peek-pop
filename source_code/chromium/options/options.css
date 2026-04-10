@@ -3,10 +3,11 @@
     align-items: center;
     gap: 5px;
     white-space: nowrap;
-    margin-bottom: 10px; /* Vertical spacing between rows */
-  }
-  
-  .options-page {
+    margin-bottom: 10px;
+    /* Vertical spacing between rows */
+}
+
+.options-page {
     width: 100%;
     margin: 0 auto;
 }
@@ -28,7 +29,8 @@
     background: #f9f9f9;
 
     border: 0px solid #ccc;
-    border-radius: 15px 15px 15px 15px; /* Top-left and top-right corners rounded */
+    border-radius: 15px 15px 15px 15px;
+    /* Top-left and top-right corners rounded */
     transition: background-color 0.3s ease;
     margin-right: 0px;
     text-align: center;
@@ -98,6 +100,15 @@ button:disabled {
     /* Slightly transparent */
 }
 
+.group {
+    padding: 0 10px;
+    background-color: #f9f9f9a6;
+    border-radius: 10px;
+}
+
+.group-nobackground {
+    padding: 0 10px;
+}
 
 /* General Option Styling */
 .option {
@@ -105,7 +116,7 @@ button:disabled {
     padding-bottom: 6px;
 }
 
-.option-label :hover{
+.option-label :hover {
     cursor: pointer;
 }
 
@@ -189,17 +200,25 @@ textarea {
 
 .row {
     display: flex;
-    gap: 10px;       /* space between the two blocks */
-    align-items: left; /* vertical alignment */
+    gap: 10px;
+    /* space between the two blocks */
+    align-items: left;
+    /* vertical alignment */
 }
+
 .block {
-    flex: 1;             /* each block takes equal width */
+    flex: 1;
+    /* each block takes equal width */
     display: flex;
-    flex-direction: column; /* stack title and options vertically */
+    flex-direction: column;
+    /* stack title and options vertically */
 }
-.block > .option {
-    flex: 1;          /* make both blocks take equal width */
-    min-width: 100px; /* optional minimum width */
+
+.block>.option {
+    flex: 1;
+    /* make both blocks take equal width */
+    min-width: 100px;
+    /* optional minimum width */
 }
 
 
@@ -297,4 +316,9 @@ textarea {
         opacity: 0.7;
         /* Slightly transparent */
     }
+
+    .group {
+        background-color: #2c2c2c38;
+    }
+
 }
