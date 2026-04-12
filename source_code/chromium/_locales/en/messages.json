@@ -12,10 +12,10 @@
         "message": "Open add-on icon popup"
     },
     "extensionName": {
-        "message": "Peek Pop: Link Preview & Search & Read Later"
+        "message": "Peek Pop: Link Preview"
     },
     "extensionDescription": {
-        "message": "A lightweight, open-source browser extension lets you preview, search, and save pages to read later"
+        "message": "Instantly preview links with a simple double-click, without breaking your workflow"
     },
     "popupHeight": {
         "message": "Height (px)"

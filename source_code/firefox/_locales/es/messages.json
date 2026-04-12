@@ -3,10 +3,10 @@
         "message": "Abrir el icono emergente del complemento"
     },
     "extensionName": {
-        "message": "Peek Pop: Vista previa del enlace & Buscar & Leer más tarde"
+        "message": "Peek Pop: Vista previa del enlace"
     },
     "extensionDescription": {
-        "message": "Una extensión de navegador ligera y de código abierto permite previsualizar, buscar y guardar páginas para leerlas más tarde"
+        "message": "Vista previa instantánea de enlaces con un simple doble clic, sin interrumpir tu flujo de trabajo"
     },
     "popupHeight": {
         "message": "Altura (px)"
