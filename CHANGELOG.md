@@ -1,3 +1,6 @@
+1.2.7
+- UI improvements and adjustments.
+
 1.2.6
 - Fixed an issue where the drag blacklist was incorrectly applied to other triggers.
 
