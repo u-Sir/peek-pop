@@ -479,6 +479,21 @@ function setupPage(userConfigs) {
 
         function update() {
             grp.style.display = cb.checked ? "block" : "none";
+            if (checkbox === "searchTooltipsEnable" || checkbox === "blurEnabled") {
+                const searchDiv = document.getElementById(checkbox).parentNode.parentNode;
+                if (cb.checked) {
+
+                    const hr = document.createElement('hr');
+
+                    searchDiv.parentNode.insertBefore(hr, searchDiv);
+                } else {
+                    // remove hr element if it already exists to prevent multiple hr elements
+                    const existingHr = searchDiv.parentNode.querySelector('hr');
+                    if (existingHr) {
+                        existingHr.remove();
+                    }
+                }
+            }
         }
 
         update();
