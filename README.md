@@ -102,7 +102,7 @@ You can enable the **"Only respond when dragging to empty areas"** option in the
 ## Not compatible with Arc/Dia
 
 ## On Firefox
-When system scaling is not set to 100%, the popup window may briefly flash when it appears.
+When system scaling is not set to 100%, the popup window may briefly flash when it appears.([Firefox bug report](https://bugzilla.mozilla.org/show_bug.cgi?id=1982177))
 
 ## On macOS
 The preview popup window does not work properly in `fullscreen` mode.  

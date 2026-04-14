@@ -105,7 +105,7 @@ Firefox 用户可尝试通过 `userChrome.css` 进行调整。
 ## 不兼容 Arc / Dia 
 
 ## 在 Firefox 上
-当系统缩放比例不是 100% 时，弹窗可能在出现时闪一下。
+当系统缩放比例不是 100% 时，弹窗可能在出现时闪一下。([Firefox bug report](https://bugzilla.mozilla.org/show_bug.cgi?id=1982177))
 
 ## 在 macOS 上
 预览弹窗在 `全屏模式` 下无法正常工作。  
