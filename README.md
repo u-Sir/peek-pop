@@ -26,6 +26,8 @@ Instantly preview links with a simple double-click, without breaking your workfl
 
 **👉 It's recommended to visit the options page after installation to customize the settings and tailor the plugin to your needs.**
 
+> **Privacy note:** Peek Pop runs fully locally. No telemetry, no cloud sync, no external server communication.
+
 ### Triggers
 
 | Trigger                | Supported? | Modifier key  | Search or Image search  |
@@ -107,6 +109,34 @@ When system scaling is not set to 100%, the popup window may briefly flash when 
 ## On macOS
 The preview popup window does not work properly in `fullscreen` mode.  
 For best results, use the window in non-fullscreen mode.
+
+
+# Privacy & Data Handling
+
+Peek Pop is designed to work entirely on your local machine.
+
+It does not send user data anywhere, does not collect analytics or telemetry, does not make background requests to external servers, and does not rely on any remote API or cloud service.
+
+All preferences, saved items, and temporary runtime state are stored only in the browser's local extension storage or kept in memory during execution.
+
+There is currently no backend service involved.
+
+This means:
+
+* no browsing content is uploaded
+* no page text is transmitted
+* no mouse or keyboard activity is reported
+* no personal information is collected
+* no account/sign-in is required
+* no hidden background network communication exists
+
+## Why does the extension request broader permissions?
+
+Some requested permissions may look broader than those of a simple UI extension.
+
+This is because Peek Pop needs page-level interaction capabilities, script injection on supported sites, tab/context awareness, and local state persistence in order to provide its functionality consistently.
+
+Those permissions are used for feature implementation only — not for tracking, telemetry, or data collection.
 
 # Source
 Source code available in releases or source_code.
