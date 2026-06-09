@@ -2726,12 +2726,11 @@ function addLinkToCollection(e) {
     const fetchFinalTitle = (url, timeout = 5000) => {
       return new Promise((resolve) => {
         const timeoutId = setTimeout(() => {
-          resolve({ title: url, finalUrl: url }); // Fallback to URL on timeout
+          resolve({ title: url, finalUrl: url });
         }, timeout);
 
-        // Use fetch to get the page content
         fetch(url, { redirect: "follow" })
-          .then((response) => {
+          .then(async (response) => {
             clearTimeout(timeoutId);
 
             // Directly use the URL if response isn't OK
@@ -2741,20 +2740,70 @@ function addLinkToCollection(e) {
               return;
             }
 
-            const finalUrl = response.url; // Final URL after redirection
-            return response.text().then((html) => {
+            const finalUrl = response.url;
+
+            try {
+              // Get charset from response header
+              const contentType =
+                response.headers.get("content-type") || "";
+
+              const charsetMatch =
+                contentType.match(/charset=([^;]+)/i);
+
+              const charset =
+                charsetMatch?.[1]?.trim().toLowerCase() || "utf-8";
+
+              // Decode manually
+              const buffer = await response.arrayBuffer();
+
+              let html = "";
+
+              try {
+                html = new TextDecoder(charset).decode(buffer);
+              } catch (e) {
+                console.warn(
+                  `Unsupported charset: ${charset}, fallback to utf-8`
+                );
+
+                html = new TextDecoder("utf-8").decode(buffer);
+              }
+
+              // Parse HTML
               const parser = new DOMParser();
-              const doc = parser.parseFromString(html, "text/html");
+              const doc = parser.parseFromString(
+                html,
+                "text/html"
+              );
+
+              // Use doc.title instead of innerText
+              const pageTitle = doc.title?.trim();
+
               const title =
-                doc.querySelector("title")?.innerText === "微博搜索"
-                  ? `微博搜索 - ${decodeURIComponent(new URL(finalUrl || url).searchParams.get("q") || "")}`
-                  : doc.querySelector("title")?.innerText || finalUrl || url;
+                pageTitle === "微博搜索"
+                  ? `微博搜索 - ${decodeURIComponent(
+                    new URL(finalUrl || url).searchParams.get("q") || ""
+                  )}`
+                  : pageTitle || finalUrl || url;
+
               resolve({ title, finalUrl });
-            });
+            } catch (error) {
+              console.warn("Failed to parse title:", error);
+
+              resolve({
+                title: finalUrl || url,
+                finalUrl,
+              });
+            }
           })
           .catch((error) => {
             clearTimeout(timeoutId);
-            resolve({ title: url, finalUrl: url }); // Fallback to URL on error
+
+            console.warn("Fetch failed:", error);
+
+            resolve({
+              title: url,
+              finalUrl: url,
+            });
           });
       });
     };
