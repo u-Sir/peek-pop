@@ -310,5 +310,8 @@
     },
     "dragStartEnable": {
         "message": "拖拽立即触发，不等待释放"
+    },
+    "keepLinks": {
+        "message": "打开后不移除链接"
     }
 }

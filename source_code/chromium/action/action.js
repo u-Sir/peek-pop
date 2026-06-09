@@ -17,7 +17,7 @@ function handleLinkClick(e) {
         };
 
         chrome.runtime.sendMessage(group, () => {
-            handleRemoveLink(linkUrl, () => {
+            handleRemoveLink(linkUrl, false, () => {
                 window.close(); // Close the window after handleRemoveLink completes
             });
         });
@@ -25,7 +25,7 @@ function handleLinkClick(e) {
 }
 
 function openAllAndClearCollection(e) {
-    chrome.storage.local.get(['collection'], (result) => {
+    chrome.storage.local.get(['collection', 'keepLinks'], (result) => {
         let collection = result.collection || []; // Ensure collection is an array
 
         // Re-fetch the collection to make sure we have the latest data
@@ -47,6 +47,10 @@ function openAllAndClearCollection(e) {
                 };
 
                 chrome.runtime.sendMessage(group, () => {
+                    if (result.keepLinks) {
+                        window.close();
+                        return;
+                    }
                     // Remove all items from the collection except for the '+' item
                     const updatedCollection = collection.filter(item => item.label === '+');
 
@@ -57,6 +61,7 @@ function openAllAndClearCollection(e) {
                     });
 
                     chrome.runtime.sendMessage({ action: 'updateBadge' });
+
                 });
             } else {
                 // console.log('No links to open or insufficient items in the collection.');
@@ -66,8 +71,12 @@ function openAllAndClearCollection(e) {
 }
 
 
-function handleRemoveLink(linkUrl, callback) {
-    chrome.storage.local.get(['collection'], (result) => {
+function handleRemoveLink(linkUrl, isManualRemoval = false, callback) {
+    chrome.storage.local.get(['collection', 'keepLinks'], (result) => {
+        if (result.keepLinks && !isManualRemoval) {
+            if (callback) callback(); // Invoke the callback if provided
+            return;
+        }
         let collection = result.collection || [];
 
         // Filter out the specific link from the main collection
@@ -105,11 +114,54 @@ function handleRemoveLink(linkUrl, callback) {
 
 
 function loadLinks() {
-    chrome.storage.local.get(['collection'], (result) => {
+    chrome.storage.local.get(['collection', 'keepLinks'], (result) => {
         const collection = result.collection || [];
         const linksContainer = document.getElementById('links');
         const emptyMessage = document.getElementById('empty');
         linksContainer.innerHTML = ''; // Clear previous links
+
+        // Create keep links checkbox (bottom left)
+        const keepLinks = result.keepLinks === true;
+
+        // Avoid duplicate checkbox
+        const existingCheckbox =
+            document.getElementById('keep-links-container');
+
+        if (existingCheckbox) {
+            existingCheckbox.remove();
+        }
+
+        const checkboxContainer = document.createElement('div');
+        checkboxContainer.id = 'keep-links-container';
+
+        checkboxContainer.style.position = 'fixed';
+        checkboxContainer.style.bottom = '10px';
+        checkboxContainer.style.left = '10px';
+        checkboxContainer.style.display = 'flex';
+        checkboxContainer.style.alignItems = 'center';
+        checkboxContainer.style.gap = '6px';
+        checkboxContainer.style.zIndex = '9999';
+
+        const toggleCheckbox = document.createElement('input');
+        toggleCheckbox.type = 'checkbox';
+        toggleCheckbox.checked = keepLinks;
+        toggleCheckbox.id = 'keep-links-checkbox';
+
+
+        const label = document.createElement('label');
+        label.textContent = chrome.i18n.getMessage('keepLinks');
+        label.htmlFor = 'keep-links-checkbox';
+
+        toggleCheckbox.addEventListener('change', function () {
+            chrome.storage.local.set({
+                keepLinks: toggleCheckbox.checked
+            });
+        });
+
+        checkboxContainer.appendChild(toggleCheckbox);
+        checkboxContainer.appendChild(label);
+
+        document.body.appendChild(checkboxContainer);
 
         let hasLinks = false;
 
@@ -126,7 +178,7 @@ function loadLinks() {
                 const removeButton = document.createElement('button');
                 removeButton.classList.add('remove-button'); // Add a class for styling
                 removeButton.addEventListener('click', function () {
-                    handleRemoveLink(link.url);
+                    handleRemoveLink(link.url, true);
                 });
                 linkContainer.appendChild(removeButton); // Append the button to the link container
             }

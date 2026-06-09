@@ -310,5 +310,8 @@
     },
     "dragStartEnable": {
         "message": "Dragging triggers immediately, without waiting for release"
+    },
+    "keepLinks": {
+        "message": "Do not remove links after opening"
     }
 }

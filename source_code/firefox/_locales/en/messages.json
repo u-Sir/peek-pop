@@ -304,6 +304,9 @@
     },
     "countdownInvisibleTime": {
         "message": "Invisible time before showing countdown (ms): "
+    },
+    "keepLinks": {
+        "message": "Do not remove links after opening"
     }
 
 }

@@ -304,6 +304,9 @@
     },
     "countdownInvisibleTime": {
         "message": "Tiempo invisible antes de mostrar la cuenta regresiva (ms): "
+    },
+    "keepLinks": {
+        "message": "No eliminar enlaces después de abrir"
     }
 
 }

@@ -304,5 +304,9 @@
     },
     "countdownInvisibleTime": {
         "message": "延迟（ms）显示倒计时图标："
+    },
+    "keepLinks": {
+        "message": "打开后不移除链接"
     }
+
 }

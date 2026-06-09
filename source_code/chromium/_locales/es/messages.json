@@ -310,5 +310,8 @@
     },
     "dragStartEnable": {
         "message": "El arrastre se activa inmediatamente, sin esperar a soltar"
+    },
+    "keepLinks": {
+        "message": "No eliminar enlaces después de abrir"
     }
 }
