@@ -233,8 +233,22 @@ function loadLinks() {
                 linkContainer.appendChild(a); // Append the link to the link container
             }
 
+            // Add hr before the first visible linkContainer
+            if (index === 2) {
+                const topHr = document.createElement('hr');
+                linksContainer.appendChild(topHr);
+            }
+
             // Append the link container to the links container
             linksContainer.appendChild(linkContainer);
+
+            // Add hr only after the last linkContainer
+            if (index === collection.length - 1 || (index === 1 && collection.length === 2)) {
+                const hr = document.createElement('hr');
+                linksContainer.appendChild(hr);
+                const br = document.createElement('br');
+                linksContainer.appendChild(br);
+            }
         });
 
         // Show or hide the empty message based on whether there are any links
