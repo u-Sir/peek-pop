@@ -1,3 +1,7 @@
+1.2.9
+- Improved non-UTF8 character decoding for Read Later page titles (including Cyrillic and other legacy encodings).
+- Added a new "Do not remove links after opening" option for Read Later links.
+
 1.2.7
 - UI improvements and adjustments.
 
