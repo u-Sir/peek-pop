@@ -38,6 +38,14 @@ Instantly preview links with a simple double-click, without breaking your workfl
 
 > **Privacy note:** Peek Pop runs fully locally. No telemetry, no cloud sync, no external server communication.
 
+
+### Maintainer's recommended minimalist UI setup:
+
+1. Use [Helium](https://helium.computer/), and in `helium://settings/appearance`, enable:  
+   - Frameless mode  
+   - Rounded borders around webpage content  
+2. In the settings page of your preferred trigger method, set the popup type to **normal**
+
 ### Triggers
 
 | Trigger                | Supported? | Modifier key  | Search or Image search  |
