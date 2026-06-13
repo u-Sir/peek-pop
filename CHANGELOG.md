@@ -1,3 +1,7 @@
+1.2.11
+- Kept the Read Later page open when the collection is empty.
+- Kept the "Do not remove links after opening" option at the bottom of the Read Later page.
+
 1.2.9
 - Improved non-UTF8 character decoding for Read Later page titles (including Cyrillic and other legacy encodings).
 - Added a new "Do not remove links after opening" option for Read Later links.
