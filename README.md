@@ -41,9 +41,9 @@ Instantly preview links with a simple double-click, without breaking your workfl
 
 ### Maintainer's recommended minimalist UI setup:
 
-1. Use [Helium](https://helium.computer/), and in `helium://settings/appearance`, enable:  
-   - Frameless mode  
-   - Rounded borders around webpage content  
+1. Use [Helium](https://helium.computer/) and configure the following options in `helium://settings/appearance`:  
+   - Enable Frameless mode
+   - Disable rounded borders around webpage content
 2. In the settings page of your preferred trigger method, set the popup type to **normal**
 
 ### Triggers

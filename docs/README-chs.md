@@ -103,9 +103,9 @@ Firefox 用户可尝试通过 `userChrome.css` 进行调整。
 
 ### 维护者推荐的极简 UI 配置：
 
-1. 使用 [Helium](https://helium.computer/)，并在 `helium://settings/appearance` 中开启以下选项：  
-   - 无边框模式（Frameless mode）  
-   - 在网页内容周围显示圆角边框  
+1. 使用 [Helium](https://helium.computer/)，并在 `helium://settings/appearance` 中设置以下选项：  
+   - 启用无边框模式（Frameless mode）  
+   - 禁用在网页内容周围显示圆角边框  
 2. 在你喜欢的触发方式设置页面中，将弹窗类型设置为 **普通**
 
 ### 链接支持情况
