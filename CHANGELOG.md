@@ -1,55 +1,55 @@
-1.2.11
+## 1.2.11
 - Kept the Read Later page open when the collection is empty.
 - Kept the "Do not remove links after opening" option at the bottom of the Read Later page.
 
-1.2.9
+## 1.2.9
 - Improved non-UTF8 character decoding for Read Later page titles (including Cyrillic and other legacy encodings).
 - Added a new "Do not remove links after opening" option for Read Later links.
 
-1.2.7
+## 1.2.7
 - UI improvements and adjustments.
 
-1.2.6
+## 1.2.6
 - Fixed an issue where the drag blacklist was incorrectly applied to other triggers.
 
-1.2.5
+## 1.2.5
 - Fixed an issue where the blacklist was not applied to certain triggers.
 - Added support for multiple "NOT:" rules in blacklist entries.
 
-1.1.1
+## 1.1.1
 - Fixed an issue where the link blacklist was not applied during drag-to-preview.
 - Added support for "NOT:" prefix in blacklist entries.
 
-0.1.0
+## 0.1.0
 - Fixed a Content Security Policy (CSP) warning that could occur when Peek Pop simulated a click on certain links.
 
-0.0.97
+## 0.0.97
 - Added option to trigger immediately when dragging.(for chromium)
 - Updated translations.
 
-0.0.96
+## 0.0.96
 - Ensure double-click preview does not trigger when a modifier key is pressed.
 - Updated translations. (for firefox)
 
-0.0.95
+## 0.0.95
 - Fixed an issue where the countdown animation could be duplicated.
 
-0.0.94
+## 0.0.94
 - Added an option to set Invisible time before showing countdown.
 
-0.0.93
+## 0.0.93
 - Fixed an issue where search tooltips was not working.
 
-0.0.92
+## 0.0.92
 - Fixed an issue where the original page could close unexpectedly on scroll.
 
-0.0.91
+## 0.0.91
 - Fixed an issue where 'Dragging triggers immediately' was not working. (for firefox)
 
-0.0.90
+## 0.0.90
 - Fixed an issue where getting Image Url was not working.
 
-0.0.89
+## 0.0.89
 - Refine link element handling.
 - Refine icon handling.
 - Refine popup logic.
@@ -58,156 +58,156 @@
 - Refine key map handling.
 - Refine get Image Url.
 
-0.0.88
+## 0.0.88
 - Refine scroll to close logic.
 - Fixed an issue where “Open All” in collections didn’t work.
 
-0.0.87
+## 0.0.87
 - Refine option logic related to dragging.
 - Refine options page layout.
 
-0.0.86
+## 0.0.86
 - Fixed an issue where selecting text or images to search was not working.
 
-0.0.84
+## 0.0.84
 - Refine logic related to preview window.
 
-0.0.83
+## 0.0.83
 - Refine title prefix handling.
 - Refine URL processing.
 - Refine layout of search tooltips.
 - Cleanup preview icon on scroll.
 
-0.0.80
+## 0.0.80
 - Added an option to prefix preview window titles with **[Peek Pop]**.
 - Added an option to send the page back to the original window when the preview window is maximized.
 - Fixed an issue where the **Send Page Back to Original Window** context menu item was removed after a page refresh or redirect.
 - Firefox now automatically remembers the preview window size after resizing, when the related "Remember Popup Size and Position" options are enabled.
 
-0.0.79
+## 0.0.79
 - Added an option to preview link via context menu item.
 - Added a new button to remove all saved popup window size and position info.
 
-0.0.78
+## 0.0.78
 - Prevent video playback from pausing when triggering the preview popup via hover + Space by intercepting the Space key at the capture phase.
 - Added options to customize preview icon size, hover delay, and removal delay.
 
-0.0.77
+## 0.0.77
 - Ensure the preview icon always stays within the viewport.
 - Prevent triggering the popup when pressing **Space** after closing a popup opened via hover + Space.
 
-0.0.76
+## 0.0.76
 - Minor bug fixed.
 
-0.0.75
+## 0.0.75
 - New trigger: Show preview icon on hover, hover on the icon to preview.
 
-0.0.74
+## 0.0.74
 - New trigger: Hover + Space to preview the link.
 
-0.0.73
+## 0.0.73
 - Improved the Esc to close logic.
 
-0.0.70
+## 0.0.70
 - Fixed an issue where click-to-preview didn’t work correctly in certain cases.
 - Improved the update icon logic.
 
-0.0.69
+## 0.0.69
 - Minor typo fixed.
 
-0.0.68
+## 0.0.68
 - Refine double click to preview logic.
 
-0.0.67
+## 0.0.67
 - Double-click is now the default preview action for newly installed users.
 
-0.0.66
+## 0.0.66
 - Refine double click to preview logic.
 - Rearrange options page layout.
 
-0.0.65
+## 0.0.65
 - Fixed issue where single click didn't work in certain cases when double-click preview was enabled.
 
-0.0.64
+## 0.0.64
 - New trigger: double click on the link to preview.
 
-0.0.63
+## 0.0.63
 - New option: window-type for search tooltips.
 
-00.0.62
+0## 0.0.62
 - Special handling: decode and replace Bing redirect links on Bing search pages only.(for Firefox)
 - Refine hold-to-preview logic.
 
-0.0.59
+## 0.0.59
 - Minor typo fixed.
 
-0.0.57
+## 0.0.57
 - Automatically close the popup options page after clicking the **Shortcuts** button in Firefox.(for firefox)
 - Disable text wrapping in textareas.
 - Clean up import/export settings information.
 
-0.0.56
+## 0.0.56
 - Option to preserve popup window size and position during export/import.
 - Special handling: build title from Weibo search query if default title is "微博搜索"
 
-0.0.55
+## 0.0.55
 - New option: Automatically close popup when scrolling in the original window.
 - New option: Customize countdown style.
 - Added a shortcuts button.
 - Options page layout adjusted.
 
-0.0.54
+## 0.0.54
 - New option: Enable automatic blur removal.
 
-0.0.53
+## 0.0.53
 - Show the 'Send Page Back to Original Window' context menu item only in popup windows.
 
-0.0.52
+## 0.0.52
 - Keep focus on input when hovering over iframe.
 - Prevent popup from auto-hiding buttons on links with menus.
 
-0.0.51
+## 0.0.51
 - Prevent popups from opening on non-human (scripted) clicks.
 
-0.0.50
+## 0.0.50
 - New option: middle mouse button (scroll wheel) click on a blank area of the page sends page back to the original window.
 - New option: popup window size as a percentage of the last window size.
 - Refined blur removal behavior on macOS.
 
-0.0.48  
+## 0.0.48  
 - Fixed search tooltip position in certain cases. (for chromium)
 - Updated the InClickMode icon.
 - Refined click mask logic.
 
-0.0.47
+## 0.0.47
 - Fixed popup positioning on systems with scaling other than 100%. (for firefox)
 - Removed the blur effect when the mouse enters the original window.  
 - Improved the hold-to-preview functionality.  
 - Enhanced the handling of iframes.
 
-0.0.46
+## 0.0.46
 - Enhance handling when triggered by non-human clicks.
 
-0.0.45
+## 0.0.45
 - Fixed issue where blur duration was not functioning correctly.
 - Fixed an issue where "Hold to Preview" did not work in certain cases.
 - Improved overall performance.
 
-0.0.42
+## 0.0.42
 - **Fixed:** An issue where pressing `Esc` to close a tab would unintentionally trigger on the origin tab after restarting the browser.  
 - **Improved:** Attempted to prevent page elements from disappearing in certain cases.  
 - **Improved:** `Ctrl + right-click` on non-link elements will now add the current page to the collection (if the collection feature is enabled).  
 
-0.0.39
+## 0.0.39
 - Added indicator for trigger.
 - Added contact icon.
 
-0.0.37
+## 0.0.37
 - Fixed an issue where "Hold to Preview" did not work in certain cases.
 - Improved title fetching for collections.
 - Display the number of collections on the toolbar icon.
 
-0.0.36
+## 0.0.36
 - Rebranded to "Peek Pop" with new logo.
 - New feature: collection.
 - New feature: show search tooltips for selected text.
@@ -220,7 +220,7 @@
 - New feature: Link blacklist. (for firefox)
 - Remove popup in background on Firefox. (for firefox)
 
-0.0.26
+## 0.0.26
 - new options page.
 - now supports hover to preview.
 - now supports export/import configurations.
@@ -231,63 +231,63 @@
 - action icon now follows with system theme. (for firefox)
 
 
-0.0.25 for chromium
+## 0.0.25 for chromium
 - added an option to support image.
 - added an option to set at least dragging distance in px.
 - option to choose dragging direction to response.(experimental)
 - ensure that response only dragging released inside in the current page area.
 - rearrange options page.
 
-0.0.24
+## 0.0.24
 - improved dragging logic on Chromium. ***Now only trigger after dragging  is released*** . (for chromium)
 - improved modified key related logic.
 - ensure only response on links or selected text. (for chromium)
 - added option to remember the popup window position and size.***(Need to click/scroll on popup page on Firefox)***
 - added option to choose popup window type. ***Now you can do anything when set it to 'Normal'.***
 
-0.0.22 for chromium
+## 0.0.22 for chromium
 - added drag settings.
 - ensure only response on links or selected text.
 
-0.0.21
+## 0.0.21
 - ensure that popup window centered based on current screen when tryOpenAtMousePosition is false.
 - align the checkboxes/radio buttons with their respective labels properly on options page.
 - ensure "send page back" response when idle.
 - added Wikipedia in search providers.
 - keep options page following system's light/dark mode.
 
-0.0.19
+## 0.0.19
 - multi-monitors supported.
 - change modified key to optional. (Please test to ensure it meets expectations.)
 - prevent trigger click when dragging link/selectedText.
 - add options to select search provider or custom.
 - new option page.
 
-0.0.17
+## 0.0.17
 - add an option to set blur effect on original page when popup window.
 - add options page to browser action.
 
-0.0.16
+## 0.0.16
 - add option to only response when shift key is pressing.
 - add an option to enable "ensured popup window open in the same container as original page".
 - add "send page back to original window" in context menu on popup window.
 
-0.0.14
+## 0.0.14
 - convert to non-persisten background.
 - ensured popup window open in the same container/private-mode as original page on Firefox.
 
-0.0.10
+## 0.0.10
 - support disable in specific URLs via regex, wildcard, plain text.
 
-0.0.4
+## 0.0.4
 - fixed a bug that "Option to search selection in popup enabled" can't be disabled.
 
-0.0.3
+## 0.0.3
 - prevent dragged link open in new tab or in original page.
 
-0.0.2
+## 0.0.2
 - updated Chinese translation. 
 - fixed popup window does not work correctly in private mode.
 
-0.0.1
+## 0.0.1
 - initial release, modified based on "open in popup window".

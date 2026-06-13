@@ -3,10 +3,6 @@ permissions:
 
 on:
   workflow_dispatch:
-    inputs:
-      release_notes:
-        description: "Release notes / changes"
-        required: true
 
 jobs:
   build:
@@ -23,6 +19,28 @@ jobs:
         run: |
           VERSION=$(jq -r '.version' source_code/firefox/manifest.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract release notes from CHANGELOG.md
+        id: changelog
+        run: |
+          VERSION="${{ steps.firefox_version.outputs.version }}"
+
+          NOTES=$(awk -v ver="$VERSION" '
+            $0 == "## " ver { found=1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md)
+
+          if [ -z "$(echo "$NOTES" | tr -d '[:space:]')" ]; then
+            echo "ERROR: No changelog entry found for version $VERSION"
+            exit 1
+          fi
+
+          {
+            echo 'release_notes<<EOF'
+            echo "$NOTES"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Pack Firefox extension
         uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
@@ -59,7 +77,7 @@ jobs:
           tag_name: ${{ steps.firefox_version.outputs.version }}
           name: ${{ steps.firefox_version.outputs.version }}
           body: |
-            ${{ github.event.inputs.release_notes }}
+            ${{ steps.changelog.outputs.release_notes }}
           draft: false
           prerelease: false
           files: |
