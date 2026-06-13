@@ -131,13 +131,10 @@ function loadLinks() {
         const checkboxContainer = document.createElement('div');
         checkboxContainer.id = 'keep-links-container';
 
-        checkboxContainer.style.position = 'fixed';
-        checkboxContainer.style.bottom = '10px';
-        checkboxContainer.style.left = '10px';
         checkboxContainer.style.display = 'flex';
         checkboxContainer.style.alignItems = 'center';
         checkboxContainer.style.gap = '6px';
-        checkboxContainer.style.zIndex = '9999';
+        checkboxContainer.style.marginTop = '10px';
 
         const toggleCheckbox = document.createElement('input');
         toggleCheckbox.type = 'checkbox';
@@ -157,7 +154,6 @@ function loadLinks() {
         checkboxContainer.appendChild(toggleCheckbox);
         checkboxContainer.appendChild(label);
 
-        document.body.appendChild(checkboxContainer);
 
         // =========================
         // Link State
@@ -284,9 +280,7 @@ function loadLinks() {
 
         }
 
-        linksContainer.appendChild(
-            document.createElement('br')
-        );
+        linksContainer.appendChild(checkboxContainer);
     });
 }
 
