@@ -96,13 +96,7 @@ function handleRemoveLink(linkUrl, isManualRemoval = false, callback) {
         // Store the updated collection back in Chrome storage
         chrome.storage.local.set({ collection: collection }, () => {
 
-            // Check if there are no links left after removal
-            if (collection.length === 1 && (!collection[0].links || collection[0].links.length === 0)) {
-                // Redirect to options.html if no links remain
-                window.location.href = '../options/options.html';
-            } else {
-                loadLinks(); // Reload the links after removing
-            }
+            loadLinks(); // Reload the links after removing
 
             chrome.runtime.sendMessage({ action: 'updateBadge' });
 
@@ -116,14 +110,17 @@ function handleRemoveLink(linkUrl, isManualRemoval = false, callback) {
 function loadLinks() {
     chrome.storage.local.get(['collection', 'keepLinks'], (result) => {
         const collection = result.collection || [];
-        const linksContainer = document.getElementById('links');
-        const emptyMessage = document.getElementById('empty');
-        linksContainer.innerHTML = ''; // Clear previous links
-
-        // Create keep links checkbox (bottom left)
         const keepLinks = result.keepLinks === true;
 
-        // Avoid duplicate checkbox
+        const linksContainer = document.getElementById('links');
+        const emptyMessage = document.getElementById('empty');
+
+        linksContainer.innerHTML = '';
+
+        // =========================
+        // Keep Links Checkbox
+        // =========================
+
         const existingCheckbox =
             document.getElementById('keep-links-container');
 
@@ -147,7 +144,6 @@ function loadLinks() {
         toggleCheckbox.checked = keepLinks;
         toggleCheckbox.id = 'keep-links-checkbox';
 
-
         const label = document.createElement('label');
         label.textContent = chrome.i18n.getMessage('keepLinks');
         label.htmlFor = 'keep-links-checkbox';
@@ -163,104 +159,134 @@ function loadLinks() {
 
         document.body.appendChild(checkboxContainer);
 
-        let hasLinks = false;
+        // =========================
+        // Link State
+        // =========================
 
-        // Loop through the collection and create link elements
-        collection.forEach((link, index) => {
-            if (index === 0) return; // Skip the first item
+        const links = collection.slice(2);
+        const hasLinks = links.length > 0;
 
-            hasLinks = true; // If we have at least one link, set hasLinks to true
+        // =========================
+        // Top Actions
+        // =========================
 
-            const linkContainer = document.createElement('div'); // Create a container for each link and its button
-            linkContainer.classList.add('link-container'); // Add a class for styling
+        const actionsContainer = document.createElement('div');
+        actionsContainer.classList.add('link-container');
 
-            if (index !== 1) { // Add the remove button only if index is not 1
-                const removeButton = document.createElement('button');
-                removeButton.classList.add('remove-button'); // Add a class for styling
-                removeButton.addEventListener('click', function () {
+        // Open All
+        const openAllLink = document.createElement('a');
+        openAllLink.href = '#';
+        openAllLink.textContent = chrome.i18n.getMessage('openAll');
+        openAllLink.classList.add('left-link');
+
+        if (hasLinks) {
+            openAllLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                openAllAndClearCollection(e);
+            });
+        } else {
+            openAllLink.style.pointerEvents = 'none';
+            openAllLink.style.opacity = '0.5';
+            openAllLink.style.cursor = 'default';
+        }
+
+        actionsContainer.appendChild(openAllLink);
+
+        // Clear All
+        const clearLink = document.createElement('a');
+        clearLink.href = '#';
+        clearLink.textContent = chrome.i18n.getMessage('clearAll');
+        clearLink.classList.add('center-link');
+
+        clearLink.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const updatedCollection = [
+                { label: '+' },
+                { label: '↗️', links: [] }
+            ];
+
+            chrome.storage.local.set(
+                { collection: updatedCollection },
+                () => {
+                    loadLinks();
+
+                    chrome.runtime.sendMessage({
+                        action: 'updateBadge'
+                    });
+                }
+            );
+        });
+
+        actionsContainer.appendChild(clearLink);
+
+        // Options
+        const optionsLink = document.createElement('a');
+
+        optionsLink.href = '../options/options.html';
+        optionsLink.textContent =
+            chrome.i18n.getMessage('options');
+
+        optionsLink.style.marginLeft = '10px';
+        optionsLink.classList.add('right-link');
+
+        actionsContainer.appendChild(optionsLink);
+
+        linksContainer.appendChild(actionsContainer);
+
+        linksContainer.appendChild(
+            document.createElement('hr')
+        );
+
+        // =========================
+        // Links
+        // =========================
+
+        links.forEach((link) => {
+            const linkContainer =
+                document.createElement('div');
+
+            linkContainer.classList.add('link-container');
+
+            const removeButton =
+                document.createElement('button');
+
+            removeButton.classList.add('remove-button');
+
+            removeButton.addEventListener(
+                'click',
+                function () {
                     handleRemoveLink(link.url, true);
-                });
-                linkContainer.appendChild(removeButton); // Append the button to the link container
-            }
+                }
+            );
+
+            linkContainer.appendChild(removeButton);
 
             const a = document.createElement('a');
+
             a.href = link.url;
             a.textContent = link.label || link.url;
             a.target = '_blank';
 
-            if (index === 1) {
-                // Create "Open all" link
-                a.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    openAllAndClearCollection(e);
-                });
-                a.textContent = chrome.i18n.getMessage('openAll');
-                a.classList.add('left-link'); // Add a specific class for styling
-                linkContainer.appendChild(a);
+            a.addEventListener('click', function (e) {
+                handleLinkClick(e);
+            });
 
-                // Create "Clear all" link
-                const clearLink = document.createElement('a');
-                clearLink.href = '#'; // Use a placeholder href for the link
-                clearLink.textContent = chrome.i18n.getMessage('clearAll');
-                clearLink.classList.add('center-link'); // Add a specific class for styling
-                clearLink.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    // Remove all items except the first one
-                    chrome.storage.local.get(['collection'], (result) => {
-                        const collection = result.collection || [];
-                        const updatedCollection = [collection[0]]; // Keep only the first item
-                        chrome.storage.local.set({ collection: updatedCollection }, () => {
-                            loadLinks(); // Reload the links after clearing
+            linkContainer.appendChild(a);
 
-                            chrome.runtime.sendMessage({ action: 'updateBadge' });
-                        });
-                    });
-                });
-                linkContainer.appendChild(clearLink);
-
-                // Create "Options" link to redirect to options.html
-                const optionsLink = document.createElement('a');
-                optionsLink.href = '../options/options.html';
-                optionsLink.textContent = chrome.i18n.getMessage('options');
-                optionsLink.style.marginLeft = '10px'; // Add some space between the links
-                optionsLink.classList.add('right-link'); // Add a specific class for styling
-                linkContainer.appendChild(optionsLink); // Append the options link to the link container
-            } else if (index > 1) {
-                // Attach the standard click handler to other items
-                a.addEventListener('click', function (e) {
-                    handleLinkClick(e);
-                });
-                linkContainer.appendChild(a); // Append the link to the link container
-            }
-
-            // Add hr before the first visible linkContainer
-            if (index === 2) {
-                const topHr = document.createElement('hr');
-                linksContainer.appendChild(topHr);
-            }
-
-            // Append the link container to the links container
             linksContainer.appendChild(linkContainer);
-
-            // Add hr only after the last linkContainer
-            if (index === collection.length - 1 || (index === 1 && collection.length === 2)) {
-                const hr = document.createElement('hr');
-                linksContainer.appendChild(hr);
-                const br = document.createElement('br');
-                linksContainer.appendChild(br);
-            }
         });
 
-        // Show or hide the empty message based on whether there are any links
         if (hasLinks) {
-            emptyMessage.style.display = 'none'; // Hide the empty message if there are links
-        } else {
-            emptyMessage.style.display = 'block'; // Show the empty message if there are no links
-            emptyMessage.textContent = chrome.i18n.getMessage('empty'); // Set your desired message here
+            linksContainer.appendChild(
+                document.createElement('hr')
+            );
 
-            // Redirect to options.html if no links exist
-            window.location.href = '../options/options.html';
         }
+
+        linksContainer.appendChild(
+            document.createElement('br')
+        );
     });
 }
 

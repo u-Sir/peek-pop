@@ -218,9 +218,6 @@
     "styleSettings": {
         "message": "Style"
     },
-    "empty": {
-        "message": "Nothing here"
-    },
     "openAll": {
         "message": "Open all"
     },

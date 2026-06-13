@@ -221,9 +221,6 @@
     "styleSettings": {
         "message": "样式"
     },
-    "empty": {
-        "message": "这什么也没有"
-    },
     "openAll": {
         "message": "打开全部"
     },

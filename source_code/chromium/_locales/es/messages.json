@@ -221,9 +221,6 @@
     "styleSettings": {
         "message": "Estilo"
     },
-    "empty": {
-        "message": "No hay nada aquí"
-    },
     "openAll": {
         "message": "Abrir todos los enlaces"
     },
