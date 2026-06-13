@@ -72,7 +72,7 @@ export const configs = {
     'holdToPreview': false,
     'holdToPreviewTimeout': 1500,
 
-    'isFirefox': false,
+    'isFirefox': true,
     'isMac': false,
     'enableContainerIdentify': true,
 
